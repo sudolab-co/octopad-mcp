@@ -69,7 +69,7 @@ plugins/<plugin>/                   one folder per plugin
 
 ## Versioning
 
-Each skill carries a `Version:` line at the top of its file, and each plugin a `version` in its manifest. Breaking changes to the conventions written into task descriptions (title prefixes, the continuation prompt shape, template section names) bump the major version and are called out in the commit message.
+Each skill carries a `Version:` line at the top of its file, and each plugin a `version` in its manifest, kept in step. Breaking changes to the conventions written into task descriptions (title prefixes, the continuation prompt shape, template section names) bump the major version. See [CHANGELOG.md](CHANGELOG.md) for what shipped when, and [CONTRIBUTING.md](CONTRIBUTING.md) before editing a skill.
 
 ## License
 
