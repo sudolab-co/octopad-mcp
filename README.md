@@ -2,13 +2,13 @@
 
 Agent skills for [Octopad](https://octopad.app), a shared workspace where humans and AI assistants collaborate with persistent memory, structured tasks, and living knowledge.
 
-A *skill* is a set of instructions an AI assistant loads when a matching request comes in. The skills in this repository teach an assistant how to use Octopad well for a specific kind of work. More skills will land here over time.
+A *skill* is a set of instructions an AI assistant loads when a matching request comes in. The skills here teach an assistant how to use Octopad well for a specific kind of work. More will land over time.
 
 ## Skills
 
 | Skill | What it does | Assistants |
 |---|---|---|
-| [`octoplan`](claude/skills/octoplan/SKILL.md) | Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical streams alike. | Claude Code (a ChatGPT variant is planned) |
+| [`octoplan`](plugins/octoplan/skills/octoplan/SKILL.md) | Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical streams alike. | Claude Code (a ChatGPT variant is planned) |
 
 ## What Octoplan is
 
@@ -22,32 +22,54 @@ Octoplan is a planning protocol built on Octopad's task graph.
 
 - An [Octopad](https://octopad.app) account and workspace.
 - The Octopad MCP server connected to your assistant (see Octopad's docs for setup). The skill orients itself with Octopad's own tools; no other integration is needed.
-- The install below targets **Claude Code** (the terminal/desktop agent, which reads `~/.claude/skills/`). Other Claude surfaces don't load file-based skills today.
 
 ## Install (Claude Code)
 
-Copy the skill folder into your skills directory:
+This repository is a Claude Code plugin marketplace, so installing and updating are handled for you. In Claude Code, run:
+
+```
+/plugin marketplace add sudolab-co/octopad-skills
+```
+
+```
+/plugin install octoplan@octopad-skills
+```
+
+The skill then triggers on "Octoplan <work stream name>" in any project.
+
+## Staying up to date
+
+Claude Code tracks the marketplace, so you don't copy files by hand. Refresh the marketplace and update the plugin from the `/plugin` menu when a new version ships.
+
+### Manual install (no plugin support)
+
+If your setup doesn't support plugins, copy the skill folder into your skills directory instead:
 
 ```bash
 git clone https://github.com/sudolab-co/octopad-skills.git
 mkdir -p ~/.claude/skills
-cp -R octopad-skills/claude/skills/octoplan ~/.claude/skills/
+cp -R octopad-skills/plugins/octoplan/skills/octoplan ~/.claude/skills/
 ```
 
-Or, to scope it to a single project, copy it into `<project>/.claude/skills/` instead. Restart Claude Code; the skill then triggers on "Octoplan <work stream name>".
-
-## Staying up to date
-
-The repository is the source of truth. To update, pull and re-copy (the `/.` form overwrites the contents in place instead of nesting a copy):
+To update a manual install, pull and re-copy (the `/.` form overwrites in place instead of nesting a copy):
 
 ```bash
 git -C octopad-skills pull
-cp -R octopad-skills/claude/skills/octoplan/. ~/.claude/skills/octoplan/
+cp -R octopad-skills/plugins/octoplan/skills/octoplan/. ~/.claude/skills/octoplan/
+```
+
+## Repository layout
+
+```
+.claude-plugin/marketplace.json     the marketplace manifest
+plugins/<plugin>/                   one folder per plugin
+  .claude-plugin/plugin.json        its manifest and version
+  skills/<skill>/SKILL.md           the skill itself
 ```
 
 ## Versioning
 
-Each skill carries a `Version:` line at the top of its file, right under the YAML header. Breaking changes to the conventions written into task descriptions (title prefixes, the continuation prompt shape, template section names) bump the major version and are called out in the commit message.
+Each skill carries a `Version:` line at the top of its file, and each plugin a `version` in its manifest. Breaking changes to the conventions written into task descriptions (title prefixes, the continuation prompt shape, template section names) bump the major version and are called out in the commit message.
 
 ## License
 
