@@ -1,14 +1,14 @@
 ---
 name: octoplan
-description: Use when the user says "Octoplan <work stream>" or "Octoplan checkpoint <work stream>", when an Octopad work stream needs turning into an execution-ready plan, or when a task marked "Octoplan flesh-out required" needs speccing. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
+description: Use when the user says "Octoplan <work stream>", when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
 ---
-Version: 1.2.0
+Version: 1.3.0
 
 # Octoplan — work-stream planning protocol for Octopad
 
 Octoplan turns an Octopad work stream into a plan of detailed, ordered, self-contained tasks that fresh AI sessions then execute one at a time. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: an executor session briefs itself from Octopad and needs nothing else.
 
-**Everything a later session needs lives in the task itself.** The session that picks a task up has no memory of this one and does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns below. The planner plans, never implements.
+**Everything a later session needs lives in the task itself.** The session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns below. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it. The planner plans, never implements.
 
 ## What Octoplan needs
 
@@ -136,9 +136,17 @@ When a request is too big for one work stream, plan it as ONE effort across seve
 
 If one work stream suffices, none of this applies.
 
-## Checkpoints
+## Replanning — when execution changes the plan
 
-After every 3–4 closed tasks, or a long execution gap, the user runs "Octoplan checkpoint <stream>": re-validate remaining specs against the current sources, refresh `#N` prefixes and Next lines if tasks were added, surface any stranded in-progress task. Ten minutes, not a full Octoplan. Any task a checkpoint adds or materially rewrites re-runs the per-task self-check; a checkpoint that adds three or more tasks is a full Octoplan, not a checkpoint. Recurring streams (a monthly issue, a quarterly report) are normally planned one cycle at a time — re-running Octoplan per cycle is the intended rhythm, not a failure.
+A plan has no scheduled revisions. It changes only when reality changes it: a session executing a task discovers something that adds a task, drops one, or changes the order. The session that makes the discovery invokes this skill right then and rebalances the WHOLE plan, never just its own corner:
+
+- Re-validate every spec the change touches against the current sources.
+- Renumber the `#N` prefixes so the rank stays unambiguous.
+- Rewire the dependency edges and every Next line the change affects — a stale Next line kills the chain.
+- Update the tracker's ordering logic if the why-this-order changed.
+- Run the per-task self-check on any task added or materially rewritten, before the session ends.
+
+Then hand the user the corrected continuation prompt and go back to executing. The planning-only rule binds planning sessions; a rebalance inside an execution session covers exactly these plan edits, nothing more. One limit: if the discovery breaks the stream's own logic — its definition of success no longer matches reality — stop and tell the user the stream needs a fresh "Octoplan <stream>" pass instead of patching it mid-flight.
 
 ## Self-check list (step 6)
 

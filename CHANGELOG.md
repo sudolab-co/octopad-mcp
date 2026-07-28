@@ -2,9 +2,15 @@
 
 All notable changes to the skills in this repository.
 
-Each skill is versioned independently in its own `Version:` line and its plugin manifest. A **major** bump means a breaking change to the conventions written into Octopad task descriptions (title prefixes, the continuation prompt shape, template section names), so plans written under the old version may need a checkpoint pass. Minor and patch bumps are safe to adopt as-is.
+Each skill is versioned independently in its own `Version:` line and its plugin manifest. A **major** bump means a breaking change to the conventions written into Octopad task descriptions (title prefixes, the continuation prompt shape, template section names), so plans written under the old version may need a replanning pass. Minor and patch bumps are safe to adopt as-is.
 
 ## octoplan
+
+### 1.3.0 — 2026-07-28
+
+- Scheduled checkpoints are gone. The "Octoplan checkpoint <stream>" trigger and its every-3–4-tasks revision rhythm never came from a real decision, and a plan has no reason to change on a schedule. What replaces them is event-driven: the new **Replanning** section. When a session executing a task discovers something that adds a task, drops one, or changes the order, that session invokes this skill and rebalances the whole plan — specs re-validated, `#N` prefixes renumbered, dependencies and Next lines rewired, tracker logic updated, self-check re-run on anything added or rewritten. If the discovery invalidates the stream's definition of success, the session stops and asks for a fresh Octoplan pass instead.
+
+  Not breaking: nothing in existing task descriptions references checkpoints, so plans written under 1.2 keep working unchanged.
 
 ### 1.2.0 — 2026-07-28
 
@@ -17,7 +23,7 @@ Octopad · Organisation: <organisation> · Workspace: <workspace>
 
   The work and its rank lead, because an assistant names the session after the start of what it is given, so that line has to carry the readable label. The address moved to the second line and gained the organisation: workspace names can repeat across organisations, and naming only the workspace left the receiving session guessing. The stream's plain name is used, without the ` (octoplanned)` suffix.
 
-  Not breaking: a plan written under 1.0 or 1.1 keeps working, its tasks simply still emit the older one-line prompt, which resolves the same way. Run an Octoplan checkpoint when convenient to refresh those Next lines.
+  Not breaking: a plan written under 1.0 or 1.1 keeps working, its tasks simply still emit the older one-line prompt, which resolves the same way. Run an Octoplan pass on the stream when convenient to refresh those Next lines.
 
 - Dropped the remaining framing about execution being a separate mode. There is no mode. What a later session needs is written into the task description, and that is all the skill says about it.
 
