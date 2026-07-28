@@ -6,6 +6,21 @@ Each skill is versioned independently in its own `Version:` line and its plugin 
 
 ## octoplan
 
+### 2.0.0 — 2026-07-28
+
+**Breaking: the continuation prompt changed shape.** It is now two lines instead of one:
+
+```
+<work stream> #N - <task title>
+Octopad · Organisation: <organisation> · Workspace: <workspace>
+```
+
+The work and its rank lead, because an assistant names the session after the start of what it is given, so that line has to carry the readable label. The address moved to the second line and gained the organisation: workspace names can repeat across organisations, and naming only the workspace left the receiving session guessing.
+
+Plans written under 1.x still run, but their tasks carry Next lines producing the old one-line prompt. Run an Octoplan checkpoint on any live stream to refresh them.
+
+Also in this release: dropped the remaining framing about execution being a separate mode. There is no mode. What a later session needs is written into the task description, and that is all the skill says about it.
+
 ### 1.1.0 — 2026-07-28
 
 - The planner now writes the plan's reasoning into the stream tracker: why the tasks run in this order, which branches are parallel, where the human gates sit, what ends the stream. Logic only, no statuses and no copied task content, so it doesn't go stale. This is what the Blueprint page already did for multi-stream efforts, applied to a single stream.

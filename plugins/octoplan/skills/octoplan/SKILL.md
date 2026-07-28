@@ -2,17 +2,17 @@
 name: octoplan
 description: Use when the user says "Octoplan <work stream>" or "Octoplan checkpoint <work stream>", when an Octopad work stream needs turning into an execution-ready plan, or when a task marked "Octoplan flesh-out required" needs speccing. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
 ---
-Version: 1.1.0
+Version: 2.0.0
 
 # Octoplan — work-stream planning protocol for Octopad
 
 Octoplan turns an Octopad work stream into a plan of detailed, ordered, self-contained tasks that fresh AI sessions then execute one at a time. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: an executor session briefs itself from Octopad and needs nothing else.
 
-**This skill runs at planning time only.** There is no execution mode and nothing to install for one: a session picking up a task briefs itself from Octopad and follows the hand-off instruction the planner wrote into that task. Executors never load this skill — **everything an executor must do lives in the task descriptions the planner writes**, which is why the templates below spell those instructions out verbatim. The planner plans, never implements.
+**Everything a later session needs lives in the task itself.** The session that picks a task up has no memory of this one and does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns below. The planner plans, never implements.
 
 ## What Octoplan needs
 
-- The **Octopad MCP server** connected, with access to the workspace holding the stream. Orient with `start_session`, then `build_context` (mode `work_stream` or `task`). The workspace name used in continuation prompts is the one this session authenticated into.
+- The **Octopad MCP server** connected, with access to the workspace holding the stream. Orient with `start_session`, then `build_context` (mode `work_stream` or `task`). Note the organisation and workspace this session authenticated into — continuation prompts name both.
 - Octopad vocabulary used below: every work stream has a **tracker** (its living overview page); **Decisions** and **Questions** are knowledge items of those types, attached to the stream; **goals** sit above streams; **pages** hold documents.
 - Octopad enforces a task-creation contract — respect it exactly or the create is rejected:
   - Every task description must contain **Why** and **What** sections; every top-level task also needs **Done when**. Accepted header forms: `**Why**` (bold, with or without a colon), `## Why`, or `Why:` at line start. Synonyms (Context, Goal, Build, Scope) are rejected.
@@ -100,24 +100,29 @@ Recommend generously — a failed session usually costs more than a stronger mod
 
 ## Continuation — how the chain moves between sessions
 
-Executor sessions are chained by a **minimal continuation prompt**: a fenced code block containing one line of plain text (no links, no formatting):
+Sessions are chained by a **minimal continuation prompt**: a fenced code block holding two lines of plain text, no links and no formatting.
 
 ```
-Octopad: <workspace> / <work stream> #N - <task title>
+<work stream> #N - <task title>
+Octopad · Organisation: <organisation> · Workspace: <workspace>
 ```
 
-The user pastes that line into a fresh session, which briefs itself entirely from Octopad (`start_session` on the workspace, `build_context` on the task) — the prompt is a pointer, never a payload, so it can never go stale. Executors learn to emit it from ONE place: the **Next** line of the task they just executed. So the planner writes the Next line as a verbatim instruction, using these patterns (fill in the real names):
+The work and the rank come first because the assistant names the session after the start of what it is given, so that line has to be the readable label. The second line is the address: workspace names can repeat across organisations, so both are needed to land in the right place with no guessing.
+
+The user pastes the block into a fresh session, which briefs itself entirely from Octopad (`start_session` on the workspace, `build_context` on the task). The prompt is a pointer, never a payload, so it can never go stale. A session learns to emit it from ONE place: the **Next** line of the task it just finished. So the planner writes that line as a verbatim instruction, using these patterns, with the real names filled in and `<block>` standing for the two-line block above built for the named task:
 
 - **Sequential** — successor is one executable task:
-  `**Next:** #4 - <title>. When this task is fully done and verified, check in Octopad that #4 is still open and unclaimed and its dependencies are done, then end your reply with a fenced code block containing exactly: Octopad: <workspace> / <stream> #4 - <title>. If #4 is not ready, end instead with one line naming what it waits on.`
+  `**Next:** #4 - <title>. When this task is fully done and verified, check in Octopad that #4 is still open and unclaimed and its dependencies are done, then end your reply with a fenced code block containing exactly: <block for #4>. If #4 is not ready, end instead with one line naming what it waits on.`
 - **Human gate next** — successor is a human-only task:
-  `**Next:** waits on "<human task title>" (owner: <name/role>). When this task is done, end your reply by stating in one line that the chain waits on that action, then give the user this line to paste once it is done: Octopad: <workspace> / <stream> #5 - <title of the task after the gate>.`
+  `**Next:** waits on "<human task title>" (owner: <name/role>). When this task is done, end your reply by stating in one line that the chain waits on that action, then give the user this block to paste once it is done: <block for the task after the gate>.`
 - **Parallel fan-out** — several independent siblings become ready at once:
-  `**Next:** parallel group #2 + #3. When this task is done and both are confirmed ready in Octopad, emit one fenced code block PER sibling (Octopad: <workspace> / <stream> #2 - <title>, then Octopad: <workspace> / <stream> #3 - <title>) — the user opens one fresh session per block.`
+  `**Next:** parallel group #2 + #3. When this task is done and both are confirmed ready in Octopad, emit one fenced code block PER sibling (<block for #2>, then <block for #3>) — the user opens one fresh session per block.`
 - **Inside a parallel group** — exactly ONE sibling is the **relay** (it carries the chain); the others are **terminal**:
-  - Relay: `**Next:** #6 - <title>, after the whole group (#2, #3) is done. Relay: check in Octopad whether every sibling is done. If yes, emit the #6 continuation block. If not, name what is still running and give the user the #6 line to paste once the group is done.`
+  - Relay: `**Next:** #6 - <title>, after the whole group (#2, #3) is done. Relay: check in Octopad whether every sibling is done. If yes, emit the #6 continuation block. If not, name what is still running and give the user the #6 block to paste once the group is done.`
   - Terminal: `**Next:** none — terminal branch; #3 carries the continuation.` (The finishing session ends with its wrap-up and NO continuation prompt, so the chain never forks.)
 - **End of chain:** `**Next:** none — last task of the stream. End with the wrap-up only.`
+
+A Next line that points into another work stream (a multi-stream effort) works the same way: the block simply names that stream, and the organisation and workspace stay as they are.
 
 Parallelize only on true independence: no shared file, symbol, or contract for code; no shared editorial structure, template, or deliverable one sibling shapes for another, for content; never data migrations or shared generated artifacts. Parallel is the exception. Executors work only tasks assigned to them or unassigned — **a task assigned to another person is theirs; the plan assigns tasks accordingly, and an executor finding a foreign assignment warns the user instead of working it.**
 
