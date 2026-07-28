@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when the user says "Octoplan <work stream>", when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
 ---
-Version: 1.3.0
+Version: 1.3.1
 
 # Octoplan — work-stream planning protocol for Octopad
 
@@ -173,6 +173,10 @@ Per plan:
 - The stream tracker explains why the tasks run in this order, names the parallel branches and the human gates, and carries no task statuses or copied task content.
 - Multi-stream efforts: Blueprint page exists, is light, is linked, and its archiving is a closing subtask.
 - Nothing exists to serve process rather than the outcome.
+
+## Changing this skill
+
+This skill is distributed from [sudolab-co/octopad-skills](https://github.com/sudolab-co/octopad-skills). To change it, edit that repository and release (see its CONTRIBUTING); never edit an installed copy — plugin auto-update silently overwrites it.
 
 ## Common planning mistakes
 
