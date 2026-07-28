@@ -4,6 +4,18 @@ All notable changes to the skills in this repository.
 
 Each skill is versioned independently in its own `Version:` line and its plugin manifest. A **major** bump means a breaking change to the conventions written into Octopad task descriptions (title prefixes, the continuation prompt shape, template section names), so plans written under the old version may need a replanning pass. Minor and patch bumps are safe to adopt as-is.
 
+## octoplan-codex
+
+### 1.3.1 — 2026-07-28
+
+First public Codex release, intentionally aligned with the current Claude `1.3.1` version.
+
+- Keeps planning and execution separate: completing a plan never launches work. The planner asks the user whether Codex should start execution and waits for an explicit yes.
+- After approval, Codex executes the saved plan in dependency order by creating fresh worktree or local sessions with each task's exact model and reasoning effort.
+- Explicitly independent tasks can run in parallel after complete-group preflight; executor sessions are one-shot and the planning session remains the sole orchestration owner.
+- Includes Codex-specific GPT-5.6 execution and review routing, durable recovery rules, Blueprint support, and event-driven replanning.
+- No Kickstart skill or Branch command.
+
 ## octoplan
 
 ### 1.3.1 — 2026-07-28

@@ -8,14 +8,16 @@ A *skill* is a set of instructions an AI assistant loads when a matching request
 
 | Skill | What it does | Assistants |
 |---|---|---|
-| [`octoplan`](plugins/octoplan/skills/octoplan/SKILL.md) | Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical streams alike. | Claude Code (a ChatGPT variant is planned) |
+| [`octoplan`](plugins/octoplan/skills/octoplan/SKILL.md) | Turns an Octopad work stream into an execution-ready plan whose fresh sessions are chained by minimal continuation prompts. | Claude Code |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Builds the same kind of verified plan, then—only after explicit approval—lets Codex execute it in order through automatically created, model-routed sessions. | Codex |
 
 ## What Octoplan is
 
 Octoplan is a planning protocol built on Octopad's task graph.
 
 - **A planning session** reads the work stream, locks open decisions with the user, and writes every task as a complete, self-contained spec: verified against the real codebase or reference documents, sized to one session each, ordered by real dependency edges.
-- **Execution sessions** need nothing installed. Each task's description carries its own hand-off instruction, so any fresh session briefs itself from Octopad, does its one task, and hands the user a one-line continuation prompt for the next session. Octopad holds the state; the prompt is only a pointer, so it never goes stale.
+- **Claude execution sessions** need nothing installed. Each task carries its own hand-off instruction, so the user can open each fresh session from a minimal pointer.
+- **Codex execution** never starts with planning. Once the plan is complete, Octoplan asks for permission. After a clear yes, one orchestration task follows the saved dependencies, creates every executor with its planned model and reasoning effort, and launches only explicitly independent tasks in parallel.
 - **Multi-stream efforts**: when a request spans several work streams, Octoplan plans them as one effort. One goal, several streams, one light Blueprint page explaining the global logic, and cross-stream dependencies enforcing it.
 
 ## Requirements
@@ -36,6 +38,23 @@ This repository is a Claude Code plugin marketplace, so Claude Code fetches the 
 ```
 
 The skill then triggers on "Octoplan <work stream name>" in any project.
+
+## Install (Codex)
+
+Add this Git marketplace, install the Codex distribution, then start a new Codex task:
+
+```bash
+codex plugin marketplace add sudolab-co/octopad-skills --ref main
+codex plugin add octoplan-codex@octopad-skills
+```
+
+Authenticate Octopad when prompted. Then invoke the skill with `$octoplan` or say `Octoplan <work stream name>`.
+
+To pull later releases:
+
+```bash
+codex plugin marketplace upgrade octopad-skills
+```
 
 ## Staying up to date
 
@@ -83,15 +102,18 @@ cp -R octopad-skills/plugins/octoplan/skills/octoplan/. ~/.claude/skills/octopla
 ## Repository layout
 
 ```
-.claude-plugin/marketplace.json     the marketplace manifest
-plugins/<plugin>/                   one folder per plugin
-  .claude-plugin/plugin.json        its manifest and version
-  skills/<skill>/SKILL.md           the skill itself
+.claude-plugin/marketplace.json       Claude marketplace manifest
+.agents/plugins/marketplace.json      Codex marketplace manifest
+plugins/octoplan/                     Claude distribution
+  .claude-plugin/plugin.json          Claude manifest and version
+plugins/octoplan-codex/               Codex distribution
+  .codex-plugin/plugin.json           Codex manifest and version
+  skills/octoplan/SKILL.md            Codex skill entrypoint
 ```
 
 ## Versioning
 
-Each skill carries a `Version:` line at the top of its file, and each plugin a `version` in its manifest, kept in step. Breaking changes to the conventions written into task descriptions (title prefixes, the continuation prompt shape, template section names) bump the major version. See [CHANGELOG.md](CHANGELOG.md) for what shipped when, and [CONTRIBUTING.md](CONTRIBUTING.md) before editing a skill.
+Each distribution carries a `Version:` line and a matching plugin-manifest version. The first public Codex release starts at `1.3.1`, level with the Claude distribution. Tags include the distribution name (`octoplan-vX.Y.Z` or `octoplan-codex-vX.Y.Z`). See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
