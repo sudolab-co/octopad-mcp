@@ -6,6 +6,11 @@ Each skill is versioned independently in its own `Version:` line and its plugin 
 
 ## octoplan
 
+### 1.1.0 — 2026-07-28
+
+- The planner now writes the plan's reasoning into the stream tracker: why the tasks run in this order, which branches are parallel, where the human gates sit, what ends the stream. Logic only, no statuses and no copied task content, so it doesn't go stale. This is what the Blueprint page already did for multi-stream efforts, applied to a single stream.
+- Dropped the "two-tier workflow" framing. There is no execution mode: this skill runs at planning time, and everything an executor needs is written into the task descriptions themselves.
+
 ### 1.0.0 — 2026-07-28
 
 First public release.
