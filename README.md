@@ -25,7 +25,7 @@ Octoplan is a planning protocol built on Octopad's task graph.
 
 ## Install (Claude Code)
 
-This repository is a Claude Code plugin marketplace, so installing and updating are handled for you. In Claude Code, run:
+This repository is a Claude Code plugin marketplace, so Claude Code fetches the skill for you instead of you copying files. In Claude Code, run:
 
 ```
 /plugin marketplace add sudolab-co/octopad-skills
@@ -39,7 +39,29 @@ The skill then triggers on "Octoplan <work stream name>" in any project.
 
 ## Staying up to date
 
-Claude Code tracks the marketplace, so you don't copy files by hand. Refresh the marketplace and update the plugin from the `/plugin` menu when a new version ships.
+Updates are not automatic until you say so. Claude Code enables background auto-update only for Anthropic's own marketplaces; every third-party one, including this one, ships with it off. Turn it on once, right after installing:
+
+1. Run `/plugin` and open the **Marketplaces** tab.
+2. Select `octopad-skills`.
+3. Choose **Enable auto-update**.
+
+Claude Code then refreshes this marketplace and updates the plugin in the background shortly after each session starts, and tells you to run `/reload-plugins` when a new version has landed.
+
+To keep it manual instead, run `/plugin marketplace update octopad-skills` followed by `/plugin update octoplan@octopad-skills` whenever a release is announced.
+
+A team can set this for everyone by declaring the marketplace in a shared `.claude/settings.json`, so nobody has to remember the toggle:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "octopad-skills": {
+      "source": { "source": "github", "repo": "sudolab-co/octopad-skills" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": { "octoplan@octopad-skills": true }
+}
+```
 
 ### Manual install (no plugin support)
 
