@@ -2,13 +2,15 @@
 name: octoplan
 description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, or asks to flesh out an Octoplan task. Requires connected Octopad MCP tools.
 ---
-Version: 1.3.1
+Version: 1.3.2
 
 # Octoplan for Codex
 
 ## Purpose
 
 Turn an Octopad work stream into a verified sequence of self-contained tasks. Planning never starts execution. After the plan is saved and reviewed, ask for explicit approval; only then may Codex execute it by creating model-routed independent sessions.
+
+A full plan or targeted replan runs on `gpt-5.6-sol` with `xhigh` or `max` effort. Use `max` only when verified scope, risk, or ambiguity warrants it. The planner setting is separate from the saved execution route for each task.
 
 Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out a task. Read [references/codex-runtime.md](references/codex-runtime.md) completely before recommending models, asking to launch execution, or orchestrating an approved plan.
 

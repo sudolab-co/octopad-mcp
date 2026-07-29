@@ -6,6 +6,10 @@ Each skill is versioned independently in its own `Version:` line and its plugin 
 
 ## octoplan-codex
 
+### 1.3.2 — 2026-07-29
+
+Full planning and targeted replanning accept `gpt-5.6-sol` at `xhigh` or `max`; `max` remains for verified extra scope, risk, or ambiguity.
+
 ### 1.3.1 — 2026-07-28
 
 First public Codex release, intentionally aligned with the current Claude `1.3.1` version.
