@@ -1,6 +1,6 @@
 # Octoplan planning protocol
 
-This is the Codex distribution of the public Octoplan 1.3.1 planning protocol. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
+This is the Codex distribution of the public Octoplan 1.4.0 planning protocol. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
 
 ## What Octoplan needs
 
@@ -25,20 +25,28 @@ Respect Octopad's task-creation contract:
 - Size each executable top-level task to one focused, memory-less executor session.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
-- Run the saved-state self-check and adversarial plan review on every complete plan.
+- On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. Only a reduced event-driven rebalance as defined under Replanning is exempt.
+- Run the scoping brief, saved-state self-check, and adversarial plan review on every full planning pass. A reduced event-driven rebalance runs only the gates named under Replanning.
 
 ## Workflow
 
-1. **Review or discover.** Read the whole existing stream. If it is thin, interview the user one theme at a time: outcome, audience, scope, constraints, proof, and human owners. If a loose plan exists, improve it instead of replacing it reflexively.
-2. **Lock decisions.** Present one material choice at a time as Deciding, Options with gain and cost, Recommendation, and Reversibility. Save only the accepted choice as an Octopad Decision.
-3. **Set the order.** Close done-but-open work, log Questions, add missing tasks, and wire every real dependency. Prefix executable task titles `#N - ` for human-readable rank. Dependencies, not the number, decide readiness.
-4. **Ground and make runnable.** For engineering, verify repository patterns, tests, data changes, permissions, rollback, and exact commands. For content or operations, read the governing canon and live surfaces. Missing access becomes a blocking task. Anything that must already be live appears under `Preconditions`.
-5. **Spec every task.** Fill the template below with exact sources, boundaries, edge cases, checks, routing, and completion state. A task depending on unknown output stays a flesh-out placeholder.
-6. **Add final validation.** Wire one final validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist.
-7. **Self-check saved state.** Re-open every task from Octopad, check the saved text and edges, repair failures, then reread repairs.
-8. **Adversarial review.** A full plan uses at least two fresh `gpt-5.6-sol` reviewers at the planner's accepted effort (`xhigh` or `max`): design soundness and memory-less executability. Add a third reviewer at the same route for eight or more tasks or work involving migrations, permissions, authentication, money, or destructive data changes. A targeted event-driven replan changing fewer than three tasks uses one fresh reviewer at that same accepted effort; three or more changed or added tasks use the full-plan route. Give reviewers saved task text and source access, not a summary.
-9. **Explain the logic.** Update the stream tracker with why the order exists, which branches are parallel, where human gates sit, and what finishes the stream. Store no statuses or copied task content there.
-10. **Mark and stop.** Append ` (octoplanned)` to the stream name if absent. Report the plan, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
+1. **Review or discover.** Read the whole existing stream. If it is thin, interview the user one theme at a time: outcome, audience, scope, constraints, proof, and human owners. If a loose plan exists, improve it instead of replacing it reflexively. The answers and verified sources feed the scoping brief; no Decision, Question, Blueprint, design page, task, or tracker change is saved yet.
+2. **Scoping brief — reflect back, then wait.** Before locking any Decision, drafting any Blueprint or design page, or writing any task or tracker change, merge the user's words with verified sources and return one short brief in the conversation. The brief is the entire reply: do not include decision proposals, a draft breakdown, an execution-consent question, or any other planning output. Include all five parts every time:
+   - **Understanding:** restate the purpose and deliverable in the planner's own words.
+   - **In scope / out of scope:** make both explicit. Name at least the nearest adjacent result the stream will not deliver.
+   - **Success:** state the definition of success the plan will use.
+   - **Assumptions:** list every point settled by inference instead of a verified source or the user's words, one line each, with the basis for the inference. If none remain, show where scope edges, audience, ordering, and quality bar were each settled.
+   - **Open questions:** list what the planner cannot settle alone.
+   Then stop. Confirmation must be a user reply sent after seeing the brief; a launch prompt, earlier chat, tracker note, or apparently complete stream never counts. Apply corrections before proceeding. If a reply leaves an assumption or open question unanswered, do not treat it as accepted: ask once more, then save any still-open point as an Octopad Question and keep affected tasks as flesh-out placeholders. Do not start step 3 or write any planning artifact until the user has confirmed the brief as corrected. The brief itself stays in chat; its confirmed content becomes the durable Decisions, Questions, tracker logic, and tasks.
+3. **Lock decisions.** Present one remaining material choice at a time as Deciding, Options with gain and cost, Recommendation, and Reversibility. A choice explicitly settled in the scoping-brief reply is recorded directly instead of being presented again. Save only the accepted choice as an Octopad Decision.
+4. **Set the order.** Close done-but-open work, log Questions, add missing tasks, and wire every real dependency. Prefix executable task titles `#N - ` for human-readable rank. Dependencies, not the number, decide readiness.
+5. **Ground and make runnable.** For engineering, verify repository patterns, tests, data changes, permissions, rollback, and exact commands. For content or operations, read the governing canon and live surfaces. Missing access becomes a blocking task. Anything that must already be live appears under `Preconditions`.
+6. **Spec every task.** Fill the template below with exact sources, boundaries, edge cases, checks, routing, and completion state. A task depending on unknown output stays a flesh-out placeholder.
+7. **Add final validation.** Wire one final validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist.
+8. **Self-check saved state.** Re-open every task from Octopad, check the saved text and edges, repair failures, then reread repairs.
+9. **Adversarial review.** A full plan uses at least two fresh `gpt-5.6-sol` reviewers at the planner's accepted effort (`xhigh` or `max`): design soundness and memory-less executability. The design reviewer also checks every saved spec against the confirmed scoping brief, including corrections. Add a third reviewer at the same route for eight or more tasks or work involving migrations, permissions, authentication, money, or destructive data changes. A reduced event-driven replan adding or materially rewriting fewer than three tasks uses one fresh reviewer at that same accepted effort; three or more added or materially rewritten tasks require a fresh full planning pass. Give reviewers saved task text and source access, not a summary.
+10. **Explain the logic.** Update the stream tracker with why the order exists, which branches are parallel, where human gates sit, and what finishes the stream. Store no statuses or copied task content there.
+11. **Mark and stop.** Append ` (octoplanned)` to the stream name if absent. Report the plan, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
 
 ## Task template
 
@@ -79,7 +87,7 @@ The orchestration session owns continuation. Parallel executor sessions are ster
 
 ## Multi-stream efforts and Blueprint
 
-When one outcome needs several autonomous work streams:
+When one outcome needs several autonomous work streams, write one effort-level scoping brief before cutting it into streams. The brief must expose the proposed seams and what each stream owns. A later full Octoplan pass on one stream writes its own stream-level brief because the effort brief did not settle that stream's internals.
 
 1. Link the streams to one goal and keep each autonomous package in its logical stream.
 2. Wire real dependencies across streams in the same workspace.
@@ -91,9 +99,11 @@ The Blueprint explains the logic. The Octopad dependency graph enforces it.
 
 ## Replanning
 
-Replan only when reality changes the plan, not on a schedule. Revalidate affected specs, renumber titles, rewire dependencies, update affected Next lines and tracker logic, then rerun the relevant self-check.
+Replan only when reality changes the plan, not on a schedule. A reduced event-driven rebalance may add or materially rewrite at most two tasks without rerunning the scoping brief, and only when the approved result, scope, material risk, cost, and definition of success stay unchanged. Mechanical title renumbering, dependency rewiring, and Next-line repairs do not count toward that limit. Revalidate affected specs, repair the graph and tracker logic, then rerun the relevant self-check and one fresh review.
 
-A repair that preserves the approved result and risk may continue inside the approved run. Added scope, materially changed risk or cost, or a changed definition of success requires a revised plan and a new explicit execution approval.
+Pure plan-hygiene repairs that add, remove, or materially rewrite no executable work may continue under the existing execution approval. Any added, removed, or materially rewritten executable task requires showing the revised saved plan and receiving fresh execution approval before execution continues.
+
+Three or more added or materially rewritten tasks, added scope, materially changed risk or cost, or a changed definition of success are not a reduced rebalance. Pause execution and start a fresh full planning pass: return a new scoping brief and wait for confirmation before saving the revised plan. After review, show the revision and request explicit execution approval again.
 
 ## Saved-state self-check
 
@@ -111,6 +121,9 @@ For every executable task:
 
 For the plan:
 
+- The user confirmed the scoping brief in a reply sent after seeing it, before any planning artifact was written.
+- Every assumption in the brief was confirmed, corrected, or saved as a Question with affected tasks left as flesh-out placeholders.
+- Every saved spec matches the confirmed brief and its corrections.
 - The definition of success matches real scope.
 - Every material choice is a recorded Decision.
 - Every real dependency is wired.

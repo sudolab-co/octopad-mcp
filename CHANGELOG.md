@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and its plugin 
 
 ## octoplan-codex
 
+### 1.4.0 — 2026-07-30
+
+Every full planning pass now returns a short scoping brief before writing anything to Octopad: the planner's understanding, explicit in/out of scope, definition of success, assumptions with their basis, and open questions. The brief is the whole reply, and the planner waits for a later user confirmation before saving Decisions, Questions, tasks, tracker logic, or Blueprint pages.
+
+A prior prompt or apparently complete stream cannot satisfy the gate. Partial replies never silently accept an unanswered assumption: the planner asks once more, then records anything still open as a Question and leaves affected tasks as flesh-out placeholders. Multi-stream efforts use one effort-level brief before the stream split; a later full pass on one stream uses its own brief.
+
+Reduced event-driven rebalancing remains available without a new brief only for at most two added or materially rewritten tasks when scope, result, material risk, cost, and definition of success stay unchanged; mechanical graph and title repairs do not count toward that limit. Only pure plan-hygiene repair continues under the existing execution approval. Any added, removed, or materially rewritten executable task requires fresh execution approval, while larger or material changes require a fresh full planning pass.
+
+The Codex execution-consent boundary, saved model and effort routing, independent executor sessions, and protected-action gates are unchanged. Existing saved plans remain valid.
+
 ### 1.3.2 — 2026-07-29
 
 Full planning and targeted replanning accept `gpt-5.6-sol` at `xhigh` or `max`; `max` remains for verified extra scope, risk, or ambiguity.

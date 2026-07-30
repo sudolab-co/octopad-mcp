@@ -86,7 +86,8 @@ The planning session becomes the single orchestration owner:
 ## Stops and recovery
 
 - **Human gate:** pause, name the required human action, and wait. Never perform or approve it.
-- **Material replan:** update the plan, show the change, ask the execution-consent question again, and wait.
+- **Reduced rebalance:** pure title, dependency, Next-line, or tracker-logic repairs may continue under the existing execution approval. Any added, removed, or materially rewritten executable task requires showing the reviewed saved revision, asking the execution-consent question again, and waiting before execution continues.
+- **Material replan:** pause execution, return the complete scoping brief as the whole reply, and wait for confirmation. Only then update and review the saved plan, show the revision, ask the execution-consent question again, and wait.
 - **Thread creation failure:** report the exact task, project, model, effort, and error. Do not downgrade or paste the whole task into the orchestration session.
 - **Partial parallel launch:** record exactly which sessions exist, do not duplicate them, and recover only the missing members after re-reading current state.
 - **Review failure:** keep the task `in_progress`, preserve the implementer and reviewer thread IDs, and report the exact finding or reviewer error. Never waive a saved required review.
