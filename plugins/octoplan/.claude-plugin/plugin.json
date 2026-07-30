@@ -1,7 +1,7 @@
 {
   "name": "octoplan",
   "description": "Work-stream planning protocol for Octopad. A planning session turns a work stream into detailed, ordered, self-contained tasks; fresh sessions then execute them one at a time, chained by a minimal continuation prompt.",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "author": {
     "name": "Sudolab"
   },

@@ -22,6 +22,18 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan
 
+### 1.4.0 — 2026-07-30
+
+- New step 2, **Scoping brief — reflect back, then wait**: before locking any decision, drafting any design page, or writing any task, the planner hands the user one short brief merging what the user said with what the sources hold — understanding restated in its own words, in/out of scope, definition of success, an explicit Assumptions list (every point settled by inference rather than a source or the user's words), and open questions — then stops. The old flow only forced a question when a spec slot could not be filled at all; a plausible-but-wrong inference could fill the slot and ship silently. The Assumptions list makes those inferences visible so the user can veto them before planning starts.
+
+  Three guards keep the gate from being talked around: confirmation must be a reply sent AFTER seeing the brief (no launch prompt, prior chat, or tracker note counts, however complete it looks); the brief is the entire message, with no decision proposals or draft breakdown riding along to be swept up by one "go"; and a reply that leaves part of the brief unanswered never defaults to the planner's assumption — re-ask once, then log a Question and mark the affected tasks as flesh-out placeholders. An empty Assumptions list has to show its work rather than assert itself. A call already settled in the brief reply is recorded as a Decision directly, not re-presented in step 3.
+
+  Scope of the gate: every full planning pass. A multi-stream effort writes ONE effort-level brief before the cut into streams, and a later pass on one stream of that effort writes its own stream-level brief. A mid-execution rebalance does not rerun it — and a "rebalance" that would add or materially rewrite more than a couple of tasks, or move the scope, now has to stop and ask for a fresh Octoplan pass instead. The adversarial review's design-soundness lens also checks the specs against the confirmed brief, so a correction cannot silently fail to propagate.
+
+  Steps renumbered (old 2–9 are now 3–10), with matching rows in the self-check list and the mistakes table.
+
+  Not breaking: nothing in existing task descriptions changes shape; plans written under 1.3 keep working unchanged.
+
 ### 1.3.1 — 2026-07-28
 
 - New "Changing this skill" note: edit the source repository and release, never an installed copy — auto-update silently overwrites it. This guard used to live in a project instruction file; it belongs here, where it travels with the skill.
