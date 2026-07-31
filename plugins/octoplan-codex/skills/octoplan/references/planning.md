@@ -1,6 +1,6 @@
 # Octoplan planning protocol
 
-This is the Codex distribution of the public Octoplan 1.4.0 planning protocol. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
+This is the Codex distribution of the public Octoplan 1.5.0 planning protocol. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
 
 ## What Octoplan needs
 
@@ -83,7 +83,7 @@ Done when: <the future observable result>
 
 Parallelism is exceptional. Every pair in a group must share no file, symbol, contract, generated artifact, editorial structure, migration, lockfile, or scarce external resource. Every member must have the same readiness frontier. Save `Parallel-safe with` symmetrically only after all tasks exist, using immutable Octopad IDs.
 
-The orchestration session owns continuation. Parallel executor sessions are sterile: each performs one task, records its result, and returns. They never create another Codex task.
+Continuation follows the dependency frontier. The owner that opens a parallel group claims and creates the complete saved group. Each member performs one task and may advance only after its own durable completion or required review. At fan-in, earlier siblings stop because the successor is not ready; the last durable completion sees every dependency satisfied and tries the guarded claim. If completions race, only the session whose claim succeeds creates the successor. `Next` plus dependency edges are sufficient, so existing plans need no new relay field.
 
 ## Multi-stream efforts and Blueprint
 

@@ -35,7 +35,7 @@ Optimize cost per accepted task: include retries, review corrections, delay, and
 | Sensitive, destructive, private-data, permission, payment, concurrency, public persuasion, legal, or compliance work | `gpt-5.6-sol · effort xhigh` |
 | Open investigation or architecture decision | `gpt-5.6-sol · effort max` |
 
-Use a fresh reviewer with no authoring history. The orchestration owner creates and monitors that review session at the saved Review route; the executor does not review its own work. Resolve or explicitly surface every material finding and rerun affected verification before completion.
+Use a fresh reviewer with no authoring history. The executor creates that review session at the saved Review route and transfers continuation ownership to it; the executor never reviews its own work. The reviewer sends confirmed findings to the original executor, monitors the correction loop, reruns affected verification, and may complete and relay the task only after PASS.
 
 ## Execution consent
 
@@ -56,42 +56,4 @@ A clear yes authorizes only:
 
 It does not authorize a protected external action, a human-only task, a materially revised plan, or a model substitution.
 
-## Orchestration loop after approval
-
-The planning session becomes the single orchestration owner:
-
-1. Re-read the current Octopad plan. Treat dependencies as authority and `#N` only as a label.
-2. Resolve the next ready executable task. If the plan explicitly records a parallel group, preflight every member and every pair before creating any session.
-3. Reject placeholders, unmet Preconditions, foreign assignments, missing routing, asymmetric parallel links, and tasks already owned by another live execution.
-4. Claim the complete selected set before launch. Prefer one atomic batch when Octopad offers it. Otherwise set members to `in_progress` sequentially with each current value passed as `expected_updated_at`; if any claim fails before launch, release only the untouched claims acquired by this attempt with the same concurrency guard, then re-read the group. Never launch or leave a partial claimed group.
-5. Use `list_projects` to resolve the saved repository. For a Git repository, create a fresh worktree task; otherwise use the saved local project. Never fork the planning conversation.
-6. Call `create_thread` once per selected top-level task with its exact saved model and reasoning effort. Do not use a cheaper fallback.
-7. Keep executor prompts minimal and task-specific:
-
-   ```text
-   Execute Octopad task "<immutable task ID>" — <plain stream> #N - <task title>.
-   Octopad · Organisation: <organisation> · Workspace: <workspace>.
-   This is one task in an approved Octoplan run. Brief yourself from Octopad and the repository, start immediately, and complete the saved implementation and verification. If Review is required, produce a reviewable branch, pull request, document, or artifact only as permitted by the active rules, and leave the task in progress; a separate routed reviewer will gate completion. Do not create or emit a successor; the orchestration task owns continuation.
-   Plan approval does not authorize human-only gates or any merge, publication, message, permission, payment, destructive change, or other action that the current user or repository rules reserve for separate approval. Stop before that action and report the exact gate to the orchestration task.
-   ```
-
-8. Persist every creation result in Octopad immediately. When `create_thread` returns `threadId` and `hostId`, save both. When worktree setup returns only `clientThreadId`, save it as pending, do not pass it to thread tools, and do not relaunch. Resolve the finished setup with `list_threads`, matching the saved project and the immutable Octopad task ID at the start of the executor prompt; then save the real `threadId` and `hostId`. If that unique match cannot be proven, pause with the pending client ID instead of guessing.
-9. Use `wait_threads` only after a real `threadId` exists, for bounded progress snapshots. A created or exited thread proves neither delivery nor completion.
-10. For `Review: required`, create one fresh review thread with the exact saved Review route after the executor has produced a reviewable branch, pull request, document, or other durable artifact. For code, start the reviewer from the published branch when available and give it the task ID plus branch or pull-request pointer. For shared non-code work, give it the task ID plus the system-of-record pointer. Never pass authoring history or a summary in place of the saved task.
-11. Persist the review thread ID. Send confirmed findings to the original executor with `send_message_to_thread`, wait for fixes and rerun verification, then ask the same reviewer thread to verify the corrected artifact. Do not create duplicate implementers or reviewers for the same attempt.
-12. Mark a task done only after its saved `Done when`, verification, and required review are durably satisfied. A protected merge, publication, approval, or other human action remains a gate.
-13. When every member of the active group is durably complete, re-read Octopad and repeat from step 2.
-14. Finish only when final validation and the plan's definition of success are complete.
-
-## Stops and recovery
-
-- **Human gate:** pause, name the required human action, and wait. Never perform or approve it.
-- **Reduced rebalance:** pure title, dependency, Next-line, or tracker-logic repairs may continue under the existing execution approval. Any added, removed, or materially rewritten executable task requires showing the reviewed saved revision, asking the execution-consent question again, and waiting before execution continues.
-- **Material replan:** pause execution, return the complete scoping brief as the whole reply, and wait for confirmation. Only then update and review the saved plan, show the revision, ask the execution-consent question again, and wait.
-- **Thread creation failure:** report the exact task, project, model, effort, and error. Do not downgrade or paste the whole task into the orchestration session.
-- **Partial parallel launch:** record exactly which sessions exist, do not duplicate them, and recover only the missing members after re-reading current state.
-- **Review failure:** keep the task `in_progress`, preserve the implementer and reviewer thread IDs, and report the exact finding or reviewer error. Never waive a saved required review.
-- **Interrupted orchestration:** Octopad remains authoritative. On a later explicit "resume execution", re-read claims, saved thread identifiers, task state, branches, and pull requests before deciding what remains.
-- **Protected external action:** follow the active repository and user approval rules even when autonomous execution was approved.
-
-The orchestration owner may wait and monitor; executor sessions remain one-shot and sterile.
+After a clear yes, read [codex-relay.md](codex-relay.md) completely before creating the first task or resuming the run.

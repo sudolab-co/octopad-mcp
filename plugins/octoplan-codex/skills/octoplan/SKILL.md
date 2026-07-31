@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, or asks to flesh out an Octoplan task. Requires connected Octopad MCP tools.
 ---
-Version: 1.4.0
+Version: 1.5.0
 
 # Octoplan for Codex
 
@@ -12,7 +12,7 @@ Turn an Octopad work stream into a verified sequence of self-contained tasks. Pl
 
 A full plan or targeted replan runs on `gpt-5.6-sol` with `xhigh` or `max` effort. Use `max` only when verified scope, risk, or ambiguity warrants it. The planner setting is separate from the saved execution route for each task.
 
-Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out a task. Read [references/codex-runtime.md](references/codex-runtime.md) completely before recommending models, asking to launch execution, or orchestrating an approved plan.
+Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out a task. Read [references/codex-runtime.md](references/codex-runtime.md) completely before recommending models or asking to launch execution. After a clear execution yes, read [references/codex-relay.md](references/codex-relay.md) completely before creating the first task or resuming an approved run.
 
 ## Hard boundaries
 
@@ -21,14 +21,14 @@ Read [references/planning.md](references/planning.md) completely before planning
 3. Never create an executor session during planning or merely because a plan is complete.
 4. End a completed plan with the execution-consent question from the Codex runtime reference and wait.
 5. A clear affirmative answer authorizes execution of the current saved plan only. It does not authorize protected external actions, human gates, or materially expanded scope.
-6. After approval, keep one orchestration owner. It follows Octopad dependencies and creates a fresh independent Codex task for each executable top-level task. Executor tasks never create successors.
+6. After approval, the planning session launches only the first ready task or explicitly parallel group. Continuation then travels with the work: a `Review: skip` executor owns durable completion and the next launch; a `Review: required` executor creates one fresh routed reviewer, which owns the correction loop, durable completion, and the next launch after PASS.
 7. Apply the exact saved model and reasoning effort. Never silently substitute a cheaper or different configuration.
 8. Run tasks in parallel only when the saved plan explicitly proves them independent and the complete group passes preflight.
 9. Octopad holds scope, state, dependencies, routing, review, and verification. Handoffs are pointers, never copied plans.
 
 ## Codex-specific result
 
-The planning session becomes the orchestration session only after approval. It resolves the next ready task or explicitly parallel group, claims the work in Octopad, creates the required worktree or local sessions, waits for their results, verifies the durable task state, and advances until the plan finishes or reaches a real stop.
+After approval, the planning session resolves, claims, and creates the first ready task or explicitly parallel group. Each completing executor or reviewer then re-reads Octopad, claims the next ready task or group with concurrency guards, creates its fresh worktree or local sessions, persists their identifiers, and returns. `Next` and dependency edges carry this relay; no new field is required in existing plans.
 
 No Kickstart skill or Branch command exists. Fresh `create_thread` tasks replace both.
 
