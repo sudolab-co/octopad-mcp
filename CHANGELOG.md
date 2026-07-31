@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 1.6.1 — 2026-07-31
+
+Octoplan now distinguishes execution guidance from retrievable source context. Tasks save the outcome, decisions, boundaries, verified approach, exact pointers, risks, and verification that direct a fresh executor, while live pages, documents, and code remain in their systems of record. Engineering tasks identify the applicable files, symbols, patterns, integration points, invariants, regressions, and tests without copying implementation context.
+
+Executor and reviewer prompts now explicitly start the Octopad workspace session, call `build_context` for the task, and open the saved source pointers before acting. This is a wording clarification only: existing task schemas, saved plans, routing, approvals, relay behavior, and terminal contracts remain valid.
+
 ### 1.6.0 — 2026-07-31
 
 Octoplan now routes after decomposition by verification strength, consequence, and subjectivity. Luna `high` handles mechanical work, Luna `xhigh` is the default for well-specified autonomous execution, and Luna `max` handles difficult but strongly verifiable tasks. Terra `high` and `xhigh` cover everyday business communication and well-bounded product or decision documents. Sol `high` and `xhigh` remain for open-ended strategy, weak verification, polished or high-consequence public work, sensitive systems, and confirmed lower-tier capacity failures; planning remains Sol `xhigh`, with `max` reserved for justified extra scope, risk, or ambiguity.

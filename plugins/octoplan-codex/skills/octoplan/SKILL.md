@@ -2,13 +2,13 @@
 name: octoplan
 description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, or asks to flesh out an Octoplan task. Requires connected Octopad MCP tools.
 ---
-Version: 1.6.0
+Version: 1.6.1
 
 # Octoplan for Codex
 
 ## Purpose
 
-Turn an Octopad work stream into a verified sequence of self-contained tasks. Planning never starts execution. On every full planning pass, return a scoping brief as the whole reply and wait for the user's confirmation before saving any planning artifact; only the reduced event-driven rebalance defined below is exempt. After the confirmed plan is saved and reviewed, ask for explicit approval; only then may Codex execute it by creating model-routed independent sessions.
+Turn an Octopad work stream into a verified sequence of execution-ready tasks with authoritative pointers. Planning never starts execution. On every full planning pass, return a scoping brief as the whole reply and wait for the user's confirmation before saving any planning artifact; only the reduced event-driven rebalance defined below is exempt. After the confirmed plan is saved and reviewed, ask for explicit approval; only then may Codex execute it by creating model-routed independent sessions.
 
 A full plan or targeted replan runs on `gpt-5.6-sol` with `xhigh` or `max` effort. Use `max` only when verified scope, risk, or ambiguity warrants it. The planner setting is separate from the saved execution route for each task.
 

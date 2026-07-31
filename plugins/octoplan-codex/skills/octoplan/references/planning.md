@@ -22,7 +22,7 @@ Respect Octopad's task-creation contract:
 - Save only verified paths, symbols, commands, source claims, access assumptions, and statuses.
 - An unknown becomes a Question, Decision, investigation task, or flesh-out marker; never a guess.
 - Use the simplest plan that fully delivers the definition of success.
-- Size each executable top-level task to one focused, memory-less executor session, with enough verified context that the executor does not need the planning conversation.
+- Size each executable top-level task to one focused executor session. Make its direction independent of the planning conversation by saving the accepted decisions, verified execution guidance, exact pointers, and checks it needs.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
 - On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. Only a reduced event-driven rebalance as defined under Replanning is exempt.
@@ -61,7 +61,7 @@ Preconditions: <what must already be live>
 
 Why: <why this task exists and what it builds on>
 What: <one job, scope, and boundaries>
-How: <verified sources, exact paths, existing patterns, edge cases, approval gates>
+How: <verified execution guidance: exact pointers, paths or symbols, approach and existing patterns, integration points, edge cases, invariants, approval gates>
 Verify: <exact runnable commands or observable checks>
 Done when: <durable result in its system of record>
 Next: <the next task, parallel group, human gate, or none>
@@ -69,7 +69,14 @@ Next: <the next task, parallel group, human gate, or none>
 
 Keep `Review route` only when review is required. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
 
-Every executable task must make these core items resolvable from the saved text or its exact pointers: expected result and reason; in-scope and out-of-scope boundaries; inputs and dependencies; observable acceptance criteria; exact verification; and enough context for a fresh executor to continue without chat memory. Also save accepted decisions, governing sources, ordered steps, failure cases, safeguards, proof artifacts, and stop or escalation conditions whenever they affect execution. Put this context in `How` and the checks in `Verify`; do not add empty sections merely to repeat that an item does not apply.
+A fresh executor has no memory of the planning conversation, but it does have Octopad `build_context` plus access to the exact repository, document, page, and Decision pointers saved by the planner. Build the handoff in two layers:
+
+1. The saved task carries the execution contract: expected result and reason; scope boundaries; accepted decisions; inputs and dependencies; verified execution guidance; exact pointers; acceptance criteria and verification; and the risks, safeguards, proof artifacts, or stop conditions that affect the job.
+2. The executor starts by calling `build_context` in task mode, then rereads the current task, linked Octopad sources, and cited repository or document sources before acting.
+
+Keep live source content in its system of record. A resolvable pointer is enough; do not copy pages, files, or broad background that `build_context` and the cited sources can supply. Put execution guidance in `How` and checks in `Verify`, and include only the conditional details that affect this job.
+
+For engineering, use the planning pass's grounded analysis to identify the likely files and symbols, the expected change or approach, the existing pattern to follow, integration points, contracts or invariants to preserve, edge cases and regressions to watch, and exact test commands. Save the applicable guidance and pointers, not copied implementation context; the executor rereads the code before editing.
 
 For business communication or editorial deliverables, also save the audience and channel, intended reader action or decision, and any message hierarchy, voice guidance, format, length, or editorial criteria that affect execution. Save permitted claims with sources whenever the work makes factual claims. Subjective quality never replaces factual verification.
 
@@ -120,7 +127,7 @@ For every executable task:
 - Verify is exact and runnable now.
 - Preconditions name every live assumption and external gate.
 - The task contains one job and fits one session.
-- The task contains the core memory-less handoff context; conditional decisions, sources, safeguards, proofs, and escalation instructions are present where they affect execution.
+- The task carries a complete execution contract and enough verified guidance to focus the work; live source content remains reachable through `build_context` and exact pointers instead of being duplicated.
 - A business communication or editorial task records its audience, channel, intended effect, and the message, voice, format, claim-source, factual-review, and editorial-review constraints that apply.
 - Parallel links are immutable, complete, symmetric, and genuinely independent.
 - Next matches the dependency graph.
