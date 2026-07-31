@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 1.6.0 — 2026-07-31
+
+Octoplan now routes after decomposition by verification strength, consequence, and subjectivity. Luna `high` handles mechanical work, Luna `xhigh` is the default for well-specified autonomous execution, and Luna `max` handles difficult but strongly verifiable tasks. Terra `high` and `xhigh` cover everyday business communication and well-bounded product or decision documents. Sol `high` and `xhigh` remain for open-ended strategy, weak verification, polished or high-consequence public work, sensitive systems, and confirmed lower-tier capacity failures; planning remains Sol `xhigh`, with `max` reserved for justified extra scope, risk, or ambiguity.
+
+Tasks now carry the smallest complete memory-less handoff: observable result, boundaries, inputs, acceptance, verification, and any decisions, sources, safeguards, proofs, or escalation conditions that affect execution. Business communication and editorial deliverables add only the audience, channel, intended effect, voice, message, claim-source, format, and review constraints that actually apply.
+
+Review routing now uses Luna `max` for deterministic completeness and verifiability, Sol `high` for difficult or editorial judgment, and Sol `xhigh` for sensitive or costly public work. Failed work is diagnosed as a plan gap, environment or verifier blocker, or model-capacity problem before escalation. A changed route is a material task rewrite: it must be saved, reviewed, and explicitly approved in a fresh run; executors and reviewers never substitute a model themselves.
+
+Existing saved plans remain valid. No task field, title convention, continuation prompt, or terminal contract changes.
+
 ### 1.5.0 — 2026-07-31
 
 After explicit execution approval, Codex now passes continuation directly between task sessions. The planning session launches only the first ready task or parallel group. A review-skipped executor completes and relays its task; a review-required executor creates one fresh routed reviewer, which owns corrections, completion, and the next launch after PASS.
