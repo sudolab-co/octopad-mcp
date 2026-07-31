@@ -24,11 +24,13 @@ The first public Codex distribution intentionally starts at `1.3.1`, matching th
 
 ## Which number moves
 
-- **Major** (`2.0.0`) — a breaking change to anything an executor session reads literally out of an Octopad task: the `#N - ` title prefix, the continuation prompt shape, the template's section names, the relay/terminal wording, the flesh-out marker. Plans written under the old version may need a checkpoint pass, so say that in the changelog entry.
-- **Minor** (`1.1.0`) — new guidance, a new section, a rubric row. Existing plans stay valid.
-- **Patch** (`1.0.1`) — wording, typos, clarifications that change no behavior.
+Use semantic versioning against each distribution's public contract:
 
-When in doubt between minor and major, ask: would a session executing an existing plan behave differently? If yes, it is major.
+- **Major** (`2.0.0`) — an incompatible contract change. This includes making a new task field mandatory or changing a title, template, continuation, relay, terminal, or flesh-out shape so that an existing saved plan needs migration or replanning before it can continue.
+- **Minor** (`1.1.0`) — backward-compatible functionality or guidance. Existing saved plans and prompts remain valid without migration.
+- **Patch** (`1.0.1`) — a backward-compatible bug fix, clarification, or wording correction that adds no new capability.
+
+When in doubt, ask whether existing valid inputs need editing or migration to keep working. If yes, it is major. A different internal execution path is not major by itself when the documented inputs, safety gates, and durable outcomes remain compatible.
 
 ## The Octopad contract is not yours to change
 
@@ -39,7 +41,7 @@ Octoplan writes tasks through Octopad's MCP server, which rejects a create that 
 - Subtasks are created with `parent_task_id` and need only Why + What.
 - Dependency edges require a rationale when added.
 
-If Octopad's own contract changes, that is a major bump here.
+An incompatible Octopad contract change is a major bump here. A backward-compatible server addition follows the same minor-or-patch test above.
 
 ## Before you push
 

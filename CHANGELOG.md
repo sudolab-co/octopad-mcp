@@ -2,9 +2,17 @@
 
 All notable changes to the skills in this repository.
 
-Each skill is versioned independently in its own `Version:` line and its plugin manifest. A **major** bump means a breaking change to the conventions written into Octopad task descriptions (title prefixes, the continuation prompt shape, template section names), so plans written under the old version may need a replanning pass. Minor and patch bumps are safe to adopt as-is.
+Each skill is versioned independently in its own `Version:` line and plugin manifest. Standard semantic versioning applies to each distribution's public contract: major changes are incompatible and may require migration or replanning, minor changes add backward-compatible functionality, and patches are backward-compatible fixes or clarifications.
 
 ## octoplan-codex
+
+### 1.5.0 — 2026-07-31
+
+After explicit execution approval, Codex now passes continuation directly between task sessions. The planning session launches only the first ready task or parallel group. A review-skipped executor completes and relays its task; a review-required executor creates one fresh routed reviewer, which owns corrections, completion, and the next launch after PASS.
+
+An Octopad ledger binds every session to the approved run, plan fingerprint, guarded task attempt, and persisted pending or real thread IDs. Parallel groups use all-or-none preflight and guarded claims, so racing completions cannot create duplicate reviewers or successors. Human gates, protected actions, plan changes, ambiguous recovery, and failed reviews stop without advancing.
+
+Existing plans need no migration: their current `Next` values and dependency edges carry the relay, with no new required task field. Relay mechanics live in a separate reference loaded only after approval, keeping planning-time routing and consent guidance lightweight. Repository version guidance now follows standard compatibility-based semantic versioning, making this backward-compatible capability a minor release.
 
 ### 1.4.0 — 2026-07-30
 

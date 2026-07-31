@@ -17,7 +17,7 @@ Octoplan is a planning protocol built on Octopad's task graph.
 
 - **A planning session** reads the work stream, locks open decisions with the user, and writes every task as a complete, self-contained spec: verified against the real codebase or reference documents, sized to one session each, ordered by real dependency edges.
 - **Claude execution sessions** need nothing installed. Each task carries its own hand-off instruction, so the user can open each fresh session from a minimal pointer.
-- **Codex execution** never starts with planning. Once the plan is complete, Octoplan asks for permission. After a clear yes, one orchestration task follows the saved dependencies, creates every executor with its planned model and reasoning effort, and launches only explicitly independent tasks in parallel.
+- **Codex execution** never starts during planning. Once the plan is complete, Octoplan asks for permission. After a clear yes, the planning session launches the first ready work; each completing executor or reviewer then follows the saved dependencies and hands execution directly to the next model-routed task or explicitly independent parallel group.
 - **Multi-stream efforts**: when a request spans several work streams, Octoplan plans them as one effort. One goal, several streams, one light Blueprint page explaining the global logic, and cross-stream dependencies enforcing it.
 
 ## Requirements
