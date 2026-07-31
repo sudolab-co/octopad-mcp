@@ -1,6 +1,6 @@
 # Octoplan planning protocol
 
-This is the Codex distribution of the public Octoplan 1.5.0 planning protocol. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
+This is the Codex distribution of the public Octoplan planning protocol; its Codex-specific runtime guidance is versioned independently. The dependency graph is executable truth; titles, trackers, and Blueprints explain it to people.
 
 ## What Octoplan needs
 
@@ -22,7 +22,7 @@ Respect Octopad's task-creation contract:
 - Save only verified paths, symbols, commands, source claims, access assumptions, and statuses.
 - An unknown becomes a Question, Decision, investigation task, or flesh-out marker; never a guess.
 - Use the simplest plan that fully delivers the definition of success.
-- Size each executable top-level task to one focused, memory-less executor session.
+- Size each executable top-level task to one focused, memory-less executor session, with enough verified context that the executor does not need the planning conversation.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
 - On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. Only a reduced event-driven rebalance as defined under Replanning is exempt.
@@ -68,6 +68,10 @@ Next: <the next task, parallel group, human gate, or none>
 ```
 
 Keep `Review route` only when review is required. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
+
+Every executable task must make these core items resolvable from the saved text or its exact pointers: expected result and reason; in-scope and out-of-scope boundaries; inputs and dependencies; observable acceptance criteria; exact verification; and enough context for a fresh executor to continue without chat memory. Also save accepted decisions, governing sources, ordered steps, failure cases, safeguards, proof artifacts, and stop or escalation conditions whenever they affect execution. Put this context in `How` and the checks in `Verify`; do not add empty sections merely to repeat that an item does not apply.
+
+For business communication or editorial deliverables, also save the audience and channel, intended reader action or decision, and any message hierarchy, voice guidance, format, length, or editorial criteria that affect execution. Save permitted claims with sources whenever the work makes factual claims. Subjective quality never replaces factual verification.
 
 For code, `Done when` names the repository's actual terminal state. If the repository requires a merged pull request, say so; do not stop at tests passing or a branch existing. Human-only tasks have no title rank, Exec, Review, Review route, or Next.
 
@@ -116,6 +120,8 @@ For every executable task:
 - Verify is exact and runnable now.
 - Preconditions name every live assumption and external gate.
 - The task contains one job and fits one session.
+- The task contains the core memory-less handoff context; conditional decisions, sources, safeguards, proofs, and escalation instructions are present where they affect execution.
+- A business communication or editorial task records its audience, channel, intended effect, and the message, voice, format, claim-source, factual-review, and editorial-review constraints that apply.
 - Parallel links are immutable, complete, symmetric, and genuinely independent.
 - Next matches the dependency graph.
 
