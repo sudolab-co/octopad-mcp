@@ -131,7 +131,7 @@ For every executable task:
 
 - The ranked title is unique.
 - Why, What, Done when, impact, and impact rationale exist.
-- Exec and Review match the runtime rubric; every executable task has an exact lead Review route and rationale, any Specialist route has a justified orthogonal mandate, and every Sol rationale states why Luna and Terra are inadequate.
+- Exec and Review match the runtime rubric; for objectively specified implementation with qualitative acceptance, the Exec rationale distinguishes choices the executor must originate from review-only judgment; every executable task has an exact lead Review route and rationale, any Specialist route has a justified orthogonal mandate, and every Sol rationale states why Luna and Terra are inadequate.
 - How cites verified sources and a concrete existing pattern when one exists.
 - Verify is exact and runnable now.
 - Preconditions name every live assumption and external gate.

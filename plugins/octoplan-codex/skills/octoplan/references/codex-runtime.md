@@ -20,6 +20,8 @@ Minimize expected cost per accepted task: execution, required review, likely cor
 | High-consequence work whose material failure is hard to detect or costly to reverse | `gpt-5.6-sol · effort xhigh` |
 | Open architecture or investigation with broad coupling and no reliable bounded verifier | `gpt-5.6-sol · effort max` |
 
+Treat a task as mixed when it combines objectively specified implementation with qualitative product, UX, editorial, semantic, or cross-domain acceptance. Route execution through the full rubric using only choices the executor must originate; judgment assigned only to independent review does not elevate execution. If the executor must originate material judgment, apply the relevant Terra or Sol row. Split separable work first.
+
 A label such as authentication, private data, integrity, concurrency, public, or production never selects a route alone. Risk raises a route only when paired with weak detection or costly irreversibility; strong proof and cheap rollback can keep bounded work on Luna or Terra. Every Sol executor or reviewer rationale must name the observable reason Luna and Terra are inadequate. If it cannot, choose the cheaper adequate route.
 
 Terra is a technical and non-code capacity rung, not a quota. `ultra` means parallel delegation for genuinely independent partitions with user opt-in, never “very hard.” Do not silently change a saved model or effort.

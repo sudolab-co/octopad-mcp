@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Plan Octopad work streams, then let Codex execute approved plans through model-routed independent sessions.",
   "author": {
     "name": "Sudolab"

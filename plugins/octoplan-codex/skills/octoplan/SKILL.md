@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, or asks to flesh out an Octoplan task. Requires connected Octopad MCP tools.
 ---
-Version: 2.0.0
+Version: 2.0.1
 
 # Octoplan for Codex
 
