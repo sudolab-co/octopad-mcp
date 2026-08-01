@@ -2,55 +2,61 @@
 
 ## Route after decomposition
 
-Choose by consequence, openness, ambiguity, coupling, verification strength, subjectivity, and retry cost. File count alone never chooses a model. Split an oversized task before raising its model.
+Minimize expected cost per accepted task: execution, required review, likely correction or retry, delay, and drift. Start with the cheapest adequate route, not the cheapest call. Split work that exceeds one focused session before raising model capacity.
 
-Apply these rows in order:
+1. Classify the work: engineering, research or analysis, communication or content, product or strategy, or operations.
+2. Choose its cheapest plausible base route below.
+3. Adjust for boundedness, verifier strength, reversibility, consequence, subjectivity, coupling, and retry cost.
 
-| Observable task profile | Exec stamp |
+| Observable profile | Exec stamp |
 |---|---|
-| Open investigation or architecture decision | `gpt-5.6-sol · effort max` |
-| Bounded authentication, permissions, payments, private data, data integrity, concurrency, destructive migration, or other costly-to-reverse implementation | `gpt-5.6-sol · effort xhigh` |
-| Bounded non-sensitive synthesis with genuinely independent partitions and a real parallel gain | `gpt-5.6-sol · effort ultra`, with user opt-in |
-| Public, brand-defining, persuasion-critical, legal, compliance, or other costly-to-reverse non-code work | `gpt-5.6-sol · effort xhigh` |
-| High-value or open-ended strategy, positioning, or multi-source research synthesis; polished external writing with a subjective quality bar; or difficult bounded work with weak verification | `gpt-5.6-sol · effort high` |
-| Mechanical exact copy, rename, text, or safe configuration with no design choice | `gpt-5.6-luna · effort high` |
-| Routine low-consequence work with an exact pattern, deterministic checks, and cheap retry | `gpt-5.6-luna · effort high` |
-| Standard bounded autonomous work with clear acceptance and strong deterministic verification | `gpt-5.6-luna · effort xhigh` |
-| Difficult but bounded autonomous work with strong verification | `gpt-5.6-luna · effort max` |
-| Everyday communication or internal content where tone and interpretation matter | `gpt-5.6-terra · effort high` |
-| Routine non-code work with a verified governing template and no voice or interpretive judgment | `gpt-5.6-luna · effort xhigh` |
-| Well-bounded, ordinary-consequence PRD, product brief, opportunity analysis, or decision memo with verified sources | `gpt-5.6-terra · effort xhigh` |
+| Exact mechanical work with deterministic proof | `gpt-5.6-luna · effort high` |
+| Routine bounded work with clear acceptance and strong proof | `gpt-5.6-luna · effort xhigh` |
+| Difficult bounded work with strong proof | `gpt-5.6-luna · effort max` |
+| Everyday non-code work where tone or interpretation matters | `gpt-5.6-terra · effort high` |
+| Bounded product, analysis, communication, or editorial work | `gpt-5.6-terra · effort xhigh` |
+| Difficult bounded technical or non-code work needing judgment beyond Luna, without open ambiguity or severe irreversible consequence | `gpt-5.6-terra · effort max` |
+| Difficult open-ended work, weak verification, or high-value subjective synthesis | `gpt-5.6-sol · effort high` |
+| High-consequence work whose material failure is hard to detect or costly to reverse | `gpt-5.6-sol · effort xhigh` |
+| Open architecture or investigation with broad coupling and no reliable bounded verifier | `gpt-5.6-sol · effort max` |
 
-Luna `xhigh` is the default executor after a strong Octoplan decomposition. Use Luna `max` when the task remains difficult but its boundaries and verifier are strong. Terra is a business-work route, not a mandatory rung between Luna and Sol. Luna `medium`, Terra `medium`, and Sol `low` are outside the default path. Ultra means parallel delegation, not "very hard".
+A label such as authentication, private data, integrity, concurrency, public, or production never selects a route alone. Risk raises a route only when paired with weak detection or costly irreversibility; strong proof and cheap rollback can keep bounded work on Luna or Terra. Every Sol executor or reviewer rationale must name the observable reason Luna and Terra are inadequate. If it cannot, choose the cheaper adequate route.
 
-Optimize cost per accepted task: include retries, review corrections, delay, and scope drift. Do not silently change model or effort mid-session. If the profile changes, stop, save the evidence, re-route, and create a fresh session.
+Terra is a technical and non-code capacity rung, not a quota. `ultra` means parallel delegation for genuinely independent partitions with user opt-in, never “very hard.” Do not silently change a saved model or effort.
 
 Routing basis: [OpenAI model guidance](https://learn.chatgpt.com/docs/models#choosing-sol-terra-and-luna), [OpenAI outcome routing](https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6/#matching-intelligence-to-the-outcome), [DeepSWE](https://deepswe.datacurve.ai/), [HUMAINE](https://www.prolific.com/resources/gpt-5-6-joins-the-humaine-leaderboard-how-sol-terra-and-luna-rank-with-real-people), and [Box Complex Work Eval](https://blog.box.com/how-gpt-56-handles-real-enterprise-work). Treat cross-domain transfer as a default to validate on accepted Octoplan results, not a universal ranking.
 
 ## Failure diagnosis and escalation
 
-Do not walk every model or effort level. Diagnose and save the failure evidence first:
+Diagnose before changing routes:
 
-- Missing or contradictory task context: return to a fresh Sol `xhigh` Octoplan pass.
-- Environment, access, or verifier failure: repair that blocker before changing model.
-- Clear implementation miss on a sound task: propose the next justified Luna route; after a confirmed Luna `max` capacity failure, propose Sol `high` or `xhigh` according to consequence.
-- Tone, voice, persuasion, or strategic-judgment miss on Luna or Terra: propose Sol `high` or `xhigh` according to consequence, using the saved brief and concrete review findings.
-- Material scope or risk change: stop and replan; never hide it as a model escalation.
+- Missing or contradictory context: return to a fresh Sol `xhigh` Octoplan pass.
+- Environment, access, or verifier failure: repair the blocker without changing model.
+- Confirmed capability miss on a sound bounded task: choose the next justified route; do not walk every effort level.
+- Tone, persuasion, or strategic-judgment miss: escalate the failed executor or reviewer according to the saved evidence.
+- Material scope or risk change: stop and replan.
 
-Any changed Exec or Review stamp is a material task rewrite. Save and review the revised route, ask the execution-consent question again, and wait. Only a fresh approved run may create the replacement session; the failed executor or reviewer never substitutes its own route.
+Any changed Exec, Review, or Specialist review stamp is a material task rewrite. Save and review it, ask the execution-consent question again, and wait. Only a fresh approved run creates replacement work.
 
 ## Review routing
 
-`Review: required` for behavioral changes, material judgment, unfamiliar integrations, ambiguous diagnoses, weak verification, public or source-sensitive external content, or costly mistakes. `skip` is limited to exact, reversible mechanical work with deterministic proof.
+Every executable task receives one fresh independent review. Choose its route by detection difficulty, not executor prestige:
 
-| Review target | Review route |
+| Detection target | Lead review route |
 |---|---|
-| Completeness and verifiability of standard deterministic work | `gpt-5.6-luna · effort max` |
-| Difficult logic, bounded ambiguity, unfamiliar integration, weak verification, editorial judgment, or Ultra synthesis | `gpt-5.6-sol · effort high` |
-| Sensitive, destructive, private-data, permission, payment, concurrency, public persuasion, legal, or compliance work | `gpt-5.6-sol · effort xhigh` |
-| Open investigation or architecture decision | `gpt-5.6-sol · effort max` |
+| Exact mechanical result with deterministic proof | `gpt-5.6-luna · effort high` |
+| Routine bounded completeness, tests, constraints, or reproducibility | `gpt-5.6-luna · effort xhigh` |
+| Difficult deterministic logic or proof | `gpt-5.6-luna · effort max` |
+| Everyday tone, factual, UX, or editorial check | `gpt-5.6-terra · effort high` |
+| Bounded product, evidence, integration, or editorial judgment | `gpt-5.6-terra · effort xhigh` |
+| Subtle bounded cross-domain or technical judgment | `gpt-5.6-terra · effort max` |
+| Difficult cross-domain defects, materially weak verification, or high-value subjective judgment | `gpt-5.6-sol · effort high` |
+| Security, privacy, permissions, money, destructive data, production mutation, legal, or public harm when failure is hard to detect or reverse | `gpt-5.6-sol · effort xhigh` |
+| Open architecture or investigation | `gpt-5.6-sol · effort max` |
 
-Use a fresh reviewer with no authoring history. The executor creates that review session at the saved Review route and transfers continuation ownership to it; the executor never reviews its own work. The reviewer sends confirmed findings to the original executor, monitors the correction loop, reruns affected verification, and may complete and relay the task only after PASS.
+Use one reviewer by default. Add one simultaneous specialist only when the artifact has two genuinely orthogonal failure domains and at least one is weakly verified or costly to miss. Give lead and specialist non-overlapping mandates; duplicate generic reviews are invalid. Both must PASS. Unresolved disagreement stops for evidence or human judgment and never creates a third reviewer automatically.
+
+The reviewer may share the executor's model family when that is the cheapest adequate route. Independence comes from a fresh thread and source-first inspection; model diversity matters only when it adds a distinct detection lens. The lead owns corrections, completion, and relay. A saved specialist reviews only its mandate, reports to the lead, and never completes or relays the task.
 
 ## Execution consent
 
@@ -65,7 +71,7 @@ Then stop. Do not call `list_projects`, `create_thread`, or any executor tool wh
 A clear yes authorizes only:
 
 - the current saved plan and its verified scope;
-- creation and monitoring of its executor sessions;
+- creation and monitoring of its executor and reviewer sessions;
 - the exact saved model and reasoning effort for each task;
 - saved parallel groups that still pass preflight.
 
