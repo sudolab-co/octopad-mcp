@@ -44,18 +44,27 @@ Respect Octopad's task-creation contract:
 6. **Spec every task.** Fill the template below with exact sources, boundaries, edge cases, checks, routing, and completion state. A task depending on unknown output stays a flesh-out placeholder.
 7. **Add final validation.** Wire one final validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist.
 8. **Self-check saved state.** Re-open every task from Octopad, check the saved text and edges, repair failures, then reread repairs.
-9. **Adversarial review.** A full plan uses at least two fresh `gpt-5.6-sol` reviewers at the planner's accepted effort (`xhigh` or `max`): design soundness and memory-less executability. The design reviewer also checks every saved spec against the confirmed scoping brief, including corrections. Add a third reviewer at the same route for eight or more tasks or work involving migrations, permissions, authentication, money, or destructive data changes. A reduced event-driven replan adding or materially rewriting fewer than three tasks uses one fresh reviewer at that same accepted effort; three or more added or materially rewritten tasks require a fresh full planning pass. Give reviewers saved task text and source access, not a summary.
-10. **Explain the logic.** Update the stream tracker with why the order exists, which branches are parallel, where human gates sit, and what finishes the stream. Store no statuses or copied task content there.
+9. **Adversarial review.** One fresh reviewer, routed by the runtime's detection rubric, checks plan soundness, memory-less executability, and every spec against the confirmed brief. Before launch, save the block below in the stream tracker, reread it, and create exactly its saved lead and specialist; any Sol rationale states why Luna and Terra are inadequate. Add one simultaneous specialist only for two orthogonal material risks passing the runtime gate; task count and risk labels never qualify. Give distinct mandates, saved task text, and source access, not a summary. Both must PASS. A reduced replan uses one fresh routed reviewer; three or more added or materially rewritten tasks require a fresh full planning pass.
+10. **Explain the logic.** Update the stream tracker with why the order exists, which branches are parallel, where human gates sit, what finishes the stream, and the Plan review block. Store no statuses or copied task content there.
 11. **Mark and stop.** Append ` (octoplanned)` to the stream name if absent. Report the plan, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
 
 ## Task template
 
 ```text
+Plan review:
+- Lead: <model> · effort <level> — <detection target; why this route; mandate>
+- Specialist: <model> · effort <level> — <orthogonal target; why this route; mandate>
+```
+
+Omit Specialist unless the two-review gate passes.
+
+```text
 Title: #N - <task title>
 
 **Exec: <Codex model> · effort <level>** — <why>
-**Review: required|skip** — <why>
-**Review route: <Codex model> · effort <level>**
+**Review: required** — <detection target>
+**Review route: <Codex model> · effort <level>** — <why this route; lead mandate>
+**Specialist review route: <Codex model> · effort <level>** — <why this route; orthogonal mandate>
 **Parallel-safe with: <immutable task ID> — <task title>; ...**
 Preconditions: <what must already be live>
 
@@ -67,7 +76,7 @@ Done when: <durable result in its system of record>
 Next: <the next task, parallel group, human gate, or none>
 ```
 
-Keep `Review route` only when review is required. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
+Keep `Specialist review route` only when its two-review gate passes. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
 
 A fresh executor has no memory of the planning conversation, but it does have Octopad `build_context` plus access to the exact repository, document, page, and Decision pointers saved by the planner. Build the handoff in two layers:
 
@@ -94,7 +103,7 @@ Done when: <the future observable result>
 
 Parallelism is exceptional. Every pair in a group must share no file, symbol, contract, generated artifact, editorial structure, migration, lockfile, or scarce external resource. Every member must have the same readiness frontier. Save `Parallel-safe with` symmetrically only after all tasks exist, using immutable Octopad IDs.
 
-Continuation follows the dependency frontier. The owner that opens a parallel group claims and creates the complete saved group. Each member performs one task and may advance only after its own durable completion or required review. At fan-in, earlier siblings stop because the successor is not ready; the last durable completion sees every dependency satisfied and tries the guarded claim. If completions race, only the session whose claim succeeds creates the successor. `Next` plus dependency edges are sufficient, so existing plans need no new relay field.
+Continuation follows the dependency frontier. The owner that opens a parallel group claims and creates the complete saved group. Each member may advance only after the lead records durable completion following every required PASS. At fan-in, earlier siblings stop because the successor is not ready; the last reviewed completion sees every dependency satisfied and tries the guarded claim. If completions race, only the session whose claim succeeds creates the successor. `Next` plus dependency edges are sufficient, so existing plans need no new relay field.
 
 ## Multi-stream efforts and Blueprint
 
@@ -122,7 +131,7 @@ For every executable task:
 
 - The ranked title is unique.
 - Why, What, Done when, impact, and impact rationale exist.
-- Exec and Review match the runtime rubric; required review has an exact Review route.
+- Exec and Review match the runtime rubric; every executable task has an exact lead Review route and rationale, any Specialist route has a justified orthogonal mandate, and every Sol rationale states why Luna and Terra are inadequate.
 - How cites verified sources and a concrete existing pattern when one exists.
 - Verify is exact and runnable now.
 - Preconditions name every live assumption and external gate.
@@ -141,5 +150,6 @@ For the plan:
 - Every material choice is a recorded Decision.
 - Every real dependency is wired.
 - Final validation follows all delivery tasks.
+- The reread Plan review block matches created reviewers and the runtime rubric.
 - Tracker and Blueprint contain logic only.
 - Nothing exists merely to serve process.

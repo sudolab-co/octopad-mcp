@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, or asks to flesh out an Octoplan task. Requires connected Octopad MCP tools.
 ---
-Version: 1.6.1
+Version: 2.0.0
 
 # Octoplan for Codex
 
@@ -21,14 +21,14 @@ Read [references/planning.md](references/planning.md) completely before planning
 3. Never create an executor session during planning or merely because a plan is complete.
 4. End a completed plan with the execution-consent question from the Codex runtime reference and wait.
 5. A clear affirmative answer authorizes execution of the current saved plan only. It does not authorize protected external actions, human gates, or materially expanded scope.
-6. After approval, the planning session launches only the first ready task or explicitly parallel group. Continuation then travels with the work: a `Review: skip` executor owns durable completion and the next launch; a `Review: required` executor creates one fresh routed reviewer, which owns the correction loop, durable completion, and the next launch after PASS.
+6. After approval, the planning session launches only the first ready task or explicitly parallel group. Each executor creates the saved fresh lead reviewer and any saved specialist reviewer. The lead owns the correction loop, durable completion, and the next launch after every required PASS.
 7. Apply the exact saved model and reasoning effort. Never silently substitute a cheaper or different configuration.
 8. Run tasks in parallel only when the saved plan explicitly proves them independent and the complete group passes preflight.
 9. Octopad holds scope, state, dependencies, routing, review, and verification. Handoffs are pointers, never copied plans.
 
 ## Codex-specific result
 
-After approval, the planning session resolves, claims, and creates the first ready task or explicitly parallel group. Each completing executor or reviewer then re-reads Octopad, claims the next ready task or group with concurrency guards, creates its fresh worktree or local sessions, persists their identifiers, and returns. `Next` and dependency edges carry this relay; no new field is required in existing plans.
+After approval, the planning session resolves, claims, and creates the first ready task or explicitly parallel group. Each completing lead reviewer then re-reads Octopad, claims the next ready task or group with concurrency guards, creates its fresh worktree or local sessions, persists their identifiers, and returns. `Next` and dependency edges carry the relay; no separate relay field is required.
 
 No Kickstart skill or Branch command exists. Fresh `create_thread` tasks replace both.
 

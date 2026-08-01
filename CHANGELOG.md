@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 2.0.0 — 2026-07-31
+
+Every executable task now receives a fresh independent adversarial review. The lead reviewer owns corrections, durable completion, and relay; one simultaneous specialist is allowed only for a distinct material failure domain. Every PASS is bound to the same immutable artifact revision, and reviewer rerouting starts a fresh guarded attempt with an authorized correction executor and full review set.
+
+Execution and review routing now minimize expected cost per accepted task. Luna covers exact and strongly verified work, Terra is a real technical and non-code judgment rung, and Sol is reserved for open, weakly verified, or hard-to-reverse work. Risk labels never select Sol alone; every Sol route must state why Luna and Terra are inadequate. Plan-review routes and rationales are saved and reread before launch.
+
+This is breaking: saved plans that skip review or use the previous routing contract must be replanned before execution.
+
 ### 1.6.1 — 2026-07-31
 
 Octoplan now distinguishes execution guidance from retrievable source context. Tasks save the outcome, decisions, boundaries, verified approach, exact pointers, risks, and verification that direct a fresh executor, while live pages, documents, and code remain in their systems of record. Engineering tasks identify the applicable files, symbols, patterns, integration points, invariants, regressions, and tests without copying implementation context.
