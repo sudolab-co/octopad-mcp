@@ -14,8 +14,11 @@ fail() {
   exit 1
 }
 
-grep -q '^Version: 3\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 3.0.0'
-grep -q '"version": "3\.0\.0"' "$manifest" || fail 'plugin manifest is not 3.0.0'
+grep -q '^Version: 3\.0\.1$' "$skill/SKILL.md" || fail 'SKILL.md is not 3.0.1'
+grep -q '"version": "3\.0\.1"' "$manifest" || fail 'plugin manifest is not 3.0.1'
+grep -q '^  allow_implicit_invocation: false$' "$skill/agents/openai.yaml" || fail 'implicit invocation remains enabled'
+grep -Fq 'Use only when a Codex user explicitly invokes $octoplan' "$skill/SKILL.md" || fail 'explicit invocation boundary is missing'
+grep -Fq 'Do not use for general Octopad actions, organization connection, onboarding' "$skill/SKILL.md" || fail 'non-Octoplan exclusions are missing'
 [ -f "$supervision" ] || fail 'conditional-supervision runtime is missing'
 git -C "$root" ls-files --error-unmatch "$supervision_rel" >/dev/null 2>&1 || fail 'conditional-supervision runtime is not tracked'
 [ ! -e "$skill/references/codex-relay.md" ] || fail 'legacy direct-relay runtime remains'

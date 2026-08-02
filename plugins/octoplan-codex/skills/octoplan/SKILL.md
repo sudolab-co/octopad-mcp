@@ -1,8 +1,8 @@
 ---
 name: octoplan
-description: Use when a Codex user invokes Octoplan for a named work stream, asks to plan or replan an Octopad work stream, says Blueprint for a multi-stream effort, asks to flesh out an Octoplan task, or asks to resume an approved Octoplan run. Requires connected Octopad MCP tools.
+description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, or flesh out an Octopad work stream or task, create a Blueprint for a multi-stream effort, or resume an approved Octoplan run. Do not use for general Octopad actions, organization connection, onboarding, or task execution without an approved Octoplan run. Requires connected Octopad MCP tools.
 ---
-Version: 3.0.0
+Version: 3.0.1
 
 # Octoplan for Codex
 
