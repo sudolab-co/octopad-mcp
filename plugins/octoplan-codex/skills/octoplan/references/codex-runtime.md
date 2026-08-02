@@ -1,4 +1,4 @@
-# Codex routing and autonomous execution
+# Codex routing and execution consent
 
 ## Route after decomposition
 
@@ -28,17 +28,23 @@ Terra is a technical and non-code capacity rung, not a quota. `ultra` means para
 
 Routing basis: [OpenAI model guidance](https://learn.chatgpt.com/docs/models#choosing-sol-terra-and-luna), [OpenAI outcome routing](https://openai.com/index/advancing-the-price-performance-frontier-with-gpt-5-6/#matching-intelligence-to-the-outcome), [DeepSWE](https://deepswe.datacurve.ai/), [HUMAINE](https://www.prolific.com/resources/gpt-5-6-joins-the-humaine-leaderboard-how-sol-terra-and-luna-rank-with-real-people), and [Box Complex Work Eval](https://blog.box.com/how-gpt-56-handles-real-enterprise-work). Treat cross-domain transfer as a default to validate on accepted Octoplan results, not a universal ranking.
 
+## Supervisor routing
+
+Route the supervisor by scheduling and recovery difficulty, never by the hardest child artifact. Inline supervision uses the current Sol planning or recovery session. A dedicated parent defaults to `gpt-5.6-terra · effort xhigh`; use Terra `max` for difficult bounded fan-in or multi-stream reconciliation and Sol only when orchestration itself has open ambiguity, weak verification, or costly irreversible consequences. Save why each cheaper route is inadequate.
+
 ## Failure diagnosis and escalation
 
 Diagnose before changing routes:
 
 - Missing or contradictory context: return to a fresh Sol `xhigh` Octoplan pass.
 - Environment, access, or verifier failure: repair the blocker without changing model.
-- Confirmed capability miss on a sound bounded task: choose the next justified route; do not walk every effort level.
-- Tone, persuasion, or strategic-judgment miss: escalate the failed executor or reviewer according to the saved evidence.
+- Confirmed executor capability miss on a sound bounded task: use only its saved fallback; do not walk every effort level.
+- Reviewer capability miss: revise and review that route, then request fresh consent.
 - Material scope or risk change: stop and replan.
 
-Any changed Exec, Review, or Specialist review stamp is a material task rewrite. Save and review it, ask the execution-consent question again, and wait. Only a fresh approved run creates replacement work.
+Before consent, an optional executor fallback may be saved. Its stamp names the exact route, maximum replacements, failed criterion, evidence count, and observations required to establish that prompt, context, access, environment, and verifier are sound. The count is at least two; never infer capacity from elapsed time or hidden reasoning.
+
+During execution, the supervisor may use that saved fallback only when every clause is durably proven and its bound remains. It starts a fresh attempt and thread; it never retargets the failed session. Any unsaved route or changed task meaning requires a reviewed replan, fresh consent, run ID, and fingerprint. A direct user instruction naming the task, already-saved fallback route, and one replacement is a new bounded routing decision, not proof that the trigger matched.
 
 ## Review routing
 
@@ -58,25 +64,31 @@ Every executable task receives one fresh independent review. Choose its route by
 
 Use one reviewer by default. Add one simultaneous specialist only when the artifact has two genuinely orthogonal failure domains and at least one is weakly verified or costly to miss. Give lead and specialist non-overlapping mandates; duplicate generic reviews are invalid. Both must PASS. Unresolved disagreement stops for evidence or human judgment and never creates a third reviewer automatically.
 
-The reviewer may share the executor's model family when that is the cheapest adequate route. Independence comes from a fresh thread and source-first inspection; model diversity matters only when it adds a distinct detection lens. The lead owns corrections, completion, and relay. A saved specialist reviews only its mandate, reports to the lead, and never completes or relays the task.
+The reviewer may share the executor's model family when that is the cheapest adequate route. Independence comes from a fresh thread and source-first inspection; model diversity matters only when it adds a distinct detection lens. The lead owns corrections and task completion but never launches a successor. A saved specialist reviews only its mandate, reports to the lead, and never completes or relays.
+
+Plan review uses fresh `spawn_agent` subagents, never user-owned threads. Use Terra `xhigh` for routine bounded plans, Terra `max` for difficult bounded reconciliation, and Sol only for open ambiguity, weak verification, or costly consequences. Save the exact supported route and why cheaper support is inadequate.
 
 ## Execution consent
 
-Completing a plan never authorizes execution. End the planning response in the conversation language with this meaning, adapted only for natural grammar:
+Completing a plan never authorizes execution. State the reviewed plan hash, then end the planning response in the conversation language with this meaning, adapted only for natural grammar:
 
 > The plan is complete and verified. Would you like me to start execution now?
 >
-> If you accept, Codex will execute the plan in its defined order by automatically creating the required sessions, using the planned model and reasoning effort for each task. It will run only tasks that the plan explicitly declares independent in parallel. It will stop at human gates, material plan changes, or failures that need your decision.
+> If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, reviewer, and bounded replacement sessions at the exact saved routes. It will run only tasks explicitly proven independent in parallel and stop at human gates, material plan changes, unmatched fallback conditions, exhausted bounds, or failures needing your decision.
 
 Then stop. Do not call `list_projects`, `create_thread`, or any executor tool while waiting.
 
 A clear yes authorizes only:
 
-- the current saved plan and its verified scope;
+- the stated reviewed plan hash and its verified scope;
+- its fingerprinted conditional supervision policy and allowed parent routes;
+- its saved dedicated-parent replacement bound;
 - creation and monitoring of its executor and reviewer sessions;
 - the exact saved model and reasoning effort for each task;
+- each saved executor fallback route, trigger, evidence threshold, and replacement bound;
+- each saved same-route recovery policy and bound;
 - saved parallel groups that still pass preflight.
 
-It does not authorize a protected external action, a human-only task, a materially revised plan, or a model substitution.
+It does not authorize a protected external action, a human-only task, a materially revised plan, an unsaved route, or a substitution outside those exact bounds.
 
-After a clear yes, read [codex-relay.md](codex-relay.md) completely before creating the first task or resuming the run.
+After a clear yes, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v1` contract requires replanning.

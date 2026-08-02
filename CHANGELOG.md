@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 3.0.0 — 2026-08-02
+
+Approved execution now runs through one fenced supervisor. Small linear streams stay in the planning or recovery session; four or more delivery tasks, parallel work, multi-stream coordination, or interruption gates justify a dedicated parent at a saved route. Supervisor epochs make takeover restartable, and one saved replacement bound prevents parent churn.
+
+One compact Octopad Plan manifest and tracker pointers replace copied contracts. Its canonical hash is persisted before plan review and consent; any plan change needs a new review, consent, and run. Native session creation uses durable identities and an activation barrier, including all-ready activation for parallel groups. Executors produce immutable artifacts, lead reviewers own revision-bound correction and completion, and only the supervisor launches successors. Saved lineage, same-route recovery, and evidence-gated executor fallback keep replacement work bounded.
+
+This is breaking: pre-3.0 plans are unsupported and must be replanned. The Octopad MCP and Claude distribution are unchanged.
+
 ### 2.0.1 — 2026-08-01
 
 Mixed tasks now route execution and review independently when objectively specified implementation has qualitative acceptance. Choices the executor must originate determine the execution route; qualitative judgment assigned only to review no longer inflates it. The full routing rubric still applies, and unresolved material judgment continues through Terra or Sol.

@@ -25,6 +25,7 @@ Respect Octopad's task-creation contract:
 - Size each executable top-level task to one focused executor session. Make its direction independent of the planning conversation by saving the accepted decisions, verified execution guidance, exact pointers, and checks it needs.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
+- Save the `octoplan-supervision-v1` contract for every executable plan. A pre-3.0 plan must be replanned, not silently migrated.
 - On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. Only a reduced event-driven rebalance as defined under Replanning is exempt.
 - Run the scoping brief, saved-state self-check, and adversarial plan review on every full planning pass. A reduced event-driven rebalance runs only the gates named under Replanning.
 
@@ -42,13 +43,27 @@ Respect Octopad's task-creation contract:
 4. **Set the order.** Close done-but-open work, log Questions, add missing tasks, and wire every real dependency. Prefix executable task titles `#N - ` for human-readable rank. Dependencies, not the number, decide readiness.
 5. **Ground and make runnable.** For engineering, verify repository patterns, tests, data changes, permissions, rollback, and exact commands. For content or operations, read the governing canon and live surfaces. Missing access becomes a blocking task. Anything that must already be live appears under `Preconditions`.
 6. **Spec every task.** Fill the template below with exact sources, boundaries, edge cases, checks, routing, and completion state. A task depending on unknown output stays a flesh-out placeholder.
-7. **Add final validation.** Wire one final validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist.
-8. **Self-check saved state.** Re-open every task from Octopad, check the saved text and edges, repair failures, then reread repairs.
-9. **Adversarial review.** One fresh reviewer, routed by the runtime's detection rubric, checks plan soundness, memory-less executability, and every spec against the confirmed brief. Before launch, save the block below in the stream tracker, reread it, and create exactly its saved lead and specialist; any Sol rationale states why Luna and Terra are inadequate. Add one simultaneous specialist only for two orthogonal material risks passing the runtime gate; task count and risk labels never qualify. Give distinct mandates, saved task text, and source access, not a summary. Both must PASS. A reduced replan uses one fresh routed reviewer; three or more added or materially rewritten tasks require a fresh full planning pass.
-10. **Explain the logic.** Update the stream tracker with why the order exists, which branches are parallel, where human gates sit, what finishes the stream, and the Plan review block. Store no statuses or copied task content there.
-11. **Mark and stop.** Append ` (octoplanned)` to the stream name if absent. Report the plan, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
+7. **Add final validation.** Wire one final-validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist. For one stream, this task is also the coordination ledger.
+8. **Explain and bind.** Update each tracker with order, parallel branches, human gates, finish condition, and only the supervision pointer below. Append ` (octoplanned)` to each stream name if absent. For multi-stream work, designate one cross-stream coordination/final-validation task. Save one Plan manifest there with participant IDs, supervision policy and routes, defaults, and Plan review routes.
+9. **Self-check and fingerprint.** Re-open every tracker and task, repair failures, then reread repairs. Canonicalize the complete contract as specified below, save its SHA-256 in the Plan manifest and every tracker pointer, and reread them.
+10. **Adversarial review.** One fresh subagent, routed by the runtime's plan-review rubric, checks plan soundness, memory-less executability, supervision, and every spec against the confirmed brief. Spawn exactly the saved lead and specialist, never user-owned threads. Add one simultaneous specialist only for two orthogonal material risks passing the runtime gate. Every PASS is persisted on the ledger and names the exact plan hash. Any change invalidates PASS and returns to step 9.
+11. **Report and stop.** Report the verified plan and its hash, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
 
 ## Task template
+
+```text
+Supervision contract:
+- Schema: octoplan-supervision-v1
+- Coordination ledger task ID: <immutable task ID>
+- Policy: dedicated for 4+ remaining delivery tasks (final validation excluded), any parallel fan-out/fan-in, multi-stream, or 2+ tasks across a human, external, or explicit interruption gate
+- Inline route: <model> · effort <level>
+- Dedicated route: <model> · effort <level> — <why this is the cheapest adequate scheduler>
+- Dedicated replacement: max 1 per run — authoritative terminal non-resumable evidence required
+- Default recovery: same saved route; max 1 per role — authoritative terminal non-resumable evidence required
+- Default lineage: roots use a clean base; successors use accepted dependency revisions; fan-in uses a named integrated revision
+```
+
+Save this contract once in the ledger's Plan manifest. Omit Dedicated route and replacement when no dedicated predicate is true; later expansion needs a new plan. Each tracker stores only `Supervision: octoplan-supervision-v1 · ledger <ID> · plan <SHA-256>`.
 
 ```text
 Plan review:
@@ -56,7 +71,7 @@ Plan review:
 - Specialist: <model> · effort <level> — <orthogonal target; why this route; mandate>
 ```
 
-Omit Specialist unless the two-review gate passes.
+Save Plan review in the same manifest. Omit Specialist unless the two-review gate passes.
 
 ```text
 Title: #N - <task title>
@@ -65,6 +80,9 @@ Title: #N - <task title>
 **Review: required** — <detection target>
 **Review route: <Codex model> · effort <level>** — <why this route; lead mandate>
 **Specialist review route: <Codex model> · effort <level>** — <why this route; orthogonal mandate>
+**Fallback: Exec → <Codex model> · effort <level>; max <N>** — <at least 2 required observations and exact count; observations that would establish sound prompt, context, access, environment, and verifier>
+**Recovery override: same saved route; max <N> per role** — <why the contract default is inadequate; terminal evidence required>
+**Lineage override: <approved stacked branch|named merge or integration gate>** — <why the contract default is inadequate>
 **Parallel-safe with: <immutable task ID> — <task title>; ...**
 Preconditions: <what must already be live>
 
@@ -76,18 +94,17 @@ Done when: <durable result in its system of record>
 Next: <the next task, parallel group, human gate, or none>
 ```
 
-Keep `Specialist review route` only when its two-review gate passes. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
+Keep `Specialist review route` only when its two-review gate passes. Keep `Fallback`, `Recovery override`, and `Lineage override` only when justified; contract defaults otherwise apply. Keep `Parallel-safe with` only for a proven symmetric group and name every sibling by immutable ID. Omit `Preconditions` when none exist.
 
-A fresh executor has no memory of the planning conversation, but it does have Octopad `build_context` plus access to the exact repository, document, page, and Decision pointers saved by the planner. Build the handoff in two layers:
+## Fingerprint
 
-1. The saved task carries the execution contract: expected result and reason; scope boundaries; accepted decisions; inputs and dependencies; verified execution guidance; exact pointers; acceptance criteria and verification; and the risks, safeguards, proof artifacts, or stop conditions that affect the job.
-2. The executor starts by calling `build_context` in task mode, then rereads the current task, linked Octopad sources, and cited repository or document sources before acting.
+Build canonical JSON from the schema and ledger ID; manifest policy, routes, defaults, and Plan review routes; participating stream IDs and tracker text; governing Decision IDs and text; and every executable task's ID, title, description, dependencies, assignment, impact, and routes. Task and tracker text remains authoritative; the manifest stores IDs, not copies. The current supervision mode is excluded, along with tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
 
-Keep live source content in its system of record. A resolvable pointer is enough; do not copy pages, files, or broad background that `build_context` and the cited sources can supply. Put execution guidance in `How` and checks in `Verify`, and include only the conditional details that affect this job.
+Sort object keys lexicographically, sort set-like arrays by immutable ID, preserve semantic sequences, and remove insignificant whitespace. Hash with SHA-256 before plan review. Every plan-review PASS and execution consent binds that exact hash.
 
-For engineering, use the planning pass's grounded analysis to identify the likely files and symbols, the expected change or approach, the existing pattern to follow, integration points, contracts or invariants to preserve, edge cases and regressions to watch, and exact test commands. Save the applicable guidance and pointers, not copied implementation context; the executor rereads the code before editing.
+A fresh executor has only Octopad `build_context` and the saved pointers. Its task must carry result and reason, boundaries, decisions, inputs, dependencies, verified guidance, acceptance, checks, risks, gates, and exact sources. It starts with task-mode `build_context`, then rereads the task and sources. Keep live content at source rather than copying it.
 
-For business communication or editorial deliverables, also save the audience and channel, intended reader action or decision, and any message hierarchy, voice guidance, format, length, or editorial criteria that affect execution. Save permitted claims with sources whenever the work makes factual claims. Subjective quality never replaces factual verification.
+For engineering, save likely files and symbols, approach and existing pattern, integration points, invariants, edge cases, and exact commands. For communication or editorial work, save audience, channel, intended effect, hierarchy, voice, format, length, claim sources, and review criteria. Subjective quality never replaces factual verification.
 
 For code, `Done when` names the repository's actual terminal state. If the repository requires a merged pull request, say so; do not stop at tests passing or a branch existing. Human-only tasks have no title rank, Exec, Review, Review route, or Next.
 
@@ -103,7 +120,7 @@ Done when: <the future observable result>
 
 Parallelism is exceptional. Every pair in a group must share no file, symbol, contract, generated artifact, editorial structure, migration, lockfile, or scarce external resource. Every member must have the same readiness frontier. Save `Parallel-safe with` symmetrically only after all tasks exist, using immutable Octopad IDs.
 
-Continuation follows the dependency frontier. The owner that opens a parallel group claims and creates the complete saved group. Each member may advance only after the lead records durable completion following every required PASS. At fan-in, earlier siblings stop because the successor is not ready; the last reviewed completion sees every dependency satisfied and tries the guarded claim. If completions race, only the session whose claim succeeds creates the successor. `Next` plus dependency edges are sufficient, so existing plans need no new relay field.
+The supervisor claims and creates the complete saved group. Each member advances only after its lead records durable completion following every required PASS. At fan-in, the supervisor waits for every dependency, records one integrated revision, and makes one guarded successor claim. Children and reviewers never relay.
 
 ## Multi-stream efforts and Blueprint
 
@@ -111,7 +128,7 @@ When one outcome needs several autonomous work streams, write one effort-level s
 
 1. Link the streams to one goal and keep each autonomous package in its logical stream.
 2. Wire real dependencies across streams in the same workspace.
-3. Create one light Blueprint page containing the outcome, each stream's role, global order, parallel branches, major dependencies, human gates, and finish condition.
+3. Create one light Blueprint page containing the outcome, each stream's role, global order, parallel branches, major dependencies, human gates, finish condition, and shared coordination-ledger task ID.
 4. Keep statuses and copied task content out of the Blueprint.
 5. Add Blueprint archival to the effort's final validation task.
 
@@ -119,11 +136,9 @@ The Blueprint explains the logic. The Octopad dependency graph enforces it.
 
 ## Replanning
 
-Replan only when reality changes the plan, not on a schedule. A reduced event-driven rebalance may add or materially rewrite at most two tasks without rerunning the scoping brief, and only when the approved result, scope, material risk, cost, and definition of success stay unchanged. Mechanical title renumbering, dependency rewiring, and Next-line repairs do not count toward that limit. Revalidate affected specs, repair the graph and tracker logic, then rerun the relevant self-check and one fresh review.
+Replan only when reality changes the plan, not on a schedule. Before changing an executing plan, guardedly pause and supersede its run; child guards then block further writes. A reduced event-driven rebalance may add, remove, or materially rewrite at most two tasks without rerunning the scoping brief only when result, scope, material cost, risk, and success stay unchanged. Every saved plan change, including hygiene, needs a new hash, review, consent, and run.
 
-Pure plan-hygiene repairs that add, remove, or materially rewrite no executable work may continue under the existing execution approval. Any added, removed, or materially rewritten executable task requires showing the revised saved plan and receiving fresh execution approval before execution continues.
-
-Three or more added or materially rewritten tasks, added scope, materially changed risk or cost, or a changed definition of success are not a reduced rebalance. Pause execution and start a fresh full planning pass: return a new scoping brief and wait for confirmation before saving the revised plan. After review, show the revision and request explicit execution approval again.
+Three or more added, removed, or materially rewritten tasks, added scope, or changed material cost, risk, or success require a fresh full planning pass.
 
 ## Saved-state self-check
 
@@ -132,13 +147,13 @@ For every executable task:
 - The ranked title is unique.
 - Why, What, Done when, impact, and impact rationale exist.
 - Exec and Review match the runtime rubric; for objectively specified implementation with qualitative acceptance, the Exec rationale distinguishes choices the executor must originate from review-only judgment; every executable task has an exact lead Review route and rationale, any Specialist route has a justified orthogonal mandate, and every Sol rationale states why Luna and Terra are inadequate.
+- Fallback, when present, names the executor's exact route, repeated-evidence count, required non-capability observations, and bound. Any Recovery or Lineage override explains why the default is inadequate.
 - How cites verified sources and a concrete existing pattern when one exists.
 - Verify is exact and runnable now.
 - Preconditions name every live assumption and external gate.
 - The task contains one job and fits one session.
-- The task carries a complete execution contract and enough verified guidance to focus the work; live source content remains reachable through `build_context` and exact pointers instead of being duplicated.
 - A business communication or editorial task records its audience, channel, intended effect, and the message, voice, format, claim-source, factual-review, and editorial-review constraints that apply.
-- Parallel links are immutable, complete, symmetric, and genuinely independent.
+- Every ready frontier is exactly one task or one complete immutable, symmetric, genuinely independent parallel group.
 - Next matches the dependency graph.
 
 For the plan:
@@ -150,6 +165,8 @@ For the plan:
 - Every material choice is a recorded Decision.
 - Every real dependency is wired.
 - Final validation follows all delivery tasks.
-- The reread Plan review block matches created reviewers and the runtime rubric.
+- Every tracker carries the same schema, ledger pointer, and plan hash; the ledger carries one complete Plan manifest.
+- The canonical input includes every field required by Fingerprint, uses its ordering rules, and excludes only its named execution state.
+- Every persisted Plan review PASS matches the current hash, saved routes, mandates, and runtime rubric.
 - Tracker and Blueprint contain logic only.
 - Nothing exists merely to serve process.
