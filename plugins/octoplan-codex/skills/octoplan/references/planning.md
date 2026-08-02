@@ -120,11 +120,11 @@ Build exactly one `octoplan-fingerprint-v1` input object from the current durabl
   "plan_hash": "PENDING",
   "manifest": {
     "supervision_contract": "<normalized literal Supervision contract block>",
-    "execution_environment": "<normalized literal Execution environment block>",
+    "execution_environment": "<normalized literal Execution environment block with observed host, path, and Git evidence removed>",
     "plan_review": "<normalized literal Plan review block>"
   },
   "streams": [
-    { "id": "<stream ID>", "tracker_text": "<tracker text without its generated Supervision line>" }
+    { "id": "<stream ID>", "title": "<stream title>", "tracker_text": "<tracker text without its generated Supervision line>" }
   ],
   "decisions": [
     { "id": "<decision ID>", "text": "<decision text>" }
@@ -136,7 +136,7 @@ Build exactly one `octoplan-fingerprint-v1` input object from the current durabl
       "description": "<task description>",
       "dependencies": [{ "id": "<dependency task ID>", "rationale": "<edge rationale>" }],
       "assignment": "<assignment or null>",
-      "impact": "<integer 1..5>",
+      "impact": 1,
       "impact_rationale": "<impact rationale>",
       "routes": {
         "exec": "<literal Exec line>",
@@ -163,7 +163,7 @@ Build exactly one `octoplan-fingerprint-v1` input object from the current durabl
 }
 ```
 
-`manifest` carries the saved policy, routes, binding execution targets, defaults, and Plan review routes through its three literal blocks. Task and tracker text remains authoritative; the manifest stores IDs, not copies. Include every executable task and no human-only task. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
+`manifest` carries the saved policy, routes, binding execution targets, defaults, and Plan review routes through its three literal blocks. Normalize the execution environment block with observed host, path, and Git evidence removed. Task and tracker text remains authoritative; the manifest stores IDs, not copies. The concrete `impact` value is a JSON number from 1 through 5, never a string. Include every executable task and no human-only task. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
 
 Normalize line endings in source text to LF only. Do not trim source text or normalize Unicode. Sort object keys lexicographically; sort `streams`, `decisions`, `tasks`, and each task's `dependencies` by immutable `id`; sort `target_overrides` by `role`; preserve all other sequence order. Serialize this object as UTF-8 JSON with no insignificant whitespace, then SHA-256 it as a lowercase hexadecimal digest.
 
