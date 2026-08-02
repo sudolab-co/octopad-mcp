@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Plan Octopad work streams, then conditionally supervise approved execution across model-routed Codex sessions.",
   "author": {
     "name": "Sudolab"
@@ -13,7 +13,7 @@
   "interface": {
     "displayName": "Octoplan for Codex",
     "shortDescription": "Plan in Octopad, supervise routed Codex sessions.",
-    "longDescription": "Turns an Octopad work stream into a verified task plan. After explicit approval, a fenced inline or dedicated supervisor coordinates each task and review session at its saved model and reasoning effort.",
+    "longDescription": "Turns an Octopad work stream into a verified task plan. After explicit approval, a fenced inline or dedicated supervisor coordinates each task and review session at its saved model, reasoning effort, and native project target.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],

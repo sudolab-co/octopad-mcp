@@ -25,7 +25,7 @@ Respect Octopad's task-creation contract:
 - Size each executable top-level task to one focused executor session. Make its direction independent of the planning conversation by saving the accepted decisions, verified execution guidance, exact pointers, and checks it needs.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
-- Save the `octoplan-supervision-v1` contract for every executable plan. A pre-3.0 plan must be replanned, not silently migrated.
+- Save the environment-bound `octoplan-supervision-v2` contract for every executable plan. A pre-4.0 plan must be replanned, not silently migrated.
 - On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. Only a reduced event-driven rebalance as defined under Replanning is exempt.
 - Run the scoping brief, saved-state self-check, and adversarial plan review on every full planning pass. A reduced event-driven rebalance runs only the gates named under Replanning.
 
@@ -41,10 +41,10 @@ Respect Octopad's task-creation contract:
    Then stop. Confirmation must be a user reply sent after seeing the brief; a launch prompt, earlier chat, tracker note, or apparently complete stream never counts. Apply corrections before proceeding. If a reply leaves an assumption or open question unanswered, do not treat it as accepted: ask once more, then save any still-open point as an Octopad Question and keep affected tasks as flesh-out placeholders. Do not start step 3 or write any planning artifact until the user has confirmed the brief as corrected. The brief itself stays in chat; its confirmed content becomes the durable Decisions, Questions, tracker logic, and tasks.
 3. **Lock decisions.** Present one remaining material choice at a time as Deciding, Options with gain and cost, Recommendation, and Reversibility. A choice explicitly settled in the scoping-brief reply is recorded directly instead of being presented again. Save only the accepted choice as an Octopad Decision.
 4. **Set the order.** Close done-but-open work, log Questions, add missing tasks, and wire every real dependency. Prefix executable task titles `#N - ` for human-readable rank. Dependencies, not the number, decide readiness.
-5. **Ground and make runnable.** For engineering, verify repository patterns, tests, data changes, permissions, rollback, and exact commands. For content or operations, read the governing canon and live surfaces. Missing access becomes a blocking task. Anything that must already be live appears under `Preconditions`.
+5. **Ground and make runnable.** For engineering, verify repository patterns, tests, data changes, permissions, rollback, and exact commands. For content or operations, read the governing canon and live surfaces. Call `list_projects` and select the exact native target for the inline supervisor, any dedicated supervisor, and every task role. Missing access or an unavailable project becomes a blocking task. Anything that must already be live appears under `Preconditions`.
 6. **Spec every task.** Fill the template below with exact sources, boundaries, edge cases, checks, routing, and completion state. A task depending on unknown output stays a flesh-out placeholder.
 7. **Add final validation.** Wire one final-validation task after all delivery tasks. Give it one subtask per runnable check and include any manual acceptance checklist. For one stream, this task is also the coordination ledger.
-8. **Explain and bind.** Update each tracker with order, parallel branches, human gates, finish condition, and only the supervision pointer below. Append ` (octoplanned)` to each stream name if absent. For multi-stream work, designate one cross-stream coordination/final-validation task. Save one Plan manifest there with participant IDs, supervision policy and routes, defaults, and Plan review routes.
+8. **Explain and bind.** Update each tracker with order, parallel branches, human gates, finish condition, and only the supervision pointer below. Append ` (octoplanned)` to each stream name if absent. For multi-stream work, designate one cross-stream coordination/final-validation task. Save one Plan manifest there with participant IDs, supervision policy and routes, execution environment, defaults, and Plan review routes.
 9. **Self-check and fingerprint.** Re-open every tracker and task, repair failures, then reread repairs. Canonicalize the complete contract as specified below, save its SHA-256 in the Plan manifest and every tracker pointer, and reread them.
 10. **Adversarial review.** One fresh subagent, routed by the runtime's plan-review rubric, checks plan soundness, memory-less executability, supervision, and every spec against the confirmed brief. Spawn exactly the saved lead and specialist, never user-owned threads. Add one simultaneous specialist only for two orthogonal material risks passing the runtime gate. Every PASS is persisted on the ledger and names the exact plan hash. Any change invalidates PASS and returns to step 9.
 11. **Report and stop.** Report the verified plan and its hash, then ask for execution approval exactly as the runtime reference requires. Do not launch anything yet.
@@ -53,7 +53,7 @@ Respect Octopad's task-creation contract:
 
 ```text
 Supervision contract:
-- Schema: octoplan-supervision-v1
+- Schema: octoplan-supervision-v2
 - Coordination ledger task ID: <immutable task ID>
 - Policy: dedicated for 4+ remaining delivery tasks (final validation excluded), any parallel fan-out/fan-in, multi-stream, or 2+ tasks across a human, external, or explicit interruption gate
 - Inline route: <model> · effort <level>
@@ -63,7 +63,20 @@ Supervision contract:
 - Default lineage: roots use a clean base; successors use accepted dependency revisions; fan-in uses a named integrated revision
 ```
 
-Save this contract once in the ledger's Plan manifest. Omit Dedicated route and replacement when no dedicated predicate is true; later expansion needs a new plan. Each tracker stores only `Supervision: octoplan-supervision-v1 · ledger <ID> · plan <SHA-256>`.
+Save this contract once in the ledger's Plan manifest. Omit Dedicated route and replacement when no dedicated predicate is true; later expansion needs a new plan.
+
+```text
+Execution environment:
+- Inline supervisor target: <project ID · local|worktree · observed host ID, canonical path, and Git true|false> | <projectless · directory name · explicit rationale>
+- Dedicated supervisor target: <exact target> | none
+- Default executor target: <exact target>
+- Task-role target overrides: <task ID · executor|lead-reviewer|specialist-reviewer → exact target> | none
+- Reviewer default: inherit the executor creation record's exact target
+```
+
+Resolve every project through `list_projects` during planning. A project target binds project ID and environment; also record the observed host ID, canonical path, and Git flag as non-binding discovery evidence. A projectless target binds its directory name and explicit rationale; absence of a project field never means projectless. Default Git children use a worktree unless the plan explicitly saves `local`. Reviewer and same-role recovery sessions inherit the executor or superseded creation record's exact target unless a task-role override is saved.
+
+Each tracker stores only `Supervision: octoplan-supervision-v2 · ledger <ID> · plan <SHA-256>`.
 
 ```text
 Plan review:
@@ -98,7 +111,7 @@ Keep `Specialist review route` only when its two-review gate passes. Keep `Fallb
 
 ## Fingerprint
 
-Build canonical JSON from the schema and ledger ID; manifest policy, routes, defaults, and Plan review routes; participating stream IDs and tracker text; governing Decision IDs and text; and every executable task's ID, title, description, dependencies, assignment, impact, and routes. Task and tracker text remains authoritative; the manifest stores IDs, not copies. The current supervision mode is excluded, along with tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
+Build canonical JSON from the schema and ledger ID; manifest policy, routes, binding execution targets, defaults, and Plan review routes; participating stream IDs and tracker text; governing Decision IDs and text; and every executable task's ID, title, description, dependencies, assignment, impact, and routes. Task and tracker text remains authoritative; the manifest stores IDs, not copies. Canonicalize each project target as project ID plus environment and each projectless target as directory name plus rationale; include each task-role override once under its task ID and role. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
 
 Sort object keys lexicographically, sort set-like arrays by immutable ID, preserve semantic sequences, and remove insignificant whitespace. Hash with SHA-256 before plan review. Every plan-review PASS and execution consent binds that exact hash.
 
@@ -165,6 +178,7 @@ For the plan:
 - Every material choice is a recorded Decision.
 - Every real dependency is wired.
 - Final validation follows all delivery tasks.
+- The inline supervisor target, any dedicated supervisor target, default executor target, and every task-role override resolve uniquely through `list_projects`; projectless is explicit and justified.
 - Every tracker carries the same schema, ledger pointer, and plan hash; the ledger carries one complete Plan manifest.
 - The canonical input includes every field required by Fingerprint, uses its ordering rules, and excludes only its named execution state.
 - Every persisted Plan review PASS matches the current hash, saved routes, mandates, and runtime rubric.

@@ -14,8 +14,11 @@ fail() {
   exit 1
 }
 
-grep -q '^Version: 3\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 3.0.0'
-grep -q '"version": "3\.0\.0"' "$manifest" || fail 'plugin manifest is not 3.0.0'
+grep -q '^Version: 4\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 4.0.0'
+grep -q '"version": "4\.0\.0"' "$manifest" || fail 'plugin manifest is not 4.0.0'
+grep -q '^  allow_implicit_invocation: false$' "$skill/agents/openai.yaml" || fail 'implicit invocation remains enabled'
+grep -Fq 'Use only when a Codex user explicitly invokes $octoplan' "$skill/SKILL.md" || fail 'explicit invocation boundary is missing'
+grep -Fq 'Do not use for general Octopad actions, organization connection, onboarding' "$skill/SKILL.md" || fail 'non-Octoplan exclusions are missing'
 [ -f "$supervision" ] || fail 'conditional-supervision runtime is missing'
 git -C "$root" ls-files --error-unmatch "$supervision_rel" >/dev/null 2>&1 || fail 'conditional-supervision runtime is not tracked'
 [ ! -e "$skill/references/codex-relay.md" ] || fail 'legacy direct-relay runtime remains'
@@ -42,7 +45,7 @@ grep -q '^Plan review:$' "$planning" || fail 'plan-review routing record is unde
 grep -q 'Spawn exactly the saved lead and specialist' "$planning" || fail 'plan-review routing record is not read back'
 grep -q 'Every PASS is persisted on the ledger and names the exact plan hash' "$planning" || fail 'plan-review PASS is not fingerprint-bound'
 
-grep -q 'octoplan-supervision-v1' "$planning" || fail 'supervision contract schema is not planned'
+grep -q 'octoplan-supervision-v2' "$planning" || fail 'supervision contract schema is not planned'
 grep -q '^Supervision contract:$' "$planning" || fail 'tracker supervision contract is undefined'
 grep -q '^\*\*Fallback: ' "$planning" || fail 'task template lacks bounded fallback routing'
 grep -q 'Default recovery:' "$planning" || fail 'contract lacks same-route recovery default'
@@ -72,9 +75,23 @@ grep -q 'Every changed fingerprint, including hygiene' "$supervision" || fail 'p
 grep -q 'at least four delivery tasks remain' "$supervision" || fail 'dedicated-parent size gate is missing'
 grep -q 'unserialized frontier' "$supervision" || fail 'unsaved parallel work can launch'
 grep -q 'activate the whole group in one guarded transition' "$supervision" || fail 'parallel children can start before group readiness'
-grep -q 'actual model and effort equal the saved inline route' "$supervision" || fail 'resume can substitute a supervisor route'
+grep -q 'actual model, effort, target, and environment equal the saved inline route and inline supervisor target' "$supervision" || fail 'resume can substitute a supervisor route or target'
 grep -q 'dedicated-replacement bound' "$supervision" || fail 'dedicated-parent recovery is unbounded'
 grep -q 'spawn_agent.*never user-owned threads' "$runtime" || fail 'plan review creates unapproved user threads'
+
+grep -q 'octoplan-supervision-v2' "$skill/SKILL.md" || fail '4.0 skill does not require the environment-bound schema'
+grep -q '^Execution environment:$' "$planning" || fail 'plan manifest has no execution-environment contract'
+grep -q 'Inline supervisor target:' "$planning" || fail 'inline supervisor target is not saved'
+grep -q 'Dedicated supervisor target:' "$planning" || fail 'dedicated supervisor target is not saved'
+grep -q 'Default executor target:' "$planning" || fail 'default executor target is not saved'
+grep -q 'Task-role target overrides:' "$planning" || fail 'multi-project task-role overrides are not saved'
+grep -q 'projectless.*explicit' "$planning" || fail 'projectless target is not an explicit planned choice'
+grep -q 'execution environment' "$planning" || fail 'fingerprint omits the execution environment'
+grep -q 'exact saved dedicated supervisor target' "$supervision" || fail 'dedicated bootstrap may infer its project'
+grep -q 'exact default executor target or task-role override' "$supervision" || fail 'child creation may infer its project'
+grep -q 'saved project ID and environment' "$supervision" || fail 'saved project identity is not reconciled'
+grep -q 'target and environment' "$supervision" || fail 'creation records do not bind the native target'
+grep -q 'A target mismatch pauses without creating or steering a thread' "$supervision" || fail 'resume can continue in the wrong project'
 
 review_section=$(sed -n '/^## Review routing$/,/^## Execution consent$/p' "$runtime")
 printf '%s\n' "$review_section" | grep -q 'gpt-5\.6-luna · effort high' || fail 'Luna high is unreachable for review'

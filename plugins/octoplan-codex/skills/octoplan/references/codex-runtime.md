@@ -74,7 +74,7 @@ Completing a plan never authorizes execution. State the reviewed plan hash, then
 
 > The plan is complete and verified. Would you like me to start execution now?
 >
-> If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, reviewer, and bounded replacement sessions at the exact saved routes. It will run only tasks explicitly proven independent in parallel and stop at human gates, material plan changes, unmatched fallback conditions, exhausted bounds, or failures needing your decision.
+> If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, reviewer, and bounded replacement sessions at the exact saved routes and native project targets. It will run only tasks explicitly proven independent in parallel and stop at human gates, material plan changes, unmatched fallback conditions, exhausted bounds, or failures needing your decision.
 
 Then stop. Do not call `list_projects`, `create_thread`, or any executor tool while waiting.
 
@@ -82,6 +82,7 @@ A clear yes authorizes only:
 
 - the stated reviewed plan hash and its verified scope;
 - its fingerprinted conditional supervision policy and allowed parent routes;
+- its fingerprinted inline supervisor, dedicated supervisor, default executor, and task-role override targets and environments;
 - its saved dedicated-parent replacement bound;
 - creation and monitoring of its executor and reviewer sessions;
 - the exact saved model and reasoning effort for each task;
@@ -91,4 +92,4 @@ A clear yes authorizes only:
 
 It does not authorize a protected external action, a human-only task, a materially revised plan, an unsaved route, or a substitution outside those exact bounds.
 
-After a clear yes, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v1` contract requires replanning.
+After a clear yes, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v2` contract requires replanning.

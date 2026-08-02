@@ -4,7 +4,7 @@ interface:
   default_prompt: "Use $octoplan to plan an Octopad work stream."
 
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false
 
 dependencies:
   tools:

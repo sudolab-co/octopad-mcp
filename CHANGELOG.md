@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 4.0.0 — 2026-08-02
+
+Codex plans now bind every supervisor, executor, reviewer, and recovery session to a saved native project and environment. The manifest separates inline and dedicated supervisor targets, the default executor target, and task-role overrides; projectless execution must be explicit and justified. Project ID and environment are fingerprinted into review and execution consent, while host, path, and Git metadata remain non-blocking audit evidence.
+
+Launch, activation, resume, takeover, fallback, and artifact provenance now stop on a target mismatch instead of inferring from the caller's directory or task context. This is breaking: pre-4.0 plans do not contain the environment-bound `octoplan-supervision-v2` contract and must be replanned. The explicit-only invocation behavior introduced in 3.0.1 is preserved, and the Octopad MCP and Claude distribution are unchanged.
+
+### 3.0.1 — 2026-08-02
+
+Codex no longer loads Octoplan implicitly. It now requires an explicit `$octoplan` invocation, and the trigger description excludes general Octopad actions, organization connection, onboarding, and unapproved task execution. This prevents unrelated onboarding prompts from entering Octoplan.
+
 ### 3.0.0 — 2026-08-02
 
 Approved execution now runs through one fenced supervisor. Small linear streams stay in the planning or recovery session; four or more delivery tasks, parallel work, multi-stream coordination, or interruption gates justify a dedicated parent at a saved route. Supervisor epochs make takeover restartable, and one saved replacement bound prevents parent churn.
