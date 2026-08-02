@@ -13,8 +13,8 @@ fail() {
   exit 1
 }
 
-grep -q '^Version: 2\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 2.0.0'
-grep -q '"version": "2\.0\.0"' "$manifest" || fail 'plugin manifest is not 2.0.0'
+grep -q '^Version: 2\.0\.1$' "$skill/SKILL.md" || fail 'SKILL.md is not 2.0.1'
+grep -q '"version": "2\.0\.1"' "$manifest" || fail 'plugin manifest is not 2.0.1'
 
 if grep -R -n 'Review: skip\|review is skipped\|review is skipped\|reviewer or directly' \
   "$skill/SKILL.md" "$planning" "$runtime" "$relay" >/dev/null; then
@@ -47,5 +47,8 @@ terra_max_count=$(grep -c 'gpt-5\.6-terra · effort max' "$runtime" || true)
 [ "$terra_max_count" -ge 2 ] || fail 'Terra max is not reachable for execution and review'
 
 grep -q 'executor or reviewer' "$runtime" || fail 'Sol reviewer lacks a cheaper-route inadequacy gate'
+grep -Fq 'combines objectively specified implementation with qualitative product, UX, editorial, semantic, or cross-domain acceptance' "$runtime" || fail 'mixed-task routing has no observable trigger'
+grep -Fq 'Route execution through the full rubric using only choices the executor must originate' "$runtime" || fail 'mixed-task execution and review are conflated'
+grep -Fq 'distinguishes choices the executor must originate from review-only judgment' "$planning" || fail 'mixed-task rationale is not auditable'
 
 printf 'PASS: octoplan-codex routing contract\n'
