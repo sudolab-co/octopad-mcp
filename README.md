@@ -9,7 +9,7 @@ A *skill* is a set of instructions an AI assistant loads when a matching request
 | Skill | What it does | Assistants |
 |---|---|---|
 | [`octoplan`](plugins/octoplan/skills/octoplan/SKILL.md) | Turns an Octopad work stream into an execution-ready plan whose fresh sessions are chained by minimal continuation prompts. | Claude Code |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Builds the same kind of verified plan, then—only after explicit approval—lets Codex execute it in order through automatically created, model-routed sessions. | Codex |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Builds the same verified plan, then conditionally supervises approved execution through model-routed Codex sessions. | Codex |
 
 ## What Octoplan is
 
@@ -17,7 +17,7 @@ Octoplan is a planning protocol built on Octopad's task graph.
 
 - **A planning session** reads the work stream, locks open decisions with the user, and writes every task as a complete, self-contained spec: verified against the real codebase or reference documents, sized to one session each, ordered by real dependency edges.
 - **Claude execution sessions** need nothing installed. Each task carries its own hand-off instruction, so the user can open each fresh session from a minimal pointer.
-- **Codex execution** never starts during planning. Once the plan is complete, Octoplan asks for permission. After a clear yes, the planning session launches the first ready work; each completing executor or reviewer then follows the saved dependencies and hands execution directly to the next model-routed task or explicitly independent parallel group.
+- **Codex execution** never starts during planning. After a clear yes, a fenced inline or dedicated supervisor coordinates the approved graph, native sessions, revision-bound reviews, bounded recovery, and saved model fallbacks. Reviewers complete tasks; only the supervisor launches successors.
 - **Multi-stream efforts**: when a request spans several work streams, Octoplan plans them as one effort. One goal, several streams, one light Blueprint page explaining the global logic, and cross-stream dependencies enforcing it.
 
 ## Requirements
