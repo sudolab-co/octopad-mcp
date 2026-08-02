@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 4.1.0 — 2026-08-02
+
+Plan fingerprints now use one explicit `octoplan-fingerprint-v1` JSON input. The persisted Plan hash is normalized to `PENDING` before every calculation or verification, so a manifest never hashes its own stored digest. The same durable plan sources, ordering rules, and exclusions remain in force.
+
+Dedicated supervisors now use `supervisor - <work stream name>`. Executors, including fallback and recovery attempts, use `<work stream name> - #<task number> <task name>`. The full durable creation key remains in the prompt and creation record, so lost-result recovery still stops rather than risking duplicate sessions.
+
 ### 4.0.0 — 2026-08-02
 
 Codex plans now bind every supervisor, executor, reviewer, and recovery session to a saved native project and environment. The manifest separates inline and dedicated supervisor targets, the default executor target, and task-role overrides; projectless execution must be explicit and justified. Project ID and environment are fingerprinted into review and execution consent, while host, path, and Git metadata remain non-blocking audit evidence.

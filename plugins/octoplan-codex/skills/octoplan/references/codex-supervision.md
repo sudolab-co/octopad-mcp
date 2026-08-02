@@ -41,17 +41,21 @@ Epoch changes fence supervisors only. Child authority remains bound to run ID, f
 
 ## Safe thread creation
 
-Every supervisor, executor, reviewer, and recovery creation uses one durable creation record keyed by run, task or candidate, attempt, role, route, native target and environment, and artifact revision when applicable. Guardedly save a unique token and `intent` before calling `create_thread` once. Start the native title and prompt with that full key and token; require no work until the exact record is `activated`. Save `pending` only with a returned `clientThreadId`; save `ready` only after real thread and host IDs plus the actual target and environment uniquely match the record. Save `target-mismatch` with the resolved actual identity and pause when they do not match. Save `activated` only after supervisor transfer or a guarded child start, and `failed` only after authoritative terminal failure and no unique native match.
+Every supervisor, executor, reviewer, and recovery creation uses one durable creation record keyed by run, task or candidate, attempt, role, route, native target and environment, and artifact revision when applicable. Guardedly save a unique token and `intent` before calling `create_thread` once. Require no work until the exact record is `activated`. Save `pending` only with a returned `clientThreadId`; save `ready` only after real thread and host IDs plus the actual target and environment uniquely match the record. Save `target-mismatch` with the resolved actual identity and pause when they do not match. Save `activated` only after supervisor transfer or a guarded child start, and `failed` only after authoritative terminal failure and no unique native match.
+
+Use the plain work-stream name: remove one terminal ` (octoplanned)` suffix from the saved stream title, and preserve every other character. Supervisor title: `supervisor - <plain work stream name>`. Use it for a dedicated supervisor and any dedicated-supervisor replacement. In a multi-stream run, `<plain work stream name>` is the ledger-owning stream. Executor title: `<plain work stream name> - #<N> <task name>`. Use it for the first executor, a fallback, and a same-role executor recovery. Derive `N` and `<task name>` only from that task's saved `#N - <task name>` title. If the task title cannot be parsed as `#N - <task name>`, pause. Reviewer titles retain the full creation key and token.
+
+Start the native prompt with the full key and token, never the supervisor or executor title. This keeps the visible title human-readable while the prompt and durable record retain the unique identity. For a lost result, use `list_threads` to find candidate sessions, then use `read_thread` to match the full key and token in each candidate's first prompt. A lost result stays `intent`; reconcile only one exact match and never retry while creation is ambiguous.
 
 Before saving `intent`, call `list_projects` and uniquely reconcile the saved project ID and environment; retain current host, canonical path, and Git flag as non-binding audit evidence. For an explicit projectless target, verify its saved directory name and rationale. Never infer a target from the caller's cwd, a source pointer, a task type, or the absence of a project field. A target mismatch pauses without creating or steering a thread.
 
-Never pass a client ID to thread tools. Resolve it through one unique match in `list_threads`. A lost result stays `intent`; reconcile by the full key and never retry while creation is ambiguous.
+Never pass a client ID to thread tools. Resolve it through one unique real-thread match.
 
 ## Bootstrap a dedicated parent
 
 The planning or recovery session remains inline owner until transfer finishes.
 
-1. Reconcile and use the exact saved dedicated supervisor target and environment, then use Safe thread creation with the candidate token as identity. Start its title and prompt with run ID, token, supervisor role, route, and target; do not embed a proposed epoch.
+1. Reconcile and use the exact saved dedicated supervisor target and environment, then use Safe thread creation with the candidate token as identity. Use the required supervisor title and start its prompt with run ID, token, supervisor role, route, and target; do not embed a proposed epoch.
 2. Tell it to create nothing until the ledger names its token and real IDs; before activation it returns only `awaiting activation: <token>`.
 3. The inline owner guardedly transfers ownership at its current epoch plus one, saves the real IDs, and marks `activated`.
 4. Send one activation/reconcile message. The parent rereads the ledger before acting.

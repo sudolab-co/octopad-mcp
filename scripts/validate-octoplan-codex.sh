@@ -8,14 +8,16 @@ planning="$skill/references/planning.md"
 supervision="$skill/references/codex-supervision.md"
 supervision_rel="plugins/octoplan-codex/skills/octoplan/references/codex-supervision.md"
 manifest="$root/plugins/octoplan-codex/.codex-plugin/plugin.json"
+changelog="$root/CHANGELOG.md"
 
 fail() {
   printf 'FAIL: %s\n' "$1" >&2
   exit 1
 }
 
-grep -q '^Version: 4\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 4.0.0'
-grep -q '"version": "4\.0\.0"' "$manifest" || fail 'plugin manifest is not 4.0.0'
+grep -q '^Version: 4\.1\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 4.1.0'
+grep -q '"version": "4\.1\.0"' "$manifest" || fail 'plugin manifest is not 4.1.0'
+grep -q '^### 4\.1\.0 — 2026-08-02$' "$changelog" || fail 'changelog lacks the 4.1.0 entry'
 grep -q '^  allow_implicit_invocation: false$' "$skill/agents/openai.yaml" || fail 'implicit invocation remains enabled'
 grep -Fq 'Use only when a Codex user explicitly invokes $octoplan' "$skill/SKILL.md" || fail 'explicit invocation boundary is missing'
 grep -Fq 'Do not use for general Octopad actions, organization connection, onboarding' "$skill/SKILL.md" || fail 'non-Octoplan exclusions are missing'
@@ -53,6 +55,9 @@ grep -q 'Default lineage:' "$planning" || fail 'contract lacks immutable lineage
 grep -q 'at least 2 required observations and exact count' "$planning" || fail 'fallback lacks auditable repeated evidence'
 grep -q 'tracker stores only' "$planning" || fail 'supervision contract is copied into trackers'
 grep -q '^## Fingerprint$' "$planning" || fail 'pre-consent fingerprint protocol is missing'
+grep -Fq '`octoplan-fingerprint-v1`' "$planning" || fail 'fingerprint schema is not named'
+grep -Fq '"plan_hash": "PENDING"' "$planning" || fail 'persisted plan hash is not normalized before hashing'
+grep -Fq 'never the persisted digest or the ledger comment that carries it' "$planning" || fail 'fingerprint input can still hash its own persisted value'
 grep -q 'conditional supervision policy' "$runtime" || fail 'execution consent omits conditional supervision'
 grep -q 'saved fallback' "$runtime" || fail 'execution consent omits saved fallback routes'
 
@@ -67,7 +72,12 @@ grep -q 'Plan manifest' "$supervision" || fail 'multi-stream recovery source is 
 grep -q 'context, access, environment, and verifier' "$supervision" || fail 'fallback can misdiagnose non-capability failures'
 grep -q 'never retry while creation is ambiguous' "$supervision" || fail 'uncertain creation can duplicate sessions'
 grep -q 'Every supervisor, executor, reviewer, and recovery creation' "$supervision" || fail 'safe creation does not cover every role'
-grep -q 'title and prompt with that full key and token' "$supervision" || fail 'native child identity is not recoverable'
+grep -Fq 'Supervisor title: `supervisor - <plain work stream name>`' "$supervision" || fail 'supervisor title is not human-readable'
+grep -Fq 'Executor title: `<plain work stream name> - #<N> <task name>`' "$supervision" || fail 'executor title is not human-readable'
+grep -Fq 'Start the native prompt with the full key and token, never the supervisor or executor title.' "$supervision" || fail 'human titles can still replace durable identity'
+grep -Fq 'If the task title cannot be parsed as `#N - <task name>`, pause.' "$supervision" || fail 'executor title can invent a task rank or name'
+grep -Fq 'ledger-owning stream' "$supervision" || fail 'multi-stream supervisor title is ambiguous'
+grep -q 'read_thread' "$supervision" || fail 'lost result recovery cannot recover a human-titled thread safely'
 grep -q 'reviewer verifies its activated creation record' "$supervision" || fail 'reviewers can work before activation'
 grep -q 'Before work, after every wake, and before any write, PASS, or completion' "$supervision" || fail 'reviewers can write after supersession'
 grep -q 'supervisor epoch 1' "$supervision" || fail 'fresh runs lack initialized ownership'

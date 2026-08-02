@@ -111,9 +111,63 @@ Keep `Specialist review route` only when its two-review gate passes. Keep `Fallb
 
 ## Fingerprint
 
-Build canonical JSON from the schema and ledger ID; manifest policy, routes, binding execution targets, defaults, and Plan review routes; participating stream IDs and tracker text; governing Decision IDs and text; and every executable task's ID, title, description, dependencies, assignment, impact, and routes. Task and tracker text remains authoritative; the manifest stores IDs, not copies. Canonicalize each project target as project ID plus environment and each projectless target as directory name plus rationale; include each task-role override once under its task ID and role. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
+Build exactly one `octoplan-fingerprint-v1` input object from the current durable sources. Angle-bracket values below are replaced with the saved value. Every shown key is present: use `null` for an inapplicable scalar and `[]` for an inapplicable list.
 
-Sort object keys lexicographically, sort set-like arrays by immutable ID, preserve semantic sequences, and remove insignificant whitespace. Hash with SHA-256 before plan review. Every plan-review PASS and execution consent binds that exact hash.
+```json
+{
+  "fingerprint_schema": "octoplan-fingerprint-v1",
+  "ledger_task_id": "<immutable ledger task ID>",
+  "plan_hash": "PENDING",
+  "manifest": {
+    "supervision_contract": "<normalized literal Supervision contract block>",
+    "execution_environment": "<normalized literal Execution environment block>",
+    "plan_review": "<normalized literal Plan review block>"
+  },
+  "streams": [
+    { "id": "<stream ID>", "tracker_text": "<tracker text without its generated Supervision line>" }
+  ],
+  "decisions": [
+    { "id": "<decision ID>", "text": "<decision text>" }
+  ],
+  "tasks": [
+    {
+      "id": "<task ID>",
+      "title": "<task title>",
+      "description": "<task description>",
+      "dependencies": [{ "id": "<dependency task ID>", "rationale": "<edge rationale>" }],
+      "assignment": "<assignment or null>",
+      "impact": "<integer 1..5>",
+      "impact_rationale": "<impact rationale>",
+      "routes": {
+        "exec": "<literal Exec line>",
+        "review": "<literal Review route line>",
+        "specialist_review": "<literal Specialist review route line or null>",
+        "fallback": "<literal Fallback line or null>",
+        "recovery_override": "<literal Recovery override line or null>",
+        "lineage_override": "<literal Lineage override line or null>",
+        "target_overrides": [
+          {
+            "role": "<executor|lead-reviewer|specialist-reviewer>",
+            "target": {
+              "kind": "<project|projectless>",
+              "project_id": "<project ID or null>",
+              "environment": "<local|worktree or null>",
+              "directory_name": "<projectless directory name or null>",
+              "rationale": "<projectless rationale or null>"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+`manifest` carries the saved policy, routes, binding execution targets, defaults, and Plan review routes through its three literal blocks. Task and tracker text remains authoritative; the manifest stores IDs, not copies. Include every executable task and no human-only task. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, and thread IDs.
+
+Normalize line endings in source text to LF only. Do not trim source text or normalize Unicode. Sort object keys lexicographically; sort `streams`, `decisions`, `tasks`, and each task's `dependencies` by immutable `id`; sort `target_overrides` by `role`; preserve all other sequence order. Serialize this object as UTF-8 JSON with no insignificant whitespace, then SHA-256 it as a lowercase hexadecimal digest.
+
+Before every calculation or verification, map the persisted Plan manifest hash to `"plan_hash": "PENDING"`. Hash the normalized JSON object, never the persisted digest or the ledger comment that carries it. After calculation, save the resulting digest in the Plan manifest and every tracker pointer. Every plan-review PASS and execution consent binds that exact saved digest; every later verification rebuilds the same input with `plan_hash` reset to `PENDING`.
 
 A fresh executor has only Octopad `build_context` and the saved pointers. Its task must carry result and reason, boundaries, decisions, inputs, dependencies, verified guidance, acceptance, checks, risks, gates, and exact sources. It starts with task-mode `build_context`, then rereads the task and sources. Keep live content at source rather than copying it.
 
