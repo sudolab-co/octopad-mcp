@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 5.0.0 — 2026-08-03
+
+Codex plans now choose gradual or final human validation. The planner reviews a complete symbolic draft before writing only the final graph to Octopad, verifies deterministic saved-state equivalence, binds the result to `octoplan-supervision-v3`, and still asks for explicit execution consent on the final hash. Delivery tasks end at review-ready agent artifacts; human review, merge, migration application, deployment, publication, and acceptance are separate tasks with explicit completion evidence and optional event-wake predicates.
+
+The supervisor can resolve bounded in-scope repairs without a new plan, create crash-idempotent non-blocking follow-ups, and continue unrelated safe branches while another branch waits on CI or a human. Repair classification is persisted before work, judgmental classification gets independent review, and artifact review scales from targeted deterministic checks to one independent lead plus an orthogonal specialist only when needed. Human rejection reopens the original delivery task while preserving history and returns to the same review task after correction.
+
+GitHub event wakes deduplicate immutable deliveries, verify the exact PR head and saved human-task predicate, and resume reconciliation without authorizing protected actions. Incremental reconciliation avoids full-plan rereads unless authority or fingerprinted state may have changed. The supervisor owns the final recap and reports actual repairs, rejection loops, sessions, external wakes, delivered artifacts, remaining human work, and follow-ups from the existing ledger.
+
+This is breaking: older plans do not contain the v3 validation, repair, follow-up, wake, or review contract and must be replanned before execution under 5.0.0. Explicit-only invocation, final execution consent, native target fencing, exact saved routes, and protected human-action gates remain in force.
+
 ### 4.0.0 — 2026-08-02
 
 Codex plans now bind every supervisor, executor, reviewer, and recovery session to a saved native project and environment. The manifest separates inline and dedicated supervisor targets, the default executor target, and task-role overrides; projectless execution must be explicit and justified. Project ID and environment are fingerprinted into review and execution consent, while host, path, and Git metadata remain non-blocking audit evidence.
@@ -87,6 +97,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan
+
+### 2.0.0 — 2026-08-03
+
+Octoplan now asks the user to choose gradual or final human validation, preflights the first executable frontier, adversarially reviews one complete off-record draft, and writes only the reviewed final plan to Octopad. Agent delivery tasks end at durable review-ready artifacts, while human review, merge, migration application, deployment, publication, acceptance, and access actions are separate owned tasks with explicit evidence.
+
+Every delivery task receives the narrowest useful adversarial check: targeted deterministic review without a fresh session, one independent reviewer for normal work, or a second specialist only for an orthogonal material risk. Runtime discoveries are classified as bounded repairs, non-blocking follow-ups, or material replans. Repair records are persisted before work, follow-ups are deduplicated, rejected artifacts reopen their originating delivery task without losing history, and runtimes with a supervisor may resume from verified GitHub events and finish with one evidence-based recap.
+
+This is breaking: the Review values and Done when contract changed. Existing saved plans need a fresh Octoplan pass before they can satisfy the 2.0 execution and self-check rules.
 
 ### 1.4.0 — 2026-07-30
 

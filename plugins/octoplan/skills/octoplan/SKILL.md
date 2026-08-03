@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when the user says "Octoplan <work stream>", when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
 ---
-Version: 1.4.0
+Version: 2.0.0
 
 # Octoplan — work-stream planning protocol for Octopad
 
@@ -24,7 +24,7 @@ Octoplan turns an Octopad work stream into a plan of detailed, ordered, self-con
 
 - **Planning only.** No code, no content deliverables, no "quick fix while we're here". The session's outputs are tasks, Decisions, Questions, design pages, and plan-hygiene edits to existing items — nothing else.
 - **Verified facts only.** Every file path, symbol, command, source claim, or task status cited in a spec must come from THIS session's tool output (reads, searches, Octopad calls), never from memory or plausibility. Can't verify it right now → ask the user or log a Question; never fill a spec slot with a guess.
-- **Every gate runs on every full planning pass.** A small stream is not a reason to skip the scoping brief (step 2), the self-check (step 7), or the adversarial review (step 8). A mid-execution rebalance runs only the reduced set named in Replanning.
+- **Every gate runs on every full planning pass.** A small stream is not a reason to skip the scoping brief, self-check, or adversarial plan review. Runtime repairs use only the bounded repair loop below; material changes return to a full pass.
 
 ## When NOT to use
 
@@ -47,26 +47,27 @@ One Octoplan for every domain — but the interview questions, the brief's assum
 ## Steps, in order
 
 1. **Review or discover.** Read everything that exists: the stream's tracker, every task, linked design pages, prior Decisions. A loose plan exists → review and improve it. The stream is thin or empty → interview the user first (purpose, scope, constraints, who it serves — one theme at a time), letting the stream-type lens shape the questions; the answers feed the scoping brief (step 2), and the design page and proposed task breakdown come only after the brief is confirmed. Also settle two practical facts you'll need later: which AI models and reasoning-depth settings the team's environment offers (for Exec recommendations), and who on the team owns each human gate.
-2. **Scoping brief — reflect back, then wait.** Before locking any decision, drafting any design page, or writing any task, merge what the user said with what the sources hold and hand it back as ONE short brief (aim for half a page) in the chat — a stream that already looks fully specced is where an unchecked misreading survives longest. The brief is the ENTIRE message: no decision proposals, no draft breakdown riding along — end the turn on it. Five parts, each present every time, with the stream-type lens shaping what belongs in each:
+2. **Scoping brief — reflect back, then wait.** Before locking any decision, drafting any design page, or writing any task, merge what the user said with what the sources hold and hand it back as ONE short brief (aim for half a page) in the chat — a stream that already looks fully specced is where an unchecked misreading survives longest. The brief is the ENTIRE message: no decision proposals, no draft breakdown riding along — end the turn on it. Six parts, each present every time, with the stream-type lens shaping what belongs in each:
    - **Understanding** — the stream's purpose and deliverable, restated in the planner's own words.
    - **In / out of scope** — both lists explicit. An empty "out" list is a red flag: name at least the nearest adjacent thing the stream does NOT deliver.
    - **Success** — the definition of success the planner intends to plan against.
    - **Assumptions** — every point the planner settled by inference instead of a source or the user's words, one line each, with where the inference came from. An empty list must show its work: name where each usual hiding place (scope edges, audience, ordering, quality bar) was settled — a source read this session, or the user's words.
    - **Open questions** — what the planner cannot settle alone.
+   - **Validation mode** — `gradual` validates each human-reviewable artifact as it becomes ready; `final` stacks every safe agent-owned artifact and validates at the end. Recommend one and disclose any unavoidable mid-stream human gate, especially a migration that must be applied before later proof can run.
    Then STOP. Confirmation is a reply the user sends AFTER seeing the brief — no launch prompt, prior chat, or tracker note counts, however complete it looks. The reply confirms the brief as corrected: a correction replaces the assumption, and anything the reply leaves unanswered never defaults to the planner's assumption — re-ask once, then whatever stays open becomes a logged Question with its affected tasks as flesh-out placeholders. Do not start step 3 until that reply has arrived. The brief itself is a chat message, not an Octopad artifact — its confirmed content flows into Decisions, Questions, and the tracker, which are the durable records. A multi-stream effort writes ONE effort-level brief (see Multi-stream efforts).
 3. **Lock decisions.** Surface every open call and present each in this shape before locking: **Deciding** (what and why it matters, in real-world terms) → **Options** (each with what you gain and what you give up) → **Recommendation** (your pick and why) → **Reversibility** (how hard to undo). Confirm ONE decision at a time — a "go ahead" locks only the item just confirmed, never neighboring proposals. A call the user already settled in the brief reply is recorded as a Decision directly, not re-presented. Record each as a Decision on the stream.
-4. **Plan hygiene + execution order.** Close done-but-open tasks; align the stream's definition of success with real scope; log open Questions. Then wire the order so "what's next" is never ambiguous:
+4. **Draft plan hygiene + execution order.** Identify done-but-open tasks, scope alignment, open Questions, human tasks, and the complete dependency order off-record. Do not write partial task drafts to Octopad. Draft so "what's next" is never ambiguous:
    - **Dependencies are the machine-readable order.** Wire a dependency edge (with its one-line rationale) for every real "B needs A" relation — edges work across work streams in the same workspace. Octopad's next-task resolution skips tasks whose dependencies aren't done.
    - **Title prefix is the human-readable order.** Name every executable task `#N - <title>`, N being its rank among the stream's executable tasks. The rank shows in every task list and in the continuation prompt.
    - **A Next line closes every executable task's description** — the hand-off instruction the finishing session follows. Write it using the exact patterns in the Continuation section; it is the only way the chain moves.
    - Add the **final validation task** — whatever proves the stream's definition of success (an end-to-end test for a build stream, a publish-readiness review for a content stream), wired after the delivery tasks, with one subtask per check. Producing a manual checklist for the user is part of its Done when.
-   - **Human-only tasks** (approvals, access grants) get no `#N` prefix, no Exec/Review lines, and no Next line — dependencies gate them, and the preceding executable task's Next line carries the resume instruction (see Continuation). They still need Why, What, Done when, and the impact parameters like any task, and are assigned to the team member who owns the action.
+   - **Human-only tasks** (review, merge, migration application, deployment, publication, acceptance, access grants) get no `#N` prefix, no Exec/Review lines, and no Next line. Dependencies gate them, and the preceding executable task's Next line carries the resume instruction (see Continuation). They still need Why, What, Done when, impact, and an owner. When an external event may resume one, its description also names the provider/artifact, accepted event, exact owner or approval rule, required checks, head relation, and completion evidence. Never hide a human action inside an agent task's Done when.
 5. **Ground in reality + runnability.** Engineering streams: map the repository's real conventions with read-only exploration; anything written into a spec must be confirmed by a direct read. Business/content streams: ground in the governing documents instead — read them IN FULL plus the live external surfaces; never spec from memory. If the planner itself lacks access to a governing surface, log a Question and mark the affected tasks as flesh-out placeholders rather than speccing blind. All streams: confirm every Verify step is executable with access that exists today — missing access (a database, analytics, posting rights) becomes its own task wired before its dependents. A check that can only mature later (a metric measured weeks after delivery) is not a runnability failure: name the event or date it waits on in a `**Preconditions:**` line. Any spec that assumes prior work is LIVE (deployed / published), not merely written, also gets a `**Preconditions:**` line naming what must be live first.
-6. **Spec into tasks — fill the template.** Write every executable task with the template below, every required slot filled before saving. Implementation-grade detail goes INTO the description — exact paths or source documents, patterns to copy, edge cases, and the exact verify steps (precise commands or concrete checks, not "run the tests" — the executor has no memory of any chat and can't infer them). The How must call for the simplest implementation that fully solves the job — reuse existing functions, templates, and patterns before adding new ones; simple, complete, and matching the surrounding conventions beats clever. A task that can't be fully specced yet (it depends on another task's output) is a **placeholder**: it keeps its `#N - ` title AND the required Why / What / Done when headers and impact parameters (or the create is rejected), but each body slot holds one line only, with this note as the What: "⚠️ Octoplan flesh-out required: run an Octoplan pass before building, because <what is missing>" — an executor reading it flags the user instead of building on a placeholder.
-7. **Self-check gate.** After all tasks are written, re-open every one FROM OCTOPAD (re-read what was actually saved, not what you remember writing) and walk it against the self-check list below. Fix failures on the spot, then re-check the fixed task.
-8. **Adversarial review — never skip.** 2+ fresh-eyes agents attack the plan against the real source of truth — the repository for engineering, the governing documents and live surfaces for content — worst problems first. Give each reviewer the verbatim saved task text (fetched from Octopad, never your summary) plus access to that source, and have it verify claims with its own reads. Assign each agent one lens: (a) **design soundness** — is this the right plan; wrong decomposition, missing decision, simpler structure available, and does every spec match the confirmed scoping brief, corrections included; (b) **executability** — can a memory-less session complete each task from its spec alone; paths real, steps runnable, dependencies and Next lines correct. For a stream of 8+ tasks or anything touching data migrations, permissions or auth, or money, add a third lens: (c) **risk** — what breaks, what loses data, what needs a human sign-off the plan doesn't flag. A finding may be dismissed only by verifying the contrary in this session's tool output — otherwise fix the specs or log a Question.
-9. **Write the plan's logic into the stream tracker.** Every work stream has a tracker page carrying the sections the planner owns (Scope, Rationale, Definition of Success) alongside the system-generated Progress Report and Activity Log. Update it so the ordering makes sense to anyone opening the stream later: **why the tasks run in this order**, which branches are parallel and why they are safe to split, where a human gate sits, and what ends the stream. Keep it short and keep it logic-only — no task statuses, no copies of task content, nothing the task graph already holds, or it goes stale the first time work moves. This is the same job the Blueprint page does for a multi-stream effort, at single-stream scale. Never hand-write the Progress Report or the Activity Log; the system owns those.
-10. **Hand off.** Rename the work stream so its name ends with ` (octoplanned)` — skip if it already does — so anyone scanning the workspace sees which streams have been through a full Octoplan pass. The suffix is a marker for humans reading the workspace, not part of the stream's identity: continuation prompts always use the plain name. Then end with a short wrap-up (what the plan contains — task count, decisions locked, open questions) and the continuation prompt for the first ready task, in the exact fenced format defined in Continuation. Do NOT restate chain state or the team's standing rules in the handoff: state lives in Octopad, rules live in the team's own instruction files. If you're tempted to add a fact to the handoff, it belongs in an Octopad task, Decision, or knowledge item — put it there.
+6. **Draft every task — fill the template.** Build the complete task text off-record with every slot filled. Include exact paths or source documents, patterns, edge cases, checks, routing, human-task separation, and the simplest complete approach. A task depending on unknown output remains a flesh-out placeholder.
+7. **Self-check the draft.** Walk every task and the full graph against the self-check list. Fix failures before review. Simulate the first ready frontier; if task one is blocked by missing access or a dependency, add the prerequisite or return the material choice to the user.
+8. **Adversarial review — never skip, never duplicate.** One fresh-eyes agent attacks design soundness, memory-less executability, dependency feasibility, human/agent separation, and consistency with the confirmed brief against the real source of truth. Add one simultaneous specialist only for an orthogonal material risk that the lead cannot cover adequately. Give reviewers the verbatim draft, not a summary. Fix confirmed findings and rerun only the affected lens.
+9. **Write only the reviewed final plan.** Save the final tasks, subtasks, dependencies, Decisions, Questions, tracker logic, and any Blueprint to Octopad. Reopen every saved item, compare it with the reviewed draft, and repair transcription defects. The tracker explains order, safe parallel branches, human gates, validation mode, and finish condition, with no task statuses or copied task text.
+10. **Hand off.** Rename the work stream so its name ends with ` (octoplanned)` if needed, then give the short wrap-up and first continuation prompt. The wrap-up names task count, decisions, open questions, validation mode, unavoidable human gates, and no invented process statistics.
 
 ## Task template
 
@@ -79,9 +80,9 @@ Title: #N - <task title>
 **What:** <the one job in a sentence, plus scope and boundaries — what's out when ambiguous>
 **How:** <exact paths or source documents, patterns or templates to copy, edge cases to cover>
 **Verify:** <exact copy-pasteable commands or concrete checks>
-**Done when:** <the concrete end state, named in the system of record where the deliverable lives — for code, the merged/deployed state the team's process requires, never just "tests pass"; for content or ops, the approved/published/filed state and where it sits>
+**Done when:** <the agent-owned review-ready state: durable artifact, required checks, adversarial review evidence, and handoff evidence; merge, migration application, deployment, publication, and human acceptance belong to separate human tasks>
 **Exec:** <recommended model tier · reasoning depth — see the rubric> — <why>
-**Review:** <required | skip> — <why>
+**Review:** <targeted | independent | specialist> — <detection target and why this is the narrowest adequate class>
 **Preconditions:** <what must be LIVE or matured, not just written>
 **Next:** <the hand-off instruction — copy the matching pattern from the Continuation section>
 ```
@@ -103,7 +104,13 @@ Creation parameters alongside the description: `impact` (1–5) and `impact_rati
 
 Recommend generously — a failed session usually costs more than a stronger model would have. The recommendation is not a lock: the executor escalates if the task turns out harder than specced.
 
-**Review.** `required` whenever a mistake would be costly: real decision-making, security/permissions, a data migration, cross-file logic, anything published or client-facing. `skip` only for genuinely trivial mechanical changes a fresh pass would find nothing in. When required, the executor has a separate fresh agent — no memory of writing the work — attack just the finished change, worst problems first, and fixes confirmed findings before delivering. Default to `required` when unsure.
+**Review.** Every delivery task gets an adversarial check, using the narrowest class that can catch a material defect. Write the complete lifecycle into the task's Review line so an executor that never loads this skill can follow it:
+
+- `targeted` — after producing the artifact, the executor runs the named deterministic adversarial checks itself, records the scoped PASS, then completes and follows Next; no fresh session.
+- `independent` — after verification, the executor creates one fresh source-first reviewer with the named mandate, implements confirmed findings, and completes/follows Next only after PASS on the current revision.
+- `specialist` — the executor creates one fresh lead plus one fresh reviewer for the named orthogonal mandate, implements confirmed findings, and completes/follows Next only after both PASS the current revision.
+
+Review only the changed surface and its invariants; a metadata-only correction does not invalidate an unchanged code review.
 
 ## Continuation — how the chain moves between sessions
 
@@ -143,17 +150,19 @@ When a request is too big for one work stream, plan it as ONE effort across seve
 
 If one work stream suffices, none of this applies.
 
-## Replanning — when execution changes the plan
+## Runtime discoveries: repair, follow-up, or replan
 
-A plan has no scheduled revisions. It changes only when reality changes it: a session executing a task discovers something that adds a task, drops one, or changes the order. The session that makes the discovery invokes this skill right then and rebalances the WHOLE plan, never just its own corner:
+A plan has no scheduled revisions. Classify each discovery against the confirmed brief and affected task:
 
-- Re-validate every spec the change touches against the current sources.
-- Renumber the `#N` prefixes so the rank stays unambiguous.
-- Rewire the dependency edges and every Next line the change affects — a stale Next line kills the chain.
-- Update the tracker's ordering logic if the why-this-order changed.
-- Run the per-task self-check on any task added or materially rewritten, before the session ends.
+- **Repair:** blocks the approved task but stays inside its result, scope, risk, acceptance, route bounds, and protected-action boundary. Before artifact work, save a guarded repair record comparing each predicate with exact evidence. Create a linked repair subtask only for separate ownership, a distinct route, or persistence across a wake. Use one active repair at a time, at most two sequential repairs per delivery task, and depth one. Reuse the executor for a simple correction; use a fresh agent only for a distinct capability or context need. Run the narrowest adversarial review over the affected surface, close the repair record and optional subtask, and resume the parent.
+- **Follow-up:** useful but does not block the active definition of success. Deduplicate by source task, source revision, and normalized issue before creating one normal todo task outside the active chain with provenance, reason, acceptance criterion, and routing rationale. Do not execute it in this run; include it in the closing recap.
+- **Replan:** changes result, scope, material cost, risk, success, architecture, task meaning, validation mode, or protected actions. Stop the affected work and run a fresh full Octoplan pass.
 
-Then hand the user the corrected continuation prompt and go back to executing. The planning-only rule binds planning sessions; a rebalance inside an execution session covers exactly these plan edits, nothing more — the scoping brief is not rerun on a rebalance, it belongs to full planning passes. One limit: if the discovery breaks the stream's own logic — its definition of success no longer matches reality — or the rebalance would add or materially rewrite more than a couple of tasks or move the scope, that is not a rebalance: stop and tell the user the stream needs a fresh "Octoplan <stream>" pass instead of patching it mid-flight.
+Source-date completion, PR metadata correction, migration renumbering after upstream drift, and verifier or CI repair are repairs only when they pass that predicate. A repair does not renumber the approved graph. A genuine replan revalidates every touched spec, rewires dependencies and Next lines, updates tracker logic, and runs the full plan review.
+
+If a human rejects a review-ready artifact, preserve the rejected revision and comments, reopen the originating delivery task, repair and re-review the affected surface, then return to the same human task. Never create a duplicate human-review task or erase the rejected attempt.
+
+When the runtime provides an execution supervisor, executor and reviewer sessions report to it and never send the stream's final user-facing message. The supervisor continues every safe agent-owned branch, sleeps at an all-human frontier, and wakes on supported GitHub CI, review, rejection, or merge events described by [GitHub's webhook event reference](https://docs.github.com/en/webhooks/webhook-events-and-payloads). It deduplicates by immutable event ID, verifies the exact PR head and the human task's saved completion predicate before any transition, and treats an event as evidence, never authority for a protected action. The supervisor's final recap names delivered artifacts, checks, reviews, human actions, problems and repairs, rejection loops, follow-ups, unresolved risks, and actual session, repair, and external-event-wake counts collected from the existing ledger. It creates no reporting-only task or session. Without a native supervisor, the final-validation session produces the same recap.
 
 ## Self-check list (step 7)
 
@@ -162,19 +171,22 @@ Human-only tasks: check they carry no `#N` prefix, no Exec/Review lines, no Next
 Per executable task:
 - Title carries `#N - `; the rank is unambiguous among the stream's executable tasks.
 - Why / What / Done when present under those literal names; impact parameters set.
-- Exec and Review lines present, each with its why, matching the rubric.
+- Exec and Review lines present, each with its why, matching the routing and targeted/independent/specialist rubric.
 - A task with 3+ distinct internal steps carries one subtask per step.
 - How names the specific files or source documents to touch and a concrete existing example to copy — a memory-less session could open the right things from this text alone. "Follow the existing pattern" fails this row.
 - Every path, symbol, command, and source claim in the spec appeared in this session's tool output.
 - Verify steps are exact; access exists today; anything that can only mature later is named in `**Preconditions:**`.
 - One job; fits one executor session; independently verifiable.
+- Done when ends at the agent-owned review-ready artifact; every human action is a separate assigned task.
 - Anything assumed LIVE is named in `**Preconditions:**`.
 - The Next line uses one of the Continuation patterns verbatim (with real names filled in) and matches the dependency graph; exactly one relay per parallel group; terminals really are terminal.
 - No guesses: every gap is a Question, a Decision, or a flesh-out placeholder.
 
 Per plan:
 - The scoping brief was confirmed by a user reply sent after seeing it, before any decision was locked or task written; every assumption in it was confirmed, corrected, or logged as a Question.
-- Definition of success matches real scope; final validation task wired after the delivery tasks.
+- Definition of success matches real scope; final validation is wired after every delivery task and every human task whose evidence success requires.
+- Validation mode was explicitly confirmed and every unavoidable mid-stream human gate was disclosed in the brief.
+- The first agent-owned frontier is executable from current access; no known dependency can block task one.
 - Every point where the plan chose between real alternatives is a recorded Decision, not an unstated default.
 - Parallel groups only on truly independent siblings.
 - Dependencies wired for every real "B needs A", including across streams.
