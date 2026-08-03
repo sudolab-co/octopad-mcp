@@ -28,10 +28,10 @@ grep -q '"name": "octopad-mcp"' "$root/.agents/plugins/marketplace.json" || fail
 grep -q '"name": "octoplan-claude"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin ID is not octoplan-claude'
 grep -q '"version": "1\.4\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin did not preserve 1.4.0'
 grep -q '^Version: 1\.4\.0$' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'Claude skill did not preserve 1.4.0'
-grep -q '"version": "6\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin did not preserve 6.0.0'
-grep -q '^Version: 6\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill did not preserve 6.0.0'
+grep -q '"version": "6\.1\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin did not preserve 6.1.0'
+grep -q '^Version: 6\.1\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill did not preserve 6.1.0'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
-grep -q '^### 6\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'Codex 6.0.0 history is missing'
+grep -q '^### 6\.1\.0 — 2026-08-04$' "$root/CHANGELOG.md" || fail 'Codex 6.1.0 history is missing'
 ! grep -q '^### 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
 ! grep -q '^### 7\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Codex 7.0.0 release remains'
 

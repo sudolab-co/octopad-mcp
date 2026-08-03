@@ -15,9 +15,9 @@ fail() {
   exit 1
 }
 
-grep -q '^Version: 6\.0\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 6.0.0'
-grep -q '"version": "6\.0\.0"' "$manifest" || fail 'plugin manifest is not 6.0.0'
-grep -q '^### 6\.0\.0 — 2026-08-03$' "$changelog" || fail 'changelog lacks the 6.0.0 entry'
+grep -q '^Version: 6\.1\.0$' "$skill/SKILL.md" || fail 'SKILL.md is not 6.1.0'
+grep -q '"version": "6\.1\.0"' "$manifest" || fail 'plugin manifest is not 6.1.0'
+grep -q '^### 6\.1\.0 — 2026-08-04$' "$changelog" || fail 'changelog lacks the 6.1.0 entry'
 grep -q '^  allow_implicit_invocation: false$' "$skill/agents/openai.yaml" || fail 'implicit invocation remains enabled'
 grep -Fq 'Use only when a Codex user explicitly invokes $octoplan' "$skill/SKILL.md" || fail 'explicit invocation boundary is missing'
 grep -Fq 'Do not use for general Octopad actions, organization connection, onboarding' "$skill/SKILL.md" || fail 'non-Octoplan exclusions are missing'
@@ -79,6 +79,17 @@ grep -Fq 'each U+0000 through U+001F control as lowercase `\u00xx`' "$planning" 
 grep -Fq 'Never escape solidus `/` or non-ASCII scalar values.' "$planning" || fail 'canonical JSON allows alternative string bytes'
 grep -q 'conditional supervision policy' "$runtime" || fail 'execution consent omits conditional supervision'
 grep -q 'saved fallback' "$runtime" || fail 'execution consent omits saved fallback routes'
+grep -Fq 'Execution needs either a later explicit yes on the reviewed plan or an explicit advance authorization given after the user confirmed the scoping brief.' "$runtime" || fail 'legacy and advance consent modes are not both preserved'
+grep -Fq 'A bare confirmation, broad autonomy request, prior chat, or permission to plan is not advance authorization.' "$runtime" || fail 'ambiguous consent can escalate to launch authority'
+grep -Fq 'no unresolved Question or material delta from the confirmed brief in result, scope, material cost, risk, success, architecture, route bounds, validation mode, or protected actions.' "$runtime" || fail 'advance authority has an incomplete invalidation boundary'
+grep -Fq 'A material replan invalidates it.' "$runtime" || fail 'material replans can reuse advance consent'
+grep -Fq 'An existing 6.0 plan with `octoplan-supervision-v4` and a later explicit yes on its reviewed final hash remains valid.' "$runtime" || fail '6.0 final-hash consent compatibility is missing'
+grep -Fq 'use `tasks(action: "update")` with the coordination-ledger task' "$planning" || fail 'advance consent binding lacks a guarded durable write'
+grep -Fq 'append one launch-binding record as a ledger comment' "$planning" || fail 'advance consent binding is not stored in the ledger comments'
+grep -Fq 'never put the record in the task description or Plan manifest' "$planning" || fail 'launch binding can contaminate fingerprinted plan text'
+grep -Fq 'source reply and time, confirmed-brief digest, exact final plan hash, review PASS, saved-state equality PASS, and no-material-delta assertion' "$planning" || fail 'launch binding omits required evidence'
+grep -q 'execution-consent evidence, launch-binding records' "$planning" || fail 'runtime consent evidence changes the plan fingerprint'
+grep -q 'Authority is either a later explicit yes on the reviewed plan or an advance authorization plus its guarded launch-binding record' "$supervision" || fail 'supervision cannot verify advance authority'
 
 grep -q 'owner token' "$supervision" || fail 'supervisor owner token is missing'
 grep -q 'supervisor epoch' "$supervision" || fail 'supervisor epoch is missing'
@@ -121,7 +132,7 @@ grep -q 'actual model, effort, target, and environment equal the saved inline ro
 grep -q 'dedicated-replacement bound' "$supervision" || fail 'dedicated-parent recovery is unbounded'
 grep -q 'spawn_agent.*never user-owned threads' "$runtime" || fail 'plan review creates unapproved user threads'
 
-grep -q 'octoplan-supervision-v4' "$skill/SKILL.md" || fail '6.0 skill does not require the current supervision schema'
+grep -q 'octoplan-supervision-v4' "$skill/SKILL.md" || fail '6.1 skill does not require the current supervision schema'
 grep -q '^Execution environment:$' "$planning" || fail 'plan manifest has no execution-environment contract'
 grep -q 'Inline supervisor target:' "$planning" || fail 'inline supervisor target is not saved'
 grep -q 'Dedicated supervisor target:' "$planning" || fail 'dedicated supervisor target is not saved'

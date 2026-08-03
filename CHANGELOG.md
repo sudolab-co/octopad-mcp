@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 6.1.0 — 2026-08-04
+
+Codex users may now explicitly authorize automatic execution after confirming the scoping brief. Once plan review and saved-state equality pass, Octoplan can bind that prior authority to the exact final plan hash in a guarded coordination-ledger comment and launch without a second wake-up. A bare brief confirmation, broad autonomy, prior chat, or planning permission is never enough.
+
+Advance authority is invalidated by any unresolved Question or material change in result, scope, cost, risk, success, architecture, route bounds, validation mode, or protected actions. Consent evidence and launch-binding records remain runtime state outside the plan fingerprint. Existing 6.0 plans with `octoplan-supervision-v4` and normal later final-hash consent remain valid; protected actions, human gates, the Claude distribution, and the Octopad MCP are unchanged.
+
 ### 6.0.0 — 2026-08-03
 
 Codex plans now use one byte-deterministic `octoplan-fingerprint-v1` input bound to `octoplan-supervision-v4`. The structured fingerprint covers the supervision policy, binding execution targets, review record, participating streams, governing Decisions, and every agent and human task, with exact field extraction, ordering, UTF-8 JSON escaping, and exclusions for runtime state. Final-hash locations are normalized to `PENDING`, the ledger manifest has explicit exclusion sentinels, and any hidden copy of the persisted digest stops verification instead of creating a self-referential hash.

@@ -76,7 +76,13 @@ Plan review uses fresh `spawn_agent` subagents, never user-owned threads. Use Te
 
 ## Execution consent
 
-Completing a plan never authorizes execution. Keep the reviewed plan hash in the Plan manifest and ledger, but do not print it in user-facing prose. End the planning response in the conversation language with this meaning, adapted only for natural grammar:
+Planning permission alone never authorizes execution. Execution needs either a later explicit yes on the reviewed plan or an explicit advance authorization given after the user confirmed the scoping brief. A bare confirmation, broad autonomy request, prior chat, or permission to plan is not advance authorization.
+
+An existing 6.0 plan with `octoplan-supervision-v4` and a later explicit yes on its reviewed final hash remains valid. It needs no advance-authorization record or launch-binding retrofit.
+
+Advance authorization must clearly allow Codex to launch automatically once the plan is complete and verified. Record its exact source reply and time. It remains valid only while the final reviewed plan has no unresolved Question or material delta from the confirmed brief in result, scope, material cost, risk, success, architecture, route bounds, validation mode, or protected actions. It never relaxes review, fingerprint, saved-state equality, protected-action, or human-gate requirements. A material replan invalidates it.
+
+Keep the reviewed plan hash in the Plan manifest and ledger, but do not print it in user-facing prose. Without valid advance authorization, end the planning response in the conversation language with this meaning, adapted only for natural grammar:
 
 > The plan is complete and verified. Do you authorize Codex to execute this exact plan now?
 >
@@ -84,7 +90,9 @@ Completing a plan never authorizes execution. Keep the reviewed plan hash in the
 
 Then stop. Do not call `list_projects`, `create_thread`, or any executor tool while waiting.
 
-A clear later yes authorizes only:
+With valid advance authorization, repeat the brief-conformance check after review and saved-state equality PASS. Use `tasks(action: "update")` with the coordination-ledger task's current `expected_updated_at` to append a launch-binding record as a ledger comment with the authorization source and time, confirmed-brief digest, exact final hash, review PASS, saved-state equality PASS, and no-material-delta assertion; never put it in the task description or Plan manifest. Report that the verified plan is launching under the prior authority, then read the supervision reference and launch. Missing or conflicting evidence or a failed guarded update falls back to the normal question and wait; never repair consent by inference.
+
+Either valid authority mode authorizes only:
 
 - the stated reviewed plan hash and its verified scope;
 - its fingerprinted conditional supervision policy and allowed parent routes;

@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, or flesh out an Octopad work stream or task, create a Blueprint for a multi-stream effort, or resume an approved Octoplan run. Do not use for general Octopad actions, organization connection, onboarding, or task execution without an approved Octoplan run. Requires connected Octopad MCP tools.
 ---
-Version: 6.0.0
+Version: 6.1.0
 
 # Octoplan for Codex
 
@@ -12,15 +12,15 @@ Turn an Octopad work stream into a verified, execution-ready graph, then carry i
 
 Planning runs on `gpt-5.6-sol` at `xhigh` or justified `max`. Task, review, and supervisor routes are separate.
 
-Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out work. Read [references/codex-runtime.md](references/codex-runtime.md) completely before routing or asking for execution consent. After a clear execution yes, or when asked to resume a run, read [references/codex-supervision.md](references/codex-supervision.md) completely before any execution action.
+Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out work. Read [references/codex-runtime.md](references/codex-runtime.md) completely before routing or asking for execution consent. After valid launch authority, whether later consent on the reviewed plan or a still-valid advance authorization, or when asked to resume a run, read [references/codex-supervision.md](references/codex-supervision.md) completely before any execution action.
 
 ## Phase contract
 
 1. Return the scoping brief as the whole reply and wait for later confirmation before any full-plan write.
 2. Planning writes only Octopad planning artifacts. It never implements work or creates execution sessions.
-3. A completed plan records its reviewed hash in the Plan manifest and ledger, asks for execution consent, and waits. Execution consent never covers protected actions or human gates.
+3. A completed plan records its reviewed hash in the Plan manifest and ledger. Without a valid advance authorization it asks for execution consent and waits. With an explicit advance authorization given after the scoping brief was confirmed, it may bind that authority to the final hash and launch only when the reviewed plan has no unresolved Question and still matches the confirmed brief exactly on result, scope, material cost, risk, success, architecture, route bounds, validation mode, and protected actions. Execution consent never covers protected actions or human gates.
 4. Octopad is authoritative. Only the current fenced supervisor launches successors; it stays inline unless the saved policy justifies a dedicated parent.
-5. A plan without the environment-bound `octoplan-supervision-v4` contract is not executable under 6.0.0. Replan it; never infer a native project target, repair authority, validation mode, fingerprint, or consent.
+5. A plan without the environment-bound `octoplan-supervision-v4` contract is not executable under 6.1.0. Replan it; never infer a native project target, repair authority, validation mode, fingerprint, or consent.
 6. The supervisor continues while any safe agent-owned task is ready. An open PR, CI wait, human review, merge, migration application, or deployment gate stops only the branch it gates, not unrelated ready work.
 
 ## Replanning
@@ -29,7 +29,7 @@ Classify discoveries before changing the plan. A bounded repair stays inside one
 
 ## Close
 
-Before consent, report the reviewed plan and ask the execution question. During execution, report only meaningful progress, failures, and human gates. The supervisor always owns the last user-facing message: it reports delivered artifacts, reviews and checks, human actions remaining, repairs and rejection loops, problems and resolutions, follow-ups, unresolved risks, and automatically collected actual session and external-event-wake counts. Never describe session creation as task completion or create a reporting-only session.
+Without valid advance authorization, report the reviewed plan and ask the execution question. With valid advance authorization, report the reviewed plan as execution starts and identify that the previously granted authority was bound to this verified plan. During execution, report only meaningful progress, failures, and human gates. The supervisor always owns the last user-facing message: it reports delivered artifacts, reviews and checks, human actions remaining, repairs and rejection loops, problems and resolutions, follow-ups, unresolved risks, and automatically collected actual session and external-event-wake counts. Never describe session creation as task completion or create a reporting-only session.
 
 ## User-facing output
 
