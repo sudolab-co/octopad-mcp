@@ -6,7 +6,7 @@ A missing `octoplan-supervision-v3` contract stops before any native execution a
 
 ## User-facing output
 
-Apply the skill's opaque-identifier rule to every supervisor, executor, reviewer, and recovery message. Never print a raw UUID, session/client/host/run/attempt ID, owner token, SHA-256 value, or Git commit hash as visible text or inline code. Use a human-readable title, name, role, branch, or commit subject. A Codex session reference must use a readable Markdown label with the native deep link `[<title or role>](codex://threads/<thread-id>)`; keep the real thread ID only in the link destination. Internal ledger records, tool arguments, exact commands, and URL destinations may retain those identifiers. PR numbers, migration numbers, task numbers, and `#N` ranks remain allowed.
+Apply the skill's opaque-identifier rule to every supervisor, executor, reviewer, and recovery message. Never print a raw UUID, session/client/host/run/attempt ID, owner token, SHA-256 value, or Git commit hash as visible text or inline code. Use a human-readable title, name, role, branch, or commit subject. A Codex session reference must use a readable Markdown label with the native deep link `[<title or role>](codex://threads/<thread-id>)`; keep the real thread ID only in the link destination. Internal ledger records, tool arguments, exact commands, and required Markdown link destinations may retain those identifiers. Never emit them as bare URLs or visible labels. PR numbers, migration numbers, task numbers, and `#N` ranks remain allowed.
 
 ## Choose the current mode
 

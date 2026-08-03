@@ -112,5 +112,10 @@ grep -Fq 'codex://threads/<thread-id>' "$skill/SKILL.md" || fail 'Codex session 
 grep -Fq 'do not print it in user-facing prose' "$runtime" || fail 'execution consent still exposes the plan hash'
 grep -Fq 'PR numbers, migration numbers, task numbers, or `#N` ranks' "$skill/SKILL.md" || fail 'numbering exclusions are not explicit'
 grep -Fq 'Never print a raw UUID' "$supervision" || fail 'supervision lacks the opaque-identifier rule'
+grep -Fq 'required Markdown link destination only' "$skill/SKILL.md" || fail 'skill allows opaque identifiers outside required link destinations'
+grep -Fq 'required Markdown link destinations' "$supervision" || fail 'supervision allows opaque identifiers outside required link destinations'
+if grep -Fq 'or URLs' "$skill/SKILL.md" || grep -Fq 'URL destinations may retain' "$supervision"; then
+  fail 'opaque-identifier exception is broader than required Markdown link destinations'
+fi
 
 printf 'PASS: octoplan-codex routing contract\n'
