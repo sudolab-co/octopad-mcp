@@ -76,9 +76,9 @@ Plan review uses fresh `spawn_agent` subagents, never user-owned threads. Use Te
 
 ## Execution consent
 
-Completing a plan never authorizes execution. State the reviewed plan hash, then end the planning response in the conversation language with this meaning, adapted only for natural grammar:
+Completing a plan never authorizes execution. Keep the reviewed plan hash in the Plan manifest and ledger, but do not print it in user-facing prose. End the planning response in the conversation language with this meaning, adapted only for natural grammar:
 
-> Plan `<SHA-256>` is complete and verified. Do you authorize Codex to execute this exact plan now?
+> The plan is complete and verified. Do you authorize Codex to execute this exact plan now?
 >
 > If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, calibrated reviewer, repair, and bounded replacement sessions at the exact saved routes and native project targets. It will continue every safe agent-owned branch and stop only when all remaining work is human-owned, a material plan change is required, a saved bound is exhausted, or a failure needs your decision.
 
