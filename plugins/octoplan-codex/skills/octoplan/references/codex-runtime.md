@@ -101,4 +101,4 @@ A clear later yes authorizes only:
 
 It does not authorize a protected external action, a human-only task, a materially revised plan, an unsaved route, or a substitution outside those exact bounds. A wake supplies evidence, never authority.
 
-After valid launch authority, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v3` contract requires replanning.
+After valid launch authority, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v4` contract requires replanning.

@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 6.0.0 — 2026-08-03
+
+Codex plans now use one byte-deterministic `octoplan-fingerprint-v1` input bound to `octoplan-supervision-v4`. The structured fingerprint covers the supervision policy, binding execution targets, review record, participating streams, governing Decisions, and every agent and human task, with exact field extraction, ordering, UTF-8 JSON escaping, and exclusions for runtime state. Final-hash locations are normalized to `PENDING`, the ledger manifest has explicit exclusion sentinels, and any hidden copy of the persisted digest stops verification instead of creating a self-referential hash.
+
+Native Codex sessions now use readable titles for dedicated supervisors, executors, lead reviewers, and specialist reviewers. Repair, fallback, and recovery sessions preserve the owning stream and ranked delivery-task title; unsafe control or bidi characters and malformed task titles stop before creation. A canonical internal `OCTOPLAN_CREATION` JSON line retains the complete technical identity in the first prompt and durable record without exposing it in the visible title.
+
+Every `create_thread` response shape now converges through `list_threads` and `read_thread` before a creation record becomes ready. Client IDs are never passed to thread tools, every real candidate is checked for the exact internal identity, and ambiguous or lost results pause without retrying creation. This release is breaking: plans using `octoplan-supervision-v3` or older must be replanned before execution. The Claude distribution and Octopad MCP are unchanged.
+
 ### 5.1.0 — 2026-08-03
 
 User-facing Octoplan replies now keep opaque identifiers out of visible prose: raw UUIDs, session metadata, SHA-256 values, and Git commit hashes are retained only in internal records, agent-to-agent prompts, exact commands, or required Markdown link destinations. Codex session references use a readable label linked with the native `codex://threads/<thread-id>` deep link. PR, migration, task, and `#N` numbering remains unchanged.
