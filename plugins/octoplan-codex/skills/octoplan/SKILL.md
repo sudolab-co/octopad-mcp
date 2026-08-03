@@ -37,4 +37,4 @@ Opaque identifiers are internal data, not visible prose. In any reply shown to t
 
 ## Changing this skill
 
-Edit and release [sudolab-co/octopad-skills](https://github.com/sudolab-co/octopad-skills), never an installed copy.
+Edit and release [sudolab-co/octopad-mcp](https://github.com/sudolab-co/octopad-mcp), never an installed copy.

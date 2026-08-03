@@ -1,20 +1,20 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "octopad-skills",
-  "description": "Agent skills for Octopad — the shared workspace where humans and AI assistants collaborate on tasks, plans, and living knowledge.",
+  "name": "octopad-mcp",
+  "description": "Optional Octoplan planning skill for Claude Code.",
   "owner": {
     "name": "Sudolab"
   },
   "plugins": [
     {
-      "name": "octoplan",
+      "name": "octoplan-claude",
       "description": "Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical work alike. Requires a connected Octopad MCP server.",
       "author": {
         "name": "Sudolab"
       },
       "category": "productivity",
       "homepage": "https://octopad.app",
-      "source": "./plugins/octoplan"
+      "source": "./plugins/octoplan-claude"
     }
   ]
 }

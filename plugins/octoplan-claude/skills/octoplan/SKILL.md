@@ -184,7 +184,7 @@ Per plan:
 
 ## Changing this skill
 
-This skill is distributed from [sudolab-co/octopad-skills](https://github.com/sudolab-co/octopad-skills). To change it, edit that repository and release (see its CONTRIBUTING); never edit an installed copy — plugin auto-update silently overwrites it.
+This skill is distributed from [sudolab-co/octopad-mcp](https://github.com/sudolab-co/octopad-mcp). To change it, edit that repository and release (see its CONTRIBUTING); never edit an installed copy — plugin auto-update silently overwrites it.
 
 ## Common planning mistakes
 
