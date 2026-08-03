@@ -98,14 +98,6 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan
 
-### 2.0.0 — 2026-08-03
-
-Octoplan now asks the user to choose gradual or final human validation, preflights the first executable frontier, adversarially reviews one complete off-record draft, and writes only the reviewed final plan to Octopad. Agent delivery tasks end at durable review-ready artifacts, while human review, merge, migration application, deployment, publication, acceptance, and access actions are separate owned tasks with explicit evidence.
-
-Every delivery task receives the narrowest useful adversarial check: targeted deterministic review without a fresh session, one independent reviewer for normal work, or a second specialist only for an orthogonal material risk. Runtime discoveries are classified as bounded repairs, non-blocking follow-ups, or material replans. Repair records are persisted before work, follow-ups are deduplicated, rejected artifacts reopen their originating delivery task without losing history, and runtimes with a supervisor may resume from verified GitHub events and finish with one evidence-based recap.
-
-This is breaking: the Review values and Done when contract changed. Existing saved plans need a fresh Octoplan pass before they can satisfy the 2.0 execution and self-check rules.
-
 ### 1.4.0 — 2026-07-30
 
 - New step 2, **Scoping brief — reflect back, then wait**: before locking any decision, drafting any design page, or writing any task, the planner hands the user one short brief merging what the user said with what the sources hold — understanding restated in its own words, in/out of scope, definition of success, an explicit Assumptions list (every point settled by inference rather than a source or the user's words), and open questions — then stops. The old flow only forced a question when a spec slot could not be filled at all; a plausible-but-wrong inference could fill the slot and ship silently. The Assumptions list makes those inferences visible so the user can veto them before planning starts.
