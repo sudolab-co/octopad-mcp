@@ -5,8 +5,8 @@
   "author": {
     "name": "Sudolab"
   },
-  "homepage": "https://github.com/sudolab-co/octopad-skills",
-  "repository": "https://github.com/sudolab-co/octopad-skills",
+  "homepage": "https://github.com/sudolab-co/octopad-mcp",
+  "repository": "https://github.com/sudolab-co/octopad-mcp",
   "license": "MIT",
   "keywords": ["octopad", "planning", "codex", "orchestration"],
   "skills": "./skills/",

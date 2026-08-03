@@ -108,7 +108,7 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - Includes Codex-specific GPT-5.6 execution and review routing, durable recovery rules, Blueprint support, and event-driven replanning.
 - No Kickstart skill or Branch command.
 
-## octoplan
+## octoplan-claude
 
 ### 1.4.0 — 2026-07-30
 

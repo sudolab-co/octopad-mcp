@@ -1,7 +1,7 @@
 {
-  "name": "octopad-skills",
+  "name": "octopad-mcp",
   "interface": {
-    "displayName": "Octopad Skills"
+    "displayName": "Octopad MCP"
   },
   "plugins": [
     {
