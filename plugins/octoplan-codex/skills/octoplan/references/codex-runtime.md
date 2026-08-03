@@ -2,7 +2,7 @@
 
 ## Route after decomposition
 
-Minimize expected cost per accepted task: execution, required review, likely correction or retry, delay, and drift. Start with the cheapest adequate route, not the cheapest call. Split work that exceeds one focused session before raising model capacity.
+Minimize expected cost per accepted task: execution, useful review, likely correction or retry, delay, and drift. The internal efficiency budget exists to remove analysis, sessions, reviews, polling, and rereads that cannot change a decision or catch a material defect. It is never a user-facing estimate or a separate planning step. Start with the cheapest adequate route, reuse verified unchanged evidence, and split work that exceeds one focused session before raising model capacity.
 
 1. Classify the work: engineering, research or analysis, communication or content, product or strategy, or operations.
 2. Choose its cheapest plausible base route below.
@@ -48,7 +48,13 @@ During execution, the supervisor may use that saved fallback only when every cla
 
 ## Review routing
 
-Every executable task receives one fresh independent review. Choose its route by detection difficulty, not executor prestige:
+Every delivery task receives an adversarial check, calibrated by detection value:
+
+- `targeted`: exact metadata, generated text, or mechanical change with deterministic proof and no material interaction risk. Reuse the executor or supervisor context, inspect only the changed surface plus required invariants, and create no reviewer thread.
+- `independent`: normal artifact review in one fresh source-first thread.
+- `specialist`: independent lead plus one simultaneous specialist only for a second orthogonal material failure domain.
+
+Choose any fresh route by detection difficulty, not executor prestige:
 
 | Detection target | Lead review route |
 |---|---|
@@ -62,9 +68,9 @@ Every executable task receives one fresh independent review. Choose its route by
 | Security, privacy, permissions, money, destructive data, production mutation, legal, or public harm when failure is hard to detect or reverse | `gpt-5.6-sol · effort xhigh` |
 | Open architecture or investigation | `gpt-5.6-sol · effort max` |
 
-Use one reviewer by default. Add one simultaneous specialist only when the artifact has two genuinely orthogonal failure domains and at least one is weakly verified or costly to miss. Give lead and specialist non-overlapping mandates; duplicate generic reviews are invalid. Both must PASS. Unresolved disagreement stops for evidence or human judgment and never creates a third reviewer automatically.
+For independent review, use one reviewer by default. Add one simultaneous specialist only when the artifact has two genuinely orthogonal failure domains and at least one is weakly verified or costly to miss. Give lead and specialist non-overlapping mandates; duplicate generic reviews are invalid. Both must PASS. Unresolved disagreement stops for evidence or human judgment and never creates a third reviewer automatically.
 
-The reviewer may share the executor's model family when that is the cheapest adequate route. Independence comes from a fresh thread and source-first inspection; model diversity matters only when it adds a distinct detection lens. The lead owns corrections and task completion but never launches a successor. A saved specialist reviews only its mandate, reports to the lead, and never completes or relays.
+An independent reviewer may share the executor's model family when that is the cheapest adequate route. Independence comes from a fresh thread and source-first inspection; model diversity matters only when it adds a distinct detection lens. The lead owns corrections and task completion but never launches a successor. A saved specialist reviews only its mandate, reports to the lead, and never completes or relays. A metadata-only correction does not invalidate unrelated code review: bind the targeted PASS to the metadata revision, verify the underlying artifact head is unchanged, and preserve the code PASS and green CI tied to that head. Do not rerun CI solely for PR-body metadata unless repository automation reruns it or the metadata participates in a required check; if it reruns, wait for the required result.
 
 Plan review uses fresh `spawn_agent` subagents, never user-owned threads. Use Terra `xhigh` for routine bounded plans, Terra `max` for difficult bounded reconciliation, and Sol only for open ambiguity, weak verification, or costly consequences. Save the exact supported route and why cheaper support is inadequate.
 
@@ -72,13 +78,13 @@ Plan review uses fresh `spawn_agent` subagents, never user-owned threads. Use Te
 
 Completing a plan never authorizes execution. State the reviewed plan hash, then end the planning response in the conversation language with this meaning, adapted only for natural grammar:
 
-> The plan is complete and verified. Would you like me to start execution now?
+> Plan `<SHA-256>` is complete and verified. Do you authorize Codex to execute this exact plan now?
 >
-> If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, reviewer, and bounded replacement sessions at the exact saved routes and native project targets. It will run only tasks explicitly proven independent in parallel and stop at human gates, material plan changes, unmatched fallback conditions, exhausted bounds, or failures needing your decision.
+> If you accept, Codex will apply the saved conditional supervision policy and automatically create any justified parent plus executor, calibrated reviewer, repair, and bounded replacement sessions at the exact saved routes and native project targets. It will continue every safe agent-owned branch and stop only when all remaining work is human-owned, a material plan change is required, a saved bound is exhausted, or a failure needs your decision.
 
 Then stop. Do not call `list_projects`, `create_thread`, or any executor tool while waiting.
 
-A clear yes authorizes only:
+A clear later yes authorizes only:
 
 - the stated reviewed plan hash and its verified scope;
 - its fingerprinted conditional supervision policy and allowed parent routes;
@@ -88,8 +94,11 @@ A clear yes authorizes only:
 - the exact saved model and reasoning effort for each task;
 - each saved executor fallback route, trigger, evidence threshold, and replacement bound;
 - each saved same-route recovery policy and bound;
+- the saved repair envelope and its per-task bounds;
+- creation of non-blocking follow-ups outside the active participant set;
+- supported external-event wakes that only resume reconciliation;
 - saved parallel groups that still pass preflight.
 
-It does not authorize a protected external action, a human-only task, a materially revised plan, an unsaved route, or a substitution outside those exact bounds.
+It does not authorize a protected external action, a human-only task, a materially revised plan, an unsaved route, or a substitution outside those exact bounds. A wake supplies evidence, never authority.
 
-After a clear yes, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v2` contract requires replanning.
+After valid launch authority, read [codex-supervision.md](codex-supervision.md) completely before creating the first session. Read it before resuming any run; a missing `octoplan-supervision-v3` contract requires replanning.
