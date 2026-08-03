@@ -25,7 +25,7 @@ Respect Octopad's task-creation contract:
 - Size each executable top-level task to one focused executor session. Make its direction independent of the planning conversation by saving the accepted decisions, verified execution guidance, exact pointers, and checks it needs.
 - Keep one real job per task. Split at natural seams, never merely to reduce file count.
 - Use subtasks only as an in-session checklist for three or more concrete internal steps.
-- Save the environment-bound `octoplan-supervision-v3` contract for every executable plan. An older plan must be replanned, not silently granted repair, wake, or autonomous-launch authority.
+- Save the environment-bound `octoplan-supervision-v4` contract for every executable plan. An older plan must be replanned, not silently granted fingerprint, repair, wake, or autonomous-launch authority.
 - On every full planning pass, return the scoping brief below as the whole reply and wait for the user's later confirmation before any planning write. The brief includes validation timing. Only a material replan returns to this gate; bounded runtime repairs do not.
 - Run the scoping brief, saved-state self-check, and adversarial plan review on every full planning pass. Runtime repairs use the bounded repair loop; material changes return to a full pass.
 
@@ -46,14 +46,14 @@ Respect Octopad's task-creation contract:
 6. **Calibrate task review.** Every delivery task gets an adversarial check. Save the narrowest adequate class: `targeted` for exact metadata or mechanical changes with deterministic proof and no fresh thread; `independent` for normal artifact review in one fresh thread; `specialist` only for a second orthogonal material failure domain. Review timing follows the confirmed validation mode.
 7. **Adversarially review the draft.** One fresh subagent checks design soundness, memory-less executability, dependency feasibility, human/agent separation, repair bounds, and consistency with the confirmed brief. Add one simultaneous specialist only for an orthogonal material risk. Fix confirmed findings in the draft and rerun only the affected lens. Reviewers do not create user-owned threads.
 8. **Write the reviewed final plan to Octopad.** Save Decisions, Questions, tasks, dependencies, final validation, tracker logic, Blueprint, and one Plan manifest. Resolve every symbolic key to its new immutable ID as one mechanical transcription step. Append ` (octoplanned)` to participating stream names if absent. Do not save review drafts as tasks.
-9. **Read back and fingerprint.** Reopen every saved item and deterministically normalize immutable IDs back to the reviewed symbolic keys. Compare that semantic form with the reviewed draft, repair literal transcription defects, and reread repairs. Canonicalize the complete saved contract and save its SHA-256 in the Plan manifest and every tracker pointer. Derive the final binding record from the draft-review PASS, reviewed draft digest, exact final hash, and deterministic equality proof. Wake the existing plan reviewer only if a semantic delta exists; then return to step 7 for the affected lens.
+9. **Read back and fingerprint.** Reopen every saved item and deterministically normalize immutable IDs back to the reviewed symbolic keys. Compare that semantic form with the reviewed draft, repair literal transcription defects, and reread repairs. Set saved-state equality to PASS only after exact semantic equality. Canonicalize the complete saved contract and save its SHA-256 in the Plan manifest and every tracker pointer. Derive the final binding record from the draft-review PASS, reviewed draft digest, exact final hash, and saved-state equality PASS. Wake the existing plan reviewer only if a semantic delta exists; then return to step 7 for the affected lens.
 10. **Ask before launch.** Record the verified plan and exact final hash in the Plan manifest and ledger, report the plan without printing that hash, ask the runtime execution question, and stop. Do not create any execution session until a later explicit yes binds the saved hash.
 
 ## Task template
 
 ```text
 Supervision contract:
-- Schema: octoplan-supervision-v3
+- Schema: octoplan-supervision-v4
 - Coordination ledger task ID: <immutable task ID>
 - Policy: dedicated for 4+ remaining delivery tasks (final validation excluded), any parallel fan-out/fan-in, multi-stream, or 2+ tasks across a human, external, or explicit interruption gate
 - Validation mode: gradual | final
@@ -73,20 +73,28 @@ Execution environment:
 - Inline supervisor target: <project ID · local|worktree · observed host ID, canonical path, and Git true|false> | <projectless · directory name · explicit rationale>
 - Dedicated supervisor target: <exact target> | none
 - Default executor target: <exact target>
-- Task-role target overrides: <task ID · executor|lead-reviewer|specialist-reviewer → exact target> | none
+- Task-role target override: <task ID> · <executor|lead-reviewer|specialist-reviewer> → <exact target>
+- Task-role target overrides: none
 - Reviewer default: inherit the executor creation record's exact target
 ```
 
-Resolve every project through `list_projects` during planning. A project target binds project ID and environment; also record the observed host ID, canonical path, and Git flag as non-binding discovery evidence. A projectless target binds its directory name and explicit rationale; absence of a project field never means projectless. Default Git children use a worktree unless the plan explicitly saves `local`. Reviewer and same-role recovery sessions inherit the executor or superseded creation record's exact target unless a task-role override is saved.
+Use one singular `Task-role target override` line per override; use the plural `Task-role target overrides: none` line only when the list is empty. Resolve every project through `list_projects` during planning. A project target binds project ID and environment; also record the observed host ID, canonical path, and Git flag as non-binding discovery evidence. A projectless target binds its directory name and explicit rationale; absence of a project field never means projectless. Default Git children use a worktree unless the plan explicitly saves `local`. Reviewer and same-role recovery sessions inherit the executor or superseded creation record's exact target unless a task-role override is saved.
 
-Each tracker stores only `Supervision: octoplan-supervision-v3 · ledger <ID> · plan <SHA-256>`.
+Each tracker stores only `Supervision: octoplan-supervision-v4 · ledger <ID> · plan <SHA-256>`.
+
+Save `Plan hash: <SHA-256>` once as a top-level field in the ledger's Plan manifest.
+
+Store the complete Plan manifest inside the ledger task description between exactly one pair of sentinel lines, each on its own line: `OCTOPLAN_PLAN_MANIFEST_V4_BEGIN` and `OCTOPLAN_PLAN_MANIFEST_V4_END`. No other content uses either sentinel.
 
 ```text
 Plan review:
 - Reviewed draft digest: <SHA-256 over normalized symbolic draft>
 - Lead: <model> · effort <level> — <detection target; why this route; mandate>
 - Specialist: <model> · effort <level> — <orthogonal target; why this route; mandate>
-- Final binding: <final plan SHA-256 · deterministic saved-state equality proof>
+- Review PASS: <matching draft-review PASS record>
+- Final binding:
+  - Plan hash: <final plan SHA-256>
+  - Saved-state equality: PASS
 ```
 
 Save Plan review in the same manifest. Omit Specialist unless the two-review gate passes.
@@ -118,9 +126,136 @@ Create a separate human task for each human review, merge, migration application
 
 ## Fingerprint
 
-Build canonical JSON from the schema and ledger ID; validation mode, repair envelope, follow-up policy, routes, binding execution targets, defaults, and Plan review routes; participating stream IDs and tracker text; governing Decision IDs and text; and every planned agent and human task's ID, title, description, dependencies, assignment, impact, and routes. Task and tracker text remains authoritative; the manifest stores IDs, not copies. Canonicalize each project target as project ID plus environment and each projectless target as directory name plus rationale; include each task-role override once under its task ID and role. The current supervision mode is excluded, along with observed host, path, and Git evidence, tracker `Supervision` lines, statuses, comments, timestamps, claims, owners, epochs, attempts, artifact revisions, thread IDs, run-scoped repair subtasks, and follow-ups outside the participant set.
+Build exactly one `octoplan-fingerprint-v1` input object from the current durable sources. Every shown key is present. Replace angle-bracket values with the saved value, use `null` for an inapplicable scalar, and use `[]` for an inapplicable list.
 
-Sort object keys lexicographically, sort set-like arrays by immutable ID, preserve semantic sequences, and remove insignificant whitespace. Hash with SHA-256 after saved-state readback. The final binding record combines the draft-review PASS, normalized draft digest, deterministic saved-state equality proof, and exact final hash. Every execution consent binds that exact final hash.
+```json
+{
+  "fingerprint_schema": "octoplan-fingerprint-v1",
+  "ledger_task_id": "<immutable ledger task ID>",
+  "plan_hash": "PENDING",
+  "manifest": {
+    "supervision_contract": {
+      "schema": "octoplan-supervision-v4",
+      "policy": "<exact Policy value>",
+      "validation_mode": "<gradual|final>",
+      "repair_envelope": "<exact Repair envelope value>",
+      "follow_up_policy": "<exact Follow-up policy value>",
+      "inline_route": "<exact Inline route value>",
+      "dedicated_route": "<exact Dedicated route value or null>",
+      "dedicated_replacement": "<exact Dedicated replacement value or null>",
+      "default_recovery": "<exact Default recovery value>",
+      "default_lineage": "<exact Default lineage value>"
+    },
+    "execution_environment": {
+      "inline_supervisor_target": {
+        "kind": "<project|projectless>",
+        "project_id": "<project ID or null>",
+        "environment": "<local|worktree or null>",
+        "directory_name": "<projectless directory name or null>",
+        "rationale": "<projectless rationale or null>"
+      },
+      "dedicated_supervisor_target": {
+        "kind": "<project|projectless>",
+        "project_id": "<project ID or null>",
+        "environment": "<local|worktree or null>",
+        "directory_name": "<projectless directory name or null>",
+        "rationale": "<projectless rationale or null>"
+      },
+      "default_executor_target": {
+        "kind": "<project|projectless>",
+        "project_id": "<project ID or null>",
+        "environment": "<local|worktree or null>",
+        "directory_name": "<projectless directory name or null>",
+        "rationale": "<projectless rationale or null>"
+      },
+      "task_role_target_overrides": [
+        {
+          "task_id": "<task ID>",
+          "role": "<executor|lead-reviewer|specialist-reviewer>",
+          "target": {
+            "kind": "<project|projectless>",
+            "project_id": "<project ID or null>",
+            "environment": "<local|worktree or null>",
+            "directory_name": "<projectless directory name or null>",
+            "rationale": "<projectless rationale or null>"
+          }
+        }
+      ],
+      "reviewer_default": "<exact Reviewer default value>"
+    },
+    "plan_review": {
+      "reviewed_draft_digest": "<lowercase SHA-256>",
+      "lead": "<literal Lead line>",
+      "specialist": "<literal Specialist line or null>",
+      "review_pass": "<literal matching Review PASS record>",
+      "final_binding": {
+        "plan_hash": "PENDING",
+        "saved_state_equality": true
+      }
+    }
+  },
+  "streams": [
+    {
+      "id": "<stream ID>",
+      "title": "<stream title>",
+      "tracker_text": "<tracker text without its generated Supervision line>"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "<Decision ID>",
+      "work_stream_id": "<owning stream ID or null>",
+      "title": "<exact title>",
+      "content": "<exact chosen outcome>",
+      "rationale": "<exact rationale>",
+      "decision_status": "<exact decision status>"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "<task ID>",
+      "work_stream_id": "<owning stream ID>",
+      "parent_task_id": "<parent task ID or null>",
+      "title": "<task title>",
+      "description": "<task description>",
+      "dependencies": [
+        { "id": "<dependency task ID>", "rationale": "<edge rationale>" }
+      ],
+      "assignment": "<saved assignee or owner, or null>",
+      "impact": 1,
+      "impact_rationale": "<impact rationale>",
+      "routes": {
+        "exec": "<literal Exec line or null>",
+        "review": "<literal Review line or null>",
+        "review_route": "<literal Review route line or null>",
+        "specialist_review_route": "<literal Specialist review route line or null>",
+        "fallback": "<literal Fallback line or null>",
+        "recovery_override": "<literal Recovery override line or null>",
+        "lineage_override": "<literal Lineage override line or null>",
+        "parallel_safe_with": ["<sibling task ID>"]
+      }
+    }
+  ]
+}
+```
+
+Extract every supervision-contract string as the exact value after its unique `- <Label>: ` prefix. A missing or duplicate required label stops fingerprinting. Use `null` only for an omitted Dedicated route and Dedicated replacement. The coordination-ledger ID is represented only by root `ledger_task_id`.
+
+Parse every saved target into the five-key target object shown for `inline_supervisor_target`; `dedicated_supervisor_target` alone is JSON `null` when the saved value is `none`. For a project target, split on the first two literal ` · ` separators: the first field is `project_id`, the second is `environment`, and the remaining observed evidence is excluded; set `directory_name` and `rationale` to `null`. For a projectless target, require `projectless · <directory name> · <rationale>` and reject a directory name containing the literal separator ` · ` before saving the plan. Preserve the complete remainder after the second separator as `rationale`, set `project_id` and `environment` to `null`, and do not infer a missing field. Parse each singular target-override line at its first literal ` · ` and first literal ` → ` into `task_id`, `role`, and the same target object; the plural `none` line produces `[]`. A missing, duplicate, or malformed binding field stops fingerprinting.
+
+`plan_review` retains the reviewed draft digest, review routes, matching review PASS, and boolean saved-state equality result, but its final plan hash is always normalized to `PENDING`. Equality is `true` only for the literal saved value `PASS`; any other or missing value stops fingerprinting. Extract every other Plan review string as the exact value after its unique label.
+
+For each governing Octopad Decision, read the durable `id`, `work_stream_id`, `title`, `content`, `rationale`, and `decision_status` fields directly; use JSON `null` for an absent nullable field and never compose them into a synthetic text string. Include all planned agent and human tasks with their owning stream and nullable parent. Human tasks use `null` and `[]` for inapplicable route fields; their owner remains in `assignment`. Extract each route as the exact saved line value; a missing optional line is `null` or `[]`, never an invented default. Task and tracker text remains authoritative; the manifest stores IDs, not copies. The concrete `impact` value is a JSON number from 1 through 5, never a string.
+
+For the task whose ID equals `ledger_task_id`, normalize LF first, then remove the one complete Plan-manifest region from the beginning of its `OCTOPLAN_PLAN_MANIFEST_V4_BEGIN` sentinel through the end of its `OCTOPLAN_PLAN_MANIFEST_V4_END` sentinel; preserve every byte before and after that region as the task's fingerprinted `description`. Missing, duplicate, nested, or reversed sentinels stop fingerprinting. The removed manifest is represented only by the structured root `plan_hash` and `manifest` fields. After the two structured final-hash fields are set to `PENDING` and generated tracker pointers and the ledger manifest region are removed, scan every included JSON string value. If any still contains the persisted final plan digest, stop instead of hashing it.
+
+The current supervision mode is excluded, along with observed host, path, and Git evidence, generated tracker `Supervision` lines, statuses, comments, timestamps, claims, runtime owners, epochs, attempts, artifact revisions, thread IDs, run-scoped repair records or subtasks, external-event receipts, and follow-ups outside the participant set. Ledger comments and tracker pointers are not fingerprint inputs.
+
+Normalize line endings in source text to LF only before extracting fields. Do not otherwise trim source text or normalize Unicode. Reject an unpaired Unicode surrogate. Sort object keys by Unicode scalar-value order over their unescaped names. Sort `streams`, `decisions`, `tasks`, each task's `dependencies`, and `parallel_safe_with` by immutable `id`; sort `task_role_target_overrides` by `task_id`, then `role`; preserve every other sequence order.
+
+Serialize JSON strings by emitting every Unicode scalar value directly as UTF-8 except: encode quotation mark as `\"`, reverse solidus as `\\`, and each U+0000 through U+001F control as lowercase `\u00xx`. Never escape solidus `/` or non-ASCII scalar values. Emit `true`, `null`, array and object delimiters, commas, and colons as their ASCII JSON literals with no insignificant whitespace; emit `impact` as the single ASCII digit `1` through `5`. SHA-256 those exact bytes and encode the digest as lowercase hexadecimal.
+
+Before every calculation or verification, set both `plan_hash` fields shown above to `PENDING`. Hash the normalized JSON object, never the persisted digest or a ledger or tracker copy that carries it. Retain `reviewed_draft_digest`: it identifies the independently reviewed symbolic draft and is not the final plan hash. After calculation, save the resulting digest in the Plan manifest, its Final binding, and every tracker pointer. Every execution consent binds that exact saved digest; every later verification rebuilds the same input with both final-hash fields reset to `PENDING`.
 
 A fresh executor has only Octopad `build_context` and the saved pointers. Its task must carry result and reason, boundaries, decisions, inputs, dependencies, verified guidance, acceptance, checks, risks, gates, and exact sources. It starts with task-mode `build_context`, then rereads the task and sources. Keep live content at source rather than copying it.
 
@@ -195,7 +330,7 @@ For the plan:
 - The inline supervisor target, any dedicated supervisor target, default executor target, and every task-role override resolve uniquely through `list_projects`; projectless is explicit and justified.
 - Every tracker carries the same schema, ledger pointer, and plan hash; the ledger carries one complete Plan manifest.
 - The canonical input includes every field required by Fingerprint, uses its ordering rules, and excludes only its named execution state.
-- Every final binding record carries the reviewed draft digest, matching review PASS, deterministic saved-state equality proof, current hash, saved routes, mandates, and runtime rubric.
+- Every final binding record carries the reviewed draft digest, matching review PASS, saved-state equality PASS, current hash, saved routes, mandates, and runtime rubric.
 - The manifest carries the bounded repair envelope and follow-up policy; no planned task relies on dynamic repair to fill a known prerequisite.
 - Tracker and Blueprint contain logic only.
 - Nothing exists merely to serve process.

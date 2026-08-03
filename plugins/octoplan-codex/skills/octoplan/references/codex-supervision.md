@@ -2,7 +2,7 @@
 
 Read this file only after valid launch authority or a request to resume a run. Octopad is authoritative; native Codex state is evidence about sessions only.
 
-A missing `octoplan-supervision-v3` contract stops before any native execution action. Replan from current Octopad state. Before a new run, inventory legacy threads and artifacts; every live legacy owner must be conclusively stopped or its immutable result explicitly adopted into the new lineage. Never create a v5 attempt while an ambiguous legacy executor may still own the same task.
+A missing `octoplan-supervision-v4` contract stops before any native execution action. Replan from current Octopad state. Before a new run, inventory legacy threads and artifacts; every live legacy owner must be conclusively stopped or its immutable result explicitly adopted into the new lineage. Never create a v6 attempt while an ambiguous legacy executor may still own the same task.
 
 ## User-facing output
 
@@ -10,7 +10,7 @@ Apply the skill's opaque-identifier rule only to messages rendered to the user, 
 
 ## Choose the current mode
 
-Apply the saved `octoplan-supervision-v3` policy at launch or after a necessary takeover. Use a dedicated supervisor when any saved predicate is true:
+Apply the saved `octoplan-supervision-v4` policy at launch or after a necessary takeover. Use a dedicated supervisor when any saved predicate is true:
 
 - at least four delivery tasks remain, excluding final validation and normally requiring at least eight executor/reviewer completion wakes;
 - parallel fan-out or fan-in remains;
@@ -45,17 +45,40 @@ Epoch changes fence supervisors only. Child authority remains bound to run ID, f
 
 ## Safe thread creation
 
-Every supervisor, executor, reviewer, and recovery creation uses one durable creation record keyed by run, task or candidate, attempt, role, route, native target and environment, and artifact revision when applicable. Guardedly save a unique token and `intent` before calling `create_thread` once. Start the native title and prompt with that full key and token; require no work until the exact record is `activated`. Save `pending` only with a returned `clientThreadId`; save `ready` only after real thread and host IDs plus the actual target and environment uniquely match the record. Save `target-mismatch` with the resolved actual identity and pause when they do not match. Save `activated` only after supervisor transfer or a guarded child start, and `failed` only after authoritative terminal failure and no unique native match.
+Every supervisor, executor, reviewer, and recovery creation uses one durable creation record keyed by run, task or candidate, attempt, role, route, native target and environment, and artifact revision when applicable. Guardedly save a unique token and `intent` before calling `create_thread` once. Use the human-readable title defined below. Start the first native prompt with the full key and token, never the human-readable title. Require no work until the exact record is `activated`. Save `pending` only with a returned `clientThreadId`; save `ready` only after real thread and host IDs plus the actual target and environment uniquely match the record. Save `target-mismatch` with the resolved actual identity and pause when they do not match. Save `activated` only after supervisor transfer or a guarded child start, and `failed` only after authoritative terminal failure and no unique native match.
+
+Derive the plain work-stream name by removing one terminal ` (octoplanned)` suffix from the saved stream title and preserving every other character. Before title construction, reject and pause on any stream or task-title scalar in U+0000–U+001F or U+007F–U+009F, either line separator U+2028–U+2029, or any bidi control U+061C, U+200E–U+200F, U+202A–U+202E, or U+2066–U+2069. Do not remove, replace, normalize, or silently display those characters. Use these exact native titles:
+
+- Supervisor title: `supervisor - <plain work stream name>`. Use it for a dedicated supervisor and every dedicated-supervisor replacement. A multi-stream dedicated supervisor uses the plain name of the ledger-owning stream.
+- Executor title: `<plain work stream name> - #<N> <task name>`. Use it for the first executor, fallback, repair, and same-role executor recovery. A repair executor, including one created for a run-scoped repair subtask, derives this visible title from the ranked parent delivery task, never from the repair-subtask title.
+- Lead reviewer title: `review - <plain work stream name> - #<N> <task name>`. Use it for the first lead reviewer and same-role lead-reviewer recovery.
+- Specialist reviewer title: `specialist review - <plain work stream name> - #<N> <task name>`. Use it for the first specialist reviewer and same-role specialist-reviewer recovery.
+
+Every executor or reviewer uses the plain name of the stream that owns its task. Derive `N` and `<task name>` only from that task's saved `#N - <task name>` title, or from the ranked parent delivery task for a repair subtask. If the required source title cannot be parsed as `#N - <task name>`, pause before creation. Repeated attempts may share a visible title: the durable record and first prompt, not the title, distinguish them.
+
+The first prompt line is exactly `OCTOPLAN_CREATION ` followed by one compact UTF-8 JSON object with these keys in lexicographic order and no insignificant whitespace:
+
+```json
+{"artifact_revision":"<artifact revision>","attempt_id":"<attempt ID>","environment":"<saved environment>","role":"<saved role>","route":"<saved route>","run_id":"<run ID>","subject_id":"<task or candidate ID>","subject_kind":"<task|candidate>","target":{"directory_name":"<projectless directory name>","environment":"<local|worktree>","kind":"<project|projectless>","project_id":"<project ID>","rationale":"<projectless rationale>"},"token":"<creation token>"}
+```
+
+Replace each angle-bracket placeholder with its saved value. Use JSON `null`, not the string `"null"`, for every inapplicable scalar. The nested target uses the five binding fields already saved in the creation record; project targets set `directory_name` and `rationale` to `null`, while projectless targets set `project_id` and `environment` to `null`. Keep object keys in the displayed order. For every string, emit Unicode scalar values directly as UTF-8 except quotation mark as `\"`, reverse solidus as `\\`, and U+0000–U+001F as lowercase `\u00xx`; never escape `/` or a non-ASCII scalar. Reject an unpaired surrogate and emit no insignificant whitespace. The durable creation record stores this exact line before `create_thread`; later prompts and records may carry additional fields but never alter it.
 
 Before saving `intent`, call `list_projects` and uniquely reconcile the saved project ID and environment; retain current host, canonical path, and Git flag as non-binding audit evidence. For an explicit projectless target, verify its saved directory name and rationale. Never infer a target from the caller's cwd, a source pointer, a task type, or the absence of a project field. A target mismatch pauses without creating or steering a thread.
 
-Never pass a client ID to thread tools. Resolve it through one unique match in `list_threads`. A lost result stays `intent`; reconcile by the full key and never retry while creation is ambiguous.
+Never pass a client ID to thread tools. After the one `create_thread` call, apply the same resolver regardless of response shape:
+
+- With a returned `clientThreadId`, save `pending`. Call `list_threads` until its result maps that client ID to a real thread ID or reports authoritative terminal failure. Comparing the client ID inside `list_threads` results is allowed; passing it to `read_thread`, `wait_threads`, or another thread tool is not.
+- With a returned real thread ID, treat it as the first candidate but do not save `ready` before full enumeration and verification.
+- With no visible result, keep `intent`, call `list_threads`, enumerate every current real-thread candidate, and do not call `create_thread` again.
+
+After every response shape, call `list_threads` and enumerate every current real-thread candidate before `ready`. For every real candidate, use `read_thread` and match the complete `OCTOPLAN_CREATION` line in its first prompt. Reconcile only one exact match and never retry while creation is ambiguous. Save `ready` only after that thread's real thread ID, host ID, target, and environment match the record. Save `target-mismatch` on a unique wrong-target match. A still-pending client, zero exact matches without terminal evidence, or multiple exact matches stays nonterminal and pauses without another creation call. Save `failed` only after authoritative terminal failure and proof that no exact native match exists.
 
 ## Bootstrap a dedicated parent
 
 The planning or recovery session remains inline owner until transfer finishes.
 
-1. Reconcile and use the exact saved dedicated supervisor target and environment, then use Safe thread creation with the candidate token as identity. Start its title and prompt with run ID, token, supervisor role, route, and target; do not embed a proposed epoch.
+1. Reconcile and use the exact saved dedicated supervisor target and environment, then use Safe thread creation with the candidate token as identity. Use the required supervisor title and start its first prompt with the full creation key and token; do not embed a proposed epoch.
 2. Tell it to create nothing until the ledger names its token and real IDs; before activation it returns only `awaiting activation: <token>`.
 3. The inline owner guardedly transfers ownership at its current epoch plus one, saves the real IDs, and marks `activated`.
 4. Send one activation/reconcile message. The parent rereads the ledger before acting.
