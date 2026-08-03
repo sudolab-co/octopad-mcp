@@ -4,7 +4,7 @@
 
 **Goal:** Make Octoplan's Codex-facing replies hide opaque UUIDs and hashes while giving every referenced Codex session a readable clickable deep link.
 
-**Architecture:** Keep UUIDs, hashes, and other opaque identifiers in the internal ledger, tool arguments, exact commands, and required Markdown link destinations, but prohibit them as visible user-facing prose or link labels. Add the rule to the Codex skill, planning/runtime consent guidance, and supervision guidance; use the repository validator as the regression test. Do not change Octopad's task graph, PR/migration/task numbering, or the Claude distribution.
+**Architecture:** Keep UUIDs, hashes, and other opaque identifiers in the internal ledger, agent-to-agent prompts, tool arguments, exact commands, and required Markdown link destinations, but prohibit them as visible user-facing prose or link labels. Add the rule to the Codex skill, planning/runtime consent guidance, and supervision guidance; use the repository validator as the regression test. Do not change Octopad's task graph, PR/migration/task numbering, or the Claude distribution.
 
 **Tech Stack:** Markdown skill instructions, POSIX shell validator, JSON plugin manifest, Git.
 
@@ -13,7 +13,7 @@
 - Base the work on `origin/main` `5.0.0`.
 - Scope is `plugins/octoplan-codex`; do not edit `plugins/octoplan`.
 - Visible replies must not print raw UUIDs, session/client/host/run/attempt IDs, owner tokens, SHA-256 values, or Git commit hashes.
-- Internal ledger records, tool calls, exact commands, and required Markdown link destinations may retain opaque identifiers; bare URLs may not.
+- Internal ledger records, agent-to-agent prompts, tool calls, exact commands, and required Markdown link destinations may retain opaque identifiers; bare URLs may not.
 - A Codex session reference uses `[readable title or role](codex://threads/<thread-id>)`; the raw thread ID is never the visible label or surrounding prose.
 - PR numbers, migration numbers, task numbers, and `#N` Octoplan ranks are not covered by this rule.
 - Bump the Codex distribution from `5.0.0` to `5.1.0` in the skill, manifest, and changelog.

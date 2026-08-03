@@ -111,9 +111,12 @@ grep -Fq 'never print a raw UUID' "$skill/SKILL.md" || fail 'user-facing opaque-
 grep -Fq 'codex://threads/<thread-id>' "$skill/SKILL.md" || fail 'Codex session deep-link shape is missing'
 grep -Fq 'do not print it in user-facing prose' "$runtime" || fail 'execution consent still exposes the plan hash'
 grep -Fq 'PR numbers, migration numbers, task numbers, or `#N` ranks' "$skill/SKILL.md" || fail 'numbering exclusions are not explicit'
-grep -Fq 'Never print a raw UUID' "$supervision" || fail 'supervision lacks the opaque-identifier rule'
+grep -Fq 'never print a raw UUID' "$supervision" || fail 'supervision lacks the opaque-identifier rule'
 grep -Fq 'required Markdown link destination only' "$skill/SKILL.md" || fail 'skill allows opaque identifiers outside required link destinations'
 grep -Fq 'required Markdown link destinations' "$supervision" || fail 'supervision allows opaque identifiers outside required link destinations'
+grep -Fq 'only to messages rendered to the user' "$supervision" || fail 'supervision does not scope the presentation rule to user-visible messages'
+grep -Fq 'must not be applied to internal supervisor, executor, reviewer, or recovery prompts' "$supervision" || fail 'internal agent communication is not exempted from presentation sanitization'
+grep -Fq 'Start every executor prompt with creation token, task ID, run ID, attempt ID' "$supervision" || fail 'executor correlation key is not preserved'
 if grep -Fq 'or URLs' "$skill/SKILL.md" || grep -Fq 'URL destinations may retain' "$supervision"; then
   fail 'opaque-identifier exception is broader than required Markdown link destinations'
 fi

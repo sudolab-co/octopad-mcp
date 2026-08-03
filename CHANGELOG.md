@@ -8,7 +8,7 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ### 5.1.0 — 2026-08-03
 
-User-facing Octoplan replies now keep opaque identifiers out of visible prose: raw UUIDs, session metadata, SHA-256 values, and Git commit hashes are retained only in internal records, exact commands, or required link destinations. Codex session references use a readable label linked with the native `codex://threads/<thread-id>` deep link. PR, migration, task, and `#N` numbering remains unchanged.
+User-facing Octoplan replies now keep opaque identifiers out of visible prose: raw UUIDs, session metadata, SHA-256 values, and Git commit hashes are retained only in internal records, agent-to-agent prompts, exact commands, or required Markdown link destinations. Codex session references use a readable label linked with the native `codex://threads/<thread-id>` deep link. PR, migration, task, and `#N` numbering remains unchanged.
 
 ### 5.0.0 — 2026-08-03
 
