@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, or flesh out an Octopad work stream or task, create a Blueprint for a multi-stream effort, or resume an approved Octoplan run. Do not use for general Octopad actions, organization connection, onboarding, or task execution without an approved Octoplan run. Requires connected Octopad MCP tools.
 ---
-Version: 5.0.0
+Version: 5.1.0
 
 # Octoplan for Codex
 
@@ -18,9 +18,9 @@ Read [references/planning.md](references/planning.md) completely before planning
 
 1. Return the scoping brief as the whole reply and wait for later confirmation before any full-plan write.
 2. Planning writes only Octopad planning artifacts. It never implements work or creates execution sessions.
-3. A completed plan states its reviewed hash, asks for execution consent, and waits. Execution consent never covers protected actions or human gates.
+3. A completed plan records its reviewed hash in the Plan manifest and ledger, asks for execution consent, and waits. Execution consent never covers protected actions or human gates.
 4. Octopad is authoritative. Only the current fenced supervisor launches successors; it stays inline unless the saved policy justifies a dedicated parent.
-5. A plan without the environment-bound `octoplan-supervision-v3` contract is not executable under 5.0.0. Replan it; never infer a native project target, repair authority, validation mode, or consent.
+5. A plan without the environment-bound `octoplan-supervision-v3` contract is not executable under 5.1.0. Replan it; never infer a native project target, repair authority, validation mode, or consent.
 6. The supervisor continues while any safe agent-owned task is ready. An open PR, CI wait, human review, merge, migration application, or deployment gate stops only the branch it gates, not unrelated ready work.
 
 ## Replanning
@@ -30,6 +30,10 @@ Classify discoveries before changing the plan. A bounded repair stays inside one
 ## Close
 
 Before consent, report the reviewed plan and ask the execution question. During execution, report only meaningful progress, failures, and human gates. The supervisor always owns the last user-facing message: it reports delivered artifacts, reviews and checks, human actions remaining, repairs and rejection loops, problems and resolutions, follow-ups, unresolved risks, and automatically collected actual session and external-event-wake counts. Never describe session creation as task completion or create a reporting-only session.
+
+## User-facing output
+
+Opaque identifiers are internal data, not visible prose. In any reply shown to the user, never print a raw UUID, session/client/host/run/attempt ID, owner token, SHA-256 value, or Git commit hash as text or inline code. Use the entity's human-readable title, name, role, branch, or commit subject instead. When pointing to a Codex session, use a readable Markdown label and the native deep link `[<title or role>](codex://threads/<thread-id>)`; keep the real thread ID only in the link destination. The exact reviewed plan hash remains in the Plan manifest, ledger, and consent binding, but is not printed in the reply. This presentation rule does not change internal ledger fields, tool arguments, exact commands, or URLs, and does not apply to PR numbers, migration numbers, task numbers, or `#N` ranks.
 
 ## Changing this skill
 

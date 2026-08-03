@@ -4,6 +4,10 @@ Read this file only after valid launch authority or a request to resume a run. O
 
 A missing `octoplan-supervision-v3` contract stops before any native execution action. Replan from current Octopad state. Before a new run, inventory legacy threads and artifacts; every live legacy owner must be conclusively stopped or its immutable result explicitly adopted into the new lineage. Never create a v5 attempt while an ambiguous legacy executor may still own the same task.
 
+## User-facing output
+
+Apply the skill's opaque-identifier rule to every supervisor, executor, reviewer, and recovery message. Never print a raw UUID, session/client/host/run/attempt ID, owner token, SHA-256 value, or Git commit hash as visible text or inline code. Use a human-readable title, name, role, branch, or commit subject. A Codex session reference must use a readable Markdown label with the native deep link `[<title or role>](codex://threads/<thread-id>)`; keep the real thread ID only in the link destination. Internal ledger records, tool arguments, exact commands, and URL destinations may retain those identifiers. PR numbers, migration numbers, task numbers, and `#N` ranks remain allowed.
+
 ## Choose the current mode
 
 Apply the saved `octoplan-supervision-v3` policy at launch or after a necessary takeover. Use a dedicated supervisor when any saved predicate is true:
