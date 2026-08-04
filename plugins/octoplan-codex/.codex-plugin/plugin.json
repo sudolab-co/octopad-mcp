@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Plan Octopad work streams, then conditionally supervise approved execution across model-routed Codex sessions.",
   "author": {
     "name": "Sudolab"
