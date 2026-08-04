@@ -11,7 +11,7 @@ fail() {
 [ -f "$root/INSTALL.md" ] || fail 'AI installation entrypoint is missing'
 [ -f "$root/.github/workflows/validate.yml" ] || fail 'repository validation workflow is missing'
 [ -d "$root/plugins/octoplan-claude" ] || fail 'Claude distribution was not renamed to octoplan-claude'
-[ ! -e "$root/plugins/octoplan" ] || fail 'legacy Claude distribution path remains'
+[ ! -e "$root/plugins/octoplan" ] || fail 'unsupported Claude distribution path remains'
 
 grep -Fq '# Octopad MCP' "$root/README.md" || fail 'README does not lead with Octopad MCP'
 grep -Fq 'Give your AI this repository URL' "$root/README.md" || fail 'AI-first install handoff is missing'
@@ -28,18 +28,19 @@ grep -q '"name": "octopad-mcp"' "$root/.agents/plugins/marketplace.json" || fail
 grep -q '"name": "octoplan-claude"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin ID is not octoplan-claude'
 grep -q '"version": "1\.4\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin did not preserve 1.4.0'
 grep -q '^Version: 1\.4\.0$' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'Claude skill did not preserve 1.4.0'
-grep -q '"version": "6\.1\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin did not preserve 6.1.0'
-grep -q '^Version: 6\.1\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill did not preserve 6.1.0'
+grep -q '"version": "7\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 7.0.0'
+grep -q '^Version: 7\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 7.0.0'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
-grep -q '^### 6\.1\.0 — 2026-08-04$' "$root/CHANGELOG.md" || fail 'Codex 6.1.0 history is missing'
+grep -q '^### 7\.0\.0 — 2026-08-04$' "$root/CHANGELOG.md" || fail 'Codex 7.0.0 entry is missing'
 ! grep -q '^### 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
-! grep -q '^### 7\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Codex 7.0.0 release remains'
 
 find "$root" -type f -name '*.json' -not -path '*/.git/*' -exec sh -c '
   for file do
     node -e "JSON.parse(require(\"fs\").readFileSync(process.argv[1], \"utf8\"))" "$file" || exit 1
   done
 ' sh {} + || fail 'invalid JSON'
+
+git -C "$root" diff --check || fail 'whitespace errors in diff'
 
 sh "$root/scripts/validate-octoplan-codex.sh"
 
