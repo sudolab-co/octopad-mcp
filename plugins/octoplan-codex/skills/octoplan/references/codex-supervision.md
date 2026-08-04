@@ -19,7 +19,7 @@ Read this reference only after valid launch authority or when resuming. Octopad 
 
 ## Contract gate and run states
 
-Before any write, claim, message, or native action, dispatch exactly one v5 supervision contract, one v2 fingerprint, and one canonical mandate through the contract. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops fail closed and returns to replanning.
+Before any write, claim, message, or native action, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate through the contract. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops fail closed and returns to replanning.
 
 Run states are exactly `active`, `replanning`, `waiting-human`, `paused`, `revoked`, `superseded`, `failed`, and `completed`.
 
@@ -59,7 +59,7 @@ At fan-in, wait for every dependency, record one integrated immutable revision, 
 
 ## Safe native-session creation
 
-Every supervisor, executor, reviewer, recovery, and follow-up creation uses the contract's unique creation key and a durable creation record. Save `intent` before at most one native create call. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable; a takeover monotonically increments the separate current supervisor epoch without changing identity.
+Every supervisor, executor, reviewer, recovery, and follow-up creation uses the contract's unique creation key and a durable creation record. Before saving `intent`, prove that its target has the same Codex project identity as the planning target; project `environment` may switch between `local` and `worktree`, but `project_id` may not change, and projectless `directory_name` must remain exact. Save `intent` before at most one native create call. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable; a takeover monotonically increments the separate current supervisor epoch without changing identity.
 
 The first prompt begins with the exact contract-defined `OCTOPLAN_CREATION` line, canonical creation token, and creator epoch; the visible title is human-readable and never replaces the identity. A malformed source title or target stops before creation.
 
@@ -137,7 +137,7 @@ For an unsupported saved contract, quarantine schema-agnostically: do not parse,
 
 For any material replacement, transition `active → replanning` and forbid new claims. Let already-claimed demonstrably independent children finish under the immutable plan; then common-fence every child and prove quiescence. Only after that barrier may canonical mutation, adoption, or supersession occur.
 
-Under plan-bound, complete the full brief, review, equality, and consent path before the replacement run. Under outcome-bound, retain only the byte-identical mandate while the old run remains quiescent in `replanning`; persist and read back the adoption/rejection map and replacement draft, independently review both, and perform fresh feasibility, source/verifier, equality, v2 fingerprint, and conformance checks. Only then guardedly supersede the old run and bind/create the new `active` run.
+Under plan-bound, complete the full brief, review, equality, and consent path before the replacement run. Under outcome-bound, retain only the byte-identical mandate while the old run remains quiescent in `replanning`; persist and read back the adoption/rejection map and replacement draft, independently review both, and perform fresh feasibility, source/verifier, equality, v3 fingerprint, and conformance checks. Only then guardedly supersede the old run and bind/create the new `active` run.
 
 The new run relaunches only unfinished work and requires a new hash, fresh equality, fresh feasibility, fresh adoption conformance, and fresh authority binding. The old launch binding, PASS records, and consent never transfer.
 

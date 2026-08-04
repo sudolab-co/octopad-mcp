@@ -3,7 +3,7 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 skill="$root/plugins/octoplan-codex/skills/octoplan"
-contract="$skill/references/octoplan-contract-v2.md"
+contract="$skill/references/octoplan-contract-v3.md"
 planning="$skill/references/planning.md"
 runtime="$skill/references/codex-runtime.md"
 supervision="$skill/references/codex-supervision.md"
@@ -29,15 +29,15 @@ require_file "$planning"
 require_file "$runtime"
 require_file "$supervision"
 
-grep -q '^Version: 7\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 7.0.0'
-grep -q '"version": "7\.0\.0"' "$manifest" || fail 'Codex plugin is not 7.0.0'
-grep -q '^### 7\.0\.0 — 2026-08-04$' "$changelog" || fail 'Codex changelog lacks 7.0.0'
-release_note=$(awk '/^### 7\.0\.0 — 2026-08-04$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
-printf '%s\n' "$release_note" | grep -Fq '**Review before delivery**' || fail '7.0.0 release note lacks Review before delivery'
-printf '%s\n' "$release_note" | grep -Fq '**Autonomous delivery**' || fail '7.0.0 release note lacks Autonomous delivery'
+grep -q '^Version: 8\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 8.0.0'
+grep -q '"version": "8\.0\.0"' "$manifest" || fail 'Codex plugin is not 8.0.0'
+grep -q '^### 8\.0\.0 — 2026-08-04$' "$changelog" || fail 'Codex changelog lacks 8.0.0'
+release_note=$(awk '/^### 8\.0\.0 — 2026-08-04$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note" | grep -Fq 'same Codex project' || fail '8.0.0 release note lacks the same-project behavior'
+printf '%s\n' "$release_note" | grep -Fq 'Claude distribution is unchanged' || fail '8.0.0 release note lacks Claude isolation'
 for forbidden_public_term in 'Delivery mandate' 'explicit-no-loop' 'plan-bound' 'outcome-bound'; do
   if printf '%s\n' "$release_note" | grep -Fq "$forbidden_public_term"; then
-    fail "7.0.0 release note exposes internal delivery term: $forbidden_public_term"
+    fail "8.0.0 release note exposes internal delivery term: $forbidden_public_term"
   fi
 done
 grep -Fq 'requires explicit execution authority before execution' "$root/CONTRIBUTING.md" || fail 'Codex CONTRIBUTING sentence is stale'
@@ -46,7 +46,7 @@ grep -Fq 'Any other saved contract is unsupported and must be replanned before u
 
 expected_refs='codex-runtime.md
 codex-supervision.md
-octoplan-contract-v2.md
+octoplan-contract-v3.md
 planning.md'
 actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec basename '{}' \; | sort)
 [ "$actual_refs" = "$expected_refs" ] || fail 'active references are not exactly the four supported references'
@@ -55,7 +55,7 @@ if find "$skill/references" -maxdepth 1 -type f -iname '*legacy*' | grep -q .; t
 fi
 
 active_docs="$skill/SKILL.md $contract $planning $runtime $supervision"
-if grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|legacy' $active_docs >/dev/null 2>&1; then
+if grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|(^|[^[:alnum:]])v5([^[:alnum:]]|$)|legacy' $active_docs >/dev/null 2>&1; then
   fail 'unsupported historical contract wording remains in active skill documents'
 fi
 for forbidden in confirmed_brief_digest message_time decision_status; do
@@ -71,7 +71,7 @@ runtime_lines=$(wc -l < "$runtime" | tr -d ' ')
 supervision_lines=$(wc -l < "$supervision" | tr -d ' ')
 [ "$skill_lines" -le 40 ] || fail "SKILL.md exceeds 40 lines: $skill_lines"
 [ "$planning_lines" -ge 145 ] && [ "$planning_lines" -le 165 ] || fail "planning.md is outside 145-165 lines: $planning_lines"
-[ "$contract_lines" -ge 240 ] && [ "$contract_lines" -le 275 ] || fail "octoplan-contract-v2.md is outside 240-275 lines: $contract_lines"
+[ "$contract_lines" -ge 240 ] && [ "$contract_lines" -le 280 ] || fail "octoplan-contract-v3.md is outside 240-280 lines: $contract_lines"
 [ "$runtime_lines" -ge 80 ] && [ "$runtime_lines" -le 95 ] || fail "codex-runtime.md is outside 80-95 lines: $runtime_lines"
 [ "$supervision_lines" -ge 160 ] && [ "$supervision_lines" -le 185 ] || fail "codex-supervision.md is outside 160-185 lines: $supervision_lines"
 active_lines=$((skill_lines + planning_lines + contract_lines + runtime_lines + supervision_lines))
@@ -87,7 +87,7 @@ for toc_file in "$planning" "$contract" "$runtime" "$supervision"; do
   require_text "$toc_file" '## Contents'
 done
 require_text "$skill/SKILL.md" 'references/planning.md'
-require_text "$skill/SKILL.md" 'references/octoplan-contract-v2.md'
+require_text "$skill/SKILL.md" 'references/octoplan-contract-v3.md'
 require_text "$skill/SKILL.md" 'references/codex-runtime.md'
 require_text "$skill/SKILL.md" 'references/codex-supervision.md'
 require_text "$contract" '[Targets and parsing](#targets-and-parsing)'
@@ -144,6 +144,7 @@ require_text "$contract" 'label value `<project ID> · <local|worktree> · <obse
 require_text "$contract" 'label value `projectless · <directory> · <rationale>`'
 require_text "$contract" 'split only on the first two literal ` · ` separators'
 require_text "$contract" 'Task-role target overrides: none'
+require_text "$contract" '"reviewer_default": {"kind": "<project|projectless>"'
 require_text "$contract" 'durable `status` directly'
 require_text "$contract" 'Retain durable `Decision.status`, `Question.status`, and task `assignment`'
 require_text "$contract" 'The `content` value is the exact direct value when exposed.'
@@ -192,6 +193,11 @@ require_text "$planning" 'before Plan PASS, fingerprinting, consent, or launch'
 require_text "$planning" 'empty `triggered_invariants`'
 require_text "$planning" 'verification actions or commands needed by a fresh executor'
 require_text "$runtime" 'does not invalidate a byte-identical outcome-bound mandate'
+require_text "$skill/SKILL.md" "planning session's saved Codex project"
+require_text "$planning" "planning session's active Codex target"
+require_text "$contract" "same Codex project identity as the planning target"
+require_text "$runtime" "same Codex project identity as the planning target"
+require_text "$supervision" "same Codex project identity as the planning target"
 
 # Root README, Claude surfaces, and the Claude changelog section are protected.
 if ! git -C "$root" diff --quiet origin/main -- README.md; then
@@ -202,14 +208,7 @@ for protected in .claude-plugin plugins/octoplan-claude docs/clients/claude.md d
     fail "protected Claude surface changed: $protected"
   fi
 done
-contrib_numstat=$(git -C "$root" diff --numstat origin/main -- CONTRIBUTING.md | awk 'NR == 1 {print $1 ":" $2}')
-[ "$contrib_numstat" = '1:1' ] || fail 'CONTRIBUTING.md has more than the one permitted Codex sentence edit'
-if ! git -C "$root" diff origin/main -- CONTRIBUTING.md | grep -Fq -- '- A Codex release still asks before execution'; then
-  fail 'permitted CONTRIBUTING.md source sentence is not the one changed'
-fi
-if ! git -C "$root" diff origin/main -- CONTRIBUTING.md | grep -Fq -- '+- A Codex release requires explicit execution authority before execution'; then
-  fail 'permitted CONTRIBUTING.md replacement sentence is missing'
-fi
+git -C "$root" diff --quiet origin/main -- CONTRIBUTING.md || fail 'CONTRIBUTING.md changed in a Codex-only release'
 origin_claude=$(git -C "$root" show origin/main:CHANGELOG.md | sed -n '/^## octoplan-claude$/,$p')
 current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
 [ "$origin_claude" = "$current_claude" ] || fail 'Claude changelog section changed'
@@ -221,8 +220,8 @@ node <<'NODE'
 const assert = require('assert');
 const crypto = require('crypto');
 
-const SUPERVISION = 'octoplan-supervision-v5';
-const FINGERPRINT = 'octoplan-fingerprint-v2';
+const SUPERVISION = 'octoplan-supervision-v6';
+const FINGERPRINT = 'octoplan-fingerprint-v3';
 const MANDATE_SCHEMA = 'octoplan-delivery-mandate-v2';
 const MODES = new Set(['plan-bound', 'outcome-bound']);
 const ACTIVATIONS = new Set(['confirmed-brief', 'explicit-no-loop']);
@@ -585,7 +584,16 @@ function validateTarget(target) {
   }
   return true;
 }
-function validateOverrides(rows) {
+function sameProjectIdentity(planningTarget, candidateTarget) {
+  validateTarget(planningTarget);
+  validateTarget(candidateTarget);
+  assert.strictEqual(candidateTarget.kind, planningTarget.kind);
+  if (planningTarget.kind === 'project') assert.strictEqual(candidateTarget.project_id, planningTarget.project_id);
+  else assert.strictEqual(candidateTarget.directory_name, planningTarget.directory_name);
+  return true;
+}
+function validateOverrides(rows, planningTarget) {
+  validateTarget(planningTarget);
   const keys = ['task_id', 'role', 'target'];
   const seen = new Set();
   for (const row of rows) {
@@ -593,6 +601,7 @@ function validateOverrides(rows) {
     nonEmpty(row.task_id);
     assert(overrideRoles.has(row.role));
     validateTarget(row.target);
+    sameProjectIdentity(planningTarget, row.target);
     const identity = `${row.task_id}\u0000${row.role}`;
     assert(!seen.has(identity));
     seen.add(identity);
@@ -600,23 +609,65 @@ function validateOverrides(rows) {
   assert.deepStrictEqual(rows, rows.slice().sort((a, b) => scalarCompare(a.task_id, b.task_id) || scalarCompare(a.role, b.role)));
   return true;
 }
+const plannerProjectTarget = parseTarget('project-a · local · planning session').target;
 const overrideRows = [
   {task_id: 'task-a', role: 'executor', target: parseTarget('project-a · worktree · observed').target},
-  {task_id: 'task-a', role: 'recovery', target: parseTarget('projectless · recovery-room · bounded rationale').target}
+  {task_id: 'task-a', role: 'recovery', target: parseTarget('project-a · local · bounded recovery').target}
 ];
-assert(validateOverrides(overrideRows));
+assert(validateOverrides(overrideRows, plannerProjectTarget));
+assert(sameProjectIdentity(plannerProjectTarget, parseTarget('project-a · worktree · executor').target));
+assert.throws(() => sameProjectIdentity(plannerProjectTarget, parseTarget('project-b · worktree · wrong project').target));
+assert.throws(() => sameProjectIdentity(plannerProjectTarget, parseTarget('projectless · project-a · wrong target kind').target));
+const plannerProjectlessTarget = parseTarget('projectless · content-room · planning session').target;
+assert(sameProjectIdentity(plannerProjectlessTarget, parseTarget('projectless · content-room · executor').target));
+assert.throws(() => sameProjectIdentity(plannerProjectlessTarget, parseTarget('projectless · other-room · wrong directory').target));
 assert.deepStrictEqual(overrideRows[0].target, parseTarget('project-a · worktree · different observed evidence').target);
 for (const key of ['task_id', 'role', 'target']) {
   const mutation = overrideRows[0].map ? overrideRows[0] : {...overrideRows[0]};
   if (key === 'task_id') mutation[key] = '';
   else if (key === 'role') mutation[key] = 'unknown';
   else mutation[key] = {...mutation[key], extra: true};
-  assert.throws(() => validateOverrides([mutation, overrideRows[1]]));
+  assert.throws(() => validateOverrides([mutation, overrideRows[1]], plannerProjectTarget));
 }
-assert.throws(() => validateOverrides([{...overrideRows[0], extra: true}, overrideRows[1]]));
-assert.throws(() => validateOverrides([{task_id: 'task-a', role: 'executor'}, overrideRows[1]]));
-assert.throws(() => validateOverrides([overrideRows[1], overrideRows[0]]));
-assert.throws(() => validateOverrides([overrideRows[0], {...overrideRows[0]}]));
+assert.throws(() => validateOverrides([{...overrideRows[0], extra: true}, overrideRows[1]], plannerProjectTarget));
+assert.throws(() => validateOverrides([{task_id: 'task-a', role: 'executor'}, overrideRows[1]], plannerProjectTarget));
+assert.throws(() => validateOverrides([overrideRows[1], overrideRows[0]], plannerProjectTarget));
+assert.throws(() => validateOverrides([overrideRows[0], {...overrideRows[0]}], plannerProjectTarget));
+assert.throws(() => validateOverrides([{task_id: 'task-b', role: 'executor', target: parseTarget('project-b · worktree · wrong project').target}], plannerProjectTarget));
+
+const executionEnvironmentKeys = ['inline_supervisor_target', 'dedicated_supervisor_target', 'default_executor_target', 'task_role_target_overrides', 'reviewer_default'];
+function validateExecutionEnvironment(value) {
+  assert.deepStrictEqual(Object.keys(value).sort(scalarCompare), executionEnvironmentKeys.slice().sort(scalarCompare));
+  validateTarget(value.inline_supervisor_target);
+  if (value.dedicated_supervisor_target !== null) sameProjectIdentity(value.inline_supervisor_target, value.dedicated_supervisor_target);
+  sameProjectIdentity(value.inline_supervisor_target, value.default_executor_target);
+  sameProjectIdentity(value.inline_supervisor_target, value.reviewer_default);
+  validateOverrides(value.task_role_target_overrides, value.inline_supervisor_target);
+  return true;
+}
+const projectEnvironment = {
+  inline_supervisor_target: plannerProjectTarget,
+  dedicated_supervisor_target: parseTarget('project-a · worktree · dedicated supervisor').target,
+  default_executor_target: parseTarget('project-a · worktree · default executor').target,
+  task_role_target_overrides: overrideRows,
+  reviewer_default: parseTarget('project-a · local · default reviewer').target
+};
+assert(validateExecutionEnvironment(projectEnvironment));
+for (const key of ['dedicated_supervisor_target', 'default_executor_target', 'reviewer_default']) {
+  assert.throws(() => validateExecutionEnvironment({...projectEnvironment, [key]: parseTarget('project-b · worktree · wrong project').target}));
+}
+const projectlessEnvironment = {
+  inline_supervisor_target: plannerProjectlessTarget,
+  dedicated_supervisor_target: null,
+  default_executor_target: parseTarget('projectless · content-room · default executor').target,
+  task_role_target_overrides: [{task_id: 'task-content', role: 'lead-reviewer', target: parseTarget('projectless · content-room · lead reviewer').target}],
+  reviewer_default: parseTarget('projectless · content-room · default reviewer').target
+};
+assert(validateExecutionEnvironment(projectlessEnvironment));
+for (const key of ['default_executor_target', 'reviewer_default']) {
+  assert.throws(() => validateExecutionEnvironment({...projectlessEnvironment, [key]: parseTarget('projectless · other-room · wrong directory').target}));
+}
+assert.throws(() => validateExecutionEnvironment({...projectEnvironment, task_role_target_overrides: [{task_id: 'task-a', role: 'specialist-reviewer', target: parseTarget('project-b · worktree · wrong project').target}]}));
 
 function sortRows(rows, keys) {
   return rows.slice().sort((a, b) => keys.reduce((delta, key) => delta || scalarCompare(a[key], b[key]), 0));
@@ -893,7 +944,7 @@ assert.strictEqual(cutover.phase(), 'new-active');
 
 const creationKeys = ['run_id', 'subject_kind', 'subject_id', 'attempt_id', 'role', 'route', 'target', 'artifact_revision'];
 const creationIdentityKeys = ['schema', 'creation_key', 'creation_token', 'creator_owner_epoch'];
-function creationIdentity(subject_kind = 'task', role = 'executor', token = 'token-a', creator_owner_epoch = 3, subject_id = 'task-a', artifact_revision = null) {
+function creationIdentity(subject_kind = 'task', role = 'executor', token = 'token-a', creator_owner_epoch = 3, subject_id = 'task-a', artifact_revision = null, target = plannerProjectTarget) {
   return {
     schema: 'octoplan-native-creation-v2',
     creation_key: {
@@ -903,14 +954,14 @@ function creationIdentity(subject_kind = 'task', role = 'executor', token = 'tok
       attempt_id: subject_kind === 'task' ? 'attempt-a' : null,
       role,
       route: 'route-a',
-      target: parseTarget('project-a · worktree · observed evidence').target,
+      target,
       artifact_revision
     },
     creation_token: token,
     creator_owner_epoch
   };
 }
-function validateCreationIdentity(value) {
+function validateCreationIdentity(value, planningTarget = plannerProjectTarget) {
   assert.deepStrictEqual(Object.keys(value).sort(scalarCompare), creationIdentityKeys.slice().sort(scalarCompare));
   assert.strictEqual(value.schema, 'octoplan-native-creation-v2');
   assert.deepStrictEqual(Object.keys(value.creation_key).sort(scalarCompare), creationKeys.slice().sort(scalarCompare));
@@ -920,6 +971,7 @@ function validateCreationIdentity(value) {
   assert(creationSubjectKinds.has(value.creation_key.subject_kind));
   assert(creationRoles.has(value.creation_key.role));
   validateTarget(value.creation_key.target);
+  sameProjectIdentity(planningTarget, value.creation_key.target);
   assert(value.creation_key.attempt_id === null || (typeof value.creation_key.attempt_id === 'string' && value.creation_key.attempt_id.length > 0));
   assert(value.creation_key.artifact_revision === null || (typeof value.creation_key.artifact_revision === 'string' && value.creation_key.artifact_revision.length > 0));
   nonEmpty(value.creation_token);
@@ -940,28 +992,49 @@ function creationKey(value) {
 }
 const executorIdentity = creationIdentity('task', 'executor', 'token-executor', 3);
 const reviewerIdentity = creationIdentity('task', 'lead-reviewer', 'token-reviewer', 3, 'task-a', 'artifact-a');
+const specialistIdentity = creationIdentity('task', 'specialist-reviewer', 'token-specialist', 3, 'task-a', 'artifact-a');
+const recoveryIdentity = creationIdentity('task', 'recovery', 'token-recovery', 3);
 const supervisorIdentity = creationIdentity('supervisor', 'supervisor', 'token-supervisor', 3, 'supervisor-a');
 const followUpIdentity = creationIdentity('follow-up', 'follow-up', 'token-follow-up', 3, 'follow-up-a');
-for (const identity of [executorIdentity, reviewerIdentity, supervisorIdentity, followUpIdentity]) assert(validateCreationIdentity(identity));
-assert.strictEqual(new Set([executorIdentity, reviewerIdentity, supervisorIdentity, followUpIdentity].map((identity) => identity.creation_token)).size, 4);
+const projectIdentities = [executorIdentity, reviewerIdentity, specialistIdentity, recoveryIdentity, supervisorIdentity, followUpIdentity];
+for (const identity of projectIdentities) {
+  assert(validateCreationIdentity(identity));
+  assert.throws(() => validateCreationIdentity({...identity, creation_key: {...identity.creation_key, target: parseTarget('project-b · worktree · wrong project').target}}));
+}
+const projectlessIdentities = [
+  creationIdentity('task', 'executor', 'token-projectless-executor', 3, 'task-projectless', null, plannerProjectlessTarget),
+  creationIdentity('task', 'lead-reviewer', 'token-projectless-reviewer', 3, 'task-projectless', 'artifact-a', plannerProjectlessTarget),
+  creationIdentity('task', 'specialist-reviewer', 'token-projectless-specialist', 3, 'task-projectless', 'artifact-a', plannerProjectlessTarget),
+  creationIdentity('task', 'recovery', 'token-projectless-recovery', 3, 'task-projectless', null, plannerProjectlessTarget),
+  creationIdentity('supervisor', 'supervisor', 'token-projectless-supervisor', 3, 'supervisor-projectless', null, plannerProjectlessTarget),
+  creationIdentity('follow-up', 'follow-up', 'token-projectless-follow-up', 3, 'follow-up-projectless', null, plannerProjectlessTarget)
+];
+for (const identity of projectlessIdentities) {
+  assert(validateCreationIdentity(identity, plannerProjectlessTarget));
+  assert.throws(() => validateCreationIdentity(identity, plannerProjectTarget));
+}
+assert.strictEqual(new Set(projectIdentities.map((identity) => identity.creation_token)).size, projectIdentities.length);
 assert.notStrictEqual(executorIdentity.creation_token, reviewerIdentity.creation_token);
 assert.strictEqual(creationKey(executorIdentity).creation_key.creator_owner_epoch, undefined);
 assert.deepStrictEqual(creationKey(executorIdentity), creationKey({...executorIdentity, creation_token: 'different-token', creator_owner_epoch: 9}));
 function creationPrompt(identity) {
   return `OCTOPLAN_CREATION ${stable(identity)}`;
 }
-function parseCreationPrompt(line) {
+function parseCreationPrompt(line, planningTarget = plannerProjectTarget) {
   const prefix = 'OCTOPLAN_CREATION ';
   assert(line.startsWith(prefix));
   const suffix = line.slice(prefix.length);
   const parsed = JSON.parse(suffix);
   assert.strictEqual(stable(parsed), suffix);
-  validateCreationIdentity(parsed);
+  validateCreationIdentity(parsed, planningTarget);
   return parsed;
 }
 const creationPromptLine = creationPrompt(executorIdentity);
 assert.strictEqual(creationPromptLine, `OCTOPLAN_CREATION ${stable(executorIdentity)}`);
 assert.deepStrictEqual(parseCreationPrompt(creationPromptLine), executorIdentity);
+const projectlessPromptLine = creationPrompt(projectlessIdentities[0]);
+assert.deepStrictEqual(parseCreationPrompt(projectlessPromptLine, plannerProjectlessTarget), projectlessIdentities[0]);
+assert.throws(() => parseCreationPrompt(projectlessPromptLine, plannerProjectTarget));
 assert.throws(() => parseCreationPrompt(`OCTOPLAN_CREATION  ${stable(executorIdentity)}`));
 assert.throws(() => parseCreationPrompt(`OCTOPLAN_CREATION\t${stable(executorIdentity)}`));
 assert.throws(() => parseCreationPrompt(`prefix OCTOPLAN_CREATION ${stable(executorIdentity)}`));
@@ -969,9 +1042,10 @@ assert.throws(() => validateCreationIdentity({...executorIdentity, creation_toke
 assert.throws(() => validateCreationIdentity({...executorIdentity, creator_owner_epoch: 0}));
 assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key: {...executorIdentity.creation_key, attempt_id: null}}));
 assert.throws(() => validateCreationIdentity({...reviewerIdentity, creation_key: {...reviewerIdentity.creation_key, artifact_revision: null}}));
+assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key: {...executorIdentity.creation_key, target: parseTarget('project-b · worktree · wrong project').target}}));
 
-function createSession(response, expectedIdentity = executorIdentity) {
-  validateCreationIdentity(expectedIdentity);
+function createSession(response, expectedIdentity = executorIdentity, planningTarget = plannerProjectTarget) {
+  validateCreationIdentity(expectedIdentity, planningTarget);
   let currentOwnerEpoch = expectedIdentity.creator_owner_epoch;
   let calls = 0;
   let intentWritten = false;
@@ -999,7 +1073,7 @@ function createSession(response, expectedIdentity = executorIdentity) {
     assert(Array.isArray(matches));
     const exact = matches.filter((match) => {
       try {
-        validateCreationIdentity(match);
+        validateCreationIdentity(match, planningTarget);
         return stable(match) === stable(expectedIdentity);
       } catch (_) {
         return false;
@@ -1119,10 +1193,12 @@ assert(!('pull_request' in projectlessPlan));
 assert(!('head' in projectlessPlan));
 assert.strictEqual(projectlessPlan.publication.kind, 'human');
 assert.strictEqual(projectlessPlan.publication.occurrence.length, 11);
+assert(sameProjectIdentity(parseTarget(projectlessPlan.target).target, parseTarget('projectless · editorial-room · executor').target));
+assert.throws(() => sameProjectIdentity(parseTarget(projectlessPlan.target).target, parseTarget('projectless · other-room · executor').target));
 
 function fingerprintSource(source) {
-  const begin = 'OCTOPLAN_PLAN_MANIFEST_V5_BEGIN';
-  const end = 'OCTOPLAN_PLAN_MANIFEST_V5_END';
+  const begin = 'OCTOPLAN_PLAN_MANIFEST_V6_BEGIN';
+  const end = 'OCTOPLAN_PLAN_MANIFEST_V6_END';
   const normalized = source.replace(/\r\n?/g, '\n');
   assert.strictEqual(normalized.split(begin).length - 1, 1);
   assert.strictEqual(normalized.split(end).length - 1, 1);
@@ -1133,11 +1209,11 @@ function fingerprintSource(source) {
   const cutEnd = lineEnd < 0 ? normalized.length : lineEnd + 1;
   return normalized.slice(0, start) + normalized.slice(cutEnd);
 }
-const sourceA = 'prefix\r\nOCTOPLAN_PLAN_MANIFEST_V5_BEGIN\r\n{"plan_hash":"hash-a"}\r\nOCTOPLAN_PLAN_MANIFEST_V5_END\r\nsuffix\r\n';
-const sourceB = 'prefix\nOCTOPLAN_PLAN_MANIFEST_V5_BEGIN\n{"plan_hash":"hash-b"}\nOCTOPLAN_PLAN_MANIFEST_V5_END\nsuffix\n';
+const sourceA = 'prefix\r\nOCTOPLAN_PLAN_MANIFEST_V6_BEGIN\r\n{"plan_hash":"hash-a"}\r\nOCTOPLAN_PLAN_MANIFEST_V6_END\r\nsuffix\r\n';
+const sourceB = 'prefix\nOCTOPLAN_PLAN_MANIFEST_V6_BEGIN\n{"plan_hash":"hash-b"}\nOCTOPLAN_PLAN_MANIFEST_V6_END\nsuffix\n';
 assert.strictEqual(fingerprintSource(sourceA), 'prefix\nsuffix\n');
 assert.strictEqual(fingerprintSource(sourceA), fingerprintSource(sourceB));
-assert.throws(() => fingerprintSource(sourceA + 'OCTOPLAN_PLAN_MANIFEST_V5_END'));
+assert.throws(() => fingerprintSource(sourceA + 'OCTOPLAN_PLAN_MANIFEST_V6_END'));
 
 function canonicalPlan(plan) {
   const {blueprint, ...authoritative} = plan;
@@ -1148,7 +1224,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 7.0.0 contract fixtures');
+console.log('PASS: deterministic 8.0.0 contract fixtures');
 NODE
 
 changed_files=$({
@@ -1171,4 +1247,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 7.0.0 contract\n'
+printf 'PASS: octoplan-codex 8.0.0 contract\n'

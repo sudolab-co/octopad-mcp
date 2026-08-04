@@ -1,4 +1,4 @@
-# Octoplan contract v2
+# Octoplan contract v3
 
 This is the only normative source for saved schemas, durable fields, extraction, canonical bytes, and contract fixtures. It is read after a complete scoping brief and before review, feasibility, persistence, fingerprinting, consent, launch, or resume.
 
@@ -18,9 +18,9 @@ This is the only normative source for saved schemas, durable fields, extraction,
 
 ## Supported contract and gate
 
-The saved pair is exactly one `octoplan-supervision-v5`, one `octoplan-fingerprint-v2`, and one canonical `delivery_mandate`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing field fails closed before any write, route, consent, resume, or native session. Never infer a field, authority, review PASS, feasibility PASS, adoption, or consent.
+The saved pair is exactly one `octoplan-supervision-v6`, one `octoplan-fingerprint-v3`, and one canonical `delivery_mandate`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing field fails closed before any write, route, consent, resume, or native session. Never infer a field, authority, review PASS, feasibility PASS, adoption, or consent.
 
-The v5 Plan manifest is enclosed by exactly one `OCTOPLAN_PLAN_MANIFEST_V5_BEGIN` and `OCTOPLAN_PLAN_MANIFEST_V5_END` pair. Markers must be ordered, non-nested, unique, and removed from the fingerprint as one byte range: from the begin-marker line's first byte through the end-marker line's LF, or EOF when final.
+The v6 Plan manifest is enclosed by exactly one `OCTOPLAN_PLAN_MANIFEST_V6_BEGIN` and `OCTOPLAN_PLAN_MANIFEST_V6_END` pair. Markers must be ordered, non-nested, unique, and removed from the fingerprint as one byte range: from the begin-marker line's first byte through the end-marker line's LF, or EOF when final.
 
 ## Delivery mode
 
@@ -31,7 +31,7 @@ User-facing replies call this choice **Delivery mode** and use only these labels
 
 The wire values and `delivery_mandate` field name are internal and never appear in user-visible prose. A user may select a label explicitly or express the same intent naturally in any language.
 
-Persist exactly this object in the Plan manifest and v2 fingerprint; object keys and array values are canonicalized below, and the object is immutable after binding:
+Persist exactly this object in the Plan manifest and v3 fingerprint; object keys and array values are canonicalized below, and the object is immutable after binding:
 
 ```json
 {
@@ -68,16 +68,16 @@ The only valid mode/activation combinations are `plan-bound` plus `confirmed-bri
 
 ## Manifest and saved collections
 
-The manifest contains the exact v5 supervision policy, execution targets, mandate, activation review, feasibility coverage and matrix, critical source revisions, verifier availability, adoption map, Plan review, and the coordination ledger task ID. The canonical input also contains `protected_occurrences` extracted from durable human occurrence records. Its structured values are represented by this fingerprint input shape; no rendered prose substitutes for a durable value:
+The manifest contains the exact v6 supervision policy, execution targets, mandate, activation review, feasibility coverage and matrix, critical source revisions, verifier availability, adoption map, Plan review, and the coordination ledger task ID. The canonical input also contains `protected_occurrences` extracted from durable human occurrence records. Its structured values are represented by this fingerprint input shape; no rendered prose substitutes for a durable value:
 
 ```json
 {
-  "fingerprint_schema": "octoplan-fingerprint-v2",
+  "fingerprint_schema": "octoplan-fingerprint-v3",
   "ledger_task_id": "<immutable ledger task ID>",
   "plan_hash": "PENDING",
   "manifest": {
     "supervision_contract": {
-      "schema": "octoplan-supervision-v5",
+      "schema": "octoplan-supervision-v6",
       "policy": "<exact Policy value>",
       "validation_mode": "<gradual|final>",
       "repair_envelope": "<exact value>",
@@ -95,7 +95,7 @@ The manifest contains the exact v5 supervision policy, execution targets, mandat
       "dedicated_supervisor_target": "<same target object or null>",
       "default_executor_target": "<same target object>",
       "task_role_target_overrides": [{"task_id":"<non-empty string>","role":"<executor|lead-reviewer|specialist-reviewer|recovery>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"}}],
-      "reviewer_default": "<exact Reviewer default value>"
+      "reviewer_default": {"kind": "<project|projectless>", "project_id": "<ID or null>", "environment": "<local|worktree or null>", "directory_name": "<name or null>", "rationale": "<rationale or null>"}
     },
     "delivery_mandate": "<exact object above>",
     "activation_review": "<exact object above or null>",
@@ -120,7 +120,7 @@ The manifest contains the exact v5 supervision policy, execution targets, mandat
 
 The manifest's supervision contract is read from the durable task text, not a generated summary. Each required label occurs once, and its value includes all source whitespace after the prefix. The dedicated route and dedicated replacement labels alone accept literal `none`; an empty value is malformed.
 
-The execution environment is a saved plan choice, not caller discovery. Resolve each non-null project target uniquely through the current project registry and retain host, path, and Git observations only as excluded evidence. A projectless target must state why it is safe and sufficient for the stream.
+The active planning session's resolved native target is the planning target and is saved as `inline_supervisor_target`; never replace it from prose or a later caller's directory. Every other saved target must have the same Codex project identity as the planning target. Resolve each non-null project target uniquely through the current project registry and retain host, path, and Git observations only as excluded evidence. A projectless target must state why it is safe and sufficient for the stream.
 
 The exact Plan-review final binding contains the reviewed draft digest, matrix digest, literal lead route, optional specialist route, verdict, mandate-conformance verdict, matching Review PASS record, `PENDING` plan hash, saved-state equality, and critical-source/verifier PASS. A final hash is never confirmed by a reply sent before it exists.
 
@@ -172,7 +172,7 @@ Actual accounting records the source record and canonical units with each availa
 
 ### Contract rejection boundaries
 
-Reject self-referential final hashes, duplicate IDs, duplicate object keys, duplicate route bindings, malformed targets, missing source revisions, unavailable verifiers, omitted trigger coverage, ambiguous adoption, a non-PASS adoption row, and any attempt to reuse a prior PASS after a fingerprinted change.
+Reject self-referential final hashes, duplicate IDs, duplicate object keys, duplicate route bindings, malformed targets, a target outside the planning target's Codex project identity, missing source revisions, unavailable verifiers, omitted trigger coverage, ambiguous adoption, a non-PASS adoption row, and any attempt to reuse a prior PASS after a fingerprinted change.
 
 ## Targets and parsing
 
@@ -180,7 +180,9 @@ Persist targets as exactly five keys: `kind`, `project_id`, `environment`, `dire
 
 A projectless target is the label value `projectless · <directory> · <rationale>` on `Projectless target:`; split only on the first two literal ` · ` separators, require the literal `projectless`, a valid non-empty directory, and a non-empty remainder, including separators, as exact rationale. Its canonical object has `kind: "projectless"`, `project_id` and `environment` as JSON `null`, and exact directory and rationale. Do not infer either target kind or any missing field.
 
-Persist one `Inline supervisor target`, one `Default executor target`, and one `Reviewer default`; `Dedicated supervisor target: none` maps only to JSON `null`. Each task-role override is exactly `{task_id: non-empty string, role: executor|lead-reviewer|specialist-reviewer|recovery, target: exact canonical five-key target object}`; no extra or missing key is allowed. Overrides are unique by `(task_id, role)` and sort by task ID then role. `Task-role target overrides: none` maps only to `[]`. Missing, empty, unknown-role, malformed, or duplicate bindings stop fingerprinting.
+Two project targets have the same Codex project identity only when both `kind` values are `project` and their exact `project_id` values match; `environment` may differ between `local` and `worktree`. Two projectless targets match only when both `kind` values are `projectless` and their exact `directory_name` values match. A project/projectless pair never matches.
+
+Persist the planning target as the one `Inline supervisor target`, plus one `Default executor target` and one `Reviewer default`; each is an exact canonical five-key target object. `Dedicated supervisor target: none` maps only to JSON `null`. The dedicated supervisor, default executor, reviewer default, and every task-role override must share the inline planning target's Codex project identity. Each task-role override is exactly `{task_id: non-empty string, role: executor|lead-reviewer|specialist-reviewer|recovery, target: exact canonical five-key target object}`; no extra or missing key is allowed. Overrides are unique by `(task_id, role)` and sort by task ID then role. `Task-role target overrides: none` maps only to `[]`. Missing, empty, unknown-role, malformed, duplicate, or cross-project bindings stop fingerprinting.
 
 ## Tasks, Questions, and protected occurrences
 
@@ -210,7 +212,7 @@ Stable blocker identity uses `source_task_id`, `reason_enum`, `affected_invarian
 
 ## Run state, adoption, and accounting
 
-The v5 durable run states are exactly `active`, `replanning`, `waiting-human`, `paused`, `revoked`, `superseded`, `failed`, and `completed`; their authority meanings are defined in supervision. Review verdicts never substitute for run states. `failed` requires an independent `INFEASIBLE`; `completed` requires the fenced supervisor and all required validation and human occurrences.
+The v6 durable run states are exactly `active`, `replanning`, `waiting-human`, `paused`, `revoked`, `superseded`, `failed`, and `completed`; their authority meanings are defined in supervision. Review verdicts never substitute for run states. `failed` requires an independent `INFEASIBLE`; `completed` requires the fenced supervisor and all required validation and human occurrences.
 
 An adoption row has `old_run_id`, `old_plan_hash`, `source_task_id`, `artifact_revision`, `destination_task_id`, `destination_lineage`, `invalidated_evidence_ids`, `invalidated_pass_ids`, and literal `fresh_conformance_pass: "PASS"`. Every old artifact is explicitly adopted or rejected, every invalidated PASS is listed, and no artifact revision is mapped twice.
 
@@ -218,7 +220,7 @@ Record authoritative actuals only. Unavailable time or provider cost is `null`/u
 
 ## Fingerprint input and exclusions
 
-The v2 input is the complete normalized object above, built only from the current v5 manifest and saved authoritative sources. Remove exactly one full LF-terminated tracker line matching `Supervision: octoplan-supervision-v5 · ledger <ID> · plan <64 lowercase hex>` from every tracker; zero or multiple matches stop. Keep every other tracker byte. Exclude all ledger comments, with a launch-binding comment removed as one complete record and never by prose splicing.
+The v3 input is the complete normalized object above, built only from the current v6 manifest and saved authoritative sources. Remove exactly one full LF-terminated tracker line matching `Supervision: octoplan-supervision-v6 · ledger <ID> · plan <64 lowercase hex>` from every tracker; zero or multiple matches stop. Keep every other tracker byte. Exclude all ledger comments, with a launch-binding comment removed as one complete record and never by prose splicing.
 
 Exclude only generated execution/task runtime statuses and claim owners, current supervision mode, observed host/path/Git evidence, claims, attempts, thread IDs, consent evidence, repairs, event receipts, and out-of-run follow-ups. Retain durable `Decision.status`, `Question.status`, and task `assignment`. Scan every included JSON string after exclusion; if the persisted digest remains anywhere, stop instead of hashing a self-reference.
 
@@ -226,9 +228,9 @@ Exclude only generated execution/task runtime statuses and claim owners, current
 
 Normalize source line endings to LF before extraction only. Do not trim, otherwise normalize source text, or normalize Unicode. Reject unpaired surrogates. Extract direct durable values, never synthetic rendered text.
 
-For supervision, read exactly one value after each unique `- <Label>: ` prefix for `Schema`, `Policy`, `Validation mode`, `Repair envelope`, `Follow-up policy`, `Inline route`, `Dedicated route`, `Dedicated replacement`, `Default recovery`, and `Default lineage`. Require the schema value `octoplan-supervision-v5`; literal `none` maps to JSON `null` only for the two dedicated labels. The coordination ledger label feeds only root `ledger_task_id`; run-state and verdict arrays use the exact declared order.
+For supervision, read exactly one value after each unique `- <Label>: ` prefix for `Schema`, `Policy`, `Validation mode`, `Repair envelope`, `Follow-up policy`, `Inline route`, `Dedicated route`, `Dedicated replacement`, `Default recovery`, and `Default lineage`. Require the schema value `octoplan-supervision-v6`; literal `none` maps to JSON `null` only for the two dedicated labels. The coordination ledger label feeds only root `ledger_task_id`; run-state and verdict arrays use the exact declared order.
 
-For execution, extract exactly one inline target, dedicated target, default executor target, reviewer default, and every singular task-role override. Apply the target grammar above and the only stated `none` defaults. For Plan review, extract unique `Reviewed draft digest`, `Feasibility matrix digest`, `Lead`, `Verdict`, `Mandate conformance`, `Review PASS`, `Plan hash`, `Saved-state equality`, and `Critical sources and verifiers`; absent `Specialist` is JSON `null`, all other missing or duplicate labels stop. Normalize Plan hash to `PENDING`, encode saved equality as `true` only for literal `PASS`, and require critical sources/verifiers `PASS`.
+For execution, extract exactly one inline target, dedicated target, default executor target, reviewer default target, and every singular task-role override. Parse each non-null value with the target grammar above, require every session target to share the inline planning target's Codex project identity, and apply only the stated `none` defaults. For Plan review, extract unique `Reviewed draft digest`, `Feasibility matrix digest`, `Lead`, `Verdict`, `Mandate conformance`, `Review PASS`, `Plan hash`, `Saved-state equality`, and `Critical sources and verifiers`; absent `Specialist` is JSON `null`, all other missing or duplicate labels stop. Normalize Plan hash to `PENDING`, encode saved equality as `true` only for literal `PASS`, and require critical sources/verifiers `PASS`.
 
 For Decisions, Questions, tasks, routes, coverage, matrix rows, adoption rows, protected occurrences, trackers, and manifest sentinels, require exactly the direct shapes above. Extract each Decision's direct `content`, `rationale`, `work_stream_id`, and durable `status`, defaulting only absent nullable values to JSON `null`; extract every agent and human task field directly, with absent lists as `[]`, human route scalars as `null`, optional agent route values as their exact literal or `null`, numeric `impact` as the saved JSON number 1 through 5, paired dependency rationales, and the exact protected-occurrence fields. Preserve `triggered_invariants` lists and every non-semantic sequence exactly as persisted.
 
@@ -244,11 +246,11 @@ The immutable first-line identity is exactly:
 {"schema":"octoplan-native-creation-v2","creation_key":{"run_id":"<non-empty string>","subject_kind":"supervisor|task|follow-up","subject_id":"<non-empty string>","attempt_id":"<non-empty string or null>","role":"supervisor|executor|lead-reviewer|specialist-reviewer|recovery|follow-up","route":"<non-empty exact saved route string>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"},"artifact_revision":"<non-empty string or null>"},"creation_token":"<non-empty unique string>","creator_owner_epoch":"<positive current supervisor epoch at intent>"}
 ```
 
-The first prompt line is exactly literal `OCTOPLAN_CREATION`, one ASCII space, and the canonical JSON bytes above. The durable creation record stores this immutable identity plus state and wake; `creation_key` excludes token and creator epoch and is the uniqueness key. Supervisor and follow-up subjects use null attempt; task roles use non-null attempt; reviewer roles require non-null artifact revision, while other roles may use null or the exact relevant revision. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable. A takeover monotonically increments the separate current supervisor epoch without changing identity. Activation and every ledger transition require actor epoch == current supervisor epoch. Matching a native candidate compares immutable identity including creator epoch, then gates transition separately on current epoch. Guard durable `intent` before at most one create call and reconcile every client, direct, empty, crash, zero, one, or multiple response.
+The first prompt line is exactly literal `OCTOPLAN_CREATION`, one ASCII space, and the canonical JSON bytes above. The durable creation record stores this immutable identity plus state and wake; `creation_key` excludes token and creator epoch and is the uniqueness key. Supervisor and follow-up subjects use null attempt; task roles use non-null attempt; reviewer roles require non-null artifact revision, while other roles may use null or the exact relevant revision. Before durable `intent`, compare the creation target with the run's inline planning target and stop on a project-identity mismatch. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable. A takeover monotonically increments the separate current supervisor epoch without changing identity. Activation and every ledger transition require actor epoch == current supervisor epoch. Matching a native candidate compares immutable identity including creator epoch, then gates transition separately on current epoch. Guard durable `intent` before at most one create call and reconcile every client, direct, empty, crash, zero, one, or multiple response.
 
 Creation states are `intent`, `pending`, `ready`, `activated`, `failed`, and `paused`. Owner epoch fencing rejects late writes; resume reconciles an existing intent without a second create call; every nonterminal pause stores an evidence-based wake predicate. A unique match may become `ready`, then only the current fenced supervisor may activate it.
 
-Repository fixtures must cover malformed and mutated mandate fields, every mode/activation combination, raw bounded English and non-English end-to-end delegation, bare “do it”, urgency, and trust without delivery delegation, activation review and launch reference, canonical-order equivalence, direct Decision defaults, Question mutation, Blueprint exclusion, target parsing, every-task feasibility coverage including omitted atomicity, stale source, and unavailable verifier, consent modes, state transitions, blocker identity, cutover race, adoption mutation, protected-action separation, all creation response cases, epoch/resume/late-write cases, schema-agnostic quarantine, and a projectless content/operations plan using a non-GitHub provider with publication as a separate human occurrence.
+Repository fixtures must cover malformed and mutated mandate fields, every mode/activation combination, raw bounded English and non-English end-to-end delegation, bare “do it”, urgency, and trust without delivery delegation, activation review and launch reference, canonical-order equivalence, direct Decision defaults, Question mutation, Blueprint exclusion, target parsing, same-project local/worktree acceptance, cross-project and project/projectless rejection, every-task feasibility coverage including omitted atomicity, stale source, and unavailable verifier, consent modes, state transitions, blocker identity, cutover race, adoption mutation, protected-action separation, all creation response cases, epoch/resume/late-write cases, schema-agnostic quarantine, and a projectless content/operations plan using a non-GitHub provider with publication as a separate human occurrence.
 
 Creation enters `intent` before the one call. A direct native ID, a client ID, an empty response, or no response all enter reconciliation; none is activation evidence by itself.
 

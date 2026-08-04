@@ -1,6 +1,6 @@
 # Octoplan planning protocol
 
-The dependency graph is executable truth. This reference owns planning workflow, review meanings, feasibility reasoning, and repair classification; exact saved shapes and bytes live only in [octoplan-contract-v2.md](octoplan-contract-v2.md).
+The dependency graph is executable truth. This reference owns planning workflow, review meanings, feasibility reasoning, and repair classification; exact saved shapes and bytes live only in [octoplan-contract-v3.md](octoplan-contract-v3.md).
 
 ## Contents
 
@@ -22,7 +22,7 @@ Read this reference completely for a planning, replanning, or flesh-out pass.
 
 As soon as the scoping brief is complete, read the contract completely before review, feasibility, any draft persistence, fingerprinting, or consent.
 
-Dispatch the complete saved pair before reading saved authority: exactly one v5 supervision contract, one v2 fingerprint, and one canonical mandate are required.
+Dispatch the complete saved pair before reading saved authority: exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate are required.
 
 Any absent, duplicate, hybrid, changed, malformed, unknown, extra, or missing contract element fails closed before a write or native session.
 
@@ -55,13 +55,13 @@ If a material answer remains open after one further question, save a Question an
 1. **Review or discover.** Establish the current stream, its source claims, definition of success, owners, gates, and graph. Separate facts, Decisions, Questions, and assumptions.
 2. **Reflect or branch.** On the default path, return the complete brief and wait for the later user reply; apply corrections only after it and do not save partial planning artifacts. On valid explicit-no-loop, publish the non-blocking checkpoint and continue planning under the exact initial grant.
 3. **Lock choices.** Present each material choice as decision, options with gain and cost, recommendation, and reversibility. Save only accepted choices as authoritative Decisions.
-4. **Ground and preflight.** Verify governing documents, repository patterns, access, native targets, source revisions, rollback or compensation, exact verifiers, verification actions or commands, and policy gates.
+4. **Ground and preflight.** Resolve the planning session's active Codex target, save it as the inline supervisor target, and verify that every supervisor, executor, reviewer, recovery, and follow-up target has the same Codex project identity. Then verify governing documents, repository patterns, access, source revisions, rollback or compensation, exact verifiers, verification actions or commands, and policy gates.
 5. **Draft off-record.** Give each task a stable symbolic key, a single coherent job, dependencies, owner, route, acceptance, proof, repair envelope, and human gates before assigning durable IDs.
 6. **Build feasibility.** Scan every agent and human task against every trigger class in the contract. Map each triggered invariant to one row and each row back to one task/invariant pair.
 7. **Simulate readiness.** Walk the first ready frontier and the highest-risk path. Add a prerequisite, narrow a promise, or return a material choice when the path is not executable now.
 8. **Review the draft.** Use one fresh independent reviewer by default. Add a specialist only for a genuinely orthogonal material failure domain.
 9. **Read back.** Persist only the complete final graph using the current concurrency guard, reread it, normalize immutable IDs to the symbolic draft, and set saved-state equality to PASS only on exact equality.
-10. **Fingerprint and bind.** Recheck source revisions and verifier availability, compute the contract's v2 bytes, obtain independent mandate conformance, and bind the reviewed plan hash only after every required PASS.
+10. **Fingerprint and bind.** Recheck source revisions and verifier availability, compute the contract's v3 bytes, obtain independent mandate conformance, and bind the reviewed plan hash only after every required PASS.
 11. **Resolve consent.** Follow the exact plan-bound or outcome-bound path in runtime. A failed guarded binding writes no authority and returns to consent or waiting.
 
 ## Decisions and graph
@@ -74,7 +74,7 @@ Subtasks use a parent task only as a concrete in-session checklist. A dependency
 
 Delivery tasks end at a review-ready agent artifact. Human review, merge, migration application, deployment, publication, access grant, external spend, destructive effect, and acceptance are separate human occurrences.
 
-Save exact execution and review routes, fallback evidence and bounds, target choices, and verification actions or commands needed by a fresh executor. Never rely on the planning conversation.
+Save exact execution and review routes, fallback evidence and bounds, same-project target choices, and verification actions or commands needed by a fresh executor. Never rely on the planning conversation.
 
 Save the plan manifest, tracker pointer, graph, source revisions, feasibility proof, review record, mandate, and binding through guarded durable writes; a failed concurrency check has no effect.
 
@@ -114,7 +114,7 @@ A changed semantic field, source revision, verifier, matrix, mandate, adoption r
 
 Before automatic launch, append the contract-defined guarded ledger binding with its current concurrency guard. Keep this runtime evidence outside the manifest fingerprint.
 
-A material replan invalidates the old launch binding in either mode. The replacement needs fresh feasibility, adoption mapping, source/read-back equality, v2 fingerprint, and independent conformance PASS before a new run; no old PASS or consent transfers.
+A material replan invalidates the old launch binding in either mode. The replacement needs fresh feasibility, adoption mapping, source/read-back equality, v3 fingerprint, and independent conformance PASS before a new run; no old PASS or consent transfers.
 
 ## Parallel work and Blueprints
 

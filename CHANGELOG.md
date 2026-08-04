@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 8.0.0 — 2026-08-04
+
+Every native Octoplan session now stays in the same Codex project as the planning session. The project ID is fixed across supervisors, executors, lead and specialist reviewers, recovery sessions, and follow-ups; `local` and `worktree` environments may still differ inside that project. Projectless plans keep the exact planning directory. A cross-project or project/projectless substitution stops before session creation.
+
+This breaking release requires earlier saved plans to be replanned before execution. Deterministic fixtures now validate the complete execution environment and every native session role for both project and projectless targets. The Claude distribution is unchanged.
+
 ### 7.0.0 — 2026-08-04
 
 This breaking Codex release supports one v5/v2 contract path; earlier saved contracts require replanning and receive no historical support. Users choose a plain-language Delivery mode: **Review before delivery** waits for confirmation, while **Autonomous delivery** can accept an unambiguous end-to-end delegation in the first message, publish a non-blocking scoping checkpoint, independently validate that authority, and continue without asking the user to judge the plan. Neither mode grants protected actions.

@@ -14,7 +14,7 @@ Read this reference before routing or asking for execution consent. Read the con
 
 ## Contract and authority gate
 
-Before routing, consent, or a native session, dispatch exactly one v5 supervision contract, one v2 fingerprint, and one canonical mandate through the contract rules. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops before any write or launch.
+Before routing, consent, or a native session, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate through the contract rules. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops before any write or launch.
 
 Planning permission never authorizes execution. On the default path, the mandatory brief is the whole initial reply and a later reply must confirm the complete brief before normal planning writes; the contract's explicit-no-loop path is the non-blocking checkpoint exception.
 
@@ -64,7 +64,7 @@ With valid advance authority, repeat brief conformance, source and verifier fres
 
 Append the contract-defined launch binding as one guarded coordination-ledger record using the current concurrency guard; it never enters the manifest or fingerprint.
 
-A material replan invalidates the old launch binding in either mode but does not invalidate a byte-identical outcome-bound mandate. The replacement needs fresh feasibility, adoption map, read-back equality, v2 fingerprint, and independent conformance PASS. No PASS or consent transfers.
+A material replan invalidates the old launch binding in either mode but does not invalidate a byte-identical outcome-bound mandate. The replacement needs fresh feasibility, adoption map, read-back equality, v3 fingerprint, and independent conformance PASS. No PASS or consent transfers.
 
 ## Authority scope and accounting
 
@@ -76,7 +76,7 @@ Record authoritative actuals only. Unavailable time or provider cost remains nul
 
 ## Target and route binding
 
-Every executor, reviewer, recovery, and supervisor uses its saved route, target, environment, model, and effort. Resolve the target through current runtime capabilities; an unresolved or changed binding stops before creation.
+Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
 
 Keep external-event adapters conditional and use native Codex operations for native sessions. A wake supplies evidence only and cannot expand the saved route or authority.
 
