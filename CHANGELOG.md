@@ -12,7 +12,7 @@ This breaking Codex release supports one v5/v2 contract path; earlier saved cont
 
 The standalone v2 fingerprint binds exact target parsing, extraction/defaults, Unicode-scalar canonical JSON, collection ordering, feasibility coverage/matrix, source and verifier availability, distinct review verdicts, durable run states, stable blocker identity, accounting truthfulness, and the exact human occurrence predicate. Only authoritative actuals are recorded; unavailable provider cost remains unavailable and ambiguous authority waits for independent conformance judgment.
 
-Material incidents use a fresh planner without execution authority, a concrete independent delta review, a whole-run fence/quiescence barrier, explicit adoption or rejection, repeated grounding, read-back, fingerprint, and conformance checks, and a new run without transferring PASS or consent. Natural-language activation fixtures distinguish bounded delegation from urgency, vague trust, or a bare “do it”. Portability, single-source references, generic tool-schema separation, deterministic fixtures, and public-hygiene validators are tightened; no historical support is retained.
+Material incidents use a fresh planner without execution authority, a concrete independent delta review, a whole-run fence/quiescence barrier, explicit adoption or rejection, repeated grounding, read-back, fingerprint, and conformance checks, and a new run without transferring PASS or consent. Natural-language activation fixtures distinguish bounded delegation from urgency, vague trust, or a bare “do it”. Portability, single-source references, generic tool-schema separation, deterministic fixtures, and CI-safe public-hygiene validators are tightened; no historical support is retained.
 
 ### 6.1.0 — 2026-08-04
 

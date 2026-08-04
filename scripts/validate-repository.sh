@@ -12,10 +12,6 @@ fail() {
 [ -f "$root/.github/workflows/validate.yml" ] || fail 'repository validation workflow is missing'
 [ -d "$root/plugins/octoplan-claude" ] || fail 'Claude distribution was not renamed to octoplan-claude'
 [ ! -e "$root/plugins/octoplan" ] || fail 'unsupported Claude distribution path remains'
-[ "$(git -C "$root" branch --show-current)" = 'codex/octoplan-codex-7.0.0' ] || fail 'Codex release branch is not codex/octoplan-codex-7.0.0'
-if ! git -C "$root" diff --quiet origin/main -- README.md; then
-  fail 'root README differs from origin/main'
-fi
 
 grep -Fq '# Octopad MCP' "$root/README.md" || fail 'README does not lead with Octopad MCP'
 grep -Fq 'Give your AI this repository URL' "$root/README.md" || fail 'AI-first install handoff is missing'
