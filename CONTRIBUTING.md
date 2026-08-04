@@ -56,4 +56,4 @@ An incompatible Octopad contract change is a major bump here. A backward-compati
 - The skill's YAML header still has `name:` matching its folder name, and a `description:` carrying the phrases that trigger it. A renamed folder or a reworded description can silently stop the skill from ever firing.
 - Nothing identifying a person, a company, its internal tooling, or its private infrastructure went in. This repo is public. Team-specific rules belong in that team's own instruction files, not here.
 - Any claim about a third-party product is either sourced or cut.
-- A Codex release still asks before execution, creates no executor during planning, and applies saved model/effort values without silent substitution.
+- A Codex release requires explicit execution authority before execution, creates no executor during planning, and applies saved model/effort values without silent substitution.

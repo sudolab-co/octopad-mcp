@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 7.0.0 — 2026-08-04
+
+This breaking Codex release supports one v5/v2 contract path; earlier saved contracts require replanning and receive no historical support. Users choose a plain-language Delivery mode: **Review before delivery** waits for confirmation, while **Autonomous delivery** can accept an unambiguous end-to-end delegation in the first message, publish a non-blocking scoping checkpoint, independently validate that authority, and continue without asking the user to judge the plan. Neither mode grants protected actions.
+
+The standalone v2 fingerprint binds exact target parsing, extraction/defaults, Unicode-scalar canonical JSON, collection ordering, feasibility coverage/matrix, source and verifier availability, distinct review verdicts, durable run states, stable blocker identity, accounting truthfulness, and the exact human occurrence predicate. Only authoritative actuals are recorded; unavailable provider cost remains unavailable and ambiguous authority waits for independent conformance judgment.
+
+Material incidents use a fresh planner without execution authority, a concrete independent delta review, a whole-run fence/quiescence barrier, explicit adoption or rejection, repeated grounding, read-back, fingerprint, and conformance checks, and a new run without transferring PASS or consent. Natural-language activation fixtures distinguish bounded delegation from urgency, vague trust, or a bare “do it”. Portability, single-source references, generic tool-schema separation, deterministic fixtures, and public-hygiene validators are tightened; no historical support is retained.
+
 ### 6.1.0 — 2026-08-04
 
 Codex users may now explicitly authorize automatic execution after confirming the scoping brief. Once plan review and saved-state equality pass, Octoplan can bind that prior authority to the exact final plan hash in a guarded coordination-ledger comment and launch without a second wake-up. A bare brief confirmation, broad autonomy, prior chat, or planning permission is never enough.

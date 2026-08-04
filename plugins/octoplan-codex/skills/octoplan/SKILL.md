@@ -1,39 +1,28 @@
 ---
 name: octoplan
-description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, or flesh out an Octopad work stream or task, create a Blueprint for a multi-stream effort, or resume an approved Octoplan run. Do not use for general Octopad actions, organization connection, onboarding, or task execution without an approved Octoplan run. Requires connected Octopad MCP tools.
+description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, flesh out, or resume a governed Octopad work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 6.1.0
+Version: 7.0.0
 
 # Octoplan for Codex
 
-## Purpose
+Plan an Octopad work stream into a verified graph, then supervise only its explicitly authorized agent-owned execution. Planning never implements the deliverable. The supported saved contract is exactly `octoplan-supervision-v5` plus `octoplan-fingerprint-v2` and one canonical Delivery mode record. Any other saved contract is unsupported and must be replanned before use.
 
-Turn an Octopad work stream into a verified, execution-ready graph, then carry its agent-owned work end to end. Planning never implements the deliverable. After consent, a fenced supervisor reconciles Octopad, native Codex sessions, and supported external events. It may insert bounded repairs and record non-blocking follow-ups without turning local runtime discoveries into full replans. A dedicated parent exists only when remaining complexity justifies its handoff cost.
+Octopad is the governed blackboard for bounded decision-relevant context, the durable plan and ledger, evidence, and activity history; native Codex is evidence about sessions. Keep both operations concrete and use only capabilities available in the active session.
 
-Planning runs on `gpt-5.6-sol` at `xhigh` or justified `max`. Task, review, and supervisor routes are separate.
+## Loading order
 
-Read [references/planning.md](references/planning.md) completely before planning, replanning, or fleshing out work. Read [references/codex-runtime.md](references/codex-runtime.md) completely before routing or asking for execution consent. After valid launch authority, whether later consent on the reviewed plan or a still-valid advance authorization, or when asked to resume a run, read [references/codex-supervision.md](references/codex-supervision.md) completely before any execution action.
+Read [references/planning.md](references/planning.md) completely for planning or replanning. Once a complete scoping brief exists, read [references/octoplan-contract-v2.md](references/octoplan-contract-v2.md) before review, feasibility, persistence, fingerprinting, or consent. Read [references/codex-runtime.md](references/codex-runtime.md) plus the contract before routing or consent. Read [references/codex-supervision.md](references/codex-supervision.md) plus the contract before launch or resume. References are one level deep and are not interchangeable.
 
-## Phase contract
+## Five invariants
 
-1. Return the scoping brief as the whole reply and wait for later confirmation before any full-plan write.
-2. Planning writes only Octopad planning artifacts. It never implements work or creates execution sessions.
-3. A completed plan records its reviewed hash in the Plan manifest and ledger. Without a valid advance authorization it asks for execution consent and waits. With an explicit advance authorization given after the scoping brief was confirmed, it may bind that authority to the final hash and launch only when the reviewed plan has no unresolved Question and still matches the confirmed brief exactly on result, scope, material cost, risk, success, architecture, route bounds, validation mode, and protected actions. Execution consent never covers protected actions or human gates.
-4. Octopad is authoritative. Only the current fenced supervisor launches successors; it stays inline unless the saved policy justifies a dedicated parent.
-5. A plan without the environment-bound `octoplan-supervision-v4` contract is not executable under 6.1.0. Replan it; never infer a native project target, repair authority, validation mode, fingerprint, or consent.
-6. The supervisor continues while any safe agent-owned task is ready. An open PR, CI wait, human review, merge, migration application, or deployment gate stops only the branch it gates, not unrelated ready work.
+- Default to **Review before delivery**. Use **Autonomous delivery** from the first message when the user explicitly delegates end-to-end delivery in any natural language; the contract determines whether that one instruction unambiguously covers planning, launch, and in-envelope replanning.
+- Ground every triggered high-risk invariant in the contract's feasibility matrix before Plan PASS; missing primitives, sources, boundaries, prerequisites, or available verifiers cannot become prose PASS.
+- Only the fenced supervisor launches successors; a material incident uses a fresh planner without execution authority, and a replacement run repeats equality, fingerprint, feasibility, adoption, and conformance checks without transferring PASS.
+- The Delivery mode never authorizes a protected action; every consequential human occurrence remains separately specified, fingerprinted, and gated.
+- Apply active instruction precedence, let local or service policy narrow authority only, resolve people from current roles, retrieve bounded context, and abstract only external adapters with GitHub conditional.
 
-## Replanning
-
-Classify discoveries before changing the plan. A bounded repair stays inside one approved task's result, scope, risk, and acceptance and runs under the saved repair envelope without a new plan hash. A non-blocking follow-up is recorded outside the active participant set and does not run in the current plan. Anything changing the approved result, scope, material cost, risk, success, architecture, route bounds, or protected actions needs a reviewed replan and consent.
-
-## Close
-
-Without valid advance authorization, report the reviewed plan and ask the execution question. With valid advance authorization, report the reviewed plan as execution starts and identify that the previously granted authority was bound to this verified plan. During execution, report only meaningful progress, failures, and human gates. The supervisor always owns the last user-facing message: it reports delivered artifacts, reviews and checks, human actions remaining, repairs and rejection loops, problems and resolutions, follow-ups, unresolved risks, and automatically collected actual session and external-event-wake counts. Never describe session creation as task completion or create a reporting-only session.
-
-## User-facing output
-
-Opaque identifiers are internal data, not visible prose. In any reply shown to the user, never print a raw UUID, session/client/host/run/attempt ID, owner token, SHA-256 value, or Git commit hash as text or inline code. Use the entity's human-readable title, name, role, branch, or commit subject instead. When pointing to a Codex session, use a readable Markdown label and the native deep link `[<title or role>](codex://threads/<thread-id>)`; keep the real thread ID only in the link destination. The exact reviewed plan hash remains in the Plan manifest, ledger, and consent binding, but is not printed in the reply. This presentation rule does not change internal ledger fields, tool arguments, exact commands, or required Markdown link destinations. Agent-to-agent prompts and internal coordination records must retain the identifiers needed for correlation; sanitize only a copy shown to the user. An opaque identifier may appear in a required Markdown link destination only; never emit it as a bare URL or visible link label. This rule does not apply to PR numbers, migration numbers, task numbers, or `#N` ranks.
+Keep opaque identifiers out of user-visible prose; use readable names and required native deep-link destinations while retaining exact identifiers in internal records, prompts, arguments, and ledgers.
 
 ## Changing this skill
 
