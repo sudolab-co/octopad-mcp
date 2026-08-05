@@ -55,8 +55,8 @@ If a material answer remains open after one further question, save a Question an
 1. **Review or discover.** Establish the current stream, its source claims, definition of success, owners, gates, and graph. Separate facts, Decisions, Questions, and assumptions.
 2. **Reflect or branch.** On the default path, return the complete brief and wait for the later user reply; apply corrections only after it and do not save partial planning artifacts. On valid explicit-no-loop, publish the non-blocking checkpoint and continue planning under the exact initial grant.
 3. **Lock choices.** Present each material choice as decision, options with gain and cost, recommendation, and reversibility. Save only accepted choices as authoritative Decisions.
-4. **Ground and preflight.** Resolve the planning session's active Codex target, save it as the inline supervisor target, and verify that every supervisor, executor, reviewer, recovery, and follow-up target has the same Codex project identity. Then verify governing documents, repository patterns, access, source revisions, rollback or compensation, exact verifiers, verification actions or commands, and policy gates.
-5. **Draft off-record.** Give each task a stable symbolic key, a single coherent job, dependencies, owner, route, acceptance, proof, repair envelope, and human gates before assigning durable IDs.
+4. **Ground and preflight.** Resolve the active Codex target and capability topology, save it as the inline supervisor target, and verify every native role target's project identity and capability. Then verify governing documents, repository patterns, access, source revisions, rollback or compensation, exact verifiers, verification actions or commands, and policy gates.
+5. **Draft off-record.** Give each task a stable key, one independently deliverable/reviewable result, dependencies, owner, role packet, route, acceptance, proof, repair envelope, and human gates. Tool probes, connections, logins, and inspections are preflight, not tasks.
 6. **Build feasibility.** Scan every agent and human task against every trigger class in the contract. Map each triggered invariant to one row and each row back to one task/invariant pair.
 7. **Simulate readiness.** Walk the first ready frontier and the highest-risk path. Add a prerequisite, narrow a promise, or return a material choice when the path is not executable now.
 8. **Review the draft.** Use one fresh independent reviewer by default. Add a specialist only for a genuinely orthogonal material failure domain.
@@ -70,11 +70,11 @@ Every material result, scope edge, success condition, risk boundary, validation 
 
 Every saved task uses the contract's direct task shape. Its description contains literal Why and What; every top-level task also contains literal Done when, impact from 1 through 5, and an impact rationale.
 
-Subtasks use a parent task only as a concrete in-session checklist. A dependency edge carries its one-line rationale. One task equals one focused executor session.
+Subtasks use a parent task only as a concrete in-session checklist. A dependency edge carries its one-line rationale. One task equals one independently deliverable result and one executor session; internal tool calls stay inside it.
 
 Delivery tasks end at a review-ready agent artifact. Human review, merge, migration application, deployment, publication, access grant, external spend, destructive effect, and acceptance are separate human occurrences.
 
-Save exact execution and review routes, fallback evidence and bounds, same-project target choices, and verification actions or commands needed by a fresh executor. Never rely on the planning conversation.
+Save exact routes, fallback bounds, same-project targets, role/capability requirements, and verification needed by a fresh executor. Pass organization, workspace, and task in each child packet.
 
 Save the plan manifest, tracker pointer, graph, source revisions, feasibility proof, review record, mandate, and binding through guarded durable writes; a failed concurrency check has no effect.
 
@@ -150,7 +150,7 @@ Compare numeric bounds mechanically only when frozen boundary and authoritative 
 
 ## Saved-state self-check
 
-Before Plan PASS, confirm the brief and validation mode, every material Decision, every Question gate, every real dependency, target resolution, task shape, one-job size, exact routes, review class, verification, preconditions, human separation, and next frontier.
+Before Plan PASS, confirm the brief, Decisions, Questions, dependencies, target/capability, deliverable task shape, routes, packet, review, proof, human separation, and next frontier. Reject tasks that are only tool calls, access checks, login steps, or inspections.
 
 Confirm every delivery task has an adversarial review target: targeted for deterministic interaction-free proof, independent for normal artifact review, specialist only for the orthogonal exception.
 

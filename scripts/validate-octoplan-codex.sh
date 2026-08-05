@@ -7,6 +7,7 @@ contract="$skill/references/octoplan-contract-v3.md"
 planning="$skill/references/planning.md"
 runtime="$skill/references/codex-runtime.md"
 supervision="$skill/references/codex-supervision.md"
+roles="$skill/roles"
 manifest="$root/plugins/octoplan-codex/.codex-plugin/plugin.json"
 changelog="$root/CHANGELOG.md"
 
@@ -28,16 +29,20 @@ require_file "$contract"
 require_file "$planning"
 require_file "$runtime"
 require_file "$supervision"
+for role in planner supervisor executor reviewer specialist-reviewer recovery follow-up; do
+  require_file "$roles/$role.md"
+done
 
-grep -q '^Version: 8\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 8.0.0'
-grep -q '"version": "8\.0\.0"' "$manifest" || fail 'Codex plugin is not 8.0.0'
-grep -q '^### 8\.0\.0 — 2026-08-04$' "$changelog" || fail 'Codex changelog lacks 8.0.0'
-release_note=$(awk '/^### 8\.0\.0 — 2026-08-04$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
-printf '%s\n' "$release_note" | grep -Fq 'same Codex project' || fail '8.0.0 release note lacks the same-project behavior'
-printf '%s\n' "$release_note" | grep -Fq 'Claude distribution is unchanged' || fail '8.0.0 release note lacks Claude isolation'
+grep -q '^Version: 9\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 9.0.0'
+grep -q '"version": "9\.0\.0"' "$manifest" || fail 'Codex plugin is not 9.0.0'
+grep -q '^### 9\.0\.0 — 2026-08-05$' "$changelog" || fail 'Codex changelog lacks 9.0.0'
+release_note=$(awk '/^### 9\.0\.0 — 2026-08-05$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note" | grep -Fq 'role-specific pack' || fail '9.0.0 release note lacks role-pack behavior'
+printf '%s\n' "$release_note" | grep -Fq 'Octopad context' || fail '9.0.0 release note lacks Octopad context behavior'
+printf '%s\n' "$release_note" | grep -Fq 'Claude distribution is unchanged' || fail '9.0.0 release note lacks Claude isolation'
 for forbidden_public_term in 'Delivery mandate' 'explicit-no-loop' 'plan-bound' 'outcome-bound'; do
   if printf '%s\n' "$release_note" | grep -Fq "$forbidden_public_term"; then
-    fail "8.0.0 release note exposes internal delivery term: $forbidden_public_term"
+    fail "9.0.0 release note exposes internal delivery term: $forbidden_public_term"
   fi
 done
 grep -Fq 'requires explicit execution authority before execution' "$root/CONTRIBUTING.md" || fail 'Codex CONTRIBUTING sentence is stale'
@@ -79,9 +84,9 @@ active_words=$(wc -w $active_docs | awk 'END {print $1}')
 common_lines=$((skill_lines + planning_lines + contract_lines))
 common_words=$(wc -w "$skill/SKILL.md" "$planning" "$contract" | awk 'END {print $1}')
 [ "$active_lines" -le 760 ] || fail "active skill documents exceed 760 lines: $active_lines"
-[ "$active_words" -le 10000 ] || fail "active skill documents exceed 10000 words: $active_words"
+[ "$active_words" -le 10600 ] || fail "active skill documents exceed 10600 words: $active_words"
 [ "$common_lines" -le 480 ] || fail "common planning load exceeds 480 lines: $common_lines"
-[ "$common_words" -le 6500 ] || fail "common planning load exceeds 6500 words: $common_words"
+[ "$common_words" -le 6900 ] || fail "common planning load exceeds 6900 words: $common_words"
 
 for toc_file in "$planning" "$contract" "$runtime" "$supervision"; do
   require_text "$toc_file" '## Contents'
@@ -97,6 +102,10 @@ require_text "$planning" '[Consent binding](#consent-binding)'
 require_text "$runtime" '[Shared capacity ladder](#shared-capacity-ladder)'
 require_text "$runtime" '[Target and route binding](#target-and-route-binding)'
 require_text "$supervision" '[Safe native-session creation](#safe-native-session-creation)'
+for role in planner supervisor executor reviewer specialist-reviewer recovery follow-up; do
+  require_text "$roles/$role.md" 'role packet'
+  require_text "$roles/$role.md" 'Octopad context'
+done
 
 require_text "$contract" '"schema": "octoplan-delivery-mandate-v2"'
 require_text "$contract" '"activation_kind": "confirmed-brief|explicit-no-loop"'
@@ -126,7 +135,24 @@ require_text "$contract" '`false` value cannot satisfy or remove one'
 require_text "$contract" 'Every occurrence points to a human task'
 require_text "$contract" 'The four allowed delta classes are exactly'
 require_text "$contract" 'task_role_target_overrides": [{"task_id":"<non-empty string>"'
-require_text "$contract" 'octoplan-native-creation-v2'
+require_text "$contract" 'role":"<planner|executor|lead-reviewer|specialist-reviewer|recovery>"'
+require_text "$contract" 'octoplan-native-creation-v3'
+require_text "$contract" 'native_creation_schema'
+require_text "$contract" 'old native creation contract is unsupported'
+require_text "$contract" 'role_packet_digest'
+require_text "$contract" 'capability_profile'
+require_text "$contract" 'capacity_source'
+require_text "$contract" 'Default recovery` is the incident route'
+require_text "$contract" 'supervisor|planner|executor|lead-reviewer|specialist-reviewer|recovery|follow-up'
+require_text "$contract" 'non-empty exact organization'
+require_text "$contract" 'non-empty exact workspace'
+require_text "$contract" 'non-empty exact work stream ID'
+require_text "$contract" 'non-empty exact task ID or null'
+require_text "$contract" 'non-empty exact model'
+require_text "$contract" 'non-empty exact effort'
+require_text "$contract" 'non-empty rationale'
+require_text "$contract" 'A planner uses its task-role target override when present'
+require_text "$contract" 'role packet is immutable'
 require_text "$contract" 'The first prompt line is exactly literal `OCTOPLAN_CREATION`'
 require_text "$contract" 'creation_token'
 require_text "$contract" 'creator_owner_epoch'
@@ -176,9 +202,17 @@ done
 require_text "$runtime" 'Every delivery task receives an adversarial check'
 require_text "$runtime" 'one fresh source-first reviewer'
 require_text "$runtime" 'a second orthogonal material failure domain'
+require_text "$runtime" 'missing skill or tool alone is not that proof'
+require_text "$runtime" 'capacity_source` record is read and its digest is verified'
+require_text "$runtime" 'multi_agent` delegate'
 require_text "$supervision" 'At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable'
 require_text "$supervision" 'Only an actor with `actor epoch == current supervisor epoch` may activate'
-require_text "$supervision" 'one fresh planner with no execution authority'
+require_text "$supervision" 'one fresh planner or recovery actor'
+require_text "$supervision" 'delegate has no execution authority'
+require_text "$supervision" 'Every child receives an immutable role packet'
+require_text "$supervision" 'model, effort, and capability rationale'
+require_text "$supervision" 'It contacts the user only after that evidence proves that no compliant path exists'
+require_text "$supervision" 'checked routes, failed criteria'
 require_text "$supervision" 'common-fence every child and prove quiescence'
 require_text "$supervision" 'old run remains quiescent in `replanning`'
 require_text "$supervision" 'Only then guardedly supersede the old run and bind/create the new `active` run'
@@ -191,11 +225,11 @@ require_text "$planning" 'may continue planning under the exact initial grant'
 require_text "$planning" 'Once durable Decision IDs make the complete canonical mandate available'
 require_text "$planning" 'before Plan PASS, fingerprinting, consent, or launch'
 require_text "$planning" 'empty `triggered_invariants`'
-require_text "$planning" 'verification actions or commands needed by a fresh executor'
+require_text "$planning" 'verification needed by a fresh executor'
 require_text "$runtime" 'does not invalidate a byte-identical outcome-bound mandate'
 require_text "$skill/SKILL.md" "planning session's saved Codex project"
-require_text "$planning" "planning session's active Codex target"
-require_text "$contract" "same Codex project identity as the planning target"
+require_text "$planning" 'active Codex target and capability topology'
+require_text "$contract" 'Every other target must share its Codex project identity'
 require_text "$runtime" "same Codex project identity as the planning target"
 require_text "$supervision" "same Codex project identity as the planning target"
 
@@ -230,8 +264,8 @@ const mandateKeys = ['activation_kind', 'allowed_delta_classes', 'authority_sour
 const occurrenceKeys = ['task_id', 'action_kind', 'target', 'parameters', 'environment', 'amount_currency', 'audience', 'occurrence_key', 'owner_approval_rule', 'evidence', 'wake_predicate'];
 const actionKinds = new Set(['merge', 'migration-application', 'deployment', 'publication', 'access-grant', 'external-spend', 'destructive-effect', 'acceptance']);
 const creationSubjectKinds = new Set(['supervisor', 'task', 'follow-up']);
-const creationRoles = new Set(['supervisor', 'executor', 'lead-reviewer', 'specialist-reviewer', 'recovery', 'follow-up']);
-const overrideRoles = new Set(['executor', 'lead-reviewer', 'specialist-reviewer', 'recovery']);
+const creationRoles = new Set(['supervisor', 'planner', 'executor', 'lead-reviewer', 'specialist-reviewer', 'recovery', 'follow-up']);
+const overrideRoles = new Set(['planner', 'executor', 'lead-reviewer', 'specialist-reviewer', 'recovery']);
 const triggerClasses = [
   'atomicity-concurrency', 'authorization-access', 'paid-resource', 'destructive-irreversible',
   'external-side-effect', 'cross-system-consistency', 'migration-schema', 'security-privacy',
@@ -615,6 +649,11 @@ const overrideRows = [
   {task_id: 'task-a', role: 'recovery', target: parseTarget('project-a · local · bounded recovery').target}
 ];
 assert(validateOverrides(overrideRows, plannerProjectTarget));
+assert(validateOverrides([
+  overrideRows[0],
+  {task_id: 'task-a', role: 'planner', target: parseTarget('project-a · local · incident planner').target},
+  overrideRows[1]
+], plannerProjectTarget));
 assert(sameProjectIdentity(plannerProjectTarget, parseTarget('project-a · worktree · executor').target));
 assert.throws(() => sameProjectIdentity(plannerProjectTarget, parseTarget('project-b · worktree · wrong project').target));
 assert.throws(() => sameProjectIdentity(plannerProjectTarget, parseTarget('projectless · project-a · wrong target kind').target));
@@ -942,11 +981,61 @@ assert.strictEqual(cutover.phase(), 'superseded');
 cutover.startNew();
 assert.strictEqual(cutover.phase(), 'new-active');
 
-const creationKeys = ['run_id', 'subject_kind', 'subject_id', 'attempt_id', 'role', 'route', 'target', 'artifact_revision'];
-const creationIdentityKeys = ['schema', 'creation_key', 'creation_token', 'creator_owner_epoch'];
+const creationKeys = ['run_id', 'subject_kind', 'subject_id', 'attempt_id', 'role', 'route', 'target', 'artifact_revision', 'role_packet_digest'];
+const creationIdentityKeys = ['schema', 'creation_key', 'role_packet', 'creation_token', 'creator_owner_epoch'];
+const nativeCreationSchema = 'octoplan-native-creation-v3';
+function validateNativeCreationSchema(manifest) {
+  assert(manifest && typeof manifest === 'object' && !Array.isArray(manifest));
+  assert.strictEqual(manifest.native_creation_schema, nativeCreationSchema);
+  return true;
+}
+assert(validateNativeCreationSchema({native_creation_schema: nativeCreationSchema}));
+assert.throws(() => validateNativeCreationSchema({native_creation_schema: 'octoplan-native-creation-v2'}));
+assert.throws(() => validateNativeCreationSchema({}));
+const capabilityProfiles = {
+  supervisor: ['native-context', 'native-create', 'native-ledger'],
+  planner: ['native-context'],
+  executor: ['native-context', 'native-task'],
+  'lead-reviewer': ['native-context', 'native-review'],
+  'specialist-reviewer': ['native-context', 'native-review'],
+  recovery: ['native-context', 'native-task'],
+  'follow-up': ['native-context']
+};
+const rolePacketKeys = ['organization', 'workspace', 'work_stream_id', 'task_id', 'role', 'route', 'target', 'model', 'effort', 'capability_profile', 'capability_rationale', 'capacity_source'];
+function validateRolePacket(packet, planningTarget = plannerProjectTarget) {
+  assert.deepStrictEqual(Object.keys(packet).sort(scalarCompare), rolePacketKeys.slice().sort(scalarCompare));
+  for (const key of ['organization', 'workspace', 'work_stream_id', 'role', 'route', 'model', 'effort', 'capability_rationale']) nonEmpty(packet[key]);
+  assert(packet.task_id === null || (typeof packet.task_id === 'string' && packet.task_id.length > 0));
+  assert(creationRoles.has(packet.role));
+  validateTarget(packet.target);
+  sameProjectIdentity(planningTarget, packet.target);
+  assert(Array.isArray(packet.capability_profile));
+  assert.deepStrictEqual(packet.capability_profile, capabilityProfiles[packet.role]);
+  assert(packet.capacity_source && typeof packet.capacity_source === 'object' && !Array.isArray(packet.capacity_source));
+  assert.deepStrictEqual(Object.keys(packet.capacity_source).sort(scalarCompare), ['kind', 'record_id', 'evidence_digest'].sort(scalarCompare));
+  assert(new Set(['saved-route', 'incident-delta']).has(packet.capacity_source.kind));
+  nonEmpty(packet.capacity_source.record_id);
+  assert(/^[a-f0-9]{64}$/.test(packet.capacity_source.evidence_digest));
+  if (packet.capacity_source.kind === 'incident-delta') assert(['planner', 'recovery'].includes(packet.role));
+  return true;
+}
 function creationIdentity(subject_kind = 'task', role = 'executor', token = 'token-a', creator_owner_epoch = 3, subject_id = 'task-a', artifact_revision = null, target = plannerProjectTarget) {
+  const rolePacket = {
+    organization: 'org-a',
+    workspace: 'workspace-a',
+    work_stream_id: 'stream-a',
+    task_id: subject_kind === 'task' ? subject_id : null,
+    role,
+    route: 'route-a',
+    target,
+    model: 'gpt-5.6-luna',
+    effort: 'high',
+    capability_profile: capabilityProfiles[role],
+    capability_rationale: 'fixture',
+    capacity_source: {kind: 'saved-route', record_id: 'route-a', evidence_digest: 'c'.repeat(64)}
+  };
   return {
-    schema: 'octoplan-native-creation-v2',
+    schema: nativeCreationSchema,
     creation_key: {
       run_id: 'run-a',
       subject_kind,
@@ -955,15 +1044,17 @@ function creationIdentity(subject_kind = 'task', role = 'executor', token = 'tok
       role,
       route: 'route-a',
       target,
-      artifact_revision
+      artifact_revision,
+      role_packet_digest: digest(rolePacket)
     },
+    role_packet: rolePacket,
     creation_token: token,
     creator_owner_epoch
   };
 }
 function validateCreationIdentity(value, planningTarget = plannerProjectTarget) {
   assert.deepStrictEqual(Object.keys(value).sort(scalarCompare), creationIdentityKeys.slice().sort(scalarCompare));
-  assert.strictEqual(value.schema, 'octoplan-native-creation-v2');
+  assert.strictEqual(value.schema, nativeCreationSchema);
   assert.deepStrictEqual(Object.keys(value.creation_key).sort(scalarCompare), creationKeys.slice().sort(scalarCompare));
   nonEmpty(value.creation_key.run_id);
   nonEmpty(value.creation_key.subject_id);
@@ -974,6 +1065,13 @@ function validateCreationIdentity(value, planningTarget = plannerProjectTarget) 
   sameProjectIdentity(planningTarget, value.creation_key.target);
   assert(value.creation_key.attempt_id === null || (typeof value.creation_key.attempt_id === 'string' && value.creation_key.attempt_id.length > 0));
   assert(value.creation_key.artifact_revision === null || (typeof value.creation_key.artifact_revision === 'string' && value.creation_key.artifact_revision.length > 0));
+  assert(/^[a-f0-9]{64}$/.test(value.creation_key.role_packet_digest));
+  validateRolePacket(value.role_packet, planningTarget);
+  assert.strictEqual(value.role_packet.role, value.creation_key.role);
+  assert.strictEqual(value.role_packet.route, value.creation_key.route);
+  assert.deepStrictEqual(value.role_packet.target, value.creation_key.target);
+  assert.strictEqual(value.creation_key.role_packet_digest, digest(value.role_packet));
+  assert.strictEqual(value.role_packet.task_id, value.creation_key.subject_kind === 'task' ? value.creation_key.subject_id : null);
   nonEmpty(value.creation_token);
   assert(Number.isInteger(value.creator_owner_epoch) && value.creator_owner_epoch > 0);
   if (value.creation_key.subject_kind === 'task') {
@@ -991,18 +1089,29 @@ function creationKey(value) {
   return {schema: value.schema, creation_key: value.creation_key};
 }
 const executorIdentity = creationIdentity('task', 'executor', 'token-executor', 3);
+const plannerIdentity = creationIdentity('task', 'planner', 'token-planner', 3, 'task-a');
 const reviewerIdentity = creationIdentity('task', 'lead-reviewer', 'token-reviewer', 3, 'task-a', 'artifact-a');
 const specialistIdentity = creationIdentity('task', 'specialist-reviewer', 'token-specialist', 3, 'task-a', 'artifact-a');
 const recoveryIdentity = creationIdentity('task', 'recovery', 'token-recovery', 3);
 const supervisorIdentity = creationIdentity('supervisor', 'supervisor', 'token-supervisor', 3, 'supervisor-a');
 const followUpIdentity = creationIdentity('follow-up', 'follow-up', 'token-follow-up', 3, 'follow-up-a');
-const projectIdentities = [executorIdentity, reviewerIdentity, specialistIdentity, recoveryIdentity, supervisorIdentity, followUpIdentity];
+const projectIdentities = [executorIdentity, plannerIdentity, reviewerIdentity, specialistIdentity, recoveryIdentity, supervisorIdentity, followUpIdentity];
 for (const identity of projectIdentities) {
   assert(validateCreationIdentity(identity));
   assert.throws(() => validateCreationIdentity({...identity, creation_key: {...identity.creation_key, target: parseTarget('project-b · worktree · wrong project').target}}));
 }
+const stalePacket = {...plannerIdentity, role_packet: {...plannerIdentity.role_packet, workspace: 'workspace-b'}};
+assert.throws(() => validateCreationIdentity(stalePacket));
+const relocatedPacket = {...plannerIdentity, role_packet: {...plannerIdentity.role_packet, workspace: 'workspace-b'}};
+relocatedPacket.creation_key = {...relocatedPacket.creation_key, role_packet_digest: digest(relocatedPacket.role_packet)};
+assert(validateCreationIdentity(relocatedPacket));
+assert.notDeepStrictEqual(creationKey(relocatedPacket), creationKey(plannerIdentity));
+const wrongCapability = {...plannerIdentity, role_packet: {...plannerIdentity.role_packet, capability_profile: capabilityProfiles.executor}};
+wrongCapability.creation_key = {...wrongCapability.creation_key, role_packet_digest: digest(wrongCapability.role_packet)};
+assert.throws(() => validateCreationIdentity(wrongCapability));
 const projectlessIdentities = [
   creationIdentity('task', 'executor', 'token-projectless-executor', 3, 'task-projectless', null, plannerProjectlessTarget),
+  creationIdentity('task', 'planner', 'token-projectless-planner', 3, 'task-projectless', null, plannerProjectlessTarget),
   creationIdentity('task', 'lead-reviewer', 'token-projectless-reviewer', 3, 'task-projectless', 'artifact-a', plannerProjectlessTarget),
   creationIdentity('task', 'specialist-reviewer', 'token-projectless-specialist', 3, 'task-projectless', 'artifact-a', plannerProjectlessTarget),
   creationIdentity('task', 'recovery', 'token-projectless-recovery', 3, 'task-projectless', null, plannerProjectlessTarget),
@@ -1013,6 +1122,62 @@ for (const identity of projectlessIdentities) {
   assert(validateCreationIdentity(identity, plannerProjectlessTarget));
   assert.throws(() => validateCreationIdentity(identity, plannerProjectTarget));
 }
+
+const plannerPacket = {
+  organization: 'org-a', workspace: 'workspace-a', work_stream_id: 'stream-a', task_id: 'task-a', role: 'planner',
+  route: 'recovery-route-a', target: plannerProjectTarget, model: 'gpt-5.6-luna', effort: 'max', capability_profile: capabilityProfiles.planner, capability_rationale: 'incident-detection',
+  capacity_source: {kind: 'incident-delta', record_id: 'delta-a', evidence_digest: 'd'.repeat(64)}
+};
+assert(validateRolePacket(plannerPacket, plannerProjectTarget));
+assert.throws(() => validateRolePacket({...plannerPacket, target: parseTarget('project-b · worktree · wrong project').target}, plannerProjectTarget));
+function assignRole(role, substrate) {
+  assert(capabilityProfiles[role]);
+  if (substrate.kind === 'analytical') return {kind: 'proposal-only'};
+  assert(capabilityProfiles[role].every((capability) => substrate.capabilities.has(capability)));
+  return {kind: 'native'};
+}
+assert.deepStrictEqual(assignRole('supervisor', {kind: 'native', capabilities: new Set(['native-context', 'native-ledger', 'native-create'])}), {kind: 'native'});
+assert.deepStrictEqual(assignRole('planner', {kind: 'analytical', capabilities: new Set()}), {kind: 'proposal-only'});
+assert.throws(() => assignRole('lead-reviewer', {kind: 'native', capabilities: new Set(['native-context'])}));
+
+function resolveIncident({compliantPath, evidence, userAsked}) {
+  if (compliantPath) {
+    assert.strictEqual(userAsked, false);
+    return 'continue-or-replan';
+  }
+  assert(evidence && evidence.no_compliant_path === true);
+  assert(Array.isArray(evidence.checked_routes) && evidence.checked_routes.length > 0);
+  assert(Array.isArray(evidence.failed_criteria) && evidence.failed_criteria.length > 0);
+  nonEmpty(evidence.capability_environment);
+  nonEmpty(evidence.protected_action_boundary);
+  assert.strictEqual(userAsked, true);
+  return 'human-decision';
+}
+const noPathEvidence = {no_compliant_path: true, checked_routes: ['saved-route', 'fallback'], failed_criteria: ['native-capability'], capability_environment: 'native tools absent', protected_action_boundary: 'unchanged'};
+assert.strictEqual(resolveIncident({compliantPath: true, userAsked: false}), 'continue-or-replan');
+assert.strictEqual(resolveIncident({compliantPath: false, evidence: noPathEvidence, userAsked: true}), 'human-decision');
+assert.throws(() => resolveIncident({compliantPath: false, evidence: {no_compliant_path: true}, userAsked: true}));
+assert.throws(() => resolveIncident({compliantPath: true, evidence: noPathEvidence, userAsked: true}));
+
+function validateTaskGranularity(task) {
+  const taskKeys = ['id', 'work_stream_id', 'parent_task_id', 'title', 'description', 'dependencies', 'assignment', 'impact', 'impact_rationale', 'routes'];
+  assert.deepStrictEqual(Object.keys(task).sort(scalarCompare), taskKeys.slice().sort(scalarCompare));
+  assert(nonEmpty(task.id));
+  assert(nonEmpty(task.title));
+  assert(task.description.includes('Why:') && task.description.includes('What:') && task.description.includes('Done when:'));
+  const what = task.description.match(/^What:\s*(.*)$/m);
+  const deliverableNoun = /\b(artifact|matrix|report|implementation|decision|file|page|configuration|plan|release)\b/i;
+  const operationalOnly = /\b(access|session|connection|login|endpoint|object|service)\b/i.test(what ? what[1] : '') && !deliverableNoun.test(what ? what[1] : '');
+  assert(what && !/^(open|connect|log in|login|inspect|run|call|probe|check|verify|validate|confirm)\b/i.test(what[1].trim()) || deliverableNoun.test(what ? what[1] : ''));
+  assert(!operationalOnly);
+  assert(task.routes && nonEmpty(task.routes.exec) && nonEmpty(task.routes.review));
+  return true;
+}
+const granularityRoutes = {exec: 'executor-route', review: 'review-route', review_route: null, specialist_review_route: null, fallback: null, recovery_override: null, lineage_override: null, parallel_safe_with: []};
+assert.throws(() => validateTaskGranularity({id: 'task-login', work_stream_id: null, parent_task_id: null, title: 'Connect service', description: 'Why: access is needed\nWhat: Log in to service\nDone when: session exists', dependencies: [], assignment: 'agent', impact: 1, impact_rationale: 'preflight', routes: granularityRoutes}));
+assert.throws(() => validateTaskGranularity({id: 'task-access', work_stream_id: null, parent_task_id: null, title: 'Check OAuth access', description: 'Why: access is needed\nWhat: Check OAuth access\nDone when: access exists', dependencies: [], assignment: 'agent', impact: 1, impact_rationale: 'probe', routes: granularityRoutes}));
+assert(validateTaskGranularity({id: 'task-deliverable', work_stream_id: null, parent_task_id: null, title: 'Produce matrix', description: 'Why: the decision needs evidence\nWhat: Produce a verified matrix\nDone when: independent review passes', dependencies: [], assignment: 'agent', impact: 2, impact_rationale: 'bounded deliverable', routes: granularityRoutes}));
+
 assert.strictEqual(new Set(projectIdentities.map((identity) => identity.creation_token)).size, projectIdentities.length);
 assert.notStrictEqual(executorIdentity.creation_token, reviewerIdentity.creation_token);
 assert.strictEqual(creationKey(executorIdentity).creation_key.creator_owner_epoch, undefined);
@@ -1224,7 +1389,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 8.0.0 contract fixtures');
+console.log('PASS: deterministic 9.0.0 contract fixtures');
 NODE
 
 changed_files=$({
@@ -1247,4 +1412,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 8.0.0 contract\n'
+printf 'PASS: octoplan-codex 9.0.0 contract\n'

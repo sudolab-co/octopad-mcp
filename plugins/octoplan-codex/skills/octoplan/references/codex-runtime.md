@@ -40,11 +40,13 @@ Use this one ladder for executors, reviewers, recovery, and supervisor calibrati
 
 Risk labels alone never select Sol. A Sol rationale states why Luna and Terra are inadequate. Split separable work before raising capacity; never silently substitute a saved route. `ultra` means genuinely independent parallel delegation with user opt-in, not difficulty.
 
-Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default, Terra `max` for difficult bounded reconciliation, and Sol only for orchestration ambiguity, weak verification, or costly irreversibility.
+Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default, Terra `max` for difficult bounded reconciliation, and Sol only for orchestration ambiguity, weak verification, or costly irreversibility. A bounded incident-reasoning delegate uses the least costly model and effort that can detect the issue; raise capacity only when the incident's detection difficulty warrants it, and record the rationale.
 
 ## Failure diagnosis
 
-Missing or contradictory context returns to a fresh Sol planning pass. Environment, access, or verifier failure repairs the blocker without changing capacity. A confirmed capability miss on a sound task uses only its saved fallback; it does not walk the ladder.
+Missing context, a missing skill, a missing capability, environment or access failure, and verifier failure are incidents owned by the supervisor. The supervisor diagnoses the issue, keeps safe work moving, and seeks a compliant path inside the saved scope, policy, mandate, human gates, and protected-action boundary. When useful, it delegates bounded reasoning to a fresh planner or recovery actor with model and effort suited to the incident; that actor returns a proposal only, and the supervisor decides and records the path.
+
+A child does not turn its own limitation into a new stop condition or user request. A planner cannot be created until its `capacity_source` record is read and its digest is verified. The user is contacted only after the supervisor has evidence that no solution respecting the guardrails exists; a missing skill or tool alone is not that proof.
 
 Before consent, a fallback records the exact route, failed criterion, maximum replacements, at least two repeated observations, and observations establishing prompt, context, access, environment, and verifier soundness. A direct user exception names the task, saved route, and bound; it does not prove the stored trigger.
 
@@ -68,15 +70,17 @@ A material replan invalidates the old launch binding in either mode but does not
 
 ## Authority scope and accounting
 
-Valid authority covers only the reviewed hash, saved conditional policy, saved routes and targets, bounded recovery and repair, saved fallbacks, agent-owned executor/reviewer sessions, non-blocking follow-ups, reconciliation wakes, and still-valid parallel groups.
+Valid authority covers only the reviewed hash, saved conditional policy, saved routes and targets, bounded recovery and repair, saved fallbacks, agent-owned executor/reviewer sessions, bounded incident reasoning, non-blocking follow-ups, reconciliation wakes, and still-valid parallel groups.
 
-It never covers a human-only task, an unsaved route, an out-of-envelope replan, a protected action, a new audience or access grant, or a model/effort/target substitution. Apply the contract's exact protected human-occurrence predicate; the mandate never satisfies it.
+It never covers a human-only task, an unsaved route, an out-of-envelope replan, a protected action, a new audience or access grant, or an arbitrary model/effort/target substitution. A capacity choice explicitly allowed by the saved incident policy is not an arbitrary substitution; otherwise save and review the delta before acting. Apply the contract's exact protected human-occurrence predicate; the mandate never satisfies it.
 
 Record authoritative actuals only. Unavailable time or provider cost remains null/unavailable; never estimate cost. Compare numeric boundaries mechanically only when frozen and actual values use the same canonical units. Otherwise request fresh independent mandate conformance; authority-changing ambiguity is `HUMAN_DECISION` and `waiting-human`.
 
 ## Target and route binding
 
-Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
+Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. A planner role uses the saved incident route and its recorded capacity rationale. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities and role capability topology; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
+
+An analytical delegate, including a `multi_agent` delegate, is not a native supervisor, reviewer, or successor launcher. It may return a bounded proposal to the fenced supervisor, but it cannot claim a delivery task, record a PASS, create a native child, or relay a result.
 
 Keep external-event adapters conditional and use native Codex operations for native sessions. A wake supplies evidence only and cannot expand the saved route or authority.
 
