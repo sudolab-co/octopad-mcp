@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 9.0.0 — 2026-08-05
+
+This breaking release gives each actor a small role-specific pack and binds every native creation to an immutable packet naming the organization, workspace, work stream, task, route, target, model, effort, and required capability profile. Every native child enters that Octopad context first, while Octopad remains responsible for its own context and status lifecycle. The planner, supervisor, executor, reviewer, recovery, and follow-up responsibilities are explicit.
+
+The supervisor owns incidents end to end: it can delegate bounded reasoning to a fresh actor with an appropriate model and effort, restore a missing capability or use a safe workaround, and asks the user only after proving that no compliant path remains. Analytical delegates cannot impersonate native launchers. Incident planners use the affected task's saved recovery route or default recovery route, and any capacity change creates a reviewed delta. Planning rejects plans decomposed into tool calls or access probes instead of independently deliverable results. Existing 8.0.0 plans require replanning under this creation contract; the Claude distribution is unchanged.
+
 ### 8.0.0 — 2026-08-04
 
 Every native Octoplan session now stays in the same Codex project as the planning session. The project ID is fixed across supervisors, executors, lead and specialist reviewers, recovery sessions, and follow-ups; `local` and `worktree` environments may still differ inside that project. Projectless plans keep the exact planning directory. A cross-project or project/projectless substitution stops before session creation.

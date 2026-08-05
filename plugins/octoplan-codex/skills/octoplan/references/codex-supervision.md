@@ -19,7 +19,7 @@ Read this reference only after valid launch authority or when resuming. Octopad 
 
 ## Contract gate and run states
 
-Before any write, claim, message, or native action, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate through the contract. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops fail closed and returns to replanning.
+Before any write, claim, message, or native action, dispatch exactly one v6 supervision contract, one v3 fingerprint, one canonical mandate, and native creation schema v3 through the contract. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops fail closed and returns to replanning.
 
 Run states are exactly `active`, `replanning`, `waiting-human`, `paused`, `revoked`, `superseded`, `failed`, and `completed`.
 
@@ -47,7 +47,7 @@ Apply the SKILL user-visible identifier rule to recaps. Internal prompts, ledger
 
 ## Supervisor ownership
 
-Only the fenced supervisor claims tasks, creates successors, starts reviewers, records transitions, and sends the final user-facing recap. Executors, reviewers, parents, and children never relay or launch.
+Only the fenced supervisor claims tasks, creates successors, starts reviewers, records transitions, and sends the final user-facing recap. Executors, reviewers, parents, and children never relay or launch. Every child receives an immutable role packet naming the exact organization, workspace, Octopad work stream, task, route, target, model, effort, and capability rationale, then enters that context through Octopad's session entrypoint; Octopad owns its context and status lifecycle.
 
 At each wake, reread the guarded cursor, run state, owner epoch, current plan hash, task attempt, artifact revision, gate, and relevant source evidence before a claim or write.
 
@@ -59,11 +59,11 @@ At fan-in, wait for every dependency, record one integrated immutable revision, 
 
 ## Safe native-session creation
 
-Every supervisor, executor, reviewer, recovery, and follow-up creation uses the contract's unique creation key and a durable creation record. Before saving `intent`, prove that its target has the same Codex project identity as the planning target; project `environment` may switch between `local` and `worktree`, but `project_id` may not change, and projectless `directory_name` must remain exact. Save `intent` before at most one native create call. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable; a takeover monotonically increments the separate current supervisor epoch without changing identity.
+Every supervisor, planner, executor, reviewer, recovery, and follow-up creation uses the contract's unique creation key and a durable creation record. Before saving `intent`, prove that its target has the same Codex project identity as the planning target and exposes the role's required native capability; project `environment` may switch between `local` and `worktree`, but `project_id` may not change, and projectless `directory_name` must remain exact. A planner uses the affected task's saved incident route and the selected model/effort rationale. Save `intent` before at most one native create call. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable; a takeover monotonically increments the separate current supervisor epoch without changing identity.
 
 The first prompt begins with the exact contract-defined `OCTOPLAN_CREATION` line, canonical creation token, and creator epoch; the visible title is human-readable and never replaces the identity. A malformed source title or target stops before creation.
 
-Use the saved title patterns: `supervisor - <plain work stream name>`, `<plain work stream name> - #<N> <task name>`, `review - <plain work stream name> - #<N> <task name>`, and `specialist review - <plain work stream name> - #<N> <task name>`.
+Use the saved title patterns: `supervisor - <plain work stream name>`, `planner - <plain work stream name> - #<N> <incident or task name>`, `<plain work stream name> - #<N> <task name>`, `review - <plain work stream name> - #<N> <task name>`, and `specialist review - <plain work stream name> - #<N> <task name>`.
 
 After a client, direct, empty, or missing response, call the native thread listing and inspect every current candidate. A client identifier is evidence only and is never passed as a native thread ID.
 
@@ -101,9 +101,11 @@ A human task never becomes agent work through a route fallback. Protected occurr
 
 ## Incidents and blockers
 
-When an executor, reviewer, event, or preflight reveals a material incident, stop new claims on the affected path and record the contract's stable blocker key. Do not let rewording or an irrelevant artifact create a new identity.
+When an executor, reviewer, event, or preflight reveals a material incident, stop new claims on the affected path and record the contract's stable blocker key. Do not let rewording or an irrelevant artifact create a new identity. A missing skill, tool, or session capability is an incident, not a user-facing stop by itself.
 
-Launch one fresh planner with no execution authority. It produces a concrete delta listing changed tasks, dependencies, routes, sources, verifiers, carried artifacts, invalidated evidence and PASS records, feasibility, and mandate comparison.
+The supervisor owns the resolution. It diagnoses the incident, preserves safe independent work, and seeks a compliant path inside the saved scope, policy, mandate, human gates, and protected-action boundary. When useful, it delegates bounded reasoning to one fresh planner or recovery actor with model and effort suited to the detection difficulty. The delegate has no execution authority and returns a proposal only; it cannot add a stop condition, ask the user, claim a task, or launch a session.
+
+The supervisor validates the proposal and records a concrete delta listing changed tasks, dependencies, routes, sources, verifiers, carried artifacts, invalidated evidence and PASS records, feasibility, capability fit, capacity source, and mandate comparison. It may restore a missing capability or use a safe workaround when that stays within the guardrails. The evidence records checked routes, failed criteria, environment/capability observations, and the protected-action boundary. It contacts the user only after that evidence proves that no compliant path exists.
 
 Run one fresh independent review of the delta, feasibility, source and verifier freshness, saved equality, conformance, human separation, and protected actions. A review proposal outside the specification returns to the parent rather than becoming a redesign.
 
@@ -131,7 +133,7 @@ An external wake supplies evidence, never authority. Stale, duplicate, unmapped,
 
 ## Recovery and plan change
 
-Use only the saved same-route recovery policy or task override. A dead session is fenced before a fresh attempt. Before an artifact, restart from the saved base; after an artifact, start a fresh recovery executor and the saved calibrated review. A predecessor PASS never transfers.
+Use the saved same-route recovery policy or a supervisor-approved incident route whose delta remains inside the guardrails. A dead session is fenced before a fresh attempt. Before an artifact, restart from the saved base; after an artifact, start a fresh recovery executor and the saved calibrated review. A predecessor PASS never transfers.
 
 For an unsupported saved contract, quarantine schema-agnostically: do not parse, resume, message, or dispatch it. Poll or reconcile only under its evidence-based wake predicate. Prove every recorded native session terminal or quiescent, or explicitly adopt or reject its immutable artifact under the current contract. Ambiguity prevents new session creation; use `waiting-human` only when native reconciliation cannot resolve it safely.
 

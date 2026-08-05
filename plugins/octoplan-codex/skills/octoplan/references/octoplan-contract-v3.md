@@ -18,7 +18,7 @@ This is the only normative source for saved schemas, durable fields, extraction,
 
 ## Supported contract and gate
 
-The saved pair is exactly one `octoplan-supervision-v6`, one `octoplan-fingerprint-v3`, and one canonical `delivery_mandate`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing field fails closed before any write, route, consent, resume, or native session. Never infer a field, authority, review PASS, feasibility PASS, adoption, or consent.
+The saved pair is exactly one `octoplan-supervision-v6`, one `octoplan-fingerprint-v3`, one canonical `delivery_mandate`, and one `native_creation_schema` equal to `octoplan-native-creation-v3`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing field fails closed before any write, route, consent, resume, or native session. A plan carrying the old native creation contract is unsupported and must be replanned. Never infer a field, authority, review PASS, feasibility PASS, adoption, or consent.
 
 The v6 Plan manifest is enclosed by exactly one `OCTOPLAN_PLAN_MANIFEST_V6_BEGIN` and `OCTOPLAN_PLAN_MANIFEST_V6_END` pair. Markers must be ordered, non-nested, unique, and removed from the fingerprint as one byte range: from the begin-marker line's first byte through the end-marker line's LF, or EOF when final.
 
@@ -76,6 +76,7 @@ The manifest contains the exact v6 supervision policy, execution targets, mandat
   "ledger_task_id": "<immutable ledger task ID>",
   "plan_hash": "PENDING",
   "manifest": {
+    "native_creation_schema": "octoplan-native-creation-v3",
     "supervision_contract": {
       "schema": "octoplan-supervision-v6",
       "policy": "<exact Policy value>",
@@ -94,7 +95,7 @@ The manifest contains the exact v6 supervision policy, execution targets, mandat
       "inline_supervisor_target": {"kind": "<project|projectless>", "project_id": "<ID or null>", "environment": "<local|worktree or null>", "directory_name": "<name or null>", "rationale": "<rationale or null>"},
       "dedicated_supervisor_target": "<same target object or null>",
       "default_executor_target": "<same target object>",
-      "task_role_target_overrides": [{"task_id":"<non-empty string>","role":"<executor|lead-reviewer|specialist-reviewer|recovery>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"}}],
+      "task_role_target_overrides": [{"task_id":"<non-empty string>","role":"<planner|executor|lead-reviewer|specialist-reviewer|recovery>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"}}],
       "reviewer_default": {"kind": "<project|projectless>", "project_id": "<ID or null>", "environment": "<local|worktree or null>", "directory_name": "<name or null>", "rationale": "<rationale or null>"}
     },
     "delivery_mandate": "<exact object above>",
@@ -120,7 +121,9 @@ The manifest contains the exact v6 supervision policy, execution targets, mandat
 
 The manifest's supervision contract is read from the durable task text, not a generated summary. Each required label occurs once, and its value includes all source whitespace after the prefix. The dedicated route and dedicated replacement labels alone accept literal `none`; an empty value is malformed.
 
-The active planning session's resolved native target is the planning target and is saved as `inline_supervisor_target`; never replace it from prose or a later caller's directory. Every other saved target must have the same Codex project identity as the planning target. Resolve each non-null project target uniquely through the current project registry and retain host, path, and Git observations only as excluded evidence. A projectless target must state why it is safe and sufficient for the stream.
+Extract `native_creation_schema` as a required manifest value, fingerprint it, and reject anything other than `octoplan-native-creation-v3` before routing or resume. This is the migration fence for plans created under the old native identity.
+
+The active planning session's resolved native target is the planning target and is saved as `inline_supervisor_target`; never replace it from prose or a later caller's directory. Every other target must share its Codex project identity. Resolve project targets through the current registry and retain host, path, and Git observations only as excluded evidence. A projectless target must state why it is safe. Role targets require native capability; analytical delegation has no launch authority.
 
 The exact Plan-review final binding contains the reviewed draft digest, matrix digest, literal lead route, optional specialist route, verdict, mandate-conformance verdict, matching Review PASS record, `PENDING` plan hash, saved-state equality, and critical-source/verifier PASS. A final hash is never confirmed by a reply sent before it exists.
 
@@ -146,7 +149,7 @@ Each Question is exactly `id`, `work_stream_id`, `question`, `status`, and `answ
 
 Each task is exactly `id`, `work_stream_id`, `parent_task_id`, `title`, `description`, `dependencies`, `assignment`, `impact`, `impact_rationale`, and `routes`. A dependency is exactly `id` plus `rationale`; a route map is the saved route lines and `parallel_safe_with`.
 
-The route scalars are `exec`, `review`, `review_route`, `specialist_review_route`, `fallback`, `recovery_override`, and `lineage_override`. `exec` and `review` are required for an agent task. A human task has null for all seven scalars and an empty parallel list; any mixed shape fails.
+The route scalars are `exec`, `review`, `review_route`, `specialist_review_route`, `fallback`, `recovery_override`, and `lineage_override`. `exec` and `review` are required for an agent task. A human task has null for all seven scalars and an empty parallel list; any mixed shape fails. A planner or recovery incident uses the affected task's saved `recovery_override`, `fallback`, or default recovery route; it never invents a route.
 
 ### Feasibility and adoption records
 
@@ -182,7 +185,13 @@ A projectless target is the label value `projectless · <directory> · <rational
 
 Two project targets have the same Codex project identity only when both `kind` values are `project` and their exact `project_id` values match; `environment` may differ between `local` and `worktree`. Two projectless targets match only when both `kind` values are `projectless` and their exact `directory_name` values match. A project/projectless pair never matches.
 
-Persist the planning target as the one `Inline supervisor target`, plus one `Default executor target` and one `Reviewer default`; each is an exact canonical five-key target object. `Dedicated supervisor target: none` maps only to JSON `null`. The dedicated supervisor, default executor, reviewer default, and every task-role override must share the inline planning target's Codex project identity. Each task-role override is exactly `{task_id: non-empty string, role: executor|lead-reviewer|specialist-reviewer|recovery, target: exact canonical five-key target object}`; no extra or missing key is allowed. Overrides are unique by `(task_id, role)` and sort by task ID then role. `Task-role target overrides: none` maps only to `[]`. Missing, empty, unknown-role, malformed, duplicate, or cross-project bindings stop fingerprinting.
+Persist the planning target as the one `Inline supervisor target`, plus one `Default executor target` and one `Reviewer default`; each is an exact canonical five-key target object. `Dedicated supervisor target: none` maps only to JSON `null`. The dedicated supervisor, default executor, reviewer default, and every task-role override must share the inline planning target's Codex project identity. Each task-role override is exactly `{task_id: non-empty string, role: planner|executor|lead-reviewer|specialist-reviewer|recovery, target: exact canonical five-key target object}`; no extra or missing key is allowed. Overrides are unique by `(task_id, role)` and sort by task ID then role. `Task-role target overrides: none` maps only to `[]`. Missing, empty, unknown-role, malformed, duplicate, or cross-project bindings stop fingerprinting.
+
+A planner uses its task-role target override when present and otherwise the inline supervisor target. Its role packet carries the exact selected model, effort, capability rationale, and incident route; a capacity change produces a reviewed delta and a fresh creation identity.
+
+When no task override exists, the supervision contract's `Default recovery` is the incident route. The route, model, effort, and capability profile are bound in the native creation identity, not selected from caller context.
+
+`capacity_source` is exactly `{"kind":"saved-route|incident-delta","record_id":"<non-empty>","evidence_digest":"<lowercase SHA-256>"}`. The packet's model and effort are read from that source record. `saved-route` uses the selected saved recovery/default route; `incident-delta` requires the reviewed delta's record and digest. A missing, stale, or unreviewed source stops creation.
 
 ## Tasks, Questions, and protected occurrences
 
@@ -240,13 +249,13 @@ Serialize UTF-8 strings with only quotation mark, reverse solidus, and U+0000 th
 
 ## Native creation and fixtures
 
-The immutable first-line identity is exactly:
+The immutable first-line identity is exactly. The role capability profiles are fixed: `supervisor` requires `native-context`, `native-ledger`, and `native-create`; `planner` requires `native-context`; `executor` and `recovery` require `native-context` and `native-task`; `lead-reviewer` and `specialist-reviewer` require `native-context` and `native-review`; `follow-up` requires `native-context`.
 
 ```json
-{"schema":"octoplan-native-creation-v2","creation_key":{"run_id":"<non-empty string>","subject_kind":"supervisor|task|follow-up","subject_id":"<non-empty string>","attempt_id":"<non-empty string or null>","role":"supervisor|executor|lead-reviewer|specialist-reviewer|recovery|follow-up","route":"<non-empty exact saved route string>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"},"artifact_revision":"<non-empty string or null>"},"creation_token":"<non-empty unique string>","creator_owner_epoch":"<positive current supervisor epoch at intent>"}
+{"schema":"octoplan-native-creation-v3","creation_key":{"run_id":"<non-empty string>","subject_kind":"supervisor|task|follow-up","subject_id":"<non-empty string>","attempt_id":"<non-empty string or null>","role":"supervisor|planner|executor|lead-reviewer|specialist-reviewer|recovery|follow-up","route":"<non-empty exact saved route string>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"},"artifact_revision":"<non-empty string or null>","role_packet_digest":"<lowercase SHA-256>"},"role_packet":{"organization":"<non-empty exact organization>","workspace":"<non-empty exact workspace>","work_stream_id":"<non-empty exact work stream ID>","task_id":"<non-empty exact task ID or null>","role":"<supervisor|planner|executor|lead-reviewer|specialist-reviewer|recovery|follow-up>","route":"<non-empty exact saved route string>","target":{"kind":"<project|projectless>","project_id":"<ID or null>","environment":"<local|worktree or null>","directory_name":"<name or null>","rationale":"<rationale or null>"},"model":"<non-empty exact model>","effort":"<non-empty exact effort>","capability_profile":["<sorted required capability>"],"capability_rationale":"<non-empty rationale>","capacity_source":{"kind":"<saved-route|incident-delta>","record_id":"<non-empty>","evidence_digest":"<lowercase SHA-256>"}},"creation_token":"<non-empty unique string>","creator_owner_epoch":"<positive current supervisor epoch at intent>"}
 ```
 
-The first prompt line is exactly literal `OCTOPLAN_CREATION`, one ASCII space, and the canonical JSON bytes above. The durable creation record stores this immutable identity plus state and wake; `creation_key` excludes token and creator epoch and is the uniqueness key. Supervisor and follow-up subjects use null attempt; task roles use non-null attempt; reviewer roles require non-null artifact revision, while other roles may use null or the exact relevant revision. Before durable `intent`, compare the creation target with the run's inline planning target and stop on a project-identity mismatch. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable. A takeover monotonically increments the separate current supervisor epoch without changing identity. Activation and every ledger transition require actor epoch == current supervisor epoch. Matching a native candidate compares immutable identity including creator epoch, then gates transition separately on current epoch. Guard durable `intent` before at most one create call and reconcile every client, direct, empty, crash, zero, one, or multiple response.
+The first prompt line is exactly literal `OCTOPLAN_CREATION`, one ASCII space, and the canonical JSON bytes above. The role packet is immutable and its digest is part of `creation_key`; the actor enters the named Octopad context through the Octopad session entrypoint. A packet, capability, capacity source, route, model, effort, or target mismatch pauses activation. The durable creation record stores this immutable identity plus state and wake; `creation_key` excludes token and creator epoch and is the uniqueness key. Supervisor and follow-up subjects use null attempt; task roles use non-null attempt; reviewer roles require non-null artifact revision, while other roles may use null or the exact relevant revision. Before durable `intent`, compare the creation target with the run's inline planning target and stop on a project-identity mismatch. At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable. A takeover monotonically increments the separate current supervisor epoch without changing identity. Activation and every ledger transition require actor epoch == current supervisor epoch. Matching a native candidate compares immutable identity including creator epoch and role packet, then gates transition separately on current epoch. Guard durable `intent` before at most one create call and reconcile every client, direct, empty, crash, zero, one, or multiple response.
 
 Creation states are `intent`, `pending`, `ready`, `activated`, `failed`, and `paused`. Owner epoch fencing rejects late writes; resume reconciles an existing intent without a second create call; every nonterminal pause stores an evidence-based wake predicate. A unique match may become `ready`, then only the current fenced supervisor may activate it.
 
