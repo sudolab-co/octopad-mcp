@@ -28,8 +28,8 @@ Use this one ladder for executors, reviewers, recovery, and supervisor calibrati
 
 | Observable detection profile | Route |
 |---|---|
-| Exact mechanical work with deterministic proof | `gpt-5.6-luna · effort high` |
-| Routine bounded work with strong proof | `gpt-5.6-luna · effort xhigh` |
+| Exact mechanical work with deterministic proof | `gpt-5.6-luna · effort max` |
+| Routine bounded work with strong proof | `gpt-5.6-luna · effort max` |
 | Difficult bounded work with strong proof | `gpt-5.6-luna · effort max` |
 | Everyday interpretation, tone, or editorial work | `gpt-5.6-terra · effort high` |
 | Bounded product, analysis, communication, or editorial judgment | `gpt-5.6-terra · effort xhigh` |
@@ -38,9 +38,9 @@ Use this one ladder for executors, reviewers, recovery, and supervisor calibrati
 | High-consequence work hard to detect or reverse | `gpt-5.6-sol · effort xhigh` |
 | Open architecture or investigation without a reliable verifier | `gpt-5.6-sol · effort max` |
 
-Risk labels alone never select Sol. A Sol rationale states why Luna and Terra are inadequate. Split separable work before raising capacity; never silently substitute a saved route. `ultra` means genuinely independent parallel delegation with user opt-in, not difficulty.
+Risk labels never select Sol; split separable work, never silently substitute a saved route, and reserve `ultra` for explicit parallel user opt-in. Automatic routing canonicalizes model/effort before selection, saving, or creation. The minimum automatic capacity is exactly `gpt-5.6-luna · effort max`; reject unknown pairs, Luna `high`/`xhigh`, and every route below it. Terra/Sol need existing rationale; `least costly` means the cheapest normalized candidate at or above the floor.
 
-Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default, Terra `max` for difficult bounded reconciliation, and Sol only for orchestration ambiguity, weak verification, or costly irreversibility. A bounded incident-reasoning delegate uses the least costly model and effort that can detect the issue; raise capacity only when the incident's detection difficulty warrants it, and record the rationale.
+Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default, Terra `max` for difficult bounded reconciliation, and Sol only for orchestration ambiguity, weak verification, or costly irreversibility. A bounded incident-reasoning delegate uses the least costly normalized model/effort pair at or above the Luna max floor that can detect the issue; raise capacity only when the incident's detection difficulty warrants it, and record the rationale.
 
 ## Failure diagnosis
 

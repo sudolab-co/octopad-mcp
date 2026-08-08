@@ -33,16 +33,17 @@ for role in planner supervisor executor reviewer specialist-reviewer recovery fo
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 9\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 9.0.0'
-grep -q '"version": "9\.0\.0"' "$manifest" || fail 'Codex plugin is not 9.0.0'
-grep -q '^### 9\.0\.0 — 2026-08-05$' "$changelog" || fail 'Codex changelog lacks 9.0.0'
-release_note=$(awk '/^### 9\.0\.0 — 2026-08-05$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
-printf '%s\n' "$release_note" | grep -Fq 'role-specific pack' || fail '9.0.0 release note lacks role-pack behavior'
-printf '%s\n' "$release_note" | grep -Fq 'Octopad context' || fail '9.0.0 release note lacks Octopad context behavior'
-printf '%s\n' "$release_note" | grep -Fq 'Claude distribution is unchanged' || fail '9.0.0 release note lacks Claude isolation'
+grep -q '^Version: 10\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.0.0'
+grep -q '"version": "10\.0\.0"' "$manifest" || fail 'Codex plugin is not 10.0.0'
+grep -q '^### 10\.0\.0 — 2026-08-08$' "$changelog" || fail 'Codex changelog lacks 10.0.0'
+release_note=$(awk '/^### 10\.0\.0 — 2026-08-08$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note" | grep -Fq 'six-field handoff' || fail '10.0.0 release note lacks handoff behavior'
+printf '%s\n' "$release_note" | grep -Fq 'Luna max' || fail '10.0.0 release note lacks capacity-floor behavior'
+printf '%s\n' "$release_note" | grep -Fq 'native project identity' || fail '10.0.0 release note lacks native project identity behavior'
+printf '%s\n' "$release_note" | grep -Fq 'Claude distribution is unchanged' || fail '10.0.0 release note lacks Claude isolation'
 for forbidden_public_term in 'Delivery mandate' 'explicit-no-loop' 'plan-bound' 'outcome-bound'; do
   if printf '%s\n' "$release_note" | grep -Fq "$forbidden_public_term"; then
-    fail "9.0.0 release note exposes internal delivery term: $forbidden_public_term"
+    fail "10.0.0 release note exposes internal delivery term: $forbidden_public_term"
   fi
 done
 grep -Fq 'requires explicit execution authority before execution' "$root/CONTRIBUTING.md" || fail 'Codex CONTRIBUTING sentence is stale'
@@ -84,7 +85,7 @@ active_words=$(wc -w $active_docs | awk 'END {print $1}')
 common_lines=$((skill_lines + planning_lines + contract_lines))
 common_words=$(wc -w "$skill/SKILL.md" "$planning" "$contract" | awk 'END {print $1}')
 [ "$active_lines" -le 760 ] || fail "active skill documents exceed 760 lines: $active_lines"
-[ "$active_words" -le 10600 ] || fail "active skill documents exceed 10600 words: $active_words"
+[ "$active_words" -le 10800 ] || fail "active skill documents exceed 10800 words: $active_words"
 [ "$common_lines" -le 480 ] || fail "common planning load exceeds 480 lines: $common_lines"
 [ "$common_words" -le 6900 ] || fail "common planning load exceeds 6900 words: $common_words"
 
@@ -199,6 +200,11 @@ for mandate_field in activation_kind scoping_brief_digest frozen_decision_ids al
 done
 [ "$(grep -Fc '| Observable detection profile |' "$runtime")" -eq 1 ] || fail 'capacity ladder is duplicated or missing'
 [ "$(grep -Ec '^\| .*`gpt-5\.6-' "$runtime")" -eq 9 ] || fail 'capacity ladder does not have nine rungs'
+if grep -E '\| `gpt-5\.6-luna · effort (high|xhigh)` \|' "$runtime" >/dev/null 2>&1; then
+  fail 'capacity ladder contains a Luna route below max'
+fi
+require_text "$runtime" 'minimum automatic capacity is exactly `gpt-5.6-luna · effort max`'
+require_text "$runtime" 'cheapest normalized candidate at or above the floor'
 require_text "$runtime" 'Every delivery task receives an adversarial check'
 require_text "$runtime" 'one fresh source-first reviewer'
 require_text "$runtime" 'a second orthogonal material failure domain'
@@ -219,6 +225,18 @@ require_text "$supervision" 'Only then guardedly supersede the old run and bind/
 require_text "$supervision" 'adoption/rejection map'
 require_text "$supervision" 'old launch binding, PASS records, and consent never transfer'
 require_text "$supervision" 'schema-agnostically'
+require_text "$supervision" 'Supervisor - <short-plan>'
+require_text "$supervision" 'Executor <human-ref> - <short-plan> - <short-task>'
+require_text "$supervision" 'Specialist reviewer - <short-plan> - <purpose>'
+require_text "$supervision" '64-character maximum'
+require_text "$supervision" 'exactly these fields, in this order: `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`'
+require_text "$supervision" 'Publishing succeeds before the transition'
+require_text "$supervision" "pause requiring Alex's attention"
+require_text "$supervision" 'actual project identity from native metadata or the registry'
+require_text "$supervision" "prompt's project text is never proof"
+require_text "$supervision" 'has a null `projectId`'
+require_text "$contract" 'actual project identity from native metadata or the registry'
+require_text "$contract" 'publish the required pause handoff'
 require_text "$planning" 'A material replan invalidates the old launch binding in either mode'
 require_text "$planning" 'Reflect or branch'
 require_text "$planning" 'may continue planning under the exact initial grant'
@@ -626,6 +644,321 @@ function sameProjectIdentity(planningTarget, candidateTarget) {
   else assert.strictEqual(candidateTarget.directory_name, planningTarget.directory_name);
   return true;
 }
+
+const opaqueVisiblePattern = /(?:[0-9a-f]{8,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|(?:uuid|hash|thread(?:[_ -]?id)?|creation(?:[_ -]?(?:key|token))?)\b(?:\s*[:=#-]?\s*[A-Za-z0-9_-]+)?)/i;
+function rejectOpaqueVisible(value, forbiddenIdentifiers = []) {
+  assert(!opaqueVisiblePattern.test(value));
+  for (const identifier of forbiddenIdentifiers) {
+    nonEmpty(identifier);
+    assert(!value.includes(identifier));
+  }
+}
+function normalizeHumanLabel(value, forbiddenIdentifiers = []) {
+  assert.strictEqual(typeof value, 'string');
+  const normalized = value.trim().replace(/\s+/gu, ' ');
+  assert(normalized);
+  rejectOpaqueVisible(normalized, forbiddenIdentifiers);
+  return normalized;
+}
+function shortenHumanLabel(value, maxChars, forbiddenIdentifiers = []) {
+  const normalized = normalizeHumanLabel(value, forbiddenIdentifiers);
+  const chars = Array.from(normalized);
+  if (chars.length <= maxChars) return normalized;
+  const words = normalized.split(' ');
+  let prefix = '';
+  for (const word of words) {
+    const candidate = prefix ? `${prefix} ${word}` : word;
+    if (Array.from(`${candidate}…`).length > maxChars) break;
+    prefix = candidate;
+  }
+  assert(prefix && prefix.length < normalized.length);
+  return `${prefix}…`;
+}
+function resolveHumanLabel(source, maxChars, peerSources, forbiddenIdentifiers = []) {
+  const label = shortenHumanLabel(source, maxChars, forbiddenIdentifiers);
+  const matches = peerSources.map((peer) => shortenHumanLabel(peer, maxChars, forbiddenIdentifiers)).filter((peer) => peer === label);
+  assert.strictEqual(matches.length, 1);
+  return label;
+}
+const titleStore = {
+  streams: new Map([['stream-native', {id: 'stream-native', title: 'Octoplan native delivery', tracker_text: 'Saved stream tracker'}]]),
+  details: new Map([['task-identity', {id: 'task-identity', title: 'Project identity proof'}]]),
+  opaqueIdentifiers: new Set(['stream-native', 'task-identity', 'token-executor', 'token-planner', 'token-reviewer', 'token-specialist', 'token-recovery', 'token-supervisor', 'token-follow-up', 'thread-123', 'creation-token-abc'])
+};
+function validateSavedStreamRegistry(streams) {
+  assert(streams instanceof Map);
+  for (const [recordId, stream] of streams) {
+    assert.deepStrictEqual(Object.keys(stream).sort(scalarCompare), ['id', 'title', 'tracker_text'].sort(scalarCompare));
+    assert.strictEqual(stream.id, recordId);
+    nonEmpty(stream.title);
+    nonEmpty(stream.tracker_text);
+  }
+  return true;
+}
+function resolveSavedTitleLabel(recordId, maxChars, records, forbiddenIdentifiers) {
+  assert(records instanceof Map);
+  assert(records.has(recordId));
+  const record = records.get(recordId);
+  assert(record && typeof record === 'object');
+  assert.strictEqual(record.id, recordId);
+  nonEmpty(record.title);
+  return resolveHumanLabel(record.title, maxChars, Array.from(records.values()).map((peer) => peer.title), forbiddenIdentifiers);
+}
+function makeNativeTitle(role, savedStreamId, savedDetailId, humanRef = null) {
+  validateSavedStreamRegistry(titleStore.streams);
+  const forbiddenIdentifiers = Array.from(titleStore.opaqueIdentifiers);
+  const shortPlan = resolveSavedTitleLabel(savedStreamId, 18, titleStore.streams, forbiddenIdentifiers);
+  const detail = resolveSavedTitleLabel(savedDetailId, 18, titleStore.details, forbiddenIdentifiers);
+  assert(Array.from(shortPlan).length <= 18);
+  assert(Array.from(detail).length <= 18);
+  let title;
+  if (role === 'supervisor') title = `Supervisor - ${shortPlan}`;
+  else if (role === 'executor') {
+    assert(/^(?:E\d{2,3}|#\d{1,3})$/.test(humanRef));
+    title = `Executor ${humanRef} - ${shortPlan} - ${detail}`;
+  } else if (role === 'reviewer') title = `Reviewer - ${shortPlan} - ${detail}`;
+  else if (role === 'planner') title = `Planner - ${shortPlan} - ${detail}`;
+  else if (role === 'specialist-reviewer') title = `Specialist reviewer - ${shortPlan} - ${detail}`;
+  else assert.fail(`unknown title role: ${role}`);
+  assert(Array.from(title).length <= 64);
+  if (humanRef) rejectOpaqueVisible(humanRef, forbiddenIdentifiers);
+  rejectOpaqueVisible(title, forbiddenIdentifiers);
+  return title;
+}
+const titleStreamId = 'stream-native';
+const titleTaskId = 'task-identity';
+assert.strictEqual(makeNativeTitle('supervisor', titleStreamId, titleTaskId), 'Supervisor - Octoplan native…');
+assert.strictEqual(makeNativeTitle('executor', titleStreamId, titleTaskId, 'E01'), 'Executor E01 - Octoplan native… - Project identity…');
+assert.strictEqual(makeNativeTitle('executor', titleStreamId, titleTaskId, '#19'), 'Executor #19 - Octoplan native… - Project identity…');
+assert.strictEqual(makeNativeTitle('reviewer', titleStreamId, titleTaskId), 'Reviewer - Octoplan native… - Project identity…');
+assert.strictEqual(makeNativeTitle('planner', titleStreamId, titleTaskId), 'Planner - Octoplan native… - Project identity…');
+assert.strictEqual(makeNativeTitle('specialist-reviewer', titleStreamId, titleTaskId), 'Specialist reviewer - Octoplan native… - Project identity…');
+assert.throws(() => makeNativeTitle('supervisor', 'missing-stream', titleTaskId));
+titleStore.streams.set('stream-migration', {id: 'stream-migration', title: 'Octoplan native migration', tracker_text: 'Saved peer stream tracker'});
+assert.throws(() => makeNativeTitle('supervisor', titleStreamId, titleTaskId));
+titleStore.streams.delete('stream-migration');
+const opaqueUuid = ['123e4567', 'e89b', '12d3', 'a456', '426614174000'].join('-');
+assert.throws(() => resolveHumanLabel(`Plan ${opaqueUuid}`, 18, [`Plan ${opaqueUuid}`]));
+assert.throws(() => resolveHumanLabel('The same stream mission', 18, ['The same stream mission', 'The same stream migration']));
+assert.throws(() => makeNativeTitle('executor', titleStreamId, titleTaskId, 'thread-123'));
+titleStore.details.set('task-token', {id: 'task-token', title: 'token-executor'});
+assert.throws(() => makeNativeTitle('reviewer', titleStreamId, 'task-token'));
+titleStore.details.delete('task-token');
+titleStore.streams.set('stream-token', {id: 'stream-token', title: 'creation-token-abc', tracker_text: 'Saved opaque stream tracker'});
+assert.throws(() => makeNativeTitle('reviewer', 'stream-token', titleTaskId));
+titleStore.streams.delete('stream-token');
+
+const handoffFields = ['État', 'Fait', 'Bloqué', 'Décision attendue', 'Pour débloquer', 'Prochaine étape'];
+function makeHandoff(values) {
+  assert.deepStrictEqual(Object.keys(values), handoffFields);
+  for (const field of handoffFields) {
+    assert.strictEqual(typeof values[field], 'string');
+    assert(values[field].trim());
+    rejectOpaqueVisible(values[field], Array.from(titleStore.opaqueIdentifiers));
+  }
+  if (/^(?:paused|waiting-human)/i.test(values['État'])) {
+    assert(/^(?:paused|waiting-human)\s*·\s*[^·]+$/i.test(values['État']));
+    assert(/branch|branche|gate|review|project|identity|decision/i.test(values['État']));
+    assert(/(?:was|were|is|are|completed|verified|reconciled|recorded|continues|finished)/i.test(values['Fait']));
+    assert(/branch|branche/i.test(values['Bloqué']));
+    assert(/(?:safe branch|branche sûre|no safe branch|aucune branche sûre)/i.test(values['Bloqué']));
+    assert(/(?:when|once|after|equals|matches|quand|lorsque|si)\b.+/i.test(values['Pour débloquer']));
+    assert(/(?:confirm|choose|select|decide|confirmer|choisir|décider)/i.test(values['Décision attendue']));
+    assert(!/^(?:waiting for review|en attente de review|review required|en attente)$/i.test(values['Décision attendue'].trim()));
+  } else if (/^completed\b/i.test(values['État'])) {
+    assert(/^completed\s*·\s*[^·]+$/i.test(values['État']));
+    assert(/artifact|check|review|complete|verified|delivered/i.test(values['Fait']));
+    assert(/blocked|nothing|aucun|none/i.test(values['Bloqué']));
+    assert(/decision|acceptance|none|aucune/i.test(values['Décision attendue']));
+    assert(/resume|predicate|reprend|débloquer/i.test(values['Pour débloquer']));
+    assert(/Alex|inspect|review|next|prochaine/i.test(values['Prochaine étape']));
+  }
+  return handoffFields.map((field) => `${field}: ${values[field]}`).join('\n');
+}
+function assertHandoffState(nextState, values) {
+  assert.strictEqual(values['État'].split('·', 1)[0].trim().toLowerCase(), nextState);
+  return true;
+}
+function transitionWithHandoff(nextState, values, publish) {
+  assert(['waiting-human', 'paused', 'completed'].includes(nextState));
+  const message = makeHandoff(values);
+  assertHandoffState(nextState, values);
+  assert.strictEqual(publish(message), true);
+  return nextState;
+}
+const pauseHandoff = {
+  'État': 'paused · native project identity check',
+  'Fait': 'The session intent was reconciled and safe branch E01 continues.',
+  'Bloqué': 'The delivery branch is paused; Branche sûre: documentation review continues.',
+  'Décision attendue': 'Confirm the native project association or choose a compliant target.',
+  'Pour débloquer': 'Resume when observed projectId equals the planning project and the supervisor rereads the intent.',
+  'Prochaine étape': 'Reconcile the native metadata, then activate only after the predicate passes.'
+};
+const waitingHumanHandoff = {...pauseHandoff, 'État': 'waiting-human · native project identity decision'};
+assert.strictEqual(transitionWithHandoff('paused', pauseHandoff, (message) => message.includes('État:')), 'paused');
+assert.strictEqual(transitionWithHandoff('waiting-human', waitingHumanHandoff, (message) => message.includes('État:')), 'waiting-human');
+assert.throws(() => transitionWithHandoff('waiting-human', pauseHandoff, () => true));
+assert.throws(() => transitionWithHandoff('waiting-human', waitingHumanHandoff, () => false));
+assert.throws(() => transitionWithHandoff('paused', {...pauseHandoff, Extra: 'forbidden'}, () => true));
+const finalHandoff = {
+  'État': 'completed · Octoplan native delivery',
+  'Fait': 'The artifact, checks, and independent review are complete and delivered.',
+  'Bloqué': 'Nothing remains blocked; no safe branch is waiting.',
+  'Décision attendue': 'None; acceptance is recorded separately and no decision remains.',
+  'Pour débloquer': 'No resume predicate remains because the run is complete.',
+  'Prochaine étape': 'Alex may inspect the returned artifact link and acceptance record.'
+};
+assert(transitionWithHandoff('completed', finalHandoff, (message) => message.split('\n').length === 6));
+
+const nativeEvidenceSources = new Set(['native-metadata', 'native-registry']);
+const nativeIdentityKeys = ['kind', 'projectId', 'directoryName'];
+const nativeProjectRegistry = new Map([
+  ['native-project-a', {source: 'native-metadata', identity: {kind: 'project', projectId: 'project-a', directoryName: null}}],
+  ['native-project-b', {source: 'native-metadata', identity: {kind: 'project', projectId: 'project-b', directoryName: null}}],
+  ['native-project-null', {source: 'native-metadata', identity: {kind: 'project', projectId: null, directoryName: null}}],
+  ['native-projectless-content-room', {source: 'native-registry', identity: {kind: 'projectless', projectId: null, directoryName: 'content-room'}}]
+]);
+function readNativeProjectIdentity(observed) {
+  if (!observed || typeof observed !== 'object' || typeof observed.nativeHandle !== 'string' || !observed.nativeHandle) return null;
+  const evidence = nativeProjectRegistry.get(observed.nativeHandle);
+  if (!evidence) return null;
+  if (!nativeEvidenceSources.has(evidence.source)) return null;
+  if (Object.keys(evidence).sort(scalarCompare).join('\u0000') !== ['identity', 'source'].sort(scalarCompare).join('\u0000')) return null;
+  const identity = evidence.identity;
+  if (!identity || typeof identity !== 'object' || Object.keys(identity).sort(scalarCompare).join('\u0000') !== nativeIdentityKeys.slice().sort(scalarCompare).join('\u0000')) return null;
+  if (!['project', 'projectless'].includes(identity.kind)) return null;
+  if (identity.kind === 'project') {
+    assert(identity.projectId === null || typeof identity.projectId === 'string');
+    assert.strictEqual(identity.directoryName, null);
+  } else {
+    assert.strictEqual(identity.projectId, null);
+    nonEmpty(identity.directoryName);
+  }
+  return identity;
+}
+function reconcileNativeProject(planningTarget, observed, pauseHandoffValues, publishHandoff) {
+  validateTarget(planningTarget);
+  const nativeIdentity = readNativeProjectIdentity(observed);
+  const observedProjectId = nativeIdentity && nativeIdentity.projectId;
+  const observedKind = nativeIdentity && nativeIdentity.kind;
+  const matches = planningTarget.kind === 'project'
+    ? observedKind === 'project' && typeof observedProjectId === 'string' && observedProjectId === planningTarget.project_id
+    : observedKind === 'projectless' && nativeIdentity.directoryName === planningTarget.directory_name;
+  if (matches) return 'ready';
+  assert(pauseHandoffValues);
+  assert.strictEqual(typeof publishHandoff, 'function');
+  const message = makeHandoff(pauseHandoffValues);
+  assertHandoffState('paused', pauseHandoffValues);
+  assert.strictEqual(publishHandoff(message), true);
+  return 'paused';
+}
+const nativeMetadataProject = {nativeHandle: 'native-project-a', prompt: 'project-a'};
+const publishNativeHandoff = (message) => message.includes('État:');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, nativeMetadataProject, pauseHandoff, publishNativeHandoff), 'ready');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {prompt: 'project-a', projectId: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'prompt-project-a', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff, publishNativeHandoff), 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-b', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
+assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, null, publishNativeHandoff));
+assert.strictEqual(reconcileNativeProject(parseTarget('projectless · content-room · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff, publishNativeHandoff), 'ready');
+let nativeHandoffCount = 0;
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff, (message) => { nativeHandoffCount += 1; return message.includes('État:'); }), 'paused');
+assert.strictEqual(nativeHandoffCount, 1);
+assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff, () => false));
+
+const capacitySourceRegistry = new Map([
+  ['route-a', {source: {kind: 'saved-route', record_id: 'route-a', evidence_digest: 'c'.repeat(64)}, route: 'route-a', model: 'gpt-5.6-luna', effort: 'max', capabilities: ['native-context'], can_detect: true}],
+  ['delta-a', {source: {kind: 'incident-delta', record_id: 'delta-a', evidence_digest: 'd'.repeat(64)}, route: 'recovery-route-a', model: 'gpt-5.6-luna', effort: 'max', capabilities: ['incident-detection'], can_detect: true}],
+  ['incident-luna', {source: {kind: 'incident-delta', record_id: 'incident-luna', evidence_digest: 'e'.repeat(64)}, route: 'incident-luna', model: 'gpt-5.6-luna', effort: 'max', capabilities: ['incident-detection'], can_detect: true}],
+  ['incident-terra', {source: {kind: 'incident-delta', record_id: 'incident-terra', evidence_digest: 'f'.repeat(64)}, route: 'incident-terra', model: 'gpt-5.6-terra', effort: 'high', capabilities: ['incident-detection'], can_detect: false}],
+  ['incident-sol', {source: {kind: 'incident-delta', record_id: 'incident-sol', evidence_digest: 'a'.repeat(64)}, route: 'incident-sol', model: 'gpt-5.6-sol', effort: 'high', capabilities: ['incident-detection'], can_detect: true}],
+  ['saved-terra', {source: {kind: 'saved-route', record_id: 'saved-terra', evidence_digest: 'b'.repeat(64)}, route: 'saved-terra', model: 'gpt-5.6-terra', effort: 'max', capabilities: ['incident-detection'], can_detect: true}]
+]);
+function validateCapacitySource(source, sourceRegistry = null) {
+  assert(source && typeof source === 'object' && !Array.isArray(source));
+  assert.deepStrictEqual(Object.keys(source).sort(scalarCompare), ['kind', 'record_id', 'evidence_digest'].sort(scalarCompare));
+  assert(new Set(['saved-route', 'incident-delta']).has(source.kind));
+  nonEmpty(source.record_id);
+  assert(/^[a-f0-9]{64}$/.test(source.evidence_digest));
+  if (!sourceRegistry) return null;
+  const record = sourceRegistry.get(source.record_id);
+  assert(record && typeof record === 'object');
+  assert.deepStrictEqual(record.source, source);
+  return record;
+}
+function nonBlank(value) {
+  assert.strictEqual(typeof value, 'string');
+  assert(value.trim().length > 0);
+  return value;
+}
+function normalizeCapacity(route, context = {}) {
+  assert(route && typeof route === 'object');
+  const model = String(route.model).trim().toLowerCase();
+  const effort = String(route.effort).trim().toLowerCase();
+  assert(['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol'].includes(model));
+  assert(['high', 'xhigh', 'max'].includes(effort));
+  if (model === 'gpt-5.6-luna') assert.strictEqual(effort, 'max');
+  else nonBlank(route.rationale);
+  const sourceRecord = context.sourceRegistry ? validateCapacitySource(route.capacity_source, context.sourceRegistry) : null;
+  if (sourceRecord) {
+    assert.strictEqual(sourceRecord.model, model);
+    assert.strictEqual(sourceRecord.effort, effort);
+    nonBlank(route.route);
+    assert.strictEqual(sourceRecord.route, route.route);
+    if (route.capabilities) assert.deepStrictEqual(route.capabilities, sourceRecord.capabilities);
+    if (Object.prototype.hasOwnProperty.call(route, 'can_detect')) assert.strictEqual(route.can_detect, sourceRecord.can_detect);
+  }
+  if (context.requiredCapability) {
+    assert(Array.isArray(route.capabilities));
+    assert(route.capabilities.includes(context.requiredCapability));
+  }
+  const normalized = {model, effort, rationale: route.rationale ?? null};
+  if (route.route) normalized.route = route.route;
+  if (route.capacity_source) normalized.capacity_source = route.capacity_source;
+  if (route.capabilities) normalized.capabilities = route.capabilities;
+  if (Object.prototype.hasOwnProperty.call(route, 'can_detect')) normalized.can_detect = route.can_detect;
+  return normalized;
+}
+const capacityCost = {
+  'gpt-5.6-luna|max': 1,
+  'gpt-5.6-terra|high': 2,
+  'gpt-5.6-terra|xhigh': 3,
+  'gpt-5.6-terra|max': 4,
+  'gpt-5.6-sol|high': 5,
+  'gpt-5.6-sol|xhigh': 6,
+  'gpt-5.6-sol|max': 7
+};
+function leastCostlyCapacity(routes, context = {}) {
+  assert(Array.isArray(routes));
+  assert(context.sourceRegistry && context.requiredCapability);
+  const normalized = routes.map((route) => normalizeCapacity(route, context));
+  const adequate = normalized.filter((route) => route.can_detect === true);
+  assert(adequate.length > 0);
+  return adequate.slice().sort((a, b) => capacityCost[`${a.model}|${a.effort}`] - capacityCost[`${b.model}|${b.effort}`])[0];
+}
+assert.deepStrictEqual(normalizeCapacity({model: 'GPT-5.6-LUNA', effort: 'MAX'}), {model: 'gpt-5.6-luna', effort: 'max', rationale: null});
+assert.throws(() => normalizeCapacity({model: 'gpt-5.6-luna', effort: 'high'}));
+assert.throws(() => normalizeCapacity({model: 'gpt-5.6-luna', effort: 'xhigh'}));
+assert.throws(() => normalizeCapacity({model: 'gpt-5.6-terra', effort: 'high', rationale: ' '}));
+assert.deepStrictEqual(normalizeCapacity({model: 'gpt-5.6-terra', effort: 'high', rationale: 'bounded judgment'}).model, 'gpt-5.6-terra');
+assert.deepStrictEqual(normalizeCapacity({model: 'gpt-5.6-sol', effort: 'max', rationale: 'weak verifier'}).effort, 'max');
+const incidentRoutingContext = {sourceRegistry: capacitySourceRegistry, requiredCapability: 'incident-detection'};
+const incidentRoutes = [
+  {model: 'gpt-5.6-terra', effort: 'high', rationale: 'bounded judgment', route: 'incident-terra', capacity_source: capacitySourceRegistry.get('incident-terra').source, capabilities: ['incident-detection'], can_detect: false},
+  {model: 'GPT-5.6-LUNA', effort: 'MAX', route: 'incident-luna', capacity_source: capacitySourceRegistry.get('incident-luna').source, capabilities: ['incident-detection'], can_detect: true},
+  {model: 'gpt-5.6-sol', effort: 'high', rationale: 'weak verifier', route: 'incident-sol', capacity_source: capacitySourceRegistry.get('incident-sol').source, capabilities: ['incident-detection'], can_detect: true},
+  {model: 'gpt-5.6-terra', effort: 'max', rationale: 'saved route has adequate incident detection', route: 'saved-terra', capacity_source: capacitySourceRegistry.get('saved-terra').source, capabilities: ['incident-detection'], can_detect: true}
+];
+const leastCostly = leastCostlyCapacity(incidentRoutes, incidentRoutingContext);
+assert.strictEqual(leastCostly.model, 'gpt-5.6-luna');
+assert.strictEqual(leastCostly.effort, 'max');
+assert.strictEqual(leastCostly.capacity_source.record_id, 'incident-luna');
+assert.throws(() => leastCostlyCapacity([], incidentRoutingContext));
+assert.throws(() => leastCostlyCapacity([{...incidentRoutes[1], capacity_source: {...incidentRoutes[1].capacity_source, evidence_digest: '0'.repeat(64)}}], incidentRoutingContext));
+assert.throws(() => leastCostlyCapacity([{...incidentRoutes[1], model: 'gpt-5.6-terra', effort: 'max', rationale: 'mismatched source evidence'}], incidentRoutingContext));
+assert.throws(() => leastCostlyCapacity([{...incidentRoutes[1], route: ''}], incidentRoutingContext));
+
 function validateOverrides(rows, planningTarget) {
   validateTarget(planningTarget);
   const keys = ['task_id', 'role', 'target'];
@@ -919,6 +1252,37 @@ assert.strictEqual(verdictForImpossible({primitive_ref: null, verifier_available
 const stateTransitions = {active: ['replanning', 'waiting-human', 'paused', 'revoked', 'completed'], replanning: ['superseded', 'waiting-human', 'failed'], paused: ['active', 'revoked'], 'waiting-human': ['active', 'revoked']};
 assert(stateTransitions.active.includes('replanning'));
 assert(!stateTransitions.active.includes('superseded'));
+const attentionTransitionStates = new Set(['waiting-human', 'paused', 'completed']);
+const transitionEvents = [];
+function guardedStateTransition(currentState, nextState, values, publish) {
+  assert(stateTransitions[currentState] && stateTransitions[currentState].includes(nextState));
+  if (attentionTransitionStates.has(nextState)) {
+    const message = makeHandoff(values);
+    assertHandoffState(nextState, values);
+    assert.strictEqual(publish(message), true);
+  }
+  transitionEvents.push(`transition:${nextState}`);
+  return nextState;
+}
+transitionEvents.length = 0;
+let modeledState = guardedStateTransition('active', 'paused', pauseHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
+assert.strictEqual(modeledState, 'paused');
+assert.deepStrictEqual(transitionEvents, ['publish', 'transition:paused']);
+transitionEvents.length = 0;
+modeledState = guardedStateTransition('replanning', 'waiting-human', waitingHumanHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
+assert.strictEqual(modeledState, 'waiting-human');
+assert.deepStrictEqual(transitionEvents, ['publish', 'transition:waiting-human']);
+transitionEvents.length = 0;
+modeledState = guardedStateTransition('active', 'completed', finalHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
+assert.strictEqual(modeledState, 'completed');
+assert.deepStrictEqual(transitionEvents, ['publish', 'transition:completed']);
+transitionEvents.length = 0;
+assert.strictEqual(guardedStateTransition('active', 'replanning', null, () => { transitionEvents.push('publish'); return true; }), 'replanning');
+assert.deepStrictEqual(transitionEvents, ['transition:replanning']);
+modeledState = 'active';
+assert.throws(() => { modeledState = guardedStateTransition('active', 'paused', pauseHandoff, () => { transitionEvents.push('publish'); return false; }); });
+assert.strictEqual(modeledState, 'active');
+assert.deepStrictEqual(transitionEvents, ['transition:replanning', 'publish']);
 
 const blocker = {source_task_id: 'task-a', reason_enum: 'missing-primitive', affected_invariant_id: 'atomicity', prerequisite_or_human_task_id: 'design-a', external_resource_locator: null, policy_gate_locator: null, normalized_bound_values: {time_seconds: null, cost_minor_units: null, currency: null}};
 const blockerKey = (value) => digest(blockerFields(value));
@@ -1011,6 +1375,9 @@ function validateRolePacket(packet, planningTarget = plannerProjectTarget) {
   sameProjectIdentity(planningTarget, packet.target);
   assert(Array.isArray(packet.capability_profile));
   assert.deepStrictEqual(packet.capability_profile, capabilityProfiles[packet.role]);
+  const normalizedCapacity = normalizeCapacity({model: packet.model, effort: packet.effort, route: packet.route, rationale: packet.capability_rationale, capacity_source: packet.capacity_source}, {sourceRegistry: capacitySourceRegistry});
+  assert.strictEqual(normalizedCapacity.model, packet.model);
+  assert.strictEqual(normalizedCapacity.effort, packet.effort);
   assert(packet.capacity_source && typeof packet.capacity_source === 'object' && !Array.isArray(packet.capacity_source));
   assert.deepStrictEqual(Object.keys(packet.capacity_source).sort(scalarCompare), ['kind', 'record_id', 'evidence_digest'].sort(scalarCompare));
   assert(new Set(['saved-route', 'incident-delta']).has(packet.capacity_source.kind));
@@ -1029,7 +1396,7 @@ function creationIdentity(subject_kind = 'task', role = 'executor', token = 'tok
     route: 'route-a',
     target,
     model: 'gpt-5.6-luna',
-    effort: 'high',
+    effort: 'max',
     capability_profile: capabilityProfiles[role],
     capability_rationale: 'fixture',
     capacity_source: {kind: 'saved-route', record_id: 'route-a', evidence_digest: 'c'.repeat(64)}
@@ -1109,6 +1476,12 @@ assert.notDeepStrictEqual(creationKey(relocatedPacket), creationKey(plannerIdent
 const wrongCapability = {...plannerIdentity, role_packet: {...plannerIdentity.role_packet, capability_profile: capabilityProfiles.executor}};
 wrongCapability.creation_key = {...wrongCapability.creation_key, role_packet_digest: digest(wrongCapability.role_packet)};
 assert.throws(() => validateCreationIdentity(wrongCapability));
+const lowCapacity = {...executorIdentity, role_packet: {...executorIdentity.role_packet, effort: 'xhigh'}};
+lowCapacity.creation_key = {...lowCapacity.creation_key, role_packet_digest: digest(lowCapacity.role_packet)};
+assert.throws(() => validateCreationIdentity(lowCapacity));
+const nonCanonicalCapacity = {...executorIdentity, role_packet: {...executorIdentity.role_packet, model: 'GPT-5.6-LUNA', effort: 'MAX'}};
+nonCanonicalCapacity.creation_key = {...nonCanonicalCapacity.creation_key, role_packet_digest: digest(nonCanonicalCapacity.role_packet)};
+assert.throws(() => validateCreationIdentity(nonCanonicalCapacity));
 const projectlessIdentities = [
   creationIdentity('task', 'executor', 'token-projectless-executor', 3, 'task-projectless', null, plannerProjectlessTarget),
   creationIdentity('task', 'planner', 'token-projectless-planner', 3, 'task-projectless', null, plannerProjectlessTarget),
@@ -1209,13 +1582,17 @@ assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key:
 assert.throws(() => validateCreationIdentity({...reviewerIdentity, creation_key: {...reviewerIdentity.creation_key, artifact_revision: null}}));
 assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key: {...executorIdentity.creation_key, target: parseTarget('project-b · worktree · wrong project').target}}));
 
-function createSession(response, expectedIdentity = executorIdentity, planningTarget = plannerProjectTarget) {
+function createSession(response, expectedIdentity = executorIdentity, planningTarget = plannerProjectTarget, nativeObservation = null, publishHandoff = (message) => message.includes('État:')) {
   validateCreationIdentity(expectedIdentity, planningTarget);
+  const nativeProject = nativeObservation ?? (planningTarget.kind === 'project'
+    ? {nativeHandle: `native-${planningTarget.project_id}`}
+    : {nativeHandle: `native-projectless-${planningTarget.directory_name}`});
   let currentOwnerEpoch = expectedIdentity.creator_owner_epoch;
   let calls = 0;
   let intentWritten = false;
   let state = 'intent';
   let wake = null;
+  let handoffCount = 0;
   const guardEpoch = (actorEpoch) => { assert.strictEqual(actorEpoch, currentOwnerEpoch); };
   const transition = (actorEpoch, nextState, nextWake) => {
     guardEpoch(actorEpoch);
@@ -1233,6 +1610,24 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     wake = 'reconcile-native-session';
     return response;
   };
+  const publishMessage = (message) => {
+    assert.strictEqual(publishHandoff(message), true);
+    handoffCount += 1;
+  };
+  const publishAttention = (expectedState, values) => {
+    const message = makeHandoff(values);
+    assertHandoffState(expectedState, values);
+    publishMessage(message);
+  };
+  const publishPause = (values = pauseHandoff) => publishAttention('paused', values);
+  const pause = (actorEpoch, nextWake, values = pauseHandoff) => {
+    publishPause(values);
+    transition(actorEpoch, 'paused', nextWake);
+  };
+  const publishNativePause = (message) => {
+    publishMessage(message);
+    return true;
+  };
   const reconcile = (matches, actorEpoch = currentOwnerEpoch) => {
     assert(['pending', 'paused'].includes(state));
     assert(Array.isArray(matches));
@@ -1247,21 +1642,37 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     if (matches.length === 0) {
       transition(actorEpoch, 'pending', 'reconcile-native-session');
     } else if (matches.length === 1 && exact.length === 1) {
+      if (reconcileNativeProject(planningTarget, nativeProject, pauseHandoff, publishNativePause) === 'paused') {
+        transition(actorEpoch, 'paused', 'native-project-identity-handoff');
+        return;
+      }
       transition(actorEpoch, 'ready', null);
     } else {
-      transition(actorEpoch, 'paused', 'human-or-reconciliation-evidence');
+      pause(actorEpoch, 'human-or-reconciliation-evidence');
     }
   };
   const exhaust = (actorEpoch = currentOwnerEpoch) => {
     assert.strictEqual(state, 'pending');
-    transition(actorEpoch, 'paused', 'human-or-reconciliation-evidence');
+    pause(actorEpoch, 'human-or-reconciliation-evidence');
   };
   const resume = (actorEpoch = currentOwnerEpoch) => {
     assert(['pending', 'paused'].includes(state));
     transition(actorEpoch, 'pending', 'reconcile-native-session');
   };
-  const activate = (actorEpoch = currentOwnerEpoch) => {
+  const waitHuman = (actorEpoch = currentOwnerEpoch, values = waitingHumanHandoff) => {
+    publishAttention('waiting-human', values);
+    transition(actorEpoch, 'waiting-human', 'human-decision');
+  };
+  const complete = (actorEpoch = currentOwnerEpoch, values = finalHandoff) => {
+    publishAttention('completed', values);
+    transition(actorEpoch, 'completed', null);
+  };
+  const activate = (actorEpoch = currentOwnerEpoch, currentNativeProject = nativeProject) => {
     assert.strictEqual(state, 'ready');
+    if (reconcileNativeProject(planningTarget, currentNativeProject, pauseHandoff, publishNativePause) === 'paused') {
+      transition(actorEpoch, 'paused', 'native-project-identity-handoff');
+      return;
+    }
     transition(actorEpoch, 'activated', null);
   };
   const lateWrite = (actorEpoch) => { guardEpoch(actorEpoch); };
@@ -1270,7 +1681,7 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     currentOwnerEpoch += 1;
     return currentOwnerEpoch;
   };
-  return {identity: () => expectedIdentity, writeIntent, create, reconcile, exhaust, resume, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, state: () => state, wake: () => wake};
+  return {identity: () => expectedIdentity, writeIntent, create, reconcile, exhaust, resume, waitHuman, complete, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, handoffs: () => handoffCount, state: () => state, wake: () => wake};
 }
 for (const response of ['client', 'direct', 'empty', 'crash', 'no-response']) {
   const session = createSession(response, executorIdentity);
@@ -1285,6 +1696,7 @@ for (const response of ['client', 'direct', 'empty', 'crash', 'no-response']) {
   assert.throws(() => session.create());
   session.exhaust();
   assert.strictEqual(session.state(), 'paused');
+  assert.strictEqual(session.handoffs(), 1);
   assert(session.wake());
 }
 const exact = createSession('direct', executorIdentity);
@@ -1296,8 +1708,44 @@ assert.throws(() => exact.activate(1));
 assert.throws(() => exact.activate(2));
 exact.activate(3);
 assert.strictEqual(exact.state(), 'activated');
+assert.strictEqual(exact.handoffs(), 0);
 assert.throws(() => exact.lateWrite(1));
 assert.throws(() => exact.lateWrite(2));
+const humanGate = createSession('direct', executorIdentity);
+humanGate.writeIntent();
+humanGate.create();
+humanGate.reconcile([executorIdentity]);
+humanGate.waitHuman();
+assert.strictEqual(humanGate.state(), 'waiting-human');
+assert.strictEqual(humanGate.handoffs(), 1);
+const wrongHumanGate = createSession('direct', executorIdentity);
+wrongHumanGate.writeIntent();
+wrongHumanGate.create();
+wrongHumanGate.reconcile([executorIdentity]);
+assert.throws(() => wrongHumanGate.waitHuman(3, pauseHandoff));
+assert.strictEqual(wrongHumanGate.state(), 'ready');
+assert.strictEqual(wrongHumanGate.handoffs(), 0);
+const failedHumanHandoff = createSession('direct', executorIdentity, plannerProjectTarget, null, () => false);
+failedHumanHandoff.writeIntent();
+failedHumanHandoff.create();
+failedHumanHandoff.reconcile([executorIdentity]);
+assert.throws(() => failedHumanHandoff.waitHuman());
+assert.strictEqual(failedHumanHandoff.state(), 'ready');
+assert.strictEqual(failedHumanHandoff.handoffs(), 0);
+const completedSession = createSession('direct', executorIdentity);
+completedSession.writeIntent();
+completedSession.create();
+completedSession.reconcile([executorIdentity]);
+completedSession.complete();
+assert.strictEqual(completedSession.state(), 'completed');
+assert.strictEqual(completedSession.handoffs(), 1);
+const failedCompletion = createSession('direct', executorIdentity, plannerProjectTarget, null, () => false);
+failedCompletion.writeIntent();
+failedCompletion.create();
+failedCompletion.reconcile([executorIdentity]);
+assert.throws(() => failedCompletion.complete());
+assert.strictEqual(failedCompletion.state(), 'ready');
+assert.strictEqual(failedCompletion.handoffs(), 0);
 const takeover = createSession('direct', executorIdentity);
 takeover.writeIntent();
 takeover.create();
@@ -1317,22 +1765,26 @@ distinct.writeIntent();
 distinct.create();
 distinct.reconcile([creationIdentity('task', 'executor', 'token-b', 3, 'task-b'), creationIdentity('task', 'executor', 'token-c', 3, 'task-c')]);
 assert.strictEqual(distinct.state(), 'paused');
+assert.strictEqual(distinct.handoffs(), 1);
 assert.throws(() => distinct.create());
 const ambiguous = createSession('empty', executorIdentity);
 ambiguous.writeIntent();
 ambiguous.create();
 ambiguous.reconcile([executorIdentity, creationIdentity('task', 'executor', 'token-d', 3, 'task-d')]);
 assert.strictEqual(ambiguous.state(), 'paused');
+assert.strictEqual(ambiguous.handoffs(), 1);
 const duplicate = createSession('empty', executorIdentity);
 duplicate.writeIntent();
 duplicate.create();
 duplicate.reconcile([executorIdentity, executorIdentity]);
 assert.strictEqual(duplicate.state(), 'paused');
+assert.strictEqual(duplicate.handoffs(), 1);
 const changedCreator = createSession('empty', executorIdentity);
 changedCreator.writeIntent();
 changedCreator.create();
 changedCreator.reconcile([{...executorIdentity, creator_owner_epoch: 4}]);
 assert.strictEqual(changedCreator.state(), 'paused');
+assert.strictEqual(changedCreator.handoffs(), 1);
 const resumed = createSession('empty', executorIdentity);
 resumed.writeIntent();
 resumed.create();
@@ -1341,6 +1793,32 @@ resumed.reconcile([executorIdentity]);
 assert.strictEqual(resumed.calls(), 1);
 assert.strictEqual(resumed.state(), 'ready');
 assert.throws(() => resumed.activate(2));
+
+const projectlessNative = createSession('direct', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-projectless-content-room'});
+projectlessNative.writeIntent();
+projectlessNative.create();
+projectlessNative.reconcile([executorIdentity]);
+assert.strictEqual(projectlessNative.state(), 'paused');
+assert.strictEqual(projectlessNative.handoffs(), 1);
+const nullProjectNative = createSession('direct', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', prompt: 'project-a'});
+nullProjectNative.writeIntent();
+nullProjectNative.create();
+nullProjectNative.reconcile([executorIdentity]);
+assert.strictEqual(nullProjectNative.state(), 'paused');
+assert.strictEqual(nullProjectNative.handoffs(), 1);
+const failedProjectHandoff = createSession('direct', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-projectless-content-room'}, () => false);
+failedProjectHandoff.writeIntent();
+failedProjectHandoff.create();
+assert.throws(() => failedProjectHandoff.reconcile([executorIdentity]));
+assert.strictEqual(failedProjectHandoff.state(), 'pending');
+const lateProjectMismatch = createSession('direct', executorIdentity);
+lateProjectMismatch.writeIntent();
+lateProjectMismatch.create();
+lateProjectMismatch.reconcile([executorIdentity]);
+assert.strictEqual(lateProjectMismatch.state(), 'ready');
+lateProjectMismatch.activate(3, {nativeHandle: 'native-project-null', prompt: 'project-a'});
+assert.strictEqual(lateProjectMismatch.state(), 'paused');
+assert.strictEqual(lateProjectMismatch.handoffs(), 1);
 
 function quarantine(record) {
   assert.strictEqual(record.parsed, false);
@@ -1389,7 +1867,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 9.0.0 contract fixtures');
+console.log('PASS: deterministic 10.0.0 contract fixtures');
 NODE
 
 changed_files=$({
@@ -1412,4 +1890,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 9.0.0 contract\n'
+printf 'PASS: octoplan-codex 10.0.0 contract\n'
