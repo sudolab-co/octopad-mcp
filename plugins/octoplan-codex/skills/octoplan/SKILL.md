@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, flesh out, or resume a governed Octopad work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 9.0.0
+Version: 10.0.0
 
 # Octoplan for Codex
 
@@ -30,7 +30,7 @@ Only a native Codex session exposing the required orchestration capability may b
 - The Delivery mode never authorizes a protected action; every consequential human occurrence remains separately specified, fingerprinted, and gated.
 - Apply active instruction precedence, let local or service policy narrow authority only, resolve people from current roles, retrieve bounded context, and abstract only external adapters with GitHub conditional.
 
-Keep opaque identifiers out of user-visible prose; use readable names and required native deep-link destinations while retaining exact identifiers in internal records, prompts, arguments, and ledgers.
+Keep opaque identifiers out of visible prose/titles; use the supervisor grammar, readable names, and required native links, keep exact IDs internal, and publish the six-field handoff before attention-requiring waits/pauses and in the final recap.
 
 ## Changing this skill
 

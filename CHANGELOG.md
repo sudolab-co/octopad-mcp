@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 10.0.0 — 2026-08-08
+
+This breaking Codex release formalizes short native-session display titles for supervisors, executors, reviewers, planners, and specialist reviewers. Titles are derived deterministically from saved human-readable names, capped at 64 characters, and never expose UUIDs, hashes, creation tokens, or thread IDs; the display title remains separate from native creation identity. Existing saved plans whose names cannot produce an unambiguous title require replanning.
+
+The supervisor now publishes a six-field handoff before every human gate or decision wait, every pause requiring Alex's attention, and the final recap. Each handoff states the current state, completed facts, blocker, exact decision, resume predicate, and next step, including safe branches that continue when only one branch is blocked.
+
+Automatic routing now normalizes capacity and enforces the Luna max floor (`gpt-5.6-luna` at maximum effort). Terra and Sol remain available only with their existing justification, and least-costly incident routing is restricted to compliant routes; saved routes below the floor require replanning. Native session reconciliation now verifies the actual native project identity from native metadata or the registry before activation; a projectless, null-project, or cross-project observation pauses with the explicit handoff. The Claude distribution is unchanged.
+
 ### 9.0.0 — 2026-08-05
 
 This breaking release gives each actor a small role-specific pack and binds every native creation to an immutable packet naming the organization, workspace, work stream, task, route, target, model, effort, and required capability profile. Every native child enters that Octopad context first, while Octopad remains responsible for its own context and status lifecycle. The planner, supervisor, executor, reviewer, recovery, and follow-up responsibilities are explicit.
