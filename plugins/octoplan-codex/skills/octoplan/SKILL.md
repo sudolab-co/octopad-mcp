@@ -2,36 +2,36 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, or resume a governed work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 10.2.1
+Version: 11.0.0
 
 # Octoplan for Codex
 
-Turn a new idea or existing Octopad stream into a verified graph, then supervise explicitly authorized agent execution. Planning never implements the deliverable. A new idea needs no stream or contract and stays non-authoritative until sealed. Every actor receives organization, workspace, and task, then enters Octopad through the session entrypoint. The supported saved contract is exactly `octoplan-supervision-v6` plus `octoplan-fingerprint-v3`, one canonical Delivery mode record, and native creation schema v3. Any other saved contract is unsupported and must be replanned before use.
+Turn a brainstorm into a detailed Octopad task graph, obtain the useful human choices once, and supervise authorized delivery until a real decision, risk, or protected gate needs the user. Planning creates no deliverable. Octopad holds the plan and recovery state; native Codex holds the working sessions.
 
-Octopad is the governed blackboard for bounded decision-relevant context, the durable plan and ledger, evidence, and activity history; native Codex is evidence about sessions. Keep both operations concrete and use only capabilities available in the active session.
+Only `octoplan-plan-v1` is supported. Replan older or unknown saved plans from the confirmed mandate; never inherit their PASS, digest, fingerprint, or launch state.
 
 ## Loading order
 
-Read [references/planning.md](references/planning.md) completely for planning or replanning. Once a complete scoping brief exists, read [references/octoplan-contract-v3.md](references/octoplan-contract-v3.md) before review, feasibility, persistence, fingerprinting, or consent. Read [references/codex-runtime.md](references/codex-runtime.md) plus the contract before routing or consent. Read [references/codex-supervision.md](references/codex-supervision.md) plus the contract before launch or resume. References are one level deep and are not interchangeable.
+Read [references/planning.md](references/planning.md) for planning or replanning. Read [references/state-and-recovery.md](references/state-and-recovery.md) before the first Octopad write or any resume. Read [references/codex-runtime.md](references/codex-runtime.md) before choosing routes, asking for authority, or creating a native task. Read [references/codex-supervision.md](references/codex-supervision.md) before launch or resume.
 
 ## Role packs
 
 Load only the matching compact pack from `roles/`: planner, plan-reviewer, supervisor, executor, reviewer, specialist-reviewer, recovery, or follow-up.
 
-Only a native Codex session exposing the required orchestration capability may be supervisor, execution reviewer, or successor launcher. One fresh read-only Codex subagent using `plan-reviewer` may return pre-run plan and activation review evidence; it needs no run or task identity, is not an Octoplan actor, and cannot persist, claim, or launch.
+One fresh read-only subagent using `plan-reviewer` reviews a complete draft before activation. It is not an Octoplan actor and cannot persist, claim, or launch. Only the active supervisor creates execution actors or records accepted review outcomes.
 
-## Seven invariants
+## Invariants
 
-- Default to **Review before delivery**. Use **Autonomous delivery** from the first message when the user explicitly delegates end-to-end delivery in any natural language; the contract determines whether that one instruction unambiguously covers planning, launch, and in-envelope replanning.
-- Ground every triggered high-risk invariant in the contract's feasibility matrix before Plan PASS; missing primitives, sources, boundaries, prerequisites, or available verifiers cannot become prose PASS.
-- Use a two-stage runway: prove project, native creation/reconciliation, entrypoint, review, and authority substrate before a candidate write, then prove the drafted graph's sources, adapters, write shapes, prerequisites, and verifiers before persistence. Relocate the untouched brief first when project identity is wrong.
-- Keep every native Octoplan session in the planning session's saved Codex project. Local and worktree sessions may differ inside that project; a cross-project or project/projectless substitution stops before creation.
-- Only the fenced supervisor launches execution successors; the pre-run read-only reviewer is the sole non-actor exception. A material incident uses a fresh planner without execution authority, and a replacement repeats equality, fingerprint, feasibility, adoption, and conformance without transferring PASS.
-- Roles bind their native capability profile and immutable context packet; child incidents return to the supervisor. Tasks are independently deliverable results: merge steps sharing owner, artifact, route, verifier, and gate unless each has independent acceptance; probes, connections, logins, inspections, and status relay stay internal.
-- The Delivery mode never authorizes a protected action; every consequential human occurrence remains separately specified, fingerprinted, and gated.
-- Apply active instruction precedence, let local or service policy narrow authority only, resolve people from current roles, retrieve bounded context, and abstract only external adapters with GitHub conditional.
+- Prove the exact organization, workspace, work stream, and Codex project before planning writes or native creation. Keep one durable, reconcilable bootstrap and one creation intent per actor; pending setup never authorizes a duplicate.
+- Ask one plan-scoped native-creation grant for the finite roles and environments. Never infer it from Delivery mode, plan approval, or execution consent.
+- Persist tasks with the live Octopad write shapes and literal **Why**, **What**, and top-level **Done when**, plus required impact fields. Keep probes and status relays out of the task graph.
+- Treat missing `structuredContent`, presentation drift, incomplete MCP prose, or absent exhaustive readback as warnings. Record one receipt per item and verify only uncertain writes by ID, stable task key, or exact edge.
+- Bind execution to a plan ID and approved integer revision, not canonical bytes. Material scope, graph, gate, route, authority, or acceptance changes create a new reviewed revision; display names, descriptions, links, and response formatting do not.
+- Scale review to effect. Never treat silence, timeout, or an unexecuted check as PASS, and recheck only the changed surface unless scope or contract changed.
+- The supervisor reconciles and repairs inside the approved envelope. Pause strictly for a wrong project/workspace, an unreconcilable duplicate, missing real authority, a write proven missing after targeted recovery, a conflicting approved plan, or a protected gate.
+- Secrets, access grants, destructive effects, merge, migration application, deployment, publication, spend, and acceptance remain separately gated.
 
-Keep opaque identifiers out of visible prose/titles; use the supervisor grammar, readable names, and required native links, keep exact IDs internal, and publish the six-field handoff before attention-requiring waits/pauses and in the final recap.
+Keep opaque identifiers out of visible prose and titles. Before any user-attention wait and in the final recap, publish `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, and `Prochaine étape`.
 
 ## Changing this skill
 

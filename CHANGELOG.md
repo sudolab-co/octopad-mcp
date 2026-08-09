@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 11.0.0 — 2026-08-09
+
+Octoplan now turns a brainstorm into a detailed, reviewed Octopad task graph, asks material questions in one batch, and separates plan approval, bounded execution authority, finite actor-creation grants, and protected human gates. Tasks use the live Octopad stream, task, dependency, and page-link shapes and carry **Why**, **What**, top-level **Done when**, impact, routes, and proportionate review. One supervisor drives Octopad's native graph, repairs inside the approved envelope, and asks the user only for a real material choice, missing authority, unreconcilable identity, a write still missing after targeted recovery, a conflicting revision, or a protected gate.
+
+The new `octoplan-plan-v1` keeps only plan identity and approved revision, essential Octopad IDs and desired dependencies, review and supervisor ownership, finite grants, gates, and pending recovery keys. Missing `structuredContent`, presentation drift, incomplete MCP prose, and non-byte-identical readback are warnings: per-item receipts and targeted reads confirm uncertain writes, while only proven-absent items may retry. Bootstrap and native actor creation use durable intents, bounded reconciliation, and ambiguity pauses without blind duplicate creation.
+
+This release removes the 10.x fingerprint, canonical readback, saved-state equality, and exhaustive Decision, Question, and task replay contracts. Existing 10.x or unknown plans must be materially replanned from the confirmed mandate without inheriting PASS, digest, consent, or creation intents. The distribution remains organization-agnostic and Codex-only; the Claude distribution is unchanged.
+
 ### 10.2.1 — 2026-08-09
 
 Octoplan now treats asynchronous Codex setup as pending until native project identity is ready, persists a deterministic bootstrap intent before its only create call, and binds handoff repair to the returned destination task. A single plan-scoped authority grant covers the exact finite actor set, while compatible tasks are compressed and only equivalent transitive dependencies are removed.

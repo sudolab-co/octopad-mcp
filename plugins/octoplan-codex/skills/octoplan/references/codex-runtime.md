@@ -1,93 +1,77 @@
-# Codex routing and execution consent
+# Codex routing and authority
 
-Read this reference before routing or asking for execution consent. Read the contract with it; schemas, exact fields, bytes, and protected-occurrence shape live only there.
+Read this reference before choosing models, asking for authority, or creating native Codex tasks. Durable identity and intents live in [state-and-recovery.md](state-and-recovery.md).
 
 ## Contents
 
-- [Contract and authority gate](#contract-and-authority-gate)
-- [Shared capacity ladder](#shared-capacity-ladder)
-- [Failure diagnosis](#failure-diagnosis)
+- [Approval and authority](#approval-and-authority)
+- [Capacity ladder](#capacity-ladder)
+- [Native target and creation](#native-target-and-creation)
 - [Review routing](#review-routing)
-- [Consent and launch binding](#consent-and-launch-binding)
-- [Authority scope and accounting](#authority-scope-and-accounting)
-- [Target and route binding](#target-and-route-binding)
+- [Protected gates](#protected-gates)
+- [Launch check](#launch-check)
 
-## Contract and authority gate
+## Approval and authority
 
-Before execution routing, consent, or a native actor, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate. The contract-defined candidate and its read-only pre-run reviewer are non-authoritative exceptions; neither may claim, launch, or perform delivery.
+Only an approved `octoplan-plan-v1` revision may launch. Planning permission never authorizes execution. Persist the exact execution-authority source separately from native creation. **Review before delivery** pairs with `revision-approval` and needs current approval of the persisted revision. **Autonomous delivery** pairs with `bounded-outcome` and may launch and replan only inside that confirmed boundary. Switch modes explicitly when the authority changes. A vague “go”, urgency, prior chat, or trust does not widen either mode.
 
-Planning permission never authorizes execution. On the default path, the mandatory brief is the whole initial reply and a later reply must confirm the complete brief before normal planning writes; the contract's explicit-no-loop path is the non-blocking checkpoint exception.
+Native task creation is separate. One exact user source may grant the finite roles, Codex project, and environments for the whole plan. Persist that source in the plan state and ask once, not per actor. A new role, environment, project, or projectless target needs new authority; a new revision inside the same grant does not.
 
-Use **Review before delivery** and **Autonomous delivery** in user-visible prose; their internal wire values remain contract-only. Review before delivery accepts brief confirmation followed by later exact-final-hash consent, or a confirmed brief plus explicit automatic-launch authority. Autonomous delivery requires unambiguous end-to-end delegation inside the confirmed envelope, except for the contract's valid first-message activation.
+The read-only plan reviewer needs no execution authority and cannot create, persist, claim, or launch.
 
-A single natural-language instruction may grant autonomous delivery without enumerating internal permissions when it clearly delegates finding, executing, and adapting the plan for a bounded outcome. Host-level native creation remains separate: one exact plan-scoped source may authorize the finite named roles, project, and allowed environments for the whole validated plan, but no broader or per-actor inference. A bare confirmation, urgency, vague autonomy, prior conversation, or permission to plan is not execution authority. A later exact-hash yes grants one launch of the current plan-bound hash; it does not create outcome-bound planning, native-task creation, or material-replan authority.
+## Capacity ladder
 
-## Shared capacity ladder
+Choose by detection difficulty and reversibility, then save the exact model, effort, target, and short rationale on each agent task. Review class remains separate from model capacity.
 
-Use this one ladder for executors, reviewers, recovery, and supervisor calibration. Review class remains separate from capacity selection; save the exact model, effort, target, environment, and rationale.
-
-| Observable detection profile | Route |
+| Work profile | Route |
 |---|---|
-| Exact mechanical work with deterministic proof | `gpt-5.6-luna · effort max` |
-| Routine bounded work with strong proof | `gpt-5.6-luna · effort max` |
-| Difficult bounded work with strong proof | `gpt-5.6-luna · effort max` |
-| Everyday interpretation, tone, or editorial work | `gpt-5.6-terra · effort high` |
-| Bounded product, analysis, communication, or editorial judgment | `gpt-5.6-terra · effort xhigh` |
-| Difficult bounded judgment beyond Luna without open ambiguity | `gpt-5.6-terra · effort max` |
-| Open-ended work or weak verification | `gpt-5.6-sol · effort high` |
-| High-consequence work hard to detect or reverse | `gpt-5.6-sol · effort xhigh` |
+| Mechanical, deterministic proof | `gpt-5.6-luna · effort max` |
+| Bounded product, technical, or editorial judgment | `gpt-5.6-terra · effort xhigh` |
+| Difficult but bounded reconciliation | `gpt-5.6-terra · effort max` |
+| Open-ended, weakly verified, or high-consequence work | `gpt-5.6-sol · effort xhigh` |
 | Open architecture or investigation without a reliable verifier | `gpt-5.6-sol · effort max` |
 
-Risk labels never select Sol; split separable work, never silently substitute a saved route, and reserve `ultra` for explicit parallel user opt-in. Automatic routing canonicalizes model/effort before selection, saving, or creation. The minimum automatic capacity is exactly `gpt-5.6-luna · effort max`; reject unknown pairs, Luna `high`/`xhigh`, and every route below it. Terra/Sol need existing rationale; `least costly` means the cheapest normalized candidate at or above the floor.
+Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default and raises capacity only for real reconciliation ambiguity. Split separable work; never silently substitute a saved route. Unknown or unavailable pairs trigger a saved route correction or material replan, not an actor-side guess.
 
-Planning uses Sol `xhigh`, or justified `max`. A dedicated supervisor uses Terra `xhigh` by default, Terra `max` for difficult bounded reconciliation, and Sol only for orchestration ambiguity, weak verification, or costly irreversibility. A bounded incident-reasoning delegate uses the least costly normalized model/effort pair at or above the Luna max floor that can detect the issue; raise capacity only when the incident's detection difficulty warrants it, and record the rationale.
+## Native target and creation
 
-## Failure diagnosis
+Native metadata or the project registry must prove the planning target. A path, prompt, or matching name is not proof. Every supervisor, planner, executor, reviewer, recovery, and follow-up stays in that exact project; `local` and `worktree` may differ inside it. An explicit projectless plan stays in its exact directory. Cross-project or project/projectless substitution stops before creation.
 
-Missing context, a missing skill, a missing capability, environment or access failure, and verifier failure are incidents owned by the supervisor. The supervisor diagnoses the issue, keeps safe work moving, and seeks a compliant path inside the saved scope, policy, mandate, human gates, and protected-action boundary. When useful, it delegates bounded reasoning to a fresh planner or recovery actor with model and effort suited to the incident; that actor returns a proposal only, and the supervisor decides and records the path.
+Before each create, verify the plan ID/revision, covering grant, role, target, model/effort, task ID/ref, required capability, and current supervisor epoch; reconcile plausible existing native tasks; persist the creation intent from [state-and-recovery.md](state-and-recovery.md); then call native create once only when no exact actor already exists.
 
-A child does not turn its own limitation into a new stop condition or user request. A planner cannot be created until its `capacity_source` record is read and its digest is verified. The user is contacted only after the supervisor has evidence that no solution respecting the guardrails exists; a missing skill or tool alone is not that proof.
+Treat `clientThreadId` as pending setup, not a task identity. Reconcile one exact creation key through native list/read. Response formatting, display title, or a missing field is not activation evidence and not a reason to create again. Activate only the unique task whose material role packet and project match.
 
-Before consent, a fallback records the exact route, failed criterion, maximum replacements, at least two repeated observations, and observations establishing prompt, context, access, environment, and verifier soundness. A direct user exception names the task, saved route, and bound; it does not prove the stored trigger.
-
-A material result, scope, cost, risk, success, architecture, task meaning, route bound, validation, or protected-action change stops the run for replan. A failed reviewer returns to the saved review path or asks for fresh consent; it never relays a successor.
+The role packet names organization, workspace, work stream, task, approved revision, role, route, target, model, effort, capability, and supervisor epoch. It is explicit working context, not a byte-level contract. The actor enters Octopad using those IDs and reads its live task before acting.
 
 ## Review routing
 
-Every delivery task receives an adversarial check. `targeted` is deterministic, interaction-free proof in the current context; `independent` is one fresh source-first reviewer; `specialist` adds one fresh reviewer only for a second orthogonal material failure domain. A specialist never completes or relays.
+Every delivery task receives its saved check:
 
-Choose review capacity by detection difficulty. Before a run, one fresh read-only Codex subagent loads `plan-reviewer` and returns immutable plan/activation artifacts to the planner without a run, stream, task, or supervisor identity; it is no user-owned thread or native actor. Execution reviewers use their native pack and return verdict artifacts to the supervisor. Neither persists PASS, completes tasks, or launches.
+- `targeted`: the supervisor or a distinct lightweight reviewer challenges the actual diff/artifact against Done when and runs the named deterministic checks;
+- `independent`: one fresh source-first reviewer plus the task's targeted tests;
+- `specialist`: one additional fresh reviewer only for a second material and orthogonal failure domain.
 
-## Consent and launch binding
+Product, code, security, privacy, data, migration, and materially public changes require `independent`. Documentation, internal, and low-risk reversible work may use `targeted`, but the check must inspect the artifact and criteria. A specialist never replaces the lead review.
 
-Without valid advance authority, ask: “The plan is complete and verified. Do you authorize Codex to execute this exact plan now?” Then stop; do not create or monitor an executor while waiting.
+Reviewers return `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION` with evidence and the artifact revision checked. They do not persist PASS, complete tasks, ask the user, or launch successors. A changed artifact invalidates its prior PASS. After a correction, recheck the finding and affected criteria; rerun the whole review only after a contract or scope change.
 
-With valid advance authority, repeat brief conformance, source and verifier freshness, feasibility, saved-state equality, mandate conformance, and review PASS after the final review.
+## Protected gates
 
-Append the contract-defined launch binding as one guarded coordination-ledger record using the current concurrency guard; it never enters the manifest or fingerprint.
+Secrets, access grants, destructive effects, external spend, merge, migration application, deployment, publication, and acceptance are distinct human occurrences. Delivery mode and plan approval never satisfy them. Each has a human task, owner, target/effect, evidence, and resume predicate.
 
-A material replan invalidates the old launch binding in either mode but does not invalidate a byte-identical outcome-bound mandate. The replacement needs fresh feasibility, adoption map, read-back equality, v3 fingerprint, and independent conformance PASS. No PASS or consent transfers.
+When one gate waits, continue every independent safe frontier. When none remains, record `waiting-human` and publish the six-field handoff. A wake supplies evidence only and never authority.
 
-## Authority scope and accounting
+## Launch check
 
-Valid authority covers only the reviewed hash, saved conditional policy, saved routes and targets, bounded recovery and repair, saved fallbacks, agent-owned executor/reviewer sessions, bounded incident reasoning, non-blocking follow-ups, reconciliation wakes, and still-valid parallel groups.
+Immediately before launch or resume, reread the coordination task with its concurrency state and verify:
 
-Before a post-plan actor, persist exact-source `octoplan-native-grant-v1`, bound to final hash, project, unique environments, and finite roles. Mode, consent, another plan, or replan cannot supply/widen it. A new hash needs a new guarded record and covered source.
+- exact organization, workspace, work stream, project, plan ID, and approved revision;
+- review PASS for that revision and receipts for essential tasks/dependencies;
+- supervisor owner/epoch, exact execution-authority source, and unique pending creation intents;
+- covering finite creation grant and exact saved route for the next actor;
+- no unresolved material question, conflicting revision, or protected gate on that frontier;
+- source and verifier availability needed by the next task.
 
-It never covers a human-only task, an unsaved route, an out-of-envelope replan, a protected action, a new audience or access grant, or an arbitrary model/effort/target substitution. A capacity choice explicitly allowed by the saved incident policy is not an arbitrary substitution; otherwise save and review the delta before acting. Apply the contract's exact protected human-occurrence predicate; the mandate never satisfies it.
+Without execution approval, show the plan and ask once. With valid approval, record the transition to `active` using `expected_updated_at`, then read [codex-supervision.md](codex-supervision.md). A failed guard or material mismatch authorizes nothing.
 
-Record authoritative actuals only. Unavailable time or provider cost remains null/unavailable; never estimate cost. Compare numeric boundaries mechanically only when frozen and actual values use the same canonical units. Otherwise request fresh independent mandate conformance; authority-changing ambiguity is `HUMAN_DECISION` and `waiting-human`.
-
-## Target and route binding
-
-Run the planning reference's execution runway before durable planning. Native metadata or the registry must prove the current task's identity; a path, prompt, or matching name does not. If a saved-project execution target is exact but the current task is null-project, projectless, or cross-project, relocate the untouched brief before any Octopad planning write. The bootstrap creates no ledger record and is never a supervisor.
-
-Review before delivery needs brief confirmation and named-target relocation authority. Autonomous delivery may relocate only when its exact initial source covers native creation; general delegation cannot override host policy. Interpret creation and relocation authority separately and retain both source record/digests; mode or consent creates neither. Reconcile the transcript-guarded bootstrap first: only its source may call create once, and `clientThreadId` is setup only. Terminal verified null alone permits one persisted handoff repair; reconcile `operationId`, adopting only `destinationThreadId`, never its archived source. The destination reruns preflight and only verified identity becomes planning target. Ambiguity or unavailable relocation stops pre-write with one question or handoff.
-
-Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. A planner role uses the saved incident route and its recorded capacity rationale. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities and role capability topology; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
-
-Analytical delegates, including `multi_agent`, are never native supervisors, execution reviewers, or launchers. The pre-run subagent returns only a verdict artifact; others return bounded proposals. The planner or supervisor alone persists accepted PASS. No delegate claims delivery, creates a native child, or relays.
-
-Keep external-event adapters conditional and use native Codex operations for native sessions. A wake supplies evidence only and cannot expand the saved route or authority.
-
-After valid authority, read [codex-supervision.md](codex-supervision.md) completely before creating or resuming any native session.
+Record authoritative actuals only. Missing time or provider cost remains unavailable; never estimate it. External event adapters are optional evidence paths, not plan prerequisites or authority sources.

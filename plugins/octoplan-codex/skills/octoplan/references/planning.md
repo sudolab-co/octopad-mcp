@@ -1,114 +1,85 @@
-# Octoplan planning protocol
+# Octoplan planning
 
-The dependency graph is executable truth. This reference owns planning workflow, review meanings, feasibility reasoning, and repair classification; exact saved shapes and bytes live only in [octoplan-contract-v3.md](octoplan-contract-v3.md).
+Use this workflow to turn an idea or an existing work stream into an executable Octopad plan. Durable state and reconciliation rules live in [state-and-recovery.md](state-and-recovery.md).
 
 ## Contents
 
-- [Entry gate](#entry-gate)
-- [Context and scoping brief](#context-and-scoping-brief)
-- [Execution runway](#execution-runway)
-- [Workflow](#workflow)
-- [Decisions and graph](#decisions-and-graph)
-- [Feasibility](#feasibility)
-- [Plan review](#plan-review)
-- [Consent binding](#consent-binding)
-- [Parallel work and Blueprints](#parallel-work-and-blueprints)
-- [Runtime classification](#runtime-classification)
-- [Blockers and accounting](#blockers-and-accounting)
-- [Saved-state self-check](#saved-state-self-check)
+- [Entry and recovery](#entry-and-recovery)
+- [Brainstorm and brief](#brainstorm-and-brief)
+- [Identity runway](#identity-runway)
+- [Draft the graph](#draft-the-graph)
+- [Review before activation](#review-before-activation)
+- [Persist and verify](#persist-and-verify)
+- [Approve and launch](#approve-and-launch)
 
-## Entry gate
+## Entry and recovery
 
-Read this reference completely for a planning, replanning, or flesh-out pass.
+Refresh the live organization, workspace, work stream, current tasks, relevant decisions/questions, and native Codex tasks before choosing a path. Read a bounded stream or task context once, then retrieve only material gaps. Do not read every Decision, Question, or task merely to reproduce a canonical snapshot.
 
-As soon as the scoping brief is complete, read the contract completely before review, feasibility, any draft persistence, fingerprinting, or consent.
+Continue exactly one live `octoplan-plan-v1`. A greenfield request creates one. A 10.x, unknown, partial, or conflicting contract is not executable: preserve it as history, recover the confirmed mandate and useful artifacts, prove old actors quiescent or fenced, then create a fresh v1 plan. Never inherit an old PASS, fingerprint, digest, consent, or creation intent.
 
-Classify the intended result as exactly `greenfield`, `candidate`, `supported`, or `unsupported`. `greenfield` means no candidate, manifest, ledger, or native-creation marker exists; `candidate` means one valid transient root with only its journal-reconciled construction records and no final marker; `supported` means one complete current contract. Every other state is `unsupported`.
+If two plausible planners, ledgers, streams, or native sessions claim the same plan, reconcile them before writing or creating. Adopt the unique evidenced owner; pause only when the duplicate is materially unreconcilable.
 
-Dispatch only the complete supported pair; resume a candidate only through its exact journal. After planning authority and both runway gates, greenfield or a safely quarantined replacement may open one guarded `octoplan-candidate-v1`. It is non-authoritative and resumable. Unsupported history is never mutated. Never infer a field, target, authority, PASS, feasibility, adoption, or consent.
+## Brainstorm and brief
 
-## Context and scoping brief
+Collaborate naturally before imposing structure. Restate the intended result, then ask only questions that can change scope, success, risk, order, ownership, validation, project/workspace, protected gates, or execution authority. Ask all currently material questions in one numbered batch; use one targeted follow-up only when an answer exposes a new material ambiguity.
 
-Retrieve only bounded, decision-relevant context and authoritative source pointers needed to prove the graph. Make one cursor-advancing discovery pass and at most one targeted gap refill; never repeat the same target, cursor, and revision without a new failed predicate.
+When enough is known, publish a compact brief containing the result and success evidence; in/out scope and important constraints; confirmed decisions, open material questions, sources, and assumptions; organization, workspace, work stream, and Codex project; protected gates; Delivery mode; and the finite native roles and environments that may be needed.
 
-Read the stream's governing Decisions, Questions, tasks, graph edges, tracker, and required source records. Resolve people from current members and roles.
+Default to **Review before delivery**. **Autonomous delivery** covers planning, launch, repair, and in-envelope replanning only when the user clearly delegates that bounded outcome. Neither mode authorizes secrets, access changes, destructive effects, spend, merge, migration application, deployment, publication, or acceptance.
 
-Ask only questions that can change result, scope, risk, order, proof, owner, validation timing, stream choice, project, or native-task authority. Ask every currently material question in one numbered batch; allow one targeted follow-up batch only when answers reveal new material uncertainty.
+Ask once for a native-creation grant covering the exact Codex project, allowed environments, and finite roles. It may cover the complete validated plan; never ask actor by actor. Keep its durable source reference. Delivery mode, plan approval, or a vague “go” does not replace it.
 
-On the default path, the first reply on every full pass is the whole scoping brief: Understanding; In scope / out of scope including the nearest excluded result; Success; Assumptions with verified basis; Open questions; Execution outlook with stream/project, foreseeable blockers, missing capabilities or prerequisites, and native-task authority; Validation mode (`gradual` or `final`); Delivery mode; and a one-line authority summary.
+If a material answer remains open after the follow-up, return one `HUMAN_DECISION` with options and a recommendation instead of serial questioning.
 
-When native actors may be needed, ask in the first brief for one exact grant covering the named project, allowed environments, and finite roles. It covers later agent-owned creates only for the validated plan; never ask per actor. Delivery mode or consent never supplies it.
+## Identity runway
 
-On the default path, do not write a plan or create an execution session before confirmation. A reply that answers every numbered question and accepts the Delivery mode confirms unchanged brief fields; publish the resolved brief as a non-blocking receipt and do not ask for a second confirmation. A material delta is the only reason to ask again. Valid explicit-no-loop instead publishes a non-blocking checkpoint and may continue under the exact initial grant.
+Before any Octopad planning write, prove the exact organization/workspace membership, one intended stream action, current Codex project identity, live Octopad write schemas, targeted read tools, one fresh plan reviewer, and real native creation/relocation authority.
 
-Use the user-facing labels from the contract. Default to **Review before delivery**. An initial **Autonomous delivery** request, or semantically equivalent end-to-end delegation in any language, may activate the contract's explicit-no-loop path when the instruction unambiguously covers finding the plan, executing it, and adapting it inside a complete outcome envelope.
+If the current task is already in the intended project, continue. Otherwise relocate the untouched brief only under exact authority. Emit one durable `OCTOPLAN_BOOTSTRAP_INTENT` with a unique key, target project/environment, stream action, and source references before the one create call.
 
-A later brief-only confirmation grants no execution authority. A bare “do it”, urgency, trust without delivery delegation, prior conversation, or permission to plan never supplies the missing grant.
+Treat `clientThreadId` as setup only. Reconcile through native task listing/reading and the bootstrap key. Pending setup waits through one bounded setup window and a second list/read. Adopt one exact destination; pause on several or a wrong project. If the second read still finds zero, pause as `bootstrap-dispatch-ambiguous`: resume only when the exact destination appears or authoritative native evidence proves no dispatch occurred, allowing the old intent to be retired and a fresh key issued once. Never retry blindly, and make no Octopad write from the source task.
 
-The explicit no-loop path is valid only when the initial request already contains that explicit grant, a complete outcome envelope, no unresolved material point, no scope-expanding inference, and separate protected occurrences.
+## Draft the graph
 
-For that path, publish the brief as a non-blocking checkpoint, record the exact source, and continue through durable Decision persistence. Once durable Decision IDs make the complete canonical mandate available, obtain a fresh independent activation review before Plan PASS, fingerprinting, consent, or launch; no execution session precedes it.
+Build the plan off-record using stable `E01`-style references for agent work and `H01`-style references for human gates. Each task must be an independently useful result, not a login, probe, read, tracker update, status relay, or tool call. Combine steps that share one owner, artifact, route, verifier, and gate unless they have independent acceptance.
 
-If a material answer remains open after the follow-up batch, return one `HUMAN_DECISION` with options and a recommendation instead of serial questioning. Save the Question and affected flesh-out placeholders only after both runway gates pass in the final planning task.
+Every agent task tells a fresh model enough to act without the planning chat: literal **Why**, **What**, and top-level **Done when** sections; outcome and boundaries; confirmed decisions and source pointers; useful implementation guidance; artifact and checks; failure or rollback limits; execution model/effort; review class/route; dependencies, owner, and gates; one internal `Octoplan operation key: <plan-id>:r<revision>:task:<ref>` marker; plus `impact` from 1 to 5 and `impact_rationale`.
 
-## Execution runway
+Subtasks still need **Why** and **What**. Human tasks have no execution route and name the exact occurrence, owner, approval evidence, and resume predicate. Preserve dependency rationales. Remove a transitive edge only when the remaining path preserves the same rationale and gate.
 
-Run two gates. The substrate gate comes first: prove native project identity, one project and stream action (`reuse|create`), creation/reconciliation, Octopad planning access, one fresh read-only review subagent, and one exact source authorizing the finite native roles. The source stays provisional until its grant binds the final plan hash. Evaluate it before research or drafting. Paths, prompts, names, Delivery mode, and consent prove neither identity nor creation authority.
+Choose the lightest adequate task review:
 
-If the current task already has the exact intended project identity, continue. If it has a null, projectless, or different identity while execution needs a saved project, do not write Decisions, tasks, trackers, manifests, claims, quarantine records, or migration notes. Resolve one exact saved project from the native registry. Ambiguity asks one material question. Missing substrate gets one bounded self-repair attempt, then a pre-write handoff with the exact failed predicate.
+- `independent`: fresh reviewer plus targeted tests for product, code, security, privacy, data, migrations, public output, or other material effects;
+- `targeted`: a real diff/criteria adversarial check for documentation, internal work, or low-risk reversible artifacts;
+- `specialist`: one additional fresh reviewer only for a second distinct material failure domain.
 
-With relocation authority, the source task owns one bootstrap. Its `OCTOPLAN_BOOTSTRAP` identity binds brief digest, full target, stream action, and separate native-creation and relocation authority sources/digests. Read registry and durable source transcript first. Emit one exact `OCTOPLAN_BOOTSTRAP_INTENT` before, then create only in that uninterrupted turn. On crash, timeout, lost response, delayed listing, or grant change, its presence means `issued-or-ambiguous`: adopt one exact match, pause on several, and with zero stay pending then pause; it never permits another create. A `clientThreadId` is only a setup handle. Nonterminal unavailable/null identity waits without activation or create. The child never relocates itself, creates a replacement, or remains an actor.
+## Review before activation
 
-Native metadata alone classifies `verified-project`, `verified-projectless`, or `verified-null`; missing, malformed, timed-out, or conflicting evidence is `unavailable`, never null. Only ready/terminal verified null permits one persisted repair intent and handoff to `local`. Persist `operationId`, await terminal success, and adopt only `destinationThreadId`; source and setup IDs never qualify. Error, timeout, changed/missing destination, unavailable/wrong/null-after-repair identity, or multiple matches pauses with the six-field handoff and repeats nothing. The bootstrap makes no Octopad write or claim and restarts the runway only after destination identity matches. Review before delivery requests confirmation and both authorities together; Autonomous delivery requires both in its initial source.
+Give one fresh read-only reviewer the complete draft, brief, sources, graph, routes, gates, and proposed review classes. Ask it to challenge outcome coverage, task quality, duplication, dependencies, model fit, authority, protected actions, feasibility, and unnecessary orchestration.
 
-Only the relocated task's verified native metadata becomes the planning target. If native relocation is unavailable, report the blocker before durable planning.
+Accept only an explicit `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION` with evidence. Silence, timeout, unavailable checks, or unfinished review is not PASS. Apply only confirmed findings. Recheck a corrected surface; repeat the whole plan review only when outcome, contract, or material scope changed.
 
-After drafting, the persistence gate validates schemas, writes, sources, prerequisites, and verifiers. Decision, Question, and task proof is schema `octopad-direct-readback-v1` from raw MCP `CallToolResult.structuredContent`; if the host hides it, accept only JSON after `OCTOPAD_DIRECT_READBACK`. Markdown, `_ui`, or missing/duplicate/wrong-type items never substitute. Stream create supplies `scope` and `work_stream_description`; streamed tasks omit `goal_id`; write `page_ids` uses `{page_id,rationale}`. Match every operation key, ID, and canonical payload digest. A missing, duplicate, or failed receipt prevents cursor advance and sealing unless exact readback proves that item: direct-read successful IDs, then issue only still-missing writes under their original journal keys, never the whole batch. Rebuild off-record before one journaled attempt; create a stream once and pass its ID to every actor.
+Record the reviewer, plan revision, verdict, checked surfaces, findings, corrections, and remaining risks. The reviewer never writes Octopad, creates actors, or grants authority.
 
-## Workflow
+## Persist and verify
 
-1. **Brief and gates.** Classify the entry, batch the brief's material questions, follow **Reflect or branch**, and prove or relocate the substrate. Build the graph off-record, then pass the persistence gate.
-2. **Draft and prove.** Resolve the stream, sources, success, owners, gates, choices, and graph. Reconfirm the relocated planning target and capability topology. Give every task one deliverable, owner, route, proof, repair envelope, and human gates; keep probes internal. Build bijective feasibility coverage and simulate the first and highest-risk frontiers.
-3. **Challenge off-record.** Start one fresh read-only Codex subagent with the draft and evidence. It returns provisional findings only; retain it for the final subject and add a specialist only for an orthogonal material risk.
-4. **Construct and bind.** Open or resume the candidate, rebuild and verify its immutable write set, reconcile its guarded cursor, persist and reread the complete graph, and normalize IDs. Build the canonical review subject, excluding only its future attestation envelope, and have the same subagent return one immutable artifact over that digest. The planner adds the envelope and conditional equality, then rereads and mechanically validates the whole candidate. Compute v3 bytes with the two hash fields normalized, guardedly replace the root with the complete final pair, reread and recompute it, and require `supported`. A crash resumes the journal; mismatch stays unsealed.
-5. **Consent.** Follow the runtime's exact plan-bound or outcome-bound path. A failed guarded binding writes no authority.
+Read the active tool schemas immediately before writing. Use the connector's accepted shapes:
 
-## Decisions and graph
+- finite work streams include `rationale`, `definition_of_success`, and `primary_goal_id`; stream creation supplies `scope` and `work_stream_description`;
+- streamed tasks use `work_stream_id` and omit `goal_id`;
+- multi-task creation supplies `depends_on_refs` for every row when required and `depends_on_rationale` for its edges;
+- page links use `{page_id, rationale}`;
+- task descriptions and impact fields follow the server contract above.
 
-Material scope, success, risk, validation, ownership, and route choices are Decisions or Questions, never hidden assumptions. Each task produces one independently deliverable result. Merge steps with the same owner, artifact, route, verifier, and human gate unless each has independent acceptance; keep planning, preflight, reads, review, tracker maintenance, and status relay internal. Preserve protected human occurrences as separate tasks. Remove a transitive dependency only when its alternate path subsumes the same rationale and gate; graph reachability alone is insufficient. Use literal Why/What and top-level Done when, numeric impact 1–5 with rationale, and dependency rationales.
+Create or adopt one coordination task, then persist the minimal state from [state-and-recovery.md](state-and-recovery.md). Create the reviewed tasks in coherent batches without shortening descriptions. Use returned IDs or receipts immediately; an incomplete response triggers targeted reconciliation, never blind replay.
 
-Delivery ends at a review-ready artifact. Keep every human or protected action separate. Save routes, bounds, same-project targets, role capabilities, and verification needed by a fresh executor; every packet names organization, workspace, and task. Persist the contract records guardedly; Blueprint and tracker summaries never replace them.
+For each essential stream, task, decision/question, dependency, and state update, record an item receipt from the write response or a targeted verification. Missing `structuredContent`, `_ui` differences, reordered prose, display-name changes, or non-byte-identical readback are warnings only. Verify uncertain items once by returned ID, stable task key, exact edge, or a bounded list plus targeted get. Retry only an item proven absent under its original operation key. If existence remains ambiguous, keep it pending and reconcile again; do not duplicate it.
 
-## Feasibility
+Plan PASS requires the independent review record, one receipt for every essential creation, the desired dependency set, correct organization/workspace/stream, available verifiers, and no material drift from the reviewed draft. It never requires exhaustive readback or byte equality.
 
-Build coverage and the matrix exactly as the contract defines. Every triggered invariant needs an available primitive, source, boundary, compensation, verifier, and prerequisites; missing proof never yields prose PASS. An empty matrix passes only when every coverage record has empty `triggered_invariants`. Bind its digest, critical revisions, and verifier availability to review, then recheck before launch and after relevant change.
+## Approve and launch
 
-## Plan review
+Set `approved_revision` only after review and targeted persistence verification. Under **Review before delivery**, show the plan and autonomy boundary, ask for approval, and stop. Under **Autonomous delivery**, an earlier end-to-end mandate may authorize launch after review only when the persisted plan stays inside its exact bounded outcome; otherwise ask once for the changed boundary.
 
-`PASS` is composite: the read-only artifact attests the contract's canonical review-subject digest, while guarded readback mechanically validates its detached envelope and proves final saved equality with current sources, verifiers, and mandate. The reviewer also challenges orchestration overhead, repeated homogeneous tasks, internal-step tasks, and redundant edges. A reviewer verdict alone is never Plan PASS. `REVISE` is correctable; `INFEASIBLE` proves no authorized route; `HUMAN_DECISION` needs human authority or choice.
-
-The reviewer cannot persist, claim, or launch. The planner persists its exact artifact, routes, reviewed and matrix digests, source/verifier and mandate results, and conditional equality in the final candidate. Exact full readback makes equality effective without recursively reviewing the attestation envelope. Any subject, source, verifier, matrix, mandate, adoption, or conformance change needs fresh review; any envelope or equality change invalidates sealing and binding.
-
-## Consent binding
-
-`plan-bound` needs later exact-final-hash consent unless brief confirmation explicitly grants launch after verification. `outcome-bound` needs plan, launch, and material-replan authority; its mandate, unlike its launch binding, stays byte-identical across eligible replans. Before launch, guardedly append the contract binding outside the fingerprint.
-
-A material replan invalidates the old launch binding in either mode. The replacement needs fresh feasibility, adoption mapping, source/read-back equality, v3 fingerprint, and independent conformance PASS before a new run; no old PASS or consent transfers.
-
-## Parallel work and Blueprints
-
-Parallel members share a readiness frontier and no file, symbol, contract, artifact, structure, migration, lockfile, or scarce resource. Persist symmetric safety by immutable ID and activate the whole group atomically; otherwise serialize before persistence. Multi-stream work exposes seams/owners, confirms each stream brief, and graphs cross-stream dependencies. Blueprints explain but never enforce.
-
-## Runtime classification
-
-The plan encodes repair, follow-up, and replan bounds; runtime may not expand them. Repair preserves the reviewed result and protected boundary. Follow-ups stay outside the run. A material or ambiguous change follows the runtime's replan authority.
-
-## Blockers and accounting
-
-Persist the stable blocker key before rerouting; wording, replacement, or irrelevant artifacts do not reset it. After two recurrences without new satisfiability evidence, prove a materially different route or return `HUMAN_DECISION`, `waiting-human`, `paused`, or independent `INFEASIBLE`.
-
-Record authoritative actuals only; missing time/cost is null/unavailable and provider cost is never estimated. Compare numeric bounds only in matching canonical units; otherwise require fresh conformance judgment and use `HUMAN_DECISION`/`waiting-human` when authority may change.
-
-## Saved-state self-check
-
-Before Plan PASS, validate the exact readback against the contract; any failed predicate leaves the candidate unsealed.
+Before launch, verify current plan ID/revision, supervisor owner, creation grant, unresolved material questions, protected gates, task routes, and first ready frontier. Then follow [codex-runtime.md](codex-runtime.md) and [codex-supervision.md](codex-supervision.md).
