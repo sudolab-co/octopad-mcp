@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan or explicitly asks to plan, replan, flesh out, or resume a governed Octopad work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 10.0.0
+Version: 10.1.0
 
 # Octoplan for Codex
 
@@ -24,6 +24,7 @@ Only a native Codex session exposing the required orchestration capability may b
 
 - Default to **Review before delivery**. Use **Autonomous delivery** from the first message when the user explicitly delegates end-to-end delivery in any natural language; the contract determines whether that one instruction unambiguously covers planning, launch, and in-envelope replanning.
 - Ground every triggered high-risk invariant in the contract's feasibility matrix before Plan PASS; missing primitives, sources, boundaries, prerequisites, or available verifiers cannot become prose PASS.
+- Before any Octopad planning write, prove the execution runway. If the current task lacks the exact saved project identity required for native actors, relocate the untouched brief into that project and restart the preflight there; never discover this after ledger reconstruction.
 - Keep every native Octoplan session in the planning session's saved Codex project. Local and worktree sessions may differ inside that project; a cross-project or project/projectless substitution stops before creation.
 - Only the fenced supervisor launches successors; a material incident uses a fresh planner without execution authority, and a replacement run repeats equality, fingerprint, feasibility, adoption, and conformance checks without transferring PASS.
 - Roles bind their native capability profile and immutable context packet; child incidents return to the supervisor. Tasks are independently deliverable results; probes, connections, logins, and inspections are internal steps.

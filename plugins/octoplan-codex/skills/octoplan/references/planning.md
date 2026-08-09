@@ -6,6 +6,7 @@ The dependency graph is executable truth. This reference owns planning workflow,
 
 - [Entry gate](#entry-gate)
 - [Context and scoping brief](#context-and-scoping-brief)
+- [Execution runway](#execution-runway)
 - [Workflow](#workflow)
 - [Decisions and graph](#decisions-and-graph)
 - [Feasibility](#feasibility)
@@ -48,19 +49,29 @@ The explicit no-loop path is valid only when the initial request already contain
 
 For that path, publish the brief as a non-blocking checkpoint, record the exact source, and continue through durable Decision persistence. Once durable Decision IDs make the complete canonical mandate available, obtain a fresh independent activation review before Plan PASS, fingerprinting, consent, or launch; no execution session precedes it.
 
-If a material answer remains open after one further question, save a Question and leave affected tasks as flesh-out placeholders.
+If a material answer remains open after one further question, ask it without a planning write. Save the Question and leave affected tasks as flesh-out placeholders only after the execution runway passes in the final planning task.
+
+## Execution runway
+
+Before any Octopad planning write, resolve the active task's native project identity from native metadata, the intended saved project from the current request or one user answer, the required native creation and reconciliation tools, the Octopad session entrypoint, required external adapters, repository or content source access, and at least the first-frontier verifier. Use read-only probes and publish the brief first. A directory, worktree path, prompt, or project name is not project-identity evidence.
+
+If the current task already has the exact intended project identity, continue. If it has a null, projectless, or different identity while execution needs a saved project, do not write Decisions, tasks, trackers, manifests, claims, quarantine records, or migration notes. Resolve one exact saved project from the native registry. Ambiguity asks one material question. Missing access or capability gets one bounded self-repair attempt, then a pre-write handoff with the exact failed predicate.
+
+With explicit authority to create the relocation task, create exactly one pre-planning task in that saved project and pass the exact idea, scoping brief, answers, source pointers, Delivery mode, and evidence gathered so far. This bootstrap is not an Octoplan actor, creates no ledger state, claims no delivery work, and must rerun this runway before planning. The original task performs no Octoplan write and does not remain supervisor. Under Review before delivery, ask for brief confirmation plus explicit relocation to the named target; under Autonomous delivery, the initial launch grant and non-blocking brief checkpoint cover relocation when the target is unambiguous.
+
+Only the relocated task's verified native metadata becomes the planning target. If native relocation is unavailable, report the blocker before durable planning instead of reconstructing a plan that cannot launch.
 
 ## Workflow
 
-1. **Review or discover.** Establish the current stream, its source claims, definition of success, owners, gates, and graph. Separate facts, Decisions, Questions, and assumptions.
+1. **Brief and runway.** Turn the idea into the complete scoping brief, ask only material questions, and prove or relocate the execution runway before durable planning.
 2. **Reflect or branch.** On the default path, return the complete brief and wait for the later user reply; apply corrections only after it and do not save partial planning artifacts. On valid explicit-no-loop, publish the non-blocking checkpoint and continue planning under the exact initial grant.
-3. **Lock choices.** Present each material choice as decision, options with gain and cost, recommendation, and reversibility. Save only accepted choices as authoritative Decisions.
-4. **Ground and preflight.** Resolve the active Codex target and capability topology, save it as the inline supervisor target, and verify every native role target's project identity and capability. Then verify governing documents, repository patterns, access, source revisions, rollback or compensation, exact verifiers, verification actions or commands, and policy gates.
+3. **Discover and lock.** Establish the current stream, source claims, success, owners, gates, and graph. Separate facts, Decisions, Questions, and assumptions; present each material choice with options, gain, cost, recommendation, and reversibility. Save only accepted choices as authoritative Decisions.
+4. **Ground the graph.** Reconfirm the relocated planning target and capability topology, then verify every role target, governing document, repository pattern, access, source revision, rollback or compensation, exact verifier, verification action or command, and policy gate.
 5. **Draft off-record.** Give each task a stable key, one independently deliverable/reviewable result, dependencies, owner, role packet, route, acceptance, proof, repair envelope, and human gates. Tool probes, connections, logins, and inspections are preflight, not tasks.
 6. **Build feasibility.** Scan every agent and human task against every trigger class in the contract. Map each triggered invariant to one row and each row back to one task/invariant pair.
 7. **Simulate readiness.** Walk the first ready frontier and the highest-risk path. Add a prerequisite, narrow a promise, or return a material choice when the path is not executable now.
 8. **Review the draft.** Use one fresh independent reviewer by default. Add a specialist only for a genuinely orthogonal material failure domain.
-9. **Read back.** Persist only the complete final graph using the current concurrency guard, reread it, normalize immutable IDs to the symbolic draft, and set saved-state equality to PASS only on exact equality.
+9. **Read back.** Persist only the complete final graph using the current concurrency guard, reread it, normalize immutable IDs to the symbolic draft, and set saved-state equality to PASS only on exact equality. Never rewrite an old ledger record by record before this point; quarantine unsupported history with one bounded pointer after the new graph is feasible.
 10. **Fingerprint and bind.** Recheck source revisions and verifier availability, compute the contract's v3 bytes, obtain independent mandate conformance, and bind the reviewed plan hash only after every required PASS.
 11. **Resolve consent.** Follow the exact plan-bound or outcome-bound path in runtime. A failed guarded binding writes no authority and returns to consent or waiting.
 

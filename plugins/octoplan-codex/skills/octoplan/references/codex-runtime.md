@@ -78,6 +78,10 @@ Record authoritative actuals only. Unavailable time or provider cost remains nul
 
 ## Target and route binding
 
+Run the planning reference's execution runway before durable planning. Native metadata or the registry must prove the current task's identity; a path, prompt, or matching name does not. If a saved-project execution target is exact but the current task is null-project, projectless, or cross-project, relocate the untouched brief before any Octopad planning write. The bootstrap creates no ledger record and is never a supervisor.
+
+Review before delivery requires brief confirmation and explicit relocation authority for the named target. Autonomous delivery may relocate after its non-blocking brief checkpoint when the target is unambiguous and native task creation is inside the initial launch grant. The relocated task reruns preflight, and only its verified identity becomes the planning target. Ambiguous target selection or unavailable relocation stops before durable planning with one precise question or handoff, not after a ledger rewrite.
+
 Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. A planner role uses the saved incident route and its recorded capacity rationale. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities and role capability topology; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
 
 An analytical delegate, including a `multi_agent` delegate, is not a native supervisor, reviewer, or successor launcher. It may return a bounded proposal to the fenced supervisor, but it cannot claim a delivery task, record a PASS, create a native child, or relay a result.

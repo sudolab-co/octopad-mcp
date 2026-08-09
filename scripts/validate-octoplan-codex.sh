@@ -33,9 +33,14 @@ for role in planner supervisor executor reviewer specialist-reviewer recovery fo
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 10\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.0.0'
-grep -q '"version": "10\.0\.0"' "$manifest" || fail 'Codex plugin is not 10.0.0'
-grep -q '^### 10\.0\.0 — 2026-08-08$' "$changelog" || fail 'Codex changelog lacks 10.0.0'
+grep -q '^Version: 10\.1\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.1.0'
+grep -q '"version": "10\.1\.0"' "$manifest" || fail 'Codex plugin is not 10.1.0'
+grep -q '^### 10\.1\.0 — 2026-08-09$' "$changelog" || fail 'Codex changelog lacks 10.1.0'
+release_note_101=$(awk '/^### 10\.1\.0 — 2026-08-09$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note_101" | grep -Fq 'execution runway before any Octopad planning write' || fail '10.1.0 release note lacks pre-write runway behavior'
+printf '%s\n' "$release_note_101" | grep -Fq 'null-project relocation' || fail '10.1.0 release note lacks null-project fixture coverage'
+printf '%s\n' "$release_note_101" | grep -Fq 'Existing 10.0.0 plans remain valid' || fail '10.1.0 release note lacks compatibility statement'
+printf '%s\n' "$release_note_101" | grep -Fq 'The Claude distribution is unchanged' || fail '10.1.0 release note lacks Claude isolation'
 release_note=$(awk '/^### 10\.0\.0 — 2026-08-08$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
 printf '%s\n' "$release_note" | grep -Fq 'six-field handoff' || fail '10.0.0 release note lacks handoff behavior'
 printf '%s\n' "$release_note" | grep -Fq 'Luna max' || fail '10.0.0 release note lacks capacity-floor behavior'
@@ -76,8 +81,8 @@ contract_lines=$(wc -l < "$contract" | tr -d ' ')
 runtime_lines=$(wc -l < "$runtime" | tr -d ' ')
 supervision_lines=$(wc -l < "$supervision" | tr -d ' ')
 [ "$skill_lines" -le 40 ] || fail "SKILL.md exceeds 40 lines: $skill_lines"
-[ "$planning_lines" -ge 145 ] && [ "$planning_lines" -le 165 ] || fail "planning.md is outside 145-165 lines: $planning_lines"
-[ "$contract_lines" -ge 240 ] && [ "$contract_lines" -le 280 ] || fail "octoplan-contract-v3.md is outside 240-280 lines: $contract_lines"
+[ "$planning_lines" -ge 145 ] && [ "$planning_lines" -le 180 ] || fail "planning.md is outside 145-180 lines: $planning_lines"
+[ "$contract_lines" -ge 240 ] && [ "$contract_lines" -le 290 ] || fail "octoplan-contract-v3.md is outside 240-290 lines: $contract_lines"
 [ "$runtime_lines" -ge 80 ] && [ "$runtime_lines" -le 95 ] || fail "codex-runtime.md is outside 80-95 lines: $runtime_lines"
 [ "$supervision_lines" -ge 160 ] && [ "$supervision_lines" -le 185 ] || fail "codex-supervision.md is outside 160-185 lines: $supervision_lines"
 active_lines=$((skill_lines + planning_lines + contract_lines + runtime_lines + supervision_lines))
@@ -85,9 +90,9 @@ active_words=$(wc -w $active_docs | awk 'END {print $1}')
 common_lines=$((skill_lines + planning_lines + contract_lines))
 common_words=$(wc -w "$skill/SKILL.md" "$planning" "$contract" | awk 'END {print $1}')
 [ "$active_lines" -le 760 ] || fail "active skill documents exceed 760 lines: $active_lines"
-[ "$active_words" -le 10800 ] || fail "active skill documents exceed 10800 words: $active_words"
-[ "$common_lines" -le 480 ] || fail "common planning load exceeds 480 lines: $common_lines"
-[ "$common_words" -le 6900 ] || fail "common planning load exceeds 6900 words: $common_words"
+[ "$active_words" -le 11400 ] || fail "active skill documents exceed 11400 words: $active_words"
+[ "$common_lines" -le 500 ] || fail "common planning load exceeds 500 lines: $common_lines"
+[ "$common_words" -le 7350 ] || fail "common planning load exceeds 7350 words: $common_words"
 
 for toc_file in "$planning" "$contract" "$runtime" "$supervision"; do
   require_text "$toc_file" '## Contents'
@@ -99,6 +104,7 @@ require_text "$skill/SKILL.md" 'references/codex-supervision.md'
 require_text "$contract" '[Targets and parsing](#targets-and-parsing)'
 require_text "$contract" '[Extraction and canonicalization](#extraction-and-canonicalization)'
 require_text "$planning" '[Feasibility](#feasibility)'
+require_text "$planning" '[Execution runway](#execution-runway)'
 require_text "$planning" '[Consent binding](#consent-binding)'
 require_text "$runtime" '[Shared capacity ladder](#shared-capacity-ladder)'
 require_text "$runtime" '[Target and route binding](#target-and-route-binding)'
@@ -246,10 +252,17 @@ require_text "$planning" 'empty `triggered_invariants`'
 require_text "$planning" 'verification needed by a fresh executor'
 require_text "$runtime" 'does not invalidate a byte-identical outcome-bound mandate'
 require_text "$skill/SKILL.md" "planning session's saved Codex project"
-require_text "$planning" 'active Codex target and capability topology'
-require_text "$contract" 'Every other target must share its Codex project identity'
+require_text "$planning" 'Reconfirm the relocated planning target and capability topology'
+require_text "$contract" 'Every other target must share that Codex project identity'
 require_text "$runtime" "same Codex project identity as the planning target"
 require_text "$supervision" "same Codex project identity as the planning target"
+require_text "$skill/SKILL.md" 'Before any Octopad planning write, prove the execution runway.'
+require_text "$planning" 'If the current task already has the exact intended project identity, continue.'
+require_text "$planning" 'create exactly one pre-planning task in that saved project'
+require_text "$planning" 'The original task performs no Octoplan write and does not remain supervisor.'
+require_text "$planning" 'Never rewrite an old ledger record by record before this point'
+require_text "$contract" 'A pre-planning relocation may select a saved project only before any Octopad planning write'
+require_text "$runtime" 'relocate the untouched brief before any Octopad planning write'
 
 # Root README, Claude surfaces, and the Claude changelog section are protected.
 if ! git -C "$root" diff --quiet origin/main -- README.md; then
@@ -590,6 +603,36 @@ incompleteNoLoop.checkpoint();
 incompleteNoLoop.continueAfterCheckpoint();
 assert.strictEqual(incompleteNoLoop.phase(), 'waiting');
 assert.throws(() => incompleteNoLoop.persistPlanning());
+
+function executionRunway({currentProjectId, intendedProjectIds, deliveryMode, briefConfirmed, checkpointPublished, relocationAuthorized, launchGrantIncludesNativeCreation, capabilities}) {
+  assert(Array.isArray(intendedProjectIds));
+  assert(['Review before delivery', 'Autonomous delivery'].includes(deliveryMode));
+  if (intendedProjectIds.length !== 1) return {state: 'QUESTION', durablePlanningWrite: false};
+  const intendedProjectId = intendedProjectIds[0];
+  nonEmpty(intendedProjectId);
+  assert(capabilities && typeof capabilities === 'object');
+  const requiredCapabilities = ['nativeCreate', 'nativeReconcile', 'octopadSession', 'firstVerifier'];
+  if (!requiredCapabilities.every((capability) => capabilities[capability] === true)) return {state: 'PREWRITE_BLOCK', durablePlanningWrite: false};
+  if (currentProjectId === intendedProjectId) return {state: 'READY', durablePlanningWrite: true};
+  if (deliveryMode === 'Review before delivery' && !briefConfirmed) return {state: 'WAIT_TARGET_CONFIRM', durablePlanningWrite: false};
+  if (deliveryMode === 'Review before delivery' && !relocationAuthorized) return {state: 'WAIT_RELOCATION_AUTHORITY', durablePlanningWrite: false};
+  if (deliveryMode === 'Autonomous delivery' && !checkpointPublished) return {state: 'PUBLISH_CHECKPOINT', durablePlanningWrite: false};
+  if (deliveryMode === 'Autonomous delivery' && !launchGrantIncludesNativeCreation) return {state: 'WAIT_RELOCATION_AUTHORITY', durablePlanningWrite: false};
+  return {state: 'RELOCATE', durablePlanningWrite: false, targetProjectId: intendedProjectId};
+}
+const fullRunwayCapabilities = {nativeCreate: true, nativeReconcile: true, octopadSession: true, firstVerifier: true};
+const nullProjectRunway = executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities});
+assert.deepStrictEqual(nullProjectRunway, {state: 'RELOCATE', durablePlanningWrite: false, targetProjectId: 'project-a'});
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: false, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}).state, 'PUBLISH_CHECKPOINT');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_RELOCATION_AUTHORITY');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_TARGET_CONFIRM');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: true, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_RELOCATION_AUTHORITY');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: true, checkpointPublished: true, relocationAuthorized: true, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'RELOCATE');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a', 'project-b'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}).state, 'QUESTION');
+assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: {...fullRunwayCapabilities, nativeCreate: false}}).state, 'PREWRITE_BLOCK');
+assert.strictEqual(executionRunway({currentProjectId: 'project-a', intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: {...fullRunwayCapabilities, nativeReconcile: false}}).state, 'PREWRITE_BLOCK');
+assert.deepStrictEqual(executionRunway({currentProjectId: 'project-a', intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}), {state: 'READY', durablePlanningWrite: true});
+assert.strictEqual(nullProjectRunway.durablePlanningWrite, false); // the bootstrap task never writes the plan
 
 function parseTarget(value) {
   const separator = ' · ';
@@ -1867,7 +1910,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 10.0.0 contract fixtures');
+console.log('PASS: deterministic 10.1.0 contract fixtures');
 NODE
 
 changed_files=$({
@@ -1890,4 +1933,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 10.0.0 contract\n'
+printf 'PASS: octoplan-codex 10.1.0 contract\n'

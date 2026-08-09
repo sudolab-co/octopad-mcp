@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 10.1.0 — 2026-08-09
+
+Octoplan now proves the execution runway before any Octopad planning write. It verifies native project identity, session creation and reconciliation capabilities, the Octopad entrypoint, required adapters, source access, and the first-frontier verifier. If the current task has no project identity or the wrong one, it relocates the untouched brief once into the exact saved project after the required authority, then restarts preflight there. Ambiguous targets or unavailable capabilities stop before durable planning.
+
+Material questions stay off-record until the runway passes, and unsupported history is no longer rewritten record by record before the replacement graph is feasible. Deterministic fixtures cover same-project readiness, null-project relocation, brief and relocation authority, ambiguous targets, and missing native capabilities. Existing 10.0.0 plans remain valid. The Claude distribution is unchanged.
+
 ### 10.0.0 — 2026-08-08
 
 This breaking Codex release formalizes short native-session display titles for supervisors, executors, reviewers, planners, and specialist reviewers. Titles are derived deterministically from saved human-readable names, capped at 64 characters, and never expose UUIDs, hashes, creation tokens, or thread IDs; the display title remains separate from native creation identity. Existing saved plans whose names cannot produce an unambiguous title require replanning.
