@@ -14,13 +14,13 @@ Read this reference before routing or asking for execution consent. Read the con
 
 ## Contract and authority gate
 
-Before routing, consent, or a native session, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate through the contract rules. A hybrid, duplicate, changed, malformed, unknown, extra, or missing element stops before any write or launch.
+Before execution routing, consent, or a native actor, dispatch exactly one v6 supervision contract, one v3 fingerprint, and one canonical mandate. The contract-defined candidate and its read-only pre-run reviewer are non-authoritative exceptions; neither may claim, launch, or perform delivery.
 
 Planning permission never authorizes execution. On the default path, the mandatory brief is the whole initial reply and a later reply must confirm the complete brief before normal planning writes; the contract's explicit-no-loop path is the non-blocking checkpoint exception.
 
 Use **Review before delivery** and **Autonomous delivery** in user-visible prose; their internal wire values remain contract-only. Review before delivery accepts brief confirmation followed by later exact-final-hash consent, or a confirmed brief plus explicit automatic-launch authority. Autonomous delivery requires unambiguous end-to-end delegation inside the confirmed envelope, except for the contract's valid first-message activation.
 
-A single natural-language instruction may grant autonomous delivery without enumerating internal permissions when it clearly delegates finding, executing, and adapting the plan for a bounded outcome. A bare confirmation, urgency, vague autonomy, prior conversation, or permission to plan is not execution authority. A later exact-hash yes cannot repair a missing grant.
+A single natural-language instruction may grant autonomous delivery without enumerating internal permissions when it clearly delegates finding, executing, and adapting the plan for a bounded outcome. A bare confirmation, urgency, vague autonomy, prior conversation, or permission to plan is not execution authority. A later exact-hash yes grants one launch of the current plan-bound hash; it does not create outcome-bound planning, native-task creation, or material-replan authority.
 
 ## Shared capacity ladder
 
@@ -56,7 +56,7 @@ A material result, scope, cost, risk, success, architecture, task meaning, route
 
 Every delivery task receives an adversarial check. `targeted` is deterministic, interaction-free proof in the current context; `independent` is one fresh source-first reviewer; `specialist` adds one fresh reviewer only for a second orthogonal material failure domain. A specialist never completes or relays.
 
-Choose a review route from the shared ladder by detection difficulty, not executor prestige. Plan review uses a fresh delegated reviewer, never a user-owned thread. The lead owns correction and PASS but never launches a successor.
+Choose review capacity by detection difficulty. Before a run, one fresh read-only Codex subagent loads `plan-reviewer` and returns immutable plan/activation artifacts to the planner without a run, stream, task, or supervisor identity; it is no user-owned thread or native actor. Execution reviewers use their native pack and return verdict artifacts to the supervisor. Neither persists PASS, completes tasks, or launches.
 
 ## Consent and launch binding
 
@@ -78,9 +78,13 @@ Record authoritative actuals only. Unavailable time or provider cost remains nul
 
 ## Target and route binding
 
+Run the planning reference's execution runway before durable planning. Native metadata or the registry must prove the current task's identity; a path, prompt, or matching name does not. If a saved-project execution target is exact but the current task is null-project, projectless, or cross-project, relocate the untouched brief before any Octopad planning write. The bootstrap creates no ledger record and is never a supervisor.
+
+Review before delivery requires brief confirmation and explicit relocation authority for the named target. Autonomous delivery may relocate after its checkpoint only when the target is unambiguous and the exact source explicitly covers user-owned native-task creation; general outcome delegation alone cannot override stricter host policy. Interpret creation and relocation authority separately and retain each exact source record and message digest; Delivery mode or final consent never manufactures either. The relocated task reruns preflight, and only its verified identity becomes the planning target. Ambiguity or unavailable relocation stops before durable planning with one precise question or handoff.
+
 Every executor, reviewer, recovery, follow-up, and supervisor uses its saved route, target, environment, model, and effort. A planner role uses the saved incident route and its recorded capacity rationale. Every target must have the same Codex project identity as the planning target: project targets keep the exact `project_id`, while projectless targets keep the exact `directory_name`; `local` and `worktree` may differ only inside the same project. Resolve the target through current runtime capabilities and role capability topology; an unresolved, cross-project, project/projectless, or changed binding stops before creation.
 
-An analytical delegate, including a `multi_agent` delegate, is not a native supervisor, reviewer, or successor launcher. It may return a bounded proposal to the fenced supervisor, but it cannot claim a delivery task, record a PASS, create a native child, or relay a result.
+Analytical delegates, including `multi_agent`, are never native supervisors, execution reviewers, or launchers. The pre-run subagent returns only a verdict artifact; others return bounded proposals. The planner or supervisor alone persists accepted PASS. No delegate claims delivery, creates a native child, or relays.
 
 Keep external-event adapters conditional and use native Codex operations for native sessions. A wake supplies evidence only and cannot expand the saved route or authority.
 
