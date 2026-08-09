@@ -33,8 +33,14 @@ for role in planner plan-reviewer supervisor executor reviewer specialist-review
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 10\.2\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.2.0'
-grep -q '"version": "10\.2\.0"' "$manifest" || fail 'Codex plugin is not 10.2.0'
+grep -q '^Version: 10\.2\.1$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.2.1'
+grep -q '"version": "10\.2\.1"' "$manifest" || fail 'Codex plugin is not 10.2.1'
+grep -q '^### 10\.2\.1 — 2026-08-09$' "$changelog" || fail 'Codex changelog lacks 10.2.1'
+release_note_1021=$(awk '/^### 10\.2\.1 — 2026-08-09$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note_1021" | grep -Fq 'asynchronous Codex setup' || fail '10.2.1 release note lacks async setup behavior'
+printf '%s\n' "$release_note_1021" | grep -Fq 'direct readback' || fail '10.2.1 release note lacks connector compatibility behavior'
+printf '%s\n' "$release_note_1021" | grep -Fq 'Existing 10.2.0 plans remain valid' || fail '10.2.1 release note lacks compatibility statement'
+printf '%s\n' "$release_note_1021" | grep -Fq 'The Claude distribution is unchanged' || fail '10.2.1 release note lacks Claude isolation'
 grep -q '^### 10\.2\.0 — 2026-08-09$' "$changelog" || fail 'Codex changelog lacks 10.2.0'
 release_note_102=$(awk '/^### 10\.2\.0 — 2026-08-09$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
 printf '%s\n' "$release_note_102" | grep -Fq 'plain idea without an existing stream or saved plan' || fail '10.2.0 release note lacks greenfield behavior'
@@ -80,7 +86,7 @@ if find "$skill/references" -maxdepth 1 -type f -iname '*legacy*' | grep -q .; t
 fi
 
 active_docs="$skill/SKILL.md $contract $planning $runtime $supervision"
-if sed 's/octoplan-candidate-v1//g' $active_docs | grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|(^|[^[:alnum:]])v5([^[:alnum:]]|$)|legacy' >/dev/null 2>&1; then
+if sed -e 's/octoplan-candidate-v1//g' -e 's/octoplan-native-grant-v1//g' -e 's/octopad-direct-readback-v1//g' $active_docs | grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|(^|[^[:alnum:]])v5([^[:alnum:]]|$)|legacy' >/dev/null 2>&1; then
   fail 'unsupported historical contract wording remains in active skill documents'
 fi
 for forbidden in confirmed_brief_digest message_time decision_status; do
@@ -174,13 +180,13 @@ require_text "$contract" 'non-empty exact effort'
 require_text "$contract" 'non-empty rationale'
 require_text "$contract" 'A planner uses its task-role target override when present'
 require_text "$contract" 'role packet is immutable'
-require_text "$contract" 'The first prompt line is exactly literal `OCTOPLAN_CREATION`'
+require_text "$contract" 'The first prompt line is literal `OCTOPLAN_CREATION`'
 require_text "$contract" 'creation_token'
 require_text "$contract" 'creator_owner_epoch'
 require_text "$contract" '"creator_owner_epoch":"<positive current supervisor epoch at intent>"'
-require_text "$contract" 'At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable'
-require_text "$contract" 'Activation and every ledger transition require actor epoch == current supervisor epoch'
-require_text "$contract" 'creation_key` excludes token and creator epoch and is the uniqueness key'
+require_text "$contract" 'immutable `creator_owner_epoch` equals current epoch'
+require_text "$contract" 'Activation/ledger writes require equality'
+require_text "$contract" 'its key excludes token and creator epoch'
 require_text "$contract" 'brief_digest` must equal `delivery_mandate.scoping_brief_digest`'
 require_text "$contract" 'mandate_digest` must equal the SHA-256 of the complete canonical mandate object'
 require_text "$contract" 'evidence_digest` must equal the SHA-256 of the exact review-record text'
@@ -252,11 +258,13 @@ require_text "$supervision" '64-character maximum'
 require_text "$supervision" 'containing exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`, in that order'
 require_text "$supervision" 'Publish only the current guarded event'
 require_text "$supervision" "pause requiring the user's attention"
-require_text "$supervision" 'actual project identity from native metadata or the registry'
-require_text "$supervision" "prompt's project text is never proof"
-require_text "$supervision" 'has a null `projectId`'
-require_text "$contract" 'actual project identity from native metadata or the registry'
-require_text "$contract" 'publish the required pause handoff'
+require_text "$supervision" 'actual project identity from native metadata/registry'
+require_text "$supervision" 'prompt text is never proof'
+require_text "$supervision" 'Nonterminal unavailable/verified-null stays `pending`'
+require_text "$supervision" 'adopt only `destinationThreadId`'
+require_text "$supervision" 'persist `operationId`'
+require_text "$contract" 'classify authoritative native identity only as verified project, verified projectless, verified null, or unavailable'
+require_text "$contract" 'pauses before activation'
 require_text "$planning" 'A material replan invalidates the old launch binding in either mode'
 require_text "$planning" 'Reflect or branch'
 require_text "$planning" 'may continue under the exact initial grant'
@@ -277,7 +285,12 @@ require_text "$planning" 'one guarded `octoplan-candidate-v1`'
 require_text "$planning" 'Ask every currently material question in one numbered batch'
 require_text "$planning" 'answers every numbered question and accepts the Delivery mode confirms unchanged brief fields'
 require_text "$planning" 'The substrate gate comes first'
-require_text "$planning" 'the persistence gate validates every live write shape'
+require_text "$planning" 'the persistence gate validates schemas'
+require_text "$planning" '`octopad-direct-readback-v1`'
+require_text "$planning" 'write `page_ids` uses `{page_id,rationale}`'
+require_text "$planning" 'raw MCP `CallToolResult.structuredContent`'
+require_text "$planning" 'missing, duplicate, or failed receipt prevents cursor advance and sealing'
+require_text "$planning" 'issue only still-missing writes under their original journal keys'
 require_text "$planning" 'fresh read-only Codex subagent'
 require_text "$planning" 'A reviewer verdict alone is never Plan PASS'
 require_text "$planning" 'excluding only its future attestation envelope'
@@ -298,15 +311,21 @@ require_text "$supervision" 'zero partial creation plus an immutable PASS'
 require_text "$roles/plan-reviewer.md" 'needs no run, work stream, task, or supervisor identity'
 require_text "$roles/plan-reviewer.md" 'Do not enter Octopad, persist, claim, launch, complete, relay, or create a gate'
 require_text "$planning" 'If the current task already has the exact intended project identity, continue.'
-require_text "$planning" 'create exactly one pre-planning task there'
-require_text "$planning" 'The original task performs no Octoplan write and does not remain supervisor.'
+require_text "$planning" '`OCTOPLAN_BOOTSTRAP_INTENT`'
+require_text "$planning" 'never permits another create'
+require_text "$planning" 'separate native-creation and relocation authority sources/digests'
+require_text "$planning" 'The child never relocates itself, creates a replacement, or remains an actor.'
+require_text "$planning" 'Merge steps with the same owner, artifact, route, verifier, and human gate'
+require_text "$planning" 'alternate path subsumes the same rationale and gate'
+require_text "$contract" '"schema":"octoplan-native-grant-v1"'
+require_text "$contract" 'A replan never edits, copies, widens, or silently rebinds it'
 require_text "$planning" 'Unsupported history is never mutated'
 require_text "$contract" 'A pre-planning relocation may select a saved project only before any Octopad planning write'
 require_text "$runtime" 'relocate the untouched brief before any Octopad planning write'
 
 # The shared README may carry the current Codex distribution version. Claude
 # surfaces and the Claude changelog section remain protected.
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 10.2.0 |' "$root/README.md" || fail 'README Codex version is stale'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 10.2.1 |' "$root/README.md" || fail 'README Codex version is stale'
 for protected in .claude-plugin plugins/octoplan-claude docs/clients/claude.md docs/clients/claude-code.md; do
   if ! git -C "$root" diff --quiet origin/main -- "$protected"; then
     fail "protected Claude surface changed: $protected"
@@ -784,13 +803,13 @@ function executionRunway({currentProjectId, intendedProjectIds, deliveryMode, br
   return {state: 'RELOCATE', durablePlanningWrite: false, targetProjectId: intendedProjectId};
 }
 function persistenceGate(evidence) {
-  const required = ['adaptersAvailable', 'deterministicCreates', 'draftComplete', 'matrixPass', 'prerequisitesReady', 'sourcesCurrent', 'verifiersAvailable', 'writeShapesValid'];
+  const required = ['adaptersAvailable', 'deterministicCreates', 'directReadbackAvailable', 'draftComplete', 'matrixPass', 'prerequisitesReady', 'sourcesCurrent', 'verifiersAvailable', 'writeShapesValid'];
   assert.deepStrictEqual(Object.keys(evidence).sort(scalarCompare), required.slice().sort(scalarCompare));
   if (!required.every((key) => evidence[key] === true)) return {state: 'PREWRITE_BLOCK', durablePlanningWrite: false};
   return {state: 'READY_TO_PERSIST', durablePlanningWrite: true};
 }
 const fullRunwayCapabilities = {nativeCreate: true, nativeReconcile: true, octopadSession: true, planningWrite: true, planReviewSubagent: true};
-const fullPersistenceEvidence = {adaptersAvailable: true, deterministicCreates: true, draftComplete: true, matrixPass: true, prerequisitesReady: true, sourcesCurrent: true, verifiersAvailable: true, writeShapesValid: true};
+const fullPersistenceEvidence = {adaptersAvailable: true, deterministicCreates: true, directReadbackAvailable: true, draftComplete: true, matrixPass: true, prerequisitesReady: true, sourcesCurrent: true, verifiersAvailable: true, writeShapesValid: true};
 const nativeTaskAuthority = runwayAuthority('native-task-authority', 'a');
 const relocationAuthority = runwayAuthority('relocation-authority', 'b');
 const nullProjectRunway = executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, nativeTaskCreationRequired: true, nativeTaskCreationAuthoritySource: nativeTaskAuthority, relocationAuthoritySource: relocationAuthority, capabilities: fullRunwayCapabilities});
@@ -810,6 +829,236 @@ assert.strictEqual(nullProjectRunway.durablePlanningWrite, false); // the bootst
 assert.deepStrictEqual(persistenceGate(fullPersistenceEvidence), {state: 'READY_TO_PERSIST', durablePlanningWrite: true});
 assert.strictEqual(persistenceGate({...fullPersistenceEvidence, verifiersAvailable: false}).durablePlanningWrite, false);
 assert.strictEqual(persistenceGate({...fullPersistenceEvidence, writeShapesValid: false}).durablePlanningWrite, false);
+assert.strictEqual(persistenceGate({...fullPersistenceEvidence, directReadbackAvailable: false}).durablePlanningWrite, false);
+
+function validateOctopadWriteSet({stream, tasks, pageLinks}) {
+  nonEmpty(stream.scope);
+  nonEmpty(stream.work_stream_description);
+  for (const task of tasks) assert(!(task.work_stream_id && task.goal_id));
+  for (const link of pageLinks) {
+    assert(link && typeof link === 'object' && !Array.isArray(link));
+    nonEmpty(link.page_id);
+    assert(typeof link.rationale === 'string' && link.rationale.length >= 10 && link.rationale.length <= 200);
+  }
+  return true;
+}
+function reconcileBatchWrite(expectedOperations, batchReceipt, callToolResult, entityType = 'task') {
+  assert(Array.isArray(expectedOperations) && expectedOperations.length > 0);
+  assert(batchReceipt && Array.isArray(batchReceipt.items));
+  assert(callToolResult && typeof callToolResult === 'object' && !Array.isArray(callToolResult));
+  const expectedByKey = new Map();
+  const expectedById = new Map();
+  for (const operation of expectedOperations) {
+    assert.deepStrictEqual(Object.keys(operation).sort(scalarCompare), ['id', 'operation_key', 'payload_digest']);
+    nonEmpty(operation.operation_key); nonEmpty(operation.id);
+    assert(/^[a-f0-9]{64}$/.test(operation.payload_digest));
+    assert(!expectedByKey.has(operation.operation_key) && !expectedById.has(operation.id));
+    expectedByKey.set(operation.operation_key, operation);
+    expectedById.set(operation.id, operation);
+  }
+  const receiptByKey = new Map();
+  for (const receipt of batchReceipt.items) {
+    assert.deepStrictEqual(Object.keys(receipt).sort(scalarCompare), ['id', 'operation_key', 'state']);
+    assert(expectedByKey.has(receipt.operation_key));
+    assert.strictEqual(receipt.id, expectedByKey.get(receipt.operation_key).id);
+    assert(['succeeded', 'failed'].includes(receipt.state));
+    assert(!receiptByKey.has(receipt.operation_key));
+    receiptByKey.set(receipt.operation_key, receipt);
+  }
+  let structured = callToolResult.structuredContent;
+  if (structured === undefined && Array.isArray(callToolResult.content)) {
+    const prefix = 'OCTOPAD_DIRECT_READBACK ';
+    const mirrors = callToolResult.content
+      .filter(block => block && block.type === 'text' && typeof block.text === 'string' && block.text.startsWith(prefix))
+      .map(block => block.text.slice(prefix.length));
+    if (mirrors.length === 1) {
+      try {
+        const parsed = JSON.parse(mirrors[0]);
+        if (JSON.stringify(parsed) === mirrors[0]) structured = parsed;
+      } catch (_) {
+        structured = undefined;
+      }
+    }
+  }
+  const validEnvelope = structured
+    && structured.schema === 'octopad-direct-readback-v1'
+    && structured.entity_type === entityType
+    && Array.isArray(structured.items)
+    && (structured.omitted === undefined || (Number.isInteger(structured.omitted) && structured.omitted >= 0));
+  const itemById = new Map();
+  if (validEnvelope) {
+    for (const item of structured.items) {
+      assert(item && typeof item === 'object' && !Array.isArray(item) && nonEmpty(item.id));
+      assert(!itemById.has(item.id));
+      itemById.set(item.id, item);
+    }
+  }
+  const retryOperationKeys = [];
+  const rereadIds = [];
+  const reconciledIds = [];
+  for (const operation of expectedOperations) {
+    const receipt = receiptByKey.get(operation.operation_key);
+    const item = itemById.get(operation.id);
+    if (validEnvelope && item && digest(item) === operation.payload_digest) {
+      reconciledIds.push(operation.id);
+      continue;
+    }
+    if (item || (receipt && receipt.state === 'succeeded')) {
+      rereadIds.push(operation.id);
+      continue;
+    }
+    retryOperationKeys.push(operation.operation_key);
+  }
+  const complete = validEnvelope
+    && (structured.omitted ?? 0) === 0
+    && retryOperationKeys.length === 0
+    && rereadIds.length === 0
+    && itemById.size === expectedOperations.length;
+  return {cursorAdvance: complete, seal: complete, reconciledIds, rereadIds, retryOperationKeys};
+}
+const compatibleWriteSet = {
+  stream: {scope: 'Bounded delivery scope', work_stream_description: 'A direct one-line description.'},
+  tasks: [{work_stream_id: 'stream-a', goal_id: null}],
+  pageLinks: [{page_id: 'page-a', rationale: 'Contains the exact source.'}]
+};
+assert(validateOctopadWriteSet(compatibleWriteSet));
+assert.throws(() => validateOctopadWriteSet({...compatibleWriteSet, stream: {...compatibleWriteSet.stream, scope: ''}}));
+assert.throws(() => validateOctopadWriteSet({...compatibleWriteSet, tasks: [{work_stream_id: 'stream-a', goal_id: 'goal-a'}]}));
+assert.throws(() => validateOctopadWriteSet({...compatibleWriteSet, pageLinks: ['page-a']}));
+const batchItems = [
+  {id: 'task-a', title: 'A'},
+  {id: 'task-b', title: 'B'}
+];
+const expectedBatch = batchItems.map((item, index) => ({operation_key: `candidate-a:${index}`, id: item.id, payload_digest: digest(item)}));
+const successfulReceipt = {items: expectedBatch.map(operation => ({operation_key: operation.operation_key, id: operation.id, state: 'succeeded'}))};
+const directCallToolResult = {content: [{type: 'text', text: 'rendered prose'}], structuredContent: {schema: 'octopad-direct-readback-v1', entity_type: 'task', items: batchItems}};
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, successfulReceipt, directCallToolResult), {cursorAdvance: true, seal: true, reconciledIds: ['task-a', 'task-b'], rereadIds: [], retryOperationKeys: []});
+const mirroredCallToolResult = {content: [{type: 'text', text: `OCTOPAD_DIRECT_READBACK ${JSON.stringify(directCallToolResult.structuredContent)}`}]};
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, successfulReceipt, mirroredCallToolResult), {cursorAdvance: true, seal: true, reconciledIds: ['task-a', 'task-b'], rereadIds: [], retryOperationKeys: []});
+const partialReceipt = {items: [successfulReceipt.items[0], {...successfulReceipt.items[1], state: 'failed'}]};
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, partialReceipt, {...directCallToolResult, structuredContent: {...directCallToolResult.structuredContent, items: [batchItems[0]]}}), {cursorAdvance: false, seal: false, reconciledIds: ['task-a'], rereadIds: [], retryOperationKeys: ['candidate-a:1']});
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, {items: [successfulReceipt.items[0]]}, directCallToolResult), {cursorAdvance: true, seal: true, reconciledIds: ['task-a', 'task-b'], rereadIds: [], retryOperationKeys: []});
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, partialReceipt, directCallToolResult), {cursorAdvance: true, seal: true, reconciledIds: ['task-a', 'task-b'], rereadIds: [], retryOperationKeys: []});
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, successfulReceipt, {content: [{type: 'text', text: stable(directCallToolResult.structuredContent)}]}).rereadIds, ['task-a', 'task-b']);
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, successfulReceipt, {content: [{type: 'text', text: '{"_ui":"task-detail"}'}]}).rereadIds, ['task-a', 'task-b']);
+assert.deepStrictEqual(reconcileBatchWrite(expectedBatch, successfulReceipt, {...directCallToolResult, structuredContent: {...directCallToolResult.structuredContent, items: [{...batchItems[0], title: 'wrong'}, batchItems[1]]}}).rereadIds, ['task-a']);
+assert.throws(() => reconcileBatchWrite(expectedBatch, successfulReceipt, {...directCallToolResult, structuredContent: {...directCallToolResult.structuredContent, items: [batchItems[0], batchItems[0]]}}));
+assert.throws(() => reconcileBatchWrite(expectedBatch, {items: [successfulReceipt.items[0], successfulReceipt.items[0]]}, directCallToolResult));
+
+function bootstrapIdentity({briefDigest, target, streamAction, nativeCreationAuthoritySource, relocationAuthoritySource}) {
+  nonEmpty(briefDigest);
+  assert(/^[a-f0-9]{64}$/.test(briefDigest));
+  assert(target && typeof target === 'object' && !Array.isArray(target));
+  assert.deepStrictEqual(Object.keys(target).sort(scalarCompare), ['directory_name', 'environment', 'kind', 'project_id', 'rationale']);
+  assert(['project', 'projectless'].includes(target.kind));
+  if (target.kind === 'project') {
+    nonEmpty(target.project_id); assert(['local', 'worktree'].includes(target.environment)); assert.strictEqual(target.directory_name, null); assert.strictEqual(target.rationale, null);
+  } else {
+    assert.strictEqual(target.project_id, null); assert.strictEqual(target.environment, null); nonEmpty(target.directory_name); nonEmpty(target.rationale);
+  }
+  assert(['reuse', 'create'].includes(streamAction));
+  validRunwayAuthority(nativeCreationAuthoritySource);
+  validRunwayAuthority(relocationAuthoritySource);
+  const material = {brief_digest: briefDigest, target, stream_action: streamAction, native_creation_authority_source: nativeCreationAuthoritySource, relocation_authority_source: relocationAuthoritySource};
+  return {schema: 'OCTOPLAN_BOOTSTRAP', key: digest(material), ...material};
+}
+function bootstrapIntent(identity) {
+  return {schema: 'OCTOPLAN_BOOTSTRAP_INTENT', identity, state: 'issued-or-ambiguous'};
+}
+function bootstrapDecision(expected, observed, durableIntent = null, exhausted = false) {
+  assert(Array.isArray(observed));
+  const exact = observed.filter(item => stable(item) === stable(expected));
+  if (observed.length === 1 && exact.length === 1) return {state: 'ADOPT', creates: 0};
+  if (observed.length > 0) return {state: 'PAUSE', creates: 0};
+  if (durableIntent !== null) {
+    assert.deepStrictEqual(Object.keys(durableIntent).sort(scalarCompare), ['identity', 'schema', 'state']);
+    assert.strictEqual(durableIntent.schema, 'OCTOPLAN_BOOTSTRAP_INTENT');
+    assert.strictEqual(durableIntent.state, 'issued-or-ambiguous');
+    if (stable(durableIntent.identity) !== stable(expected)) return {state: 'PAUSE', creates: 0};
+    return {state: exhausted ? 'PAUSE' : 'PENDING', creates: 0};
+  }
+  return {state: 'EMIT_INTENT_AND_CREATE_ONCE', creates: 1};
+}
+const bootstrapTarget = parseTarget('project-a · local · planning session').target;
+const bootstrapCreateSource = runwayAuthority('bootstrap-create-source', 'b');
+const bootstrapRelocationSource = runwayAuthority('bootstrap-relocation-source', 'c');
+const expectedBootstrap = bootstrapIdentity({briefDigest: 'a'.repeat(64), target: bootstrapTarget, streamAction: 'reuse', nativeCreationAuthoritySource: bootstrapCreateSource, relocationAuthoritySource: bootstrapRelocationSource});
+const expectedBootstrapIntent = bootstrapIntent(expectedBootstrap);
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, []), {state: 'EMIT_INTENT_AND_CREATE_ONCE', creates: 1});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [expectedBootstrap]), {state: 'ADOPT', creates: 0});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [expectedBootstrap, expectedBootstrap]), {state: 'PAUSE', creates: 0});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [], expectedBootstrapIntent), {state: 'PENDING', creates: 0}); // crash or lost response
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [], expectedBootstrapIntent, true), {state: 'PAUSE', creates: 0});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [], expectedBootstrapIntent), {state: 'PENDING', creates: 0}); // delayed listing still never creates
+const changedGrantBootstrap = bootstrapIdentity({briefDigest: 'a'.repeat(64), target: bootstrapTarget, streamAction: 'reuse', nativeCreationAuthoritySource: runwayAuthority('changed-create-source', 'd'), relocationAuthoritySource: bootstrapRelocationSource});
+assert.deepStrictEqual(bootstrapDecision(changedGrantBootstrap, [], expectedBootstrapIntent), {state: 'PAUSE', creates: 0});
+const changedTargetBootstrap = bootstrapIdentity({briefDigest: 'a'.repeat(64), target: parseTarget('project-a · worktree · planning session').target, streamAction: 'reuse', nativeCreationAuthoritySource: bootstrapCreateSource, relocationAuthoritySource: bootstrapRelocationSource});
+assert.deepStrictEqual(bootstrapDecision(changedTargetBootstrap, [], expectedBootstrapIntent), {state: 'PAUSE', creates: 0});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [expectedBootstrap, changedGrantBootstrap]), {state: 'PAUSE', creates: 0});
+assert.deepStrictEqual(bootstrapDecision(expectedBootstrap, [expectedBootstrap, changedTargetBootstrap]), {state: 'PAUSE', creates: 0});
+
+const nativeGrantRoles = new Set(['supervisor', 'planner', 'executor', 'lead-reviewer', 'specialist-reviewer', 'recovery', 'follow-up']);
+function validatePlanScopedNativeGrant(grant) {
+  assert(grant && typeof grant === 'object' && !Array.isArray(grant));
+  assert.deepStrictEqual(Object.keys(grant).sort(scalarCompare), ['environments', 'plan_hash', 'project_identity', 'record_id', 'roles', 'schema', 'source']);
+  assert.strictEqual(grant.schema, 'octoplan-native-grant-v1');
+  nonEmpty(grant.record_id);
+  assert(/^[a-f0-9]{64}$/.test(grant.plan_hash));
+  assert(grant.project_identity && typeof grant.project_identity === 'object' && !Array.isArray(grant.project_identity));
+  assert.deepStrictEqual(Object.keys(grant.project_identity).sort(scalarCompare), ['directory_name', 'kind', 'project_id']);
+  assert(['project', 'projectless'].includes(grant.project_identity.kind));
+  assert(Array.isArray(grant.environments) && grant.environments.length > 0);
+  assert(new Set(grant.environments.map(value => stable(value))).size === grant.environments.length);
+  assert.deepStrictEqual(grant.environments, grant.environments.slice().sort(scalarCompare));
+  if (grant.project_identity.kind === 'project') {
+    nonEmpty(grant.project_identity.project_id);
+    assert.strictEqual(grant.project_identity.directory_name, null);
+    assert(grant.environments.every(environment => ['local', 'worktree'].includes(environment)));
+  } else {
+    assert.strictEqual(grant.project_identity.project_id, null);
+    nonEmpty(grant.project_identity.directory_name);
+    assert.deepStrictEqual(grant.environments, [null]);
+  }
+  assert(Array.isArray(grant.roles) && grant.roles.length > 0);
+  assert(new Set(grant.roles).size === grant.roles.length);
+  assert.deepStrictEqual(grant.roles, grant.roles.slice().sort(scalarCompare));
+  assert(grant.roles.every(role => nativeGrantRoles.has(role)));
+  validRunwayAuthority(grant.source);
+  return true;
+}
+function planScopedNativeGrantCovers(grant, planHash, actors, canonicalActors) {
+  validatePlanScopedNativeGrant(grant);
+  if (grant.plan_hash !== planHash) return false;
+  if (!Array.isArray(actors) || !Array.isArray(canonicalActors) || actors.length === 0 || canonicalActors.length === 0) return false;
+  const actorKey = actor => stable({project_id: actor.project_id, directory_name: actor.directory_name ?? null, environment: actor.environment, role: actor.role});
+  const actualKeys = actors.map(actorKey);
+  const canonicalKeys = canonicalActors.map(actorKey);
+  if (new Set(actualKeys).size !== actualKeys.length || new Set(canonicalKeys).size !== canonicalKeys.length) return false;
+  if (stable(actualKeys.slice().sort(scalarCompare)) !== stable(canonicalKeys.slice().sort(scalarCompare))) return false;
+  return actors.every(actor => {
+    const sameIdentity = grant.project_identity.kind === 'project'
+      ? actor.project_id === grant.project_identity.project_id
+      : actor.project_id === null && actor.directory_name === grant.project_identity.directory_name;
+    return sameIdentity && grant.environments.includes(actor.environment) && grant.roles.includes(actor.role);
+  });
+}
+const planScopedGrant = {schema: 'octoplan-native-grant-v1', record_id: 'plan-native-grant-record', plan_hash: 'f'.repeat(64), project_identity: {kind: 'project', project_id: 'project-a', directory_name: null}, environments: ['local', 'worktree'], roles: ['executor', 'lead-reviewer', 'supervisor'], source: runwayAuthority('plan-native-grant-source', 'd')};
+const canonicalPlanActors = [
+  {project_id: 'project-a', environment: 'local', role: 'supervisor'},
+  {project_id: 'project-a', environment: 'worktree', role: 'executor'},
+  {project_id: 'project-a', environment: 'local', role: 'lead-reviewer'}
+];
+assert(planScopedNativeGrantCovers(planScopedGrant, 'f'.repeat(64), canonicalPlanActors, canonicalPlanActors));
+assert.strictEqual(planScopedNativeGrantCovers(planScopedGrant, 'f'.repeat(64), [], canonicalPlanActors), false);
+assert.strictEqual(planScopedNativeGrantCovers(planScopedGrant, 'f'.repeat(64), [canonicalPlanActors[0]], canonicalPlanActors), false);
+assert.strictEqual(planScopedNativeGrantCovers(planScopedGrant, 'e'.repeat(64), canonicalPlanActors, canonicalPlanActors), false); // replan hash cannot inherit the old grant
+assert.strictEqual(planScopedNativeGrantCovers(planScopedGrant, 'f'.repeat(64), [{project_id: 'project-b', environment: 'local', role: 'executor'}], canonicalPlanActors), false);
+assert.throws(() => validatePlanScopedNativeGrant({...planScopedGrant, environments: ['local', 'local']}));
+assert.throws(() => validatePlanScopedNativeGrant({...planScopedGrant, roles: ['supervisor', 'executor']})); // not scalar-sorted
+assert.throws(() => validatePlanScopedNativeGrant({...planScopedGrant, source: {record_id: 'final-consent', message_digest: ''}}));
+const projectlessGrant = {schema: 'octoplan-native-grant-v1', record_id: 'projectless-grant-record', plan_hash: 'a'.repeat(64), project_identity: {kind: 'projectless', project_id: null, directory_name: 'content-room'}, environments: [null], roles: ['executor'], source: runwayAuthority('projectless-grant-source', 'e')};
+const projectlessActors = [{project_id: null, directory_name: 'content-room', environment: null, role: 'executor'}];
+assert(planScopedNativeGrantCovers(projectlessGrant, 'a'.repeat(64), projectlessActors, projectlessActors));
 
 function parseTarget(value) {
   const separator = ' · ';
@@ -1040,32 +1289,39 @@ const nativeProjectRegistry = new Map([
   ['native-projectless-content-room', {source: 'native-registry', identity: {kind: 'projectless', projectId: null, directoryName: 'content-room'}}]
 ]);
 function readNativeProjectIdentity(observed) {
-  if (!observed || typeof observed !== 'object' || typeof observed.nativeHandle !== 'string' || !observed.nativeHandle) return null;
+  const unavailable = (reason) => ({state: 'unavailable', reason, identity: null});
+  if (!observed || typeof observed !== 'object') return unavailable('missing-observation');
+  if (observed.error === true) return unavailable('native-error');
+  if (observed.timeout === true) return unavailable('native-timeout');
+  if (typeof observed.nativeHandle !== 'string' || !observed.nativeHandle) return unavailable('missing-handle');
   const evidence = nativeProjectRegistry.get(observed.nativeHandle);
-  if (!evidence) return null;
-  if (!nativeEvidenceSources.has(evidence.source)) return null;
-  if (Object.keys(evidence).sort(scalarCompare).join('\u0000') !== ['identity', 'source'].sort(scalarCompare).join('\u0000')) return null;
+  if (!evidence) return unavailable('unknown-handle');
+  if (!nativeEvidenceSources.has(evidence.source)) return unavailable('untrusted-source');
+  if (Object.keys(evidence).sort(scalarCompare).join('\u0000') !== ['identity', 'source'].sort(scalarCompare).join('\u0000')) return unavailable('malformed-evidence');
   const identity = evidence.identity;
-  if (!identity || typeof identity !== 'object' || Object.keys(identity).sort(scalarCompare).join('\u0000') !== nativeIdentityKeys.slice().sort(scalarCompare).join('\u0000')) return null;
-  if (!['project', 'projectless'].includes(identity.kind)) return null;
+  if (!identity || typeof identity !== 'object' || Object.keys(identity).sort(scalarCompare).join('\u0000') !== nativeIdentityKeys.slice().sort(scalarCompare).join('\u0000')) return unavailable('malformed-identity');
+  if (!['project', 'projectless'].includes(identity.kind)) return unavailable('unknown-kind');
   if (identity.kind === 'project') {
-    assert(identity.projectId === null || typeof identity.projectId === 'string');
-    assert.strictEqual(identity.directoryName, null);
+    if (!(identity.projectId === null || (typeof identity.projectId === 'string' && identity.projectId.length > 0))) return unavailable('malformed-project-id');
+    if (identity.directoryName !== null) return unavailable('malformed-project-directory');
   } else {
-    assert.strictEqual(identity.projectId, null);
-    nonEmpty(identity.directoryName);
+    if (identity.projectId !== null || typeof identity.directoryName !== 'string' || identity.directoryName.length === 0) return unavailable('malformed-projectless');
   }
-  return identity;
+  return {state: identity.kind === 'projectless' ? 'verified-projectless' : identity.projectId === null ? 'verified-null' : 'verified-project', reason: null, identity};
 }
-function reconcileNativeProject(planningTarget, observed, pauseHandoffValues) {
+function reconcileNativeProject(planningTarget, observed, pauseHandoffValues, setupState = 'ready', sameTaskRepairAvailable = false) {
   validateTarget(planningTarget);
-  const nativeIdentity = readNativeProjectIdentity(observed);
-  const observedProjectId = nativeIdentity && nativeIdentity.projectId;
-  const observedKind = nativeIdentity && nativeIdentity.kind;
+  assert(['pending', 'ready', 'terminal'].includes(setupState));
+  const observation = readNativeProjectIdentity(observed);
+  const nativeIdentity = observation.identity;
+  const observedProjectId = nativeIdentity?.projectId;
+  const observedKind = nativeIdentity?.kind;
   const matches = planningTarget.kind === 'project'
     ? observedKind === 'project' && typeof observedProjectId === 'string' && observedProjectId === planningTarget.project_id
-    : observedKind === 'projectless' && nativeIdentity.directoryName === planningTarget.directory_name;
+    : observedKind === 'projectless' && nativeIdentity?.directoryName === planningTarget.directory_name;
   if (matches) return {state: 'ready', message: null};
+  if (setupState === 'pending' && (observation.state === 'unavailable' || observation.state === 'verified-null')) return {state: 'pending', message: null};
+  if (planningTarget.kind === 'project' && observation.state === 'verified-null' && sameTaskRepairAvailable) return {state: 'repair', action: 'handoff-same-task', message: null};
   assert(pauseHandoffValues);
   const message = makeHandoff(pauseHandoffValues);
   assertHandoffState('paused', pauseHandoffValues);
@@ -1076,6 +1332,14 @@ assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · pla
 assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {prompt: 'project-a', projectId: 'project-a'}, pauseHandoff).state, 'paused');
 assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'prompt-project-a', prompt: 'project-a'}, pauseHandoff).state, 'paused');
 assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null', prompt: 'project-a'}, pauseHandoff).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null', clientThreadId: 'setup-a'}, pauseHandoff, 'pending').state, 'pending');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {clientThreadId: 'setup-a'}, pauseHandoff, 'pending').state, 'pending');
+assert.deepStrictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff, 'terminal', true), {state: 'repair', action: 'handoff-same-task', message: null});
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {error: true}, pauseHandoff, 'terminal', true).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {timeout: true}, pauseHandoff, 'terminal', true).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'unknown'}, pauseHandoff, 'terminal', true).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-b'}, pauseHandoff, 'pending', true).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff, 'pending', true).state, 'paused');
 assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff).state, 'paused');
 assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-b', prompt: 'project-a'}, pauseHandoff).state, 'paused');
 assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, null));
@@ -1814,6 +2078,53 @@ assert.throws(() => validateTaskGranularity({id: 'task-impact', work_stream_id: 
 assert.throws(() => validateTaskGranularity({id: 'task-rationale', work_stream_id: null, parent_task_id: null, title: 'Produce report', description: 'Why: evidence matters\nWhat: Produce the report\nDone when: review passes', dependencies: [], assignment: 'agent', impact: 5, impact_rationale: ' ', routes: granularityRoutes}));
 assert(validateTaskGranularity({id: 'task-deliverable', work_stream_id: null, parent_task_id: null, title: 'Produce matrix', description: 'Why: the decision needs evidence\nWhat: Produce a verified matrix\nDone when: independent review passes', dependencies: [], assignment: 'agent', impact: 2, impact_rationale: 'bounded deliverable', routes: granularityRoutes}));
 
+function mergeablePlanSteps(left, right) {
+  const shared = ['owner', 'artifact', 'route', 'verifier', 'human_gate'];
+  return left.independent_acceptance !== true
+    && right.independent_acceptance !== true
+    && left.protected !== true
+    && right.protected !== true
+    && shared.every(key => left[key] === right[key]);
+}
+const internalDraft = {owner: 'agent', artifact: 'report-a', route: 'route-a', verifier: 'review-a', human_gate: null, independent_acceptance: false, protected: false};
+assert(mergeablePlanSteps(internalDraft, {...internalDraft, title: 'Prepare sources'}));
+assert.strictEqual(mergeablePlanSteps(internalDraft, {...internalDraft, artifact: 'report-b', independent_acceptance: true}), false);
+assert.strictEqual(mergeablePlanSteps(internalDraft, {...internalDraft, protected: true}), false);
+
+function reduceTransitiveDependencies(edges) {
+  const hasSubsumingPath = (candidate, skipIndex) => {
+    const start = candidate.from;
+    const target = candidate.to;
+    const seen = new Set([start]);
+    const queue = [start];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      for (let index = 0; index < edges.length; index += 1) {
+        if (index === skipIndex || edges[index].from !== current) continue;
+        if (edges[index].rationale !== candidate.rationale || edges[index].gate !== candidate.gate) continue;
+        if (edges[index].to === target) return true;
+        if (!seen.has(edges[index].to)) { seen.add(edges[index].to); queue.push(edges[index].to); }
+      }
+    }
+    return false;
+  };
+  return edges.filter((edge, index) => !hasSubsumingPath(edge, index));
+}
+assert.deepStrictEqual(reduceTransitiveDependencies([
+  {from: 'task-c', to: 'task-b', rationale: 'same contract', gate: 'review-pass'},
+  {from: 'task-b', to: 'task-a', rationale: 'same contract', gate: 'review-pass'},
+  {from: 'task-c', to: 'task-a', rationale: 'same contract', gate: 'review-pass'}
+]), [
+  {from: 'task-c', to: 'task-b', rationale: 'same contract', gate: 'review-pass'},
+  {from: 'task-b', to: 'task-a', rationale: 'same contract', gate: 'review-pass'}
+]);
+const protectedDistinctEdge = {from: 'task-c', to: 'task-a', rationale: 'production approval', gate: 'human-deploy-go'};
+assert(reduceTransitiveDependencies([
+  {from: 'task-c', to: 'task-b', rationale: 'implementation order', gate: 'ci-green'},
+  {from: 'task-b', to: 'task-a', rationale: 'implementation order', gate: 'ci-green'},
+  protectedDistinctEdge
+]).includes(protectedDistinctEdge));
+
 assert.strictEqual(new Set(projectIdentities.map((identity) => identity.creation_token)).size, projectIdentities.length);
 assert.notStrictEqual(executorIdentity.creation_token, reviewerIdentity.creation_token);
 assert.strictEqual(creationKey(executorIdentity).creation_key.creator_owner_epoch, undefined);
@@ -1845,17 +2156,27 @@ assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key:
 assert.throws(() => validateCreationIdentity({...reviewerIdentity, creation_key: {...reviewerIdentity.creation_key, artifact_revision: null}}));
 assert.throws(() => validateCreationIdentity({...executorIdentity, creation_key: {...executorIdentity.creation_key, target: parseTarget('project-b · worktree · wrong project').target}}));
 
-function createSession(response, expectedIdentity = executorIdentity, planningTarget = plannerProjectTarget, nativeObservation = null, publishHandoff = (message) => message.includes('État:')) {
+function createSession(response, expectedIdentity = executorIdentity, planningTarget = plannerProjectTarget, nativeObservation = null, publishHandoff = (message) => message.includes('État:'), hydrated = null) {
   validateCreationIdentity(expectedIdentity, planningTarget);
   const nativeProject = nativeObservation ?? (planningTarget.kind === 'project'
     ? {nativeHandle: `native-${planningTarget.project_id}`}
     : {nativeHandle: `native-projectless-${planningTarget.directory_name}`});
   let currentOwnerEpoch = expectedIdentity.creator_owner_epoch;
-  let calls = 0;
-  let intentWritten = false;
-  let state = 'intent';
-  let wake = null;
+  if (hydrated !== null) {
+    assert.deepStrictEqual(Object.keys(hydrated).sort(scalarCompare), ['calls', 'intent_written', 'state']);
+    assert.strictEqual(hydrated.calls, 1);
+    assert.strictEqual(hydrated.intent_written, true);
+    assert.strictEqual(hydrated.state, 'pending');
+  }
+  let calls = hydrated?.calls ?? 0;
+  let intentWritten = hydrated?.intent_written ?? false;
+  let state = hydrated?.state ?? 'intent';
+  let wake = hydrated ? 'reconcile-native-session' : null;
   let handoffCount = 0;
+  let repairIntentWritten = false;
+  let repairCallCount = 0;
+  let repairOperationId = null;
+  let repairDestinationThreadId = null;
   const outbox = [];
   const receipts = new Set();
   const guardEpoch = (actorEpoch) => { assert.strictEqual(actorEpoch, currentOwnerEpoch); };
@@ -1903,30 +2224,86 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     transitionWithOutbox(actorEpoch, 'paused', nextWake, message);
     if (publishNow) retryOutbox();
   };
-  const reconcile = (matches, actorEpoch = currentOwnerEpoch) => {
+  const reconcile = (matches, actorEpoch = currentOwnerEpoch, setupState = 'ready', currentNativeProject = nativeProject, sameTaskRepairAvailable = false) => {
     assert(['pending', 'paused'].includes(state));
     assert(Array.isArray(matches));
-    const exact = matches.filter((match) => {
+    const normalized = matches.map(match => match && typeof match === 'object' && !Array.isArray(match) && Object.hasOwn(match, 'identity')
+      ? match
+      : {threadId: null, identity: match});
+    const candidates = repairDestinationThreadId === null
+      ? normalized
+      : normalized.filter(candidate => candidate.threadId === repairDestinationThreadId);
+    const exact = candidates.filter((candidate) => {
       try {
-        validateCreationIdentity(match, planningTarget);
-        return stable(match) === stable(expectedIdentity);
+        validateCreationIdentity(candidate.identity, planningTarget);
+        return stable(candidate.identity) === stable(expectedIdentity);
       } catch (_) {
         return false;
       }
     });
-    if (matches.length === 0) {
+    if (candidates.length === 0) {
       transition(actorEpoch, 'pending', 'reconcile-native-session');
-    } else if (matches.length === 1 && exact.length === 1) {
-      const projectResult = reconcileNativeProject(planningTarget, nativeProject, pauseHandoff);
+    } else if (candidates.length === 1 && exact.length === 1) {
+      const projectResult = reconcileNativeProject(planningTarget, currentNativeProject, pauseHandoff, setupState, sameTaskRepairAvailable && repairCallCount === 0);
       if (projectResult.state === 'paused') {
         transitionWithOutbox(actorEpoch, 'paused', 'native-project-identity-handoff', projectResult.message);
         retryOutbox();
+        return;
+      }
+      if (projectResult.state === 'pending') {
+        transition(actorEpoch, 'pending', 'wait-native-setup');
+        return;
+      }
+      if (projectResult.state === 'repair') {
+        transition(actorEpoch, 'pending', 'persist-handoff-repair-intent');
         return;
       }
       transition(actorEpoch, 'ready', null);
     } else {
       pause(actorEpoch, 'human-or-reconciliation-evidence');
     }
+  };
+  const writeRepairIntent = (actorEpoch = currentOwnerEpoch) => {
+    guardEpoch(actorEpoch);
+    assert.strictEqual(state, 'pending');
+    assert.strictEqual(wake, 'persist-handoff-repair-intent');
+    assert.strictEqual(repairIntentWritten, false);
+    assert.strictEqual(repairCallCount, 0);
+    repairIntentWritten = true;
+    wake = 'start-handoff-repair';
+  };
+  const startRepair = (operationId, actorEpoch = currentOwnerEpoch) => {
+    guardEpoch(actorEpoch);
+    assert.strictEqual(repairIntentWritten, true);
+    assert.strictEqual(repairCallCount, 0);
+    nonEmpty(operationId);
+    repairCallCount += 1;
+    repairOperationId = operationId;
+    wake = 'wait-handoff-operation';
+  };
+  const completeRepair = (result, actorEpoch = currentOwnerEpoch) => {
+    guardEpoch(actorEpoch);
+    assert.strictEqual(state, 'pending');
+    assert.strictEqual(repairCallCount, 1);
+    if (!result || result.operationId !== repairOperationId) {
+      pause(actorEpoch, 'handoff-repair-failed');
+      return;
+    }
+    if (['pending', 'running'].includes(result.state)) {
+      wake = 'wait-handoff-operation';
+      return;
+    }
+    if (result.state !== 'succeeded' || typeof result.destinationThreadId !== 'string' || result.destinationThreadId.trim().length === 0) {
+      pause(actorEpoch, 'handoff-repair-failed');
+      return;
+    }
+    const sourceIds = [nativeObservation?.threadId, nativeObservation?.clientThreadId].filter(Boolean);
+    if (sourceIds.includes(result.destinationThreadId)) {
+      pause(actorEpoch, 'handoff-returned-source');
+      return;
+    }
+    repairDestinationThreadId = result.destinationThreadId;
+    wake = 'reconcile-handoff-destination';
   };
   const exhaust = (actorEpoch = currentOwnerEpoch) => {
     assert.strictEqual(state, 'pending');
@@ -1962,7 +2339,7 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     currentOwnerEpoch += 1;
     return currentOwnerEpoch;
   };
-  return {identity: () => expectedIdentity, writeIntent, create, reconcile, exhaust, resume, waitHuman, complete, retryOutbox, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, handoffs: () => handoffCount, pendingOutbox: () => outbox.filter((event) => event.status === 'pending').length, state: () => state, wake: () => wake};
+  return {identity: () => expectedIdentity, writeIntent, create, reconcile, writeRepairIntent, startRepair, completeRepair, exhaust, resume, waitHuman, complete, retryOutbox, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, repairCalls: () => repairCallCount, handoffs: () => handoffCount, pendingOutbox: () => outbox.filter((event) => event.status === 'pending').length, state: () => state, wake: () => wake};
 }
 
 function canonicalReviewSubject(plan) {
@@ -2135,6 +2512,66 @@ assert.strictEqual(exact.state(), 'activated');
 assert.strictEqual(exact.handoffs(), 0);
 assert.throws(() => exact.lateWrite(1));
 assert.throws(() => exact.lateWrite(2));
+const asyncSetup = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-a'});
+asyncSetup.writeIntent();
+asyncSetup.create();
+asyncSetup.reconcile([executorIdentity], 3, 'pending');
+assert.strictEqual(asyncSetup.state(), 'pending');
+assert.strictEqual(asyncSetup.calls(), 1);
+assert.strictEqual(asyncSetup.handoffs(), 0);
+asyncSetup.reconcile([executorIdentity], 3, 'ready', {nativeHandle: 'native-project-a'});
+assert.strictEqual(asyncSetup.state(), 'ready');
+assert.strictEqual(asyncSetup.calls(), 1);
+const nullSetupRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-b', threadId: 'source-b'});
+nullSetupRepair.writeIntent();
+nullSetupRepair.create();
+nullSetupRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true);
+assert.strictEqual(nullSetupRepair.state(), 'pending');
+assert.strictEqual(nullSetupRepair.wake(), 'persist-handoff-repair-intent');
+assert.strictEqual(nullSetupRepair.calls(), 1);
+nullSetupRepair.writeRepairIntent();
+nullSetupRepair.startRepair('operation-b');
+nullSetupRepair.completeRepair({operationId: 'operation-b', state: 'running', destinationThreadId: null});
+assert.strictEqual(nullSetupRepair.state(), 'pending');
+assert.strictEqual(nullSetupRepair.wake(), 'wait-handoff-operation');
+nullSetupRepair.completeRepair({operationId: 'operation-b', state: 'succeeded', destinationThreadId: 'destination-b'});
+nullSetupRepair.reconcile([
+  {threadId: 'source-b', identity: executorIdentity},
+  {threadId: 'destination-b', identity: executorIdentity},
+], 3, 'ready', {nativeHandle: 'native-project-a'});
+assert.strictEqual(nullSetupRepair.state(), 'ready');
+assert.strictEqual(nullSetupRepair.calls(), 1);
+assert.strictEqual(nullSetupRepair.repairCalls(), 1);
+assert.throws(() => nullSetupRepair.startRepair('operation-second'));
+const unavailableRepair = createSession('client', executorIdentity, plannerProjectTarget, {timeout: true, clientThreadId: 'setup-timeout'});
+unavailableRepair.writeIntent(); unavailableRepair.create(); unavailableRepair.reconcile([executorIdentity], 3, 'terminal', {timeout: true}, true);
+assert.strictEqual(unavailableRepair.state(), 'paused');
+assert.strictEqual(unavailableRepair.repairCalls(), 0);
+const failedRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-failed', threadId: 'source-failed'});
+failedRepair.writeIntent(); failedRepair.create(); failedRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true); failedRepair.writeRepairIntent(); failedRepair.startRepair('operation-failed');
+failedRepair.completeRepair({operationId: 'operation-failed', state: 'failed', destinationThreadId: null});
+assert.strictEqual(failedRepair.state(), 'paused');
+assert.strictEqual(failedRepair.repairCalls(), 1);
+assert.throws(() => failedRepair.startRepair('operation-retry'));
+const timedOutRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-repair-timeout'});
+timedOutRepair.writeIntent(); timedOutRepair.create(); timedOutRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true); timedOutRepair.writeRepairIntent(); timedOutRepair.startRepair('operation-timeout');
+timedOutRepair.completeRepair({operationId: 'operation-timeout', state: 'timeout', destinationThreadId: null});
+assert.strictEqual(timedOutRepair.state(), 'paused');
+assert.strictEqual(timedOutRepair.repairCalls(), 1);
+const changedOperationRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-changed'});
+changedOperationRepair.writeIntent(); changedOperationRepair.create(); changedOperationRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true); changedOperationRepair.writeRepairIntent(); changedOperationRepair.startRepair('operation-original');
+changedOperationRepair.completeRepair({operationId: 'operation-changed', state: 'succeeded', destinationThreadId: 'destination-changed'});
+assert.strictEqual(changedOperationRepair.state(), 'paused');
+const changedDestinationRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-destination'});
+changedDestinationRepair.writeIntent(); changedDestinationRepair.create(); changedDestinationRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true); changedDestinationRepair.writeRepairIntent(); changedDestinationRepair.startRepair('operation-destination');
+changedDestinationRepair.completeRepair({operationId: 'operation-destination', state: 'succeeded', destinationThreadId: 'destination-a'});
+changedDestinationRepair.reconcile([{threadId: 'destination-b', identity: executorIdentity}], 3, 'ready', {nativeHandle: 'native-project-a'});
+assert.strictEqual(changedDestinationRepair.state(), 'pending');
+assert.strictEqual(changedDestinationRepair.repairCalls(), 1);
+const sourceReturnedRepair = createSession('client', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-project-null', clientThreadId: 'setup-source', threadId: 'source-thread'});
+sourceReturnedRepair.writeIntent(); sourceReturnedRepair.create(); sourceReturnedRepair.reconcile([executorIdentity], 3, 'terminal', {nativeHandle: 'native-project-null'}, true); sourceReturnedRepair.writeRepairIntent(); sourceReturnedRepair.startRepair('operation-source');
+sourceReturnedRepair.completeRepair({operationId: 'operation-source', state: 'succeeded', destinationThreadId: 'source-thread'});
+assert.strictEqual(sourceReturnedRepair.state(), 'paused');
 const humanGate = createSession('direct', executorIdentity);
 humanGate.writeIntent();
 humanGate.create();
@@ -2264,6 +2701,75 @@ assert.strictEqual(resumed.calls(), 1);
 assert.strictEqual(resumed.state(), 'ready');
 assert.throws(() => resumed.activate(2));
 
+const saved1020Snapshot = Object.freeze({
+  artifact_version: '10.2.0',
+  entry: {
+    candidateRecords: [], candidates: [], fingerprints: ['octoplan-fingerprint-v3'],
+    mandates: [{
+      schema: 'octoplan-delivery-mandate-v2', mode: 'plan-bound', activation_kind: 'confirmed-brief',
+      scoping_brief_digest: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      frozen_decision_ids: ['decision-a'], allowed_delta_classes: [],
+      authority_source: {record_id: 'source-a', message_digest: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'},
+      policy_sources: [{kind: 'repository', locator: 'repo', revision: null}], protected_actions_authorized: false
+    }],
+    nativeSchemas: ['octoplan-native-creation-v3'], otherMarkers: [], supervisions: ['octoplan-supervision-v6']
+  },
+  native_creation_authority_source: {record_id: 'native-task-authority', message_digest: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'},
+  creation_record: {
+    schema: 'octoplan-native-creation-v3',
+    creation_key: {
+      run_id: 'run-a', subject_kind: 'task', subject_id: 'task-a', attempt_id: 'attempt-a', role: 'executor', route: 'route-a',
+      target: {kind: 'project', project_id: 'project-a', environment: 'local', directory_name: null, rationale: null},
+      artifact_revision: null, role_packet_digest: '41b92e8ffefa80dd8ea3525731738710e2f46cd7897434440c4f44b86b2148f7'
+    },
+    role_packet: {
+      organization: 'org-a', workspace: 'workspace-a', work_stream_id: 'stream-a', task_id: 'task-a', role: 'executor', route: 'route-a',
+      target: {kind: 'project', project_id: 'project-a', environment: 'local', directory_name: null, rationale: null},
+      model: 'gpt-5.6-luna', effort: 'max', capability_profile: ['native-context', 'native-task'], capability_rationale: 'fixture',
+      capacity_source: {kind: 'saved-route', record_id: 'route-a', evidence_digest: 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'}
+    },
+    creation_token: 'token-executor', creator_owner_epoch: 3
+  }
+});
+function inspectSaved1020(snapshot) {
+  assert.deepStrictEqual(Object.keys(snapshot).sort(scalarCompare), ['artifact_version', 'creation_record', 'entry', 'native_creation_authority_source']);
+  assert.strictEqual(snapshot.artifact_version, '10.2.0');
+  assert.strictEqual(classifyEntry(snapshot.entry), 'SUPPORTED');
+  validRunwayAuthority(snapshot.native_creation_authority_source);
+  validateCreationIdentity(snapshot.creation_record, plannerProjectTarget);
+  return {classification: 'SUPPORTED', action: 'RESUME', migrationRequired: false, authoritySource: snapshot.native_creation_authority_source};
+}
+function materializeCompatibleGrant(authoritySource, planHash, canonicalActors) {
+  validRunwayAuthority(authoritySource);
+  assert(Array.isArray(canonicalActors) && canonicalActors.length > 0);
+  const first = canonicalActors[0];
+  const projectless = first.project_id === null;
+  assert(canonicalActors.every(actor => projectless
+    ? actor.project_id === null && actor.directory_name === first.directory_name
+    : actor.project_id === first.project_id));
+  return {
+    schema: 'octoplan-native-grant-v1', record_id: `compat-${authoritySource.record_id}`, plan_hash: planHash,
+    project_identity: projectless
+      ? {kind: 'projectless', project_id: null, directory_name: first.directory_name}
+      : {kind: 'project', project_id: first.project_id, directory_name: null},
+    environments: projectless ? [null] : [...new Set(canonicalActors.map(actor => actor.environment))].sort(scalarCompare),
+    roles: [...new Set(canonicalActors.map(actor => actor.role))].sort(scalarCompare),
+    source: {...authoritySource}
+  };
+}
+const saved1020Inspection = inspectSaved1020(saved1020Snapshot);
+assert.deepStrictEqual(saved1020Inspection, {classification: 'SUPPORTED', action: 'RESUME', migrationRequired: false, authoritySource: nativeTaskAuthority});
+assert.deepStrictEqual(saved1020Snapshot.creation_record, executorIdentity); // literal 10.2.0 record, not a 10.2.1 constructor
+const saved1020Resume = createSession('empty', saved1020Snapshot.creation_record, plannerProjectTarget, null, undefined, {calls: 1, intent_written: true, state: 'pending'});
+saved1020Resume.resume(); saved1020Resume.reconcile([saved1020Snapshot.creation_record]);
+assert.strictEqual(saved1020Resume.calls(), 1); // hydrated prior create; resume never calls create
+assert.throws(() => saved1020Resume.create());
+assert.strictEqual(stable(saved1020Inspection.authoritySource), stable(saved1020Snapshot.native_creation_authority_source));
+const saved1020BeforeCompatibility = stable(saved1020Snapshot);
+const compatibleGrant = materializeCompatibleGrant(saved1020Inspection.authoritySource, 'f'.repeat(64), canonicalPlanActors);
+assert(planScopedNativeGrantCovers(compatibleGrant, 'f'.repeat(64), canonicalPlanActors, canonicalPlanActors));
+assert.strictEqual(stable(saved1020Snapshot), saved1020BeforeCompatibility); // runtime grant does not migrate the saved plan
+
 const projectlessNative = createSession('direct', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-projectless-content-room'});
 projectlessNative.writeIntent();
 projectlessNative.create();
@@ -2338,7 +2844,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 10.2.0 contract fixtures');
+console.log('PASS: deterministic 10.2.1 contract fixtures');
 NODE
 
 changed_files=$({
@@ -2361,4 +2867,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 10.2.0 contract\n'
+printf 'PASS: octoplan-codex 10.2.1 contract\n'

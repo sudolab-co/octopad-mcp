@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 10.2.1 — 2026-08-09
+
+Octoplan now treats asynchronous Codex setup as pending until native project identity is ready, persists a deterministic bootstrap intent before its only create call, and binds handoff repair to the returned destination task. A single plan-scoped authority grant covers the exact finite actor set, while compatible tasks are compressed and only equivalent transitive dependencies are removed.
+
+Octopad writes now use the connector's actual stream, goal, and page-link shapes. Batch recovery reconciles each item from its exact direct readback before retrying only missing operations, and accepts the model-facing JSON mirror when a host hides `structuredContent`. Existing 10.2.0 plans remain valid without migration; their exact creation authority can materialize the new runtime grant without rewriting the saved plan. The Claude distribution is unchanged.
+
 ### 10.2.0 — 2026-08-09
 
 Octoplan can now start from a plain idea without an existing stream or saved plan. It returns one complete brief, batches every material question, treats the user's answers and Delivery mode choice as confirmation of unchanged fields, and avoids a second confirmation loop. A two-stage execution runway checks the native project, required task-creation and relocation authority, session creation and reconciliation, Octopad access, write shapes, sources, prerequisites, and verifiers before the first durable planning write. Missing capability or authority therefore produces one precise pre-write blocker instead of failing after the plan is built.
