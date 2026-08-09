@@ -1,7 +1,7 @@
 interface:
   display_name: "Octoplan for Codex"
-  short_description: "Plan Octopad streams and orchestrate approved execution"
-  default_prompt: "Use $octoplan to plan an Octopad work stream."
+  short_description: "Turn ideas into governed plans and approved execution"
+  default_prompt: "Use $octoplan to turn this idea into a governed Octopad plan."
 
 policy:
   allow_implicit_invocation: false

@@ -53,7 +53,7 @@ At each wake, reread the guarded cursor, run state, owner epoch, current plan ha
 
 Continue every ready, safe, agent-owned branch. A human gate, open review, CI wait, merge, migration application, deployment, publication, or acceptance blocks only its branch unless no safe frontier remains.
 
-At a fan-out, preflight every member, dependency, target, route, source, verifier, and authority. Activate a complete symmetric group in one guarded transition; never start a partial group.
+At a fan-out, preflight every member, dependency, target, route, source, verifier, authority, and the atomic group-transition primitive. Persist the preflight record and revision before creation. Without that primitive, require zero partial creation plus an immutable PASS over the serial order, then execute that reviewed serial fallback; never start a partial group.
 
 At fan-in, wait for every dependency, record one integrated immutable revision, and make one guarded successor claim. Children and reviewers do not relay.
 
@@ -95,7 +95,7 @@ Before work and after every wake, an executor verifies its activated creation re
 
 Every artifact is immutable and revision-bound. A new artifact revision invalidates every PASS over that surface. A targeted reviewer may use deterministic checks in the current context; independent and specialist reviewers use fresh source-first sessions.
 
-The lead reviewer validates the artifact against the saved task and Done when, records the exact review result, owns bounded correction, and marks the delivery task complete only after every required PASS. It never launches a successor. A specialist reports only to the lead.
+The lead reviewer validates the artifact against the saved task and Done when, then returns one immutable verdict artifact and bounded-correction evidence. It cannot write the ledger or complete the task. The fenced supervisor validates and persists accepted PASS records and completion; a specialist reports only to the lead.
 
 A human task never becomes agent work through a route fallback. Protected occurrences use the contract's exact predicate and their owner/approval rule.
 
@@ -125,7 +125,7 @@ A non-blocking follow-up is outside the participant set. Give it stable provenan
 
 Human review, merge, migration application, deployment, publication, access grant, spend, destructive effect, and acceptance are separate assigned occurrences. The mandate never authorizes one.
 
-A human gate blocks only its branch; continue safe independent branches under `active` or `replanning`, and use `waiting-human` when no safe progress remains or authority is unresolved. Before every transition to `waiting-human` for a gate or human decision, before any pause requiring Alex's attention, and in the final recap, publish a readable handoff with exactly these fields, in this order: `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`. It names the readable branch/gate, completed work, exact decision, resume predicate, and safe branches that continue. Publishing succeeds before the transition; a failed publish leaves the run in its prior state.
+A human gate blocks only its branch; continue safe independent branches while one exists. When none remains, atomically fence authority in `waiting-human` or `paused` and append a pending outbox event containing exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`, in that order. Publish only the current guarded event, record its receipt idempotently, and retry failures under reconciliation without reopening the run. Use the same six-field outbox for any pause requiring the user's attention and the final recap.
 
 When a human rejects an artifact, preserve the artifact, PASS records, and rejection evidence, classify the correction, save the repair intent, reopen the delivery task, and return the same human occurrence to its gate. Do not duplicate the gate.
 
@@ -153,9 +153,9 @@ Apply the SKILL instruction-precedence and portability policy. Resolve owners fr
 
 ## Resume and close
 
-On resume, dispatch the contract, reread the current guarded ledger cursor, locate the owner epoch and creation records, reconcile native state, and create nothing while an exact existing supervisor can resume.
+On resume, dispatch the contract, reread the guarded cursor, owner epoch, and creation records, then reconcile native state. Wake one exact resumable supervisor once. Replace it only when source-stamped native evidence proves it terminal or unreachable and the guarded fence succeeds; then rotate owner token and epoch and use the saved replacement route and one-call rule. Existence alone never blocks takeover.
 
-If no unique supervisor exists, use the saved creation key and one-call rule. If authority, target, hash, epoch, child identity, artifact lineage, or external state is ambiguous, pause with a concrete wake predicate.
+If resumability or identity is ambiguous, create nothing and pause with a concrete wake predicate. Absence of observation is never terminal or unreachable proof. The same fail-close applies to authority, target, hash, epoch, child identity, artifact lineage, or external state ambiguity.
 
 The supervisor alone closes a run. It verifies final validation, every required human occurrence, all artifact revisions and review PASS records, unresolved risks, follow-ups, actuals, external wakes, and durable ledger state before writing `completed`.
 

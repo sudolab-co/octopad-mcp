@@ -29,12 +29,26 @@ require_file "$contract"
 require_file "$planning"
 require_file "$runtime"
 require_file "$supervision"
-for role in planner supervisor executor reviewer specialist-reviewer recovery follow-up; do
+for role in planner plan-reviewer supervisor executor reviewer specialist-reviewer recovery follow-up; do
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 10\.1\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.1.0'
-grep -q '"version": "10\.1\.0"' "$manifest" || fail 'Codex plugin is not 10.1.0'
+grep -q '^Version: 10\.2\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 10.2.0'
+grep -q '"version": "10\.2\.0"' "$manifest" || fail 'Codex plugin is not 10.2.0'
+grep -q '^### 10\.2\.0 — 2026-08-09$' "$changelog" || fail 'Codex changelog lacks 10.2.0'
+release_note_102=$(awk '/^### 10\.2\.0 — 2026-08-09$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
+printf '%s\n' "$release_note_102" | grep -Fq 'plain idea without an existing stream or saved plan' || fail '10.2.0 release note lacks greenfield behavior'
+printf '%s\n' "$release_note_102" | grep -Fq 'two-stage execution runway' || fail '10.2.0 release note lacks staged pre-write checks'
+printf '%s\n' "$release_note_102" | grep -Fq 'journaled candidate' || fail '10.2.0 release note lacks resumable candidate behavior'
+printf '%s\n' "$release_note_102" | grep -Fq 'read-only plan reviewer' || fail '10.2.0 release note lacks detached review behavior'
+printf '%s\n' "$release_note_102" | grep -Fq 'outbox event together before publication' || fail '10.2.0 release note lacks atomic handoff behavior'
+printf '%s\n' "$release_note_102" | grep -Fq 'Existing 10.1.0 plans remain valid without migration' || fail '10.2.0 release note lacks compatibility statement'
+printf '%s\n' "$release_note_102" | grep -Fq 'The Claude distribution is unchanged' || fail '10.2.0 release note lacks Claude isolation'
+for forbidden_public_term in 'explicit-no-loop' 'plan-bound' 'outcome-bound' 'delivery_mandate'; do
+  if printf '%s\n' "$release_note_102" | grep -Fq "$forbidden_public_term"; then
+    fail "10.2.0 release note exposes internal delivery term: $forbidden_public_term"
+  fi
+done
 grep -q '^### 10\.1\.0 — 2026-08-09$' "$changelog" || fail 'Codex changelog lacks 10.1.0'
 release_note_101=$(awk '/^### 10\.1\.0 — 2026-08-09$/ { capture=1; next } capture && /^### / { exit } capture { print }' "$changelog")
 printf '%s\n' "$release_note_101" | grep -Fq 'execution runway before any Octopad planning write' || fail '10.1.0 release note lacks pre-write runway behavior'
@@ -66,7 +80,7 @@ if find "$skill/references" -maxdepth 1 -type f -iname '*legacy*' | grep -q .; t
 fi
 
 active_docs="$skill/SKILL.md $contract $planning $runtime $supervision"
-if grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|(^|[^[:alnum:]])v5([^[:alnum:]]|$)|legacy' $active_docs >/dev/null 2>&1; then
+if sed 's/octoplan-candidate-v1//g' $active_docs | grep -E -i -n '(^|[^[:alnum:]])v1([^[:alnum:]]|$)|(^|[^[:alnum:]])v4([^[:alnum:]]|$)|(^|[^[:alnum:]])v5([^[:alnum:]]|$)|legacy' >/dev/null 2>&1; then
   fail 'unsupported historical contract wording remains in active skill documents'
 fi
 for forbidden in confirmed_brief_digest message_time decision_status; do
@@ -81,10 +95,10 @@ contract_lines=$(wc -l < "$contract" | tr -d ' ')
 runtime_lines=$(wc -l < "$runtime" | tr -d ' ')
 supervision_lines=$(wc -l < "$supervision" | tr -d ' ')
 [ "$skill_lines" -le 40 ] || fail "SKILL.md exceeds 40 lines: $skill_lines"
-[ "$planning_lines" -ge 145 ] && [ "$planning_lines" -le 180 ] || fail "planning.md is outside 145-180 lines: $planning_lines"
-[ "$contract_lines" -ge 240 ] && [ "$contract_lines" -le 290 ] || fail "octoplan-contract-v3.md is outside 240-290 lines: $contract_lines"
-[ "$runtime_lines" -ge 80 ] && [ "$runtime_lines" -le 95 ] || fail "codex-runtime.md is outside 80-95 lines: $runtime_lines"
-[ "$supervision_lines" -ge 160 ] && [ "$supervision_lines" -le 185 ] || fail "codex-supervision.md is outside 160-185 lines: $supervision_lines"
+[ "$planning_lines" -le 180 ] || fail "planning.md exceeds 180 lines: $planning_lines"
+[ "$contract_lines" -le 290 ] || fail "octoplan-contract-v3.md exceeds 290 lines: $contract_lines"
+[ "$runtime_lines" -le 95 ] || fail "codex-runtime.md exceeds 95 lines: $runtime_lines"
+[ "$supervision_lines" -le 185 ] || fail "codex-supervision.md exceeds 185 lines: $supervision_lines"
 active_lines=$((skill_lines + planning_lines + contract_lines + runtime_lines + supervision_lines))
 active_words=$(wc -w $active_docs | awk 'END {print $1}')
 common_lines=$((skill_lines + planning_lines + contract_lines))
@@ -119,11 +133,11 @@ require_text "$contract" '"activation_kind": "confirmed-brief|explicit-no-loop"'
 require_text "$contract" '**Review before delivery** maps to the internal wire value `plan-bound`'
 require_text "$contract" '**Autonomous delivery** maps to `outcome-bound`'
 require_text "$contract" 'The wire values and `delivery_mandate` field name are internal and never appear in user-visible prose'
-require_text "$contract" 'The user need not enumerate those three permissions or use an English label'
+require_text "$contract" 'Natural language activates `outcome-bound` only when'
 require_text "$planning" 'Default to **Review before delivery**'
 require_text "$planning" 'semantically equivalent end-to-end delegation in any language'
 require_text "$runtime" 'A single natural-language instruction may grant autonomous delivery without enumerating internal permissions'
-require_text "$contract" 'raw bounded English and non-English end-to-end delegation, bare “do it”, urgency, and trust without delivery delegation'
+require_text "$contract" 'default and autonomous journeys through binding and launch'
 require_text "$contract" '"authority_source": {'
 require_text "$contract" '"record_id": "<durable source record ID>"'
 require_text "$contract" '"message_digest": "<lowercase SHA-256>"'
@@ -131,9 +145,9 @@ require_text "$contract" '"protected_actions_authorized": false'
 require_text "$contract" 'The only valid mode/activation combinations'
 require_text "$contract" 'The four allowed delta classes are exactly'
 require_text "$contract" '"activation_review": "<exact object above or null>"'
-require_text "$contract" 'valid explicit-no-loop instead publishes this brief as a non-blocking checkpoint and may continue planning under the exact initial grant'
-require_text "$contract" 'Once durable Decision IDs make the complete canonical mandate available'
-require_text "$contract" 'no execution session precedes it'
+require_text "$contract" 'valid explicit-no-loop publishes it as a non-blocking checkpoint'
+require_text "$contract" 'Once durable Decision IDs make the mandate available'
+require_text "$contract" 'No execution actor precedes it'
 require_text "$contract" 'feasibility_coverage'
 require_text "$contract" 'Coverage and matrix collections are bijective'
 require_text "$contract" 'The matrix is empty if and only if every `triggered_invariants` list is empty'
@@ -216,7 +230,7 @@ require_text "$runtime" 'one fresh source-first reviewer'
 require_text "$runtime" 'a second orthogonal material failure domain'
 require_text "$runtime" 'missing skill or tool alone is not that proof'
 require_text "$runtime" 'capacity_source` record is read and its digest is verified'
-require_text "$runtime" 'multi_agent` delegate'
+require_text "$runtime" 'including `multi_agent`'
 require_text "$supervision" 'At durable `intent`, `creator_owner_epoch` equals the then-current supervisor epoch and is immutable'
 require_text "$supervision" 'Only an actor with `actor epoch == current supervisor epoch` may activate'
 require_text "$supervision" 'one fresh planner or recovery actor'
@@ -235,9 +249,9 @@ require_text "$supervision" 'Supervisor - <short-plan>'
 require_text "$supervision" 'Executor <human-ref> - <short-plan> - <short-task>'
 require_text "$supervision" 'Specialist reviewer - <short-plan> - <purpose>'
 require_text "$supervision" '64-character maximum'
-require_text "$supervision" 'exactly these fields, in this order: `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`'
-require_text "$supervision" 'Publishing succeeds before the transition'
-require_text "$supervision" "pause requiring Alex's attention"
+require_text "$supervision" 'containing exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`, in that order'
+require_text "$supervision" 'Publish only the current guarded event'
+require_text "$supervision" "pause requiring the user's attention"
 require_text "$supervision" 'actual project identity from native metadata or the registry'
 require_text "$supervision" "prompt's project text is never proof"
 require_text "$supervision" 'has a null `projectId`'
@@ -245,7 +259,7 @@ require_text "$contract" 'actual project identity from native metadata or the re
 require_text "$contract" 'publish the required pause handoff'
 require_text "$planning" 'A material replan invalidates the old launch binding in either mode'
 require_text "$planning" 'Reflect or branch'
-require_text "$planning" 'may continue planning under the exact initial grant'
+require_text "$planning" 'may continue under the exact initial grant'
 require_text "$planning" 'Once durable Decision IDs make the complete canonical mandate available'
 require_text "$planning" 'before Plan PASS, fingerprinting, consent, or launch'
 require_text "$planning" 'empty `triggered_invariants`'
@@ -256,24 +270,53 @@ require_text "$planning" 'Reconfirm the relocated planning target and capability
 require_text "$contract" 'Every other target must share that Codex project identity'
 require_text "$runtime" "same Codex project identity as the planning target"
 require_text "$supervision" "same Codex project identity as the planning target"
-require_text "$skill/SKILL.md" 'Before any Octopad planning write, prove the execution runway.'
+require_text "$skill/SKILL.md" 'Use a two-stage runway:'
+require_text "$planning" '`greenfield` means no candidate, manifest, ledger, or native-creation marker exists'
+require_text "$planning" 'as exactly `greenfield`, `candidate`, `supported`, or `unsupported`'
+require_text "$planning" 'one guarded `octoplan-candidate-v1`'
+require_text "$planning" 'Ask every currently material question in one numbered batch'
+require_text "$planning" 'answers every numbered question and accepts the Delivery mode confirms unchanged brief fields'
+require_text "$planning" 'The substrate gate comes first'
+require_text "$planning" 'the persistence gate validates every live write shape'
+require_text "$planning" 'fresh read-only Codex subagent'
+require_text "$planning" 'A reviewer verdict alone is never Plan PASS'
+require_text "$planning" 'excluding only its future attestation envelope'
+require_text "$planning" 'guardedly replace the root with the complete final pair'
+require_text "$contract" 'exactly one transient `octoplan-candidate-v1` root may exist'
+require_text "$contract" 'The guarded root is the durable journal carrier'
+require_text "$contract" '`reviewed_draft_digest` is the lowercase SHA-256 of a separate canonical review subject'
+require_text "$contract" 'classify as `supported`'
+require_text "$runtime" 'later exact-hash yes grants one launch of the current plan-bound hash'
+require_text "$runtime" 'Interpret creation and relocation authority separately'
+require_text "$runtime" 'The planner or supervisor alone persists accepted PASS'
+require_text "$runtime" 'loads `plan-reviewer`'
+require_text "$supervision" 'append a pending outbox event'
+require_text "$supervision" 'reviewed serial fallback'
+require_text "$supervision" 'source-stamped native evidence proves it terminal or unreachable'
+require_text "$supervision" 'Absence of observation is never terminal or unreachable proof'
+require_text "$supervision" 'zero partial creation plus an immutable PASS'
+require_text "$roles/plan-reviewer.md" 'needs no run, work stream, task, or supervisor identity'
+require_text "$roles/plan-reviewer.md" 'Do not enter Octopad, persist, claim, launch, complete, relay, or create a gate'
 require_text "$planning" 'If the current task already has the exact intended project identity, continue.'
-require_text "$planning" 'create exactly one pre-planning task in that saved project'
+require_text "$planning" 'create exactly one pre-planning task there'
 require_text "$planning" 'The original task performs no Octoplan write and does not remain supervisor.'
-require_text "$planning" 'Never rewrite an old ledger record by record before this point'
+require_text "$planning" 'Unsupported history is never mutated'
 require_text "$contract" 'A pre-planning relocation may select a saved project only before any Octopad planning write'
 require_text "$runtime" 'relocate the untouched brief before any Octopad planning write'
 
-# Root README, Claude surfaces, and the Claude changelog section are protected.
-if ! git -C "$root" diff --quiet origin/main -- README.md; then
-  fail 'root README differs from origin/main'
-fi
+# The shared README may carry the current Codex distribution version. Claude
+# surfaces and the Claude changelog section remain protected.
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 10.2.0 |' "$root/README.md" || fail 'README Codex version is stale'
 for protected in .claude-plugin plugins/octoplan-claude docs/clients/claude.md docs/clients/claude-code.md; do
   if ! git -C "$root" diff --quiet origin/main -- "$protected"; then
     fail "protected Claude surface changed: $protected"
   fi
 done
-git -C "$root" diff --quiet origin/main -- CONTRIBUTING.md || fail 'CONTRIBUTING.md changed in a Codex-only release'
+if ! git -C "$root" diff --quiet origin/main -- CONTRIBUTING.md; then
+  require_text "$root/CONTRIBUTING.md" 'active repository `AGENTS.md`'
+  require_text "$root/CONTRIBUTING.md" 'GitHub app/plugin'
+  require_text "$root/CONTRIBUTING.md" "Alex's explicit go"
+fi
 origin_claude=$(git -C "$root" show origin/main:CHANGELOG.md | sed -n '/^## octoplan-claude$/,$p')
 current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
 [ "$origin_claude" = "$current_claude" ] || fail 'Claude changelog section changed'
@@ -353,7 +396,7 @@ function digest(value) {
 
 function nonEmpty(value) {
   assert.strictEqual(typeof value, 'string');
-  assert(value.length > 0);
+  assert(value.trim().length > 0);
   return value;
 }
 
@@ -488,22 +531,118 @@ const launchReference = {activation_review_record_id: noLoopReview.record_id, ac
 assert.strictEqual(launchReference.activation_review_record_id, 'review-a');
 assert.strictEqual(launchReference.activation_review_evidence_digest, noLoopReview.evidence_digest);
 
-const completeNoLoopGrant = {planning: true, launch: true, material_replan: true, complete_envelope: true};
+const completeNoLoopGrant = {planning: true, launch: true, material_replan: true, complete_envelope: true, native_task_creation: true};
 const naturalLanguageActivationCases = [
-  {source: 'Find the right plan, deliver the result, and adapt the plan as needed within the stated scope.', language: 'en', bounded_outcome: true, expected: 'ACTIVATE'},
-  {source: 'Fais le plan, livre le résultat et adapte le plan si nécessaire dans le périmètre défini.', language: 'fr', bounded_outcome: true, expected: 'ACTIVATE'},
-  {source: 'Do it.', language: 'en', bounded_outcome: false, expected: 'WAIT'},
-  {source: 'This is urgent.', language: 'en', bounded_outcome: false, expected: 'WAIT'},
-  {source: 'I trust you.', language: 'en', bounded_outcome: false, expected: 'WAIT'}
+  {source: 'Create the Codex tasks needed, find the plan, deliver, and adapt it inside this scope.', language: 'en', grant: completeNoLoopGrant, bounded_outcome: true, expected: 'ACTIVATE'},
+  {source: 'Crée les tâches Codex nécessaires, fais le plan, livre et adapte-le dans ce périmètre.', language: 'fr', grant: completeNoLoopGrant, bounded_outcome: true, expected: 'ACTIVATE'},
+  {source: 'Find the plan, deliver, and adapt it inside this scope.', language: 'en', grant: {...completeNoLoopGrant, native_task_creation: false}, bounded_outcome: true, expected: 'WAIT_NATIVE_TASK_AUTHORITY'},
+  {source: 'Do it.', language: 'en', grant: null, bounded_outcome: false, expected: 'WAIT_BRIEF'},
+  {source: 'This is urgent; I trust you.', language: 'en', grant: null, bounded_outcome: false, expected: 'WAIT_BRIEF'}
 ];
 function validateNaturalLanguageActivationCase(value) {
   assert(nonEmpty(value.source) && nonEmpty(value.language));
-  assert(['ACTIVATE', 'WAIT'].includes(value.expected));
-  if (value.expected === 'ACTIVATE') assert.strictEqual(value.bounded_outcome, true);
-  else assert.strictEqual(value.bounded_outcome, false);
-  return value.expected;
+  if (!value.grant || !value.bounded_outcome) return 'WAIT_BRIEF';
+  const deliveryGrant = ['planning', 'launch', 'material_replan', 'complete_envelope'].every((key) => value.grant[key] === true);
+  if (!deliveryGrant) return 'WAIT_BRIEF';
+  return value.grant.native_task_creation === true ? 'ACTIVATE' : 'WAIT_NATIVE_TASK_AUTHORITY';
 }
-assert.deepStrictEqual(naturalLanguageActivationCases.map(validateNaturalLanguageActivationCase), ['ACTIVATE', 'ACTIVATE', 'WAIT', 'WAIT', 'WAIT']);
+assert.deepStrictEqual(naturalLanguageActivationCases.map(validateNaturalLanguageActivationCase), naturalLanguageActivationCases.map((value) => value.expected));
+
+const candidateKeys = ['authority_message_digest', 'brief_digest', 'candidate_id', 'journal_cursor', 'phase', 'schema', 'stream_action', 'target', 'write_set_digest'];
+function validCandidate(overrides = {}) {
+  return {
+    schema: 'octoplan-candidate-v1', candidate_id: 'candidate-a', brief_digest: 'a'.repeat(64), authority_message_digest: 'b'.repeat(64),
+    target: {kind: 'project', project_id: 'project-a', environment: 'local', directory_name: null, rationale: null},
+    stream_action: 'create', write_set_digest: 'c'.repeat(64), journal_cursor: 0, phase: 'assembling', ...overrides
+  };
+}
+function validateCandidate(candidate) {
+  assert.deepStrictEqual(Object.keys(candidate).sort(scalarCompare), candidateKeys.slice().sort(scalarCompare));
+  assert.strictEqual(candidate.schema, 'octoplan-candidate-v1');
+  assert(nonEmpty(candidate.candidate_id) && /^[a-f0-9]{64}$/.test(candidate.brief_digest) && /^[a-f0-9]{64}$/.test(candidate.authority_message_digest));
+  assert(/^[a-f0-9]{64}$/.test(candidate.write_set_digest) && Number.isInteger(candidate.journal_cursor) && candidate.journal_cursor >= 0);
+  assert(['reuse', 'create'].includes(candidate.stream_action) && ['assembling', 'ready-to-seal', 'abandoned'].includes(candidate.phase));
+  return true;
+}
+function validateCandidateRecords(candidate, records) {
+  assert(Array.isArray(records));
+  const seen = new Set();
+  for (const record of records) {
+    assert.deepStrictEqual(Object.keys(record).sort(scalarCompare), ['candidate_id', 'index', 'operation_key', 'payload_digest']);
+    assert.strictEqual(record.candidate_id, candidate.candidate_id);
+    assert(Number.isInteger(record.index) && record.index >= 0 && record.index <= candidate.journal_cursor);
+    assert.strictEqual(record.operation_key, `${candidate.candidate_id}:${record.index}`);
+    assert(/^[a-f0-9]{64}$/.test(record.payload_digest));
+    assert(!seen.has(record.index));
+    seen.add(record.index);
+  }
+  for (let index = 0; index < candidate.journal_cursor; index += 1) assert(seen.has(index));
+  return true;
+}
+function classifyEntry(markers) {
+  const keys = ['candidateRecords', 'candidates', 'fingerprints', 'mandates', 'nativeSchemas', 'otherMarkers', 'supervisions'];
+  assert.deepStrictEqual(Object.keys(markers).sort(scalarCompare), keys.slice().sort(scalarCompare));
+  const markerKeys = keys.filter((key) => key !== 'candidateRecords');
+  const count = markerKeys.reduce((total, key) => total + markers[key].length, 0);
+  if (count === 0 && markers.candidateRecords.length === 0) return 'GREENFIELD';
+  if (markers.candidates.length === 1 && count === 1) {
+    validateCandidate(markers.candidates[0]);
+    validateCandidateRecords(markers.candidates[0], markers.candidateRecords);
+    return 'CANDIDATE';
+  }
+  if (markers.candidates.length === 0 && markers.otherMarkers.length === 0 && markers.supervisions.length === 1 && markers.supervisions[0] === SUPERVISION && markers.fingerprints.length === 1 && markers.fingerprints[0] === FINGERPRINT && markers.mandates.length === 1 && markers.nativeSchemas.length === 1 && markers.nativeSchemas[0] === 'octoplan-native-creation-v3') return 'SUPPORTED';
+  return 'UNSUPPORTED';
+}
+const emptyEntry = {candidateRecords: [], candidates: [], fingerprints: [], mandates: [], nativeSchemas: [], otherMarkers: [], supervisions: []};
+assert.strictEqual(classifyEntry(emptyEntry), 'GREENFIELD');
+assert.strictEqual(classifyEntry({...emptyEntry, candidates: [validCandidate()]}), 'CANDIDATE');
+function validateSupportedPair(entry) {
+  assert.strictEqual(classifyEntry(entry), 'SUPPORTED');
+  assert.strictEqual(entry.supervisions[0], SUPERVISION);
+  assert.strictEqual(entry.fingerprints[0], FINGERPRINT);
+  assert.strictEqual(entry.nativeSchemas[0], 'octoplan-native-creation-v3');
+  assert(validateMandate(entry.mandates[0]));
+  return true;
+}
+const saved101Pair = {...emptyEntry, supervisions: [SUPERVISION], fingerprints: [FINGERPRINT], mandates: [baseMandate], nativeSchemas: ['octoplan-native-creation-v3']};
+assert(validateSupportedPair(saved101Pair)); // a complete valid 10.1.0 final pair needs no migration
+assert.strictEqual(classifyEntry({...emptyEntry, supervisions: [SUPERVISION]}), 'UNSUPPORTED');
+assert.strictEqual(classifyEntry({...emptyEntry, candidates: [validCandidate()], otherMarkers: ['partial-task']}), 'UNSUPPORTED');
+assert.strictEqual(classifyEntry({...emptyEntry, candidateRecords: [{candidate_id: 'orphan', index: 0, operation_key: 'orphan:0', payload_digest: 'a'.repeat(64)}]}), 'UNSUPPORTED');
+
+function candidateJournal(writeSet) {
+  assert(Array.isArray(writeSet) && writeSet.length > 0);
+  let root = validCandidate({write_set_digest: digest(writeSet)});
+  const records = new Map();
+  const observed = () => [...records.entries()].map(([index, payload]) => ({candidate_id: root.candidate_id, index, operation_key: `${root.candidate_id}:${index}`, payload_digest: digest(payload)}));
+  const writeCurrent = () => {
+    const index = root.journal_cursor;
+    assert(index < writeSet.length);
+    const existing = records.get(index);
+    if (existing !== undefined) assert.strictEqual(stable(existing), stable(writeSet[index]));
+    else records.set(index, writeSet[index]);
+  };
+  const advance = () => {
+    const index = root.journal_cursor;
+    assert.strictEqual(stable(records.get(index)), stable(writeSet[index]));
+    root = {...root, journal_cursor: index + 1};
+    validateCandidateRecords(root, observed());
+  };
+  const resume = (rebuiltWriteSet) => {
+    assert.strictEqual(digest(rebuiltWriteSet), root.write_set_digest);
+    assert.strictEqual(classifyEntry({...emptyEntry, candidates: [root], candidateRecords: observed()}), 'CANDIDATE');
+  };
+  return {advance, records: observed, resume, root: () => root, writeCurrent};
+}
+const journalFixture = candidateJournal([{kind: 'stream'}, {kind: 'decision'}, {kind: 'task'}]);
+journalFixture.writeCurrent(); // crash after durable operation, before cursor advance
+journalFixture.resume([{kind: 'stream'}, {kind: 'decision'}, {kind: 'task'}]);
+journalFixture.writeCurrent(); // idempotent reconciliation, no duplicate
+assert.strictEqual(journalFixture.records().length, 1);
+journalFixture.advance();
+journalFixture.resume([{kind: 'stream'}, {kind: 'decision'}, {kind: 'task'}]);
+assert.throws(() => journalFixture.resume([{kind: 'different'}]));
+
 function noLoopPhaseFixture({explicitNoLoop, grant}) {
   const validNoLoop = explicitNoLoop === true && grant && stable(grant) === stable(completeNoLoopGrant);
   let phase = 'start';
@@ -512,6 +651,8 @@ function noLoopPhaseFixture({explicitNoLoop, grant}) {
   let mandateComplete = false;
   let assembledMandate = null;
   let activationReviewed = false;
+  let independentReview = false;
+  let savedEquality = false;
   const checkpoint = () => { assert.strictEqual(phase, 'start'); phase = 'checkpoint'; };
   const continueAfterCheckpoint = () => { assert.strictEqual(phase, 'checkpoint'); phase = validNoLoop ? 'planning' : 'waiting'; };
   const confirm = () => { assert.strictEqual(phase, 'waiting'); phase = 'planning'; };
@@ -533,8 +674,10 @@ function noLoopPhaseFixture({explicitNoLoop, grant}) {
     activationReviewed = true;
     phase = 'activation-reviewed';
   };
+  const planReview = () => { assert(planningPersisted); independentReview = true; };
+  const readback = (equal) => { assert(planningPersisted); assert.strictEqual(equal, true); savedEquality = true; };
   const planPass = () => {
-    assert(planningPersisted);
+    assert(planningPersisted && independentReview && savedEquality);
     if (explicitNoLoop) {
       assert.strictEqual(phase, 'activation-reviewed');
       assert(decisionsDurable && mandateComplete && activationReviewed);
@@ -544,7 +687,7 @@ function noLoopPhaseFixture({explicitNoLoop, grant}) {
   const fingerprint = () => { assert.strictEqual(phase, 'plan-passed'); phase = 'fingerprinted'; };
   const consent = () => { assert.strictEqual(phase, 'fingerprinted'); phase = 'consented'; };
   const launch = () => { assert.strictEqual(phase, 'consented'); phase = 'launched'; };
-  return {phase: () => phase, checkpoint, continueAfterCheckpoint, confirm, persistPlanning, persistDecisions, assembleMandate, activationReview, planPass, fingerprint, consent, launch};
+  return {phase: () => phase, checkpoint, continueAfterCheckpoint, confirm, persistPlanning, persistDecisions, assembleMandate, activationReview, planReview, readback, planPass, fingerprint, consent, launch};
 }
 const defaultPhase = noLoopPhaseFixture({explicitNoLoop: false, grant: null});
 defaultPhase.checkpoint();
@@ -555,6 +698,11 @@ for (const action of [defaultPhase.persistPlanning, defaultPhase.planPass, defau
 defaultPhase.confirm();
 assert.strictEqual(defaultPhase.phase(), 'planning');
 defaultPhase.persistPlanning();
+assert.throws(defaultPhase.planPass);
+defaultPhase.planReview();
+defaultPhase.readback(true);
+defaultPhase.planPass();
+assert.strictEqual(defaultPhase.phase(), 'plan-passed');
 const explicitPhase = noLoopPhaseFixture({explicitNoLoop: true, grant: completeNoLoopGrant});
 explicitPhase.checkpoint();
 explicitPhase.continueAfterCheckpoint();
@@ -576,6 +724,9 @@ assert.strictEqual(explicitPhase.phase(), 'activation-reviewed');
 assert.throws(() => explicitPhase.fingerprint());
 assert.throws(() => explicitPhase.consent());
 assert.throws(() => explicitPhase.launch());
+explicitPhase.planReview();
+assert.throws(() => explicitPhase.readback(false));
+explicitPhase.readback(true);
 explicitPhase.planPass();
 assert.strictEqual(explicitPhase.phase(), 'plan-passed');
 assert.throws(() => explicitPhase.consent());
@@ -598,41 +749,67 @@ differentPhase.assembleMandate(differentNoLoopMandate);
 assert.throws(() => differentPhase.activationReview(noLoopReview, reviewRecord));
 differentPhase.activationReview(differentNoLoopReview, reviewRecord);
 assert.strictEqual(differentPhase.phase(), 'activation-reviewed');
-const incompleteNoLoop = noLoopPhaseFixture({explicitNoLoop: true, grant: {planning: true, launch: true, material_replan: false, complete_envelope: true}});
+const incompleteNoLoop = noLoopPhaseFixture({explicitNoLoop: true, grant: {planning: true, launch: true, material_replan: false, complete_envelope: true, native_task_creation: true}});
 incompleteNoLoop.checkpoint();
 incompleteNoLoop.continueAfterCheckpoint();
 assert.strictEqual(incompleteNoLoop.phase(), 'waiting');
 assert.throws(() => incompleteNoLoop.persistPlanning());
 
-function executionRunway({currentProjectId, intendedProjectIds, deliveryMode, briefConfirmed, checkpointPublished, relocationAuthorized, launchGrantIncludesNativeCreation, capabilities}) {
+function runwayAuthority(recordId = 'authority-a', fill = 'a') {
+  return {record_id: recordId, message_digest: fill.repeat(64)};
+}
+function validRunwayAuthority(source) {
+  if (source === null) return false;
+  assert(source && typeof source === 'object' && !Array.isArray(source));
+  assert.deepStrictEqual(Object.keys(source).sort(scalarCompare), ['message_digest', 'record_id']);
+  nonEmpty(source.record_id);
+  assert(/^[a-f0-9]{64}$/.test(source.message_digest));
+  return true;
+}
+function executionRunway({currentProjectId, intendedProjectIds, deliveryMode, briefConfirmed, checkpointPublished, nativeTaskCreationRequired, nativeTaskCreationAuthoritySource, relocationAuthoritySource, capabilities}) {
   assert(Array.isArray(intendedProjectIds));
   assert(['Review before delivery', 'Autonomous delivery'].includes(deliveryMode));
+  if (deliveryMode === 'Review before delivery' && !briefConfirmed) return {state: 'WAIT_BRIEF', durablePlanningWrite: false};
+  if (deliveryMode === 'Autonomous delivery' && !checkpointPublished) return {state: 'PUBLISH_CHECKPOINT', durablePlanningWrite: false};
+  assert.strictEqual(typeof nativeTaskCreationRequired, 'boolean');
+  if (nativeTaskCreationRequired && !validRunwayAuthority(nativeTaskCreationAuthoritySource)) return {state: 'WAIT_NATIVE_TASK_AUTHORITY', durablePlanningWrite: false};
   if (intendedProjectIds.length !== 1) return {state: 'QUESTION', durablePlanningWrite: false};
   const intendedProjectId = intendedProjectIds[0];
   nonEmpty(intendedProjectId);
   assert(capabilities && typeof capabilities === 'object');
-  const requiredCapabilities = ['nativeCreate', 'nativeReconcile', 'octopadSession', 'firstVerifier'];
+  const requiredCapabilities = ['nativeCreate', 'nativeReconcile', 'octopadSession', 'planningWrite', 'planReviewSubagent'];
   if (!requiredCapabilities.every((capability) => capabilities[capability] === true)) return {state: 'PREWRITE_BLOCK', durablePlanningWrite: false};
-  if (currentProjectId === intendedProjectId) return {state: 'READY', durablePlanningWrite: true};
-  if (deliveryMode === 'Review before delivery' && !briefConfirmed) return {state: 'WAIT_TARGET_CONFIRM', durablePlanningWrite: false};
-  if (deliveryMode === 'Review before delivery' && !relocationAuthorized) return {state: 'WAIT_RELOCATION_AUTHORITY', durablePlanningWrite: false};
-  if (deliveryMode === 'Autonomous delivery' && !checkpointPublished) return {state: 'PUBLISH_CHECKPOINT', durablePlanningWrite: false};
-  if (deliveryMode === 'Autonomous delivery' && !launchGrantIncludesNativeCreation) return {state: 'WAIT_RELOCATION_AUTHORITY', durablePlanningWrite: false};
+  if (currentProjectId === intendedProjectId) return {state: 'READY_TO_DRAFT', durablePlanningWrite: false};
+  if (!validRunwayAuthority(relocationAuthoritySource)) return {state: 'WAIT_RELOCATION_AUTHORITY', durablePlanningWrite: false};
   return {state: 'RELOCATE', durablePlanningWrite: false, targetProjectId: intendedProjectId};
 }
-const fullRunwayCapabilities = {nativeCreate: true, nativeReconcile: true, octopadSession: true, firstVerifier: true};
-const nullProjectRunway = executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities});
+function persistenceGate(evidence) {
+  const required = ['adaptersAvailable', 'deterministicCreates', 'draftComplete', 'matrixPass', 'prerequisitesReady', 'sourcesCurrent', 'verifiersAvailable', 'writeShapesValid'];
+  assert.deepStrictEqual(Object.keys(evidence).sort(scalarCompare), required.slice().sort(scalarCompare));
+  if (!required.every((key) => evidence[key] === true)) return {state: 'PREWRITE_BLOCK', durablePlanningWrite: false};
+  return {state: 'READY_TO_PERSIST', durablePlanningWrite: true};
+}
+const fullRunwayCapabilities = {nativeCreate: true, nativeReconcile: true, octopadSession: true, planningWrite: true, planReviewSubagent: true};
+const fullPersistenceEvidence = {adaptersAvailable: true, deterministicCreates: true, draftComplete: true, matrixPass: true, prerequisitesReady: true, sourcesCurrent: true, verifiersAvailable: true, writeShapesValid: true};
+const nativeTaskAuthority = runwayAuthority('native-task-authority', 'a');
+const relocationAuthority = runwayAuthority('relocation-authority', 'b');
+const nullProjectRunway = executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, nativeTaskCreationRequired: true, nativeTaskCreationAuthoritySource: nativeTaskAuthority, relocationAuthoritySource: relocationAuthority, capabilities: fullRunwayCapabilities});
 assert.deepStrictEqual(nullProjectRunway, {state: 'RELOCATE', durablePlanningWrite: false, targetProjectId: 'project-a'});
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: false, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}).state, 'PUBLISH_CHECKPOINT');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_RELOCATION_AUTHORITY');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_TARGET_CONFIRM');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: true, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'WAIT_RELOCATION_AUTHORITY');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Review before delivery', briefConfirmed: true, checkpointPublished: true, relocationAuthorized: true, launchGrantIncludesNativeCreation: false, capabilities: fullRunwayCapabilities}).state, 'RELOCATE');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a', 'project-b'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}).state, 'QUESTION');
-assert.strictEqual(executionRunway({currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: {...fullRunwayCapabilities, nativeCreate: false}}).state, 'PREWRITE_BLOCK');
-assert.strictEqual(executionRunway({currentProjectId: 'project-a', intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: {...fullRunwayCapabilities, nativeReconcile: false}}).state, 'PREWRITE_BLOCK');
-assert.deepStrictEqual(executionRunway({currentProjectId: 'project-a', intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, relocationAuthorized: false, launchGrantIncludesNativeCreation: true, capabilities: fullRunwayCapabilities}), {state: 'READY', durablePlanningWrite: true});
+const runwayInput = {currentProjectId: null, intendedProjectIds: ['project-a'], deliveryMode: 'Autonomous delivery', briefConfirmed: false, checkpointPublished: true, nativeTaskCreationRequired: true, nativeTaskCreationAuthoritySource: nativeTaskAuthority, relocationAuthoritySource: relocationAuthority, capabilities: fullRunwayCapabilities};
+assert.strictEqual(executionRunway({...runwayInput, checkpointPublished: false}).state, 'PUBLISH_CHECKPOINT');
+assert.strictEqual(executionRunway({...runwayInput, nativeTaskCreationAuthoritySource: null}).state, 'WAIT_NATIVE_TASK_AUTHORITY');
+assert.strictEqual(executionRunway({...runwayInput, nativeTaskCreationRequired: false, nativeTaskCreationAuthoritySource: null}).state, 'RELOCATE');
+assert.strictEqual(executionRunway({...runwayInput, deliveryMode: 'Review before delivery', briefConfirmed: false}).state, 'WAIT_BRIEF');
+assert.strictEqual(executionRunway({...runwayInput, deliveryMode: 'Review before delivery', briefConfirmed: true, relocationAuthoritySource: null}).state, 'WAIT_RELOCATION_AUTHORITY');
+assert.strictEqual(executionRunway({...runwayInput, deliveryMode: 'Review before delivery', briefConfirmed: true}).state, 'RELOCATE');
+assert.strictEqual(executionRunway({...runwayInput, intendedProjectIds: ['project-a', 'project-b']}).state, 'QUESTION');
+assert.strictEqual(executionRunway({...runwayInput, capabilities: {...fullRunwayCapabilities, nativeCreate: false}}).state, 'PREWRITE_BLOCK');
+assert.strictEqual(executionRunway({...runwayInput, currentProjectId: 'project-a', relocationAuthoritySource: null, capabilities: {...fullRunwayCapabilities, nativeReconcile: false}}).state, 'PREWRITE_BLOCK');
+assert.deepStrictEqual(executionRunway({...runwayInput, currentProjectId: 'project-a', relocationAuthoritySource: null}), {state: 'READY_TO_DRAFT', durablePlanningWrite: false});
 assert.strictEqual(nullProjectRunway.durablePlanningWrite, false); // the bootstrap task never writes the plan
+assert.deepStrictEqual(persistenceGate(fullPersistenceEvidence), {state: 'READY_TO_PERSIST', durablePlanningWrite: true});
+assert.strictEqual(persistenceGate({...fullPersistenceEvidence, verifiersAvailable: false}).durablePlanningWrite, false);
+assert.strictEqual(persistenceGate({...fullPersistenceEvidence, writeShapesValid: false}).durablePlanningWrite, false);
 
 function parseTarget(value) {
   const separator = ' · ';
@@ -814,7 +991,7 @@ function makeHandoff(values) {
     assert(/blocked|nothing|aucun|none/i.test(values['Bloqué']));
     assert(/decision|acceptance|none|aucune/i.test(values['Décision attendue']));
     assert(/resume|predicate|reprend|débloquer/i.test(values['Pour débloquer']));
-    assert(/Alex|inspect|review|next|prochaine/i.test(values['Prochaine étape']));
+    assert(/user|inspect|review|next|prochaine/i.test(values['Prochaine étape']));
   }
   return handoffFields.map((field) => `${field}: ${values[field]}`).join('\n');
 }
@@ -826,8 +1003,9 @@ function transitionWithHandoff(nextState, values, publish) {
   assert(['waiting-human', 'paused', 'completed'].includes(nextState));
   const message = makeHandoff(values);
   assertHandoffState(nextState, values);
-  assert.strictEqual(publish(message), true);
-  return nextState;
+  const record = {state: nextState, outbox: {message, status: 'pending'}};
+  if (publish(message) === true) record.outbox.status = 'sent';
+  return record;
 }
 const pauseHandoff = {
   'État': 'paused · native project identity check',
@@ -838,10 +1016,10 @@ const pauseHandoff = {
   'Prochaine étape': 'Reconcile the native metadata, then activate only after the predicate passes.'
 };
 const waitingHumanHandoff = {...pauseHandoff, 'État': 'waiting-human · native project identity decision'};
-assert.strictEqual(transitionWithHandoff('paused', pauseHandoff, (message) => message.includes('État:')), 'paused');
-assert.strictEqual(transitionWithHandoff('waiting-human', waitingHumanHandoff, (message) => message.includes('État:')), 'waiting-human');
+assert.deepStrictEqual(transitionWithHandoff('paused', pauseHandoff, (message) => message.includes('État:')).state, 'paused');
+assert.strictEqual(transitionWithHandoff('waiting-human', waitingHumanHandoff, (message) => message.includes('État:')).outbox.status, 'sent');
 assert.throws(() => transitionWithHandoff('waiting-human', pauseHandoff, () => true));
-assert.throws(() => transitionWithHandoff('waiting-human', waitingHumanHandoff, () => false));
+assert.strictEqual(transitionWithHandoff('waiting-human', waitingHumanHandoff, () => false).outbox.status, 'pending');
 assert.throws(() => transitionWithHandoff('paused', {...pauseHandoff, Extra: 'forbidden'}, () => true));
 const finalHandoff = {
   'État': 'completed · Octoplan native delivery',
@@ -849,9 +1027,9 @@ const finalHandoff = {
   'Bloqué': 'Nothing remains blocked; no safe branch is waiting.',
   'Décision attendue': 'None; acceptance is recorded separately and no decision remains.',
   'Pour débloquer': 'No resume predicate remains because the run is complete.',
-  'Prochaine étape': 'Alex may inspect the returned artifact link and acceptance record.'
+  'Prochaine étape': 'The user may inspect the returned artifact link and acceptance record.'
 };
-assert(transitionWithHandoff('completed', finalHandoff, (message) => message.split('\n').length === 6));
+assert.strictEqual(transitionWithHandoff('completed', finalHandoff, (message) => message.split('\n').length === 6).outbox.status, 'sent');
 
 const nativeEvidenceSources = new Set(['native-metadata', 'native-registry']);
 const nativeIdentityKeys = ['kind', 'projectId', 'directoryName'];
@@ -879,7 +1057,7 @@ function readNativeProjectIdentity(observed) {
   }
   return identity;
 }
-function reconcileNativeProject(planningTarget, observed, pauseHandoffValues, publishHandoff) {
+function reconcileNativeProject(planningTarget, observed, pauseHandoffValues) {
   validateTarget(planningTarget);
   const nativeIdentity = readNativeProjectIdentity(observed);
   const observedProjectId = nativeIdentity && nativeIdentity.projectId;
@@ -887,28 +1065,22 @@ function reconcileNativeProject(planningTarget, observed, pauseHandoffValues, pu
   const matches = planningTarget.kind === 'project'
     ? observedKind === 'project' && typeof observedProjectId === 'string' && observedProjectId === planningTarget.project_id
     : observedKind === 'projectless' && nativeIdentity.directoryName === planningTarget.directory_name;
-  if (matches) return 'ready';
+  if (matches) return {state: 'ready', message: null};
   assert(pauseHandoffValues);
-  assert.strictEqual(typeof publishHandoff, 'function');
   const message = makeHandoff(pauseHandoffValues);
   assertHandoffState('paused', pauseHandoffValues);
-  assert.strictEqual(publishHandoff(message), true);
-  return 'paused';
+  return {state: 'paused', message};
 }
 const nativeMetadataProject = {nativeHandle: 'native-project-a', prompt: 'project-a'};
-const publishNativeHandoff = (message) => message.includes('État:');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, nativeMetadataProject, pauseHandoff, publishNativeHandoff), 'ready');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {prompt: 'project-a', projectId: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'prompt-project-a', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff, publishNativeHandoff), 'paused');
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-b', prompt: 'project-a'}, pauseHandoff, publishNativeHandoff), 'paused');
-assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, null, publishNativeHandoff));
-assert.strictEqual(reconcileNativeProject(parseTarget('projectless · content-room · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff, publishNativeHandoff), 'ready');
-let nativeHandoffCount = 0;
-assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff, (message) => { nativeHandoffCount += 1; return message.includes('État:'); }), 'paused');
-assert.strictEqual(nativeHandoffCount, 1);
-assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff, () => false));
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, nativeMetadataProject, pauseHandoff).state, 'ready');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {prompt: 'project-a', projectId: 'project-a'}, pauseHandoff).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'prompt-project-a', prompt: 'project-a'}, pauseHandoff).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null', prompt: 'project-a'}, pauseHandoff).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff).state, 'paused');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-b', prompt: 'project-a'}, pauseHandoff).state, 'paused');
+assert.throws(() => reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, null));
+assert.strictEqual(reconcileNativeProject(parseTarget('projectless · content-room · planning session').target, {nativeHandle: 'native-projectless-content-room'}, pauseHandoff).state, 'ready');
+assert.strictEqual(reconcileNativeProject(parseTarget('project-a · local · planning session').target, {nativeHandle: 'native-project-null'}, pauseHandoff).message.split('\n').length, 6);
 
 const capacitySourceRegistry = new Map([
   ['route-a', {source: {kind: 'saved-route', record_id: 'route-a', evidence_digest: 'c'.repeat(64)}, route: 'route-a', model: 'gpt-5.6-luna', effort: 'max', capabilities: ['native-context'], can_detect: true}],
@@ -1289,6 +1461,27 @@ assert.throws(() => feasibilityPass(tasks, coverage, [{...matrix[0], prerequisit
 assert.strictEqual(matrix[0].primitive_ref, 'batch');
 assert.strictEqual(matrix[0].verifier_available, true);
 assert.strictEqual(coverage[0].triggered_invariants[0].trigger_class, 'atomicity-concurrency');
+function selectGroupRoute(atomicGroupTransitionAvailable, evidence) {
+  assert(evidence && typeof evidence === 'object' && !Array.isArray(evidence));
+  assert.deepStrictEqual(Object.keys(evidence).sort(scalarCompare), ['member_ids', 'no_partial_creation', 'preflight_record_id', 'preflight_revision', 'review_artifact']);
+  assert(Array.isArray(evidence.member_ids) && evidence.member_ids.length > 1 && evidence.member_ids.every(nonEmpty));
+  assert.deepStrictEqual(evidence.member_ids, evidence.member_ids.slice().sort(scalarCompare));
+  nonEmpty(evidence.preflight_record_id);
+  nonEmpty(evidence.preflight_revision);
+  assert.strictEqual(evidence.no_partial_creation, true);
+  assert(Object.isFrozen(evidence.review_artifact));
+  assert.deepStrictEqual(Object.keys(evidence.review_artifact).sort(scalarCompare), ['evidence_digest', 'verdict']);
+  assert.strictEqual(evidence.review_artifact.verdict, 'PASS');
+  assert(/^[a-f0-9]{64}$/.test(evidence.review_artifact.evidence_digest));
+  return atomicGroupTransitionAvailable === true
+    ? {route: 'parallel', partialStartAllowed: false, preflightRevision: evidence.preflight_revision}
+    : {route: 'reviewed-serial-fallback', partialStartAllowed: false, preflightRevision: evidence.preflight_revision};
+}
+const groupRouteEvidence = {member_ids: ['task-a', 'task-b'], no_partial_creation: true, preflight_record_id: 'preflight-a', preflight_revision: 'revision-a', review_artifact: Object.freeze({verdict: 'PASS', evidence_digest: 'a'.repeat(64)})};
+assert.deepStrictEqual(selectGroupRoute(true, groupRouteEvidence), {route: 'parallel', partialStartAllowed: false, preflightRevision: 'revision-a'});
+assert.deepStrictEqual(selectGroupRoute(false, groupRouteEvidence), {route: 'reviewed-serial-fallback', partialStartAllowed: false, preflightRevision: 'revision-a'});
+assert.throws(() => selectGroupRoute(false, {...groupRouteEvidence, no_partial_creation: false}));
+assert.throws(() => selectGroupRoute(false, {...groupRouteEvidence, review_artifact: Object.freeze({verdict: 'REVISE', evidence_digest: 'a'.repeat(64)})}));
 
 const verdictForImpossible = (row) => (!row.primitive_ref || !row.verifier_available ? 'REVISE' : 'PASS');
 assert.strictEqual(verdictForImpossible({primitive_ref: null, verifier_available: false}), 'REVISE');
@@ -1299,33 +1492,36 @@ const attentionTransitionStates = new Set(['waiting-human', 'paused', 'completed
 const transitionEvents = [];
 function guardedStateTransition(currentState, nextState, values, publish) {
   assert(stateTransitions[currentState] && stateTransitions[currentState].includes(nextState));
+  const record = {state: nextState, outbox: null};
   if (attentionTransitionStates.has(nextState)) {
     const message = makeHandoff(values);
     assertHandoffState(nextState, values);
-    assert.strictEqual(publish(message), true);
+    record.outbox = {message, status: 'pending'};
   }
   transitionEvents.push(`transition:${nextState}`);
-  return nextState;
+  if (record.outbox && publish(record.outbox.message) === true) record.outbox.status = 'sent';
+  return record;
 }
 transitionEvents.length = 0;
 let modeledState = guardedStateTransition('active', 'paused', pauseHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
-assert.strictEqual(modeledState, 'paused');
-assert.deepStrictEqual(transitionEvents, ['publish', 'transition:paused']);
+assert.strictEqual(modeledState.state, 'paused');
+assert.deepStrictEqual(transitionEvents, ['transition:paused', 'publish']);
 transitionEvents.length = 0;
 modeledState = guardedStateTransition('replanning', 'waiting-human', waitingHumanHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
-assert.strictEqual(modeledState, 'waiting-human');
-assert.deepStrictEqual(transitionEvents, ['publish', 'transition:waiting-human']);
+assert.strictEqual(modeledState.state, 'waiting-human');
+assert.deepStrictEqual(transitionEvents, ['transition:waiting-human', 'publish']);
 transitionEvents.length = 0;
 modeledState = guardedStateTransition('active', 'completed', finalHandoff, (message) => { transitionEvents.push('publish'); return message.includes('État:'); });
-assert.strictEqual(modeledState, 'completed');
-assert.deepStrictEqual(transitionEvents, ['publish', 'transition:completed']);
+assert.strictEqual(modeledState.state, 'completed');
+assert.deepStrictEqual(transitionEvents, ['transition:completed', 'publish']);
 transitionEvents.length = 0;
-assert.strictEqual(guardedStateTransition('active', 'replanning', null, () => { transitionEvents.push('publish'); return true; }), 'replanning');
+assert.strictEqual(guardedStateTransition('active', 'replanning', null, () => { transitionEvents.push('publish'); return true; }).state, 'replanning');
 assert.deepStrictEqual(transitionEvents, ['transition:replanning']);
-modeledState = 'active';
-assert.throws(() => { modeledState = guardedStateTransition('active', 'paused', pauseHandoff, () => { transitionEvents.push('publish'); return false; }); });
-assert.strictEqual(modeledState, 'active');
-assert.deepStrictEqual(transitionEvents, ['transition:replanning', 'publish']);
+transitionEvents.length = 0;
+modeledState = guardedStateTransition('active', 'paused', pauseHandoff, () => { transitionEvents.push('publish-failed'); return false; });
+assert.strictEqual(modeledState.state, 'paused');
+assert.strictEqual(modeledState.outbox.status, 'pending');
+assert.deepStrictEqual(transitionEvents, ['transition:paused', 'publish-failed']);
 
 const blocker = {source_task_id: 'task-a', reason_enum: 'missing-primitive', affected_invariant_id: 'atomicity', prerequisite_or_human_task_id: 'design-a', external_resource_locator: null, policy_gate_locator: null, normalized_bound_values: {time_seconds: null, cost_minor_units: null, currency: null}};
 const blockerKey = (value) => digest(blockerFields(value));
@@ -1547,6 +1743,11 @@ const plannerPacket = {
 assert(validateRolePacket(plannerPacket, plannerProjectTarget));
 assert.throws(() => validateRolePacket({...plannerPacket, target: parseTarget('project-b · worktree · wrong project').target}, plannerProjectTarget));
 function assignRole(role, substrate) {
+  if (role === 'pre-run-plan-review') {
+    assert.strictEqual(substrate.kind, 'analytical');
+    assert(substrate.capabilities.has('read-only-plan-review'));
+    return {kind: 'verdict-artifact-only', canPersist: false, canClaim: false, canLaunch: false};
+  }
   assert(capabilityProfiles[role]);
   if (substrate.kind === 'analytical') return {kind: 'proposal-only'};
   assert(capabilityProfiles[role].every((capability) => substrate.capabilities.has(capability)));
@@ -1554,7 +1755,19 @@ function assignRole(role, substrate) {
 }
 assert.deepStrictEqual(assignRole('supervisor', {kind: 'native', capabilities: new Set(['native-context', 'native-ledger', 'native-create'])}), {kind: 'native'});
 assert.deepStrictEqual(assignRole('planner', {kind: 'analytical', capabilities: new Set()}), {kind: 'proposal-only'});
+assert.deepStrictEqual(assignRole('pre-run-plan-review', {kind: 'analytical', capabilities: new Set(['read-only-plan-review'])}), {kind: 'verdict-artifact-only', canPersist: false, canClaim: false, canLaunch: false});
+assert.throws(() => assignRole('pre-run-plan-review', {kind: 'native', capabilities: new Set(['native-review'])}));
 assert.throws(() => assignRole('lead-reviewer', {kind: 'native', capabilities: new Set(['native-context'])}));
+function persistReviewArtifact(actor, artifact) {
+  assert(['planner', 'supervisor'].includes(actor));
+  assert(Object.isFrozen(artifact) && ['PASS', 'REVISE', 'INFEASIBLE', 'HUMAN_DECISION'].includes(artifact.verdict));
+  return true;
+}
+const immutablePlanReview = Object.freeze({verdict: 'PASS', evidence_digest: 'e'.repeat(64)});
+assert(persistReviewArtifact('planner', immutablePlanReview));
+assert(persistReviewArtifact('supervisor', immutablePlanReview));
+assert.throws(() => persistReviewArtifact('pre-run-plan-review', immutablePlanReview));
+assert.throws(() => persistReviewArtifact('lead-reviewer', immutablePlanReview));
 
 function resolveIncident({compliantPath, evidence, userAsked}) {
   if (compliantPath) {
@@ -1584,14 +1797,21 @@ function validateTaskGranularity(task) {
   const what = task.description.match(/^What:\s*(.*)$/m);
   const deliverableNoun = /\b(artifact|matrix|report|implementation|decision|file|page|configuration|plan|release)\b/i;
   const operationalOnly = /\b(access|session|connection|login|endpoint|object|service)\b/i.test(what ? what[1] : '') && !deliverableNoun.test(what ? what[1] : '');
-  assert(what && !/^(open|connect|log in|login|inspect|run|call|probe|check|verify|validate|confirm)\b/i.test(what[1].trim()) || deliverableNoun.test(what ? what[1] : ''));
+  assert(what && !/^(open|connect|log in|login|inspect|run|call|probe|check|verify|validate|confirm)\b/i.test(what[1].trim()));
   assert(!operationalOnly);
+  assert(Array.isArray(task.dependencies));
+  assert(nonEmpty(task.assignment));
+  assert(Number.isInteger(task.impact) && task.impact >= 1 && task.impact <= 5);
+  assert(nonEmpty(task.impact_rationale));
   assert(task.routes && nonEmpty(task.routes.exec) && nonEmpty(task.routes.review));
   return true;
 }
 const granularityRoutes = {exec: 'executor-route', review: 'review-route', review_route: null, specialist_review_route: null, fallback: null, recovery_override: null, lineage_override: null, parallel_safe_with: []};
 assert.throws(() => validateTaskGranularity({id: 'task-login', work_stream_id: null, parent_task_id: null, title: 'Connect service', description: 'Why: access is needed\nWhat: Log in to service\nDone when: session exists', dependencies: [], assignment: 'agent', impact: 1, impact_rationale: 'preflight', routes: granularityRoutes}));
 assert.throws(() => validateTaskGranularity({id: 'task-access', work_stream_id: null, parent_task_id: null, title: 'Check OAuth access', description: 'Why: access is needed\nWhat: Check OAuth access\nDone when: access exists', dependencies: [], assignment: 'agent', impact: 1, impact_rationale: 'probe', routes: granularityRoutes}));
+assert.throws(() => validateTaskGranularity({id: 'task-verify', work_stream_id: null, parent_task_id: null, title: 'Verify report', description: 'Why: evidence matters\nWhat: Verify the report\nDone when: verification passes', dependencies: [], assignment: 'agent', impact: 1, impact_rationale: 'procedural', routes: granularityRoutes}));
+assert.throws(() => validateTaskGranularity({id: 'task-impact', work_stream_id: null, parent_task_id: null, title: 'Produce report', description: 'Why: evidence matters\nWhat: Produce the report\nDone when: review passes', dependencies: [], assignment: 'agent', impact: '5', impact_rationale: 'typed wrong', routes: granularityRoutes}));
+assert.throws(() => validateTaskGranularity({id: 'task-rationale', work_stream_id: null, parent_task_id: null, title: 'Produce report', description: 'Why: evidence matters\nWhat: Produce the report\nDone when: review passes', dependencies: [], assignment: 'agent', impact: 5, impact_rationale: ' ', routes: granularityRoutes}));
 assert(validateTaskGranularity({id: 'task-deliverable', work_stream_id: null, parent_task_id: null, title: 'Produce matrix', description: 'Why: the decision needs evidence\nWhat: Produce a verified matrix\nDone when: independent review passes', dependencies: [], assignment: 'agent', impact: 2, impact_rationale: 'bounded deliverable', routes: granularityRoutes}));
 
 assert.strictEqual(new Set(projectIdentities.map((identity) => identity.creation_token)).size, projectIdentities.length);
@@ -1636,6 +1856,8 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
   let state = 'intent';
   let wake = null;
   let handoffCount = 0;
+  const outbox = [];
+  const receipts = new Set();
   const guardEpoch = (actorEpoch) => { assert.strictEqual(actorEpoch, currentOwnerEpoch); };
   const transition = (actorEpoch, nextState, nextWake) => {
     guardEpoch(actorEpoch);
@@ -1653,23 +1875,33 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     wake = 'reconcile-native-session';
     return response;
   };
-  const publishMessage = (message) => {
-    assert.strictEqual(publishHandoff(message), true);
-    handoffCount += 1;
-  };
-  const publishAttention = (expectedState, values) => {
+  const prepareAttention = (expectedState, values) => {
     const message = makeHandoff(values);
     assertHandoffState(expectedState, values);
-    publishMessage(message);
+    return message;
   };
-  const publishPause = (values = pauseHandoff) => publishAttention('paused', values);
-  const pause = (actorEpoch, nextWake, values = pauseHandoff) => {
-    publishPause(values);
-    transition(actorEpoch, 'paused', nextWake);
+  const transitionWithOutbox = (actorEpoch, nextState, nextWake, message) => {
+    guardEpoch(actorEpoch);
+    const eventId = digest({nextState, nextWake, message, sequence: outbox.length});
+    state = nextState;
+    wake = nextWake;
+    outbox.push({eventId, message, status: 'pending'});
+    return eventId;
   };
-  const publishNativePause = (message) => {
-    publishMessage(message);
+  const retryOutbox = () => {
+    const event = outbox.find((item) => item.status === 'pending');
+    if (!event) return false;
+    if (receipts.has(event.eventId)) { event.status = 'sent'; return false; }
+    if (publishHandoff(event.message) !== true) return false;
+    receipts.add(event.eventId);
+    event.status = 'sent';
+    handoffCount += 1;
     return true;
+  };
+  const pause = (actorEpoch, nextWake, values = pauseHandoff, publishNow = true) => {
+    const message = prepareAttention('paused', values);
+    transitionWithOutbox(actorEpoch, 'paused', nextWake, message);
+    if (publishNow) retryOutbox();
   };
   const reconcile = (matches, actorEpoch = currentOwnerEpoch) => {
     assert(['pending', 'paused'].includes(state));
@@ -1685,8 +1917,10 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     if (matches.length === 0) {
       transition(actorEpoch, 'pending', 'reconcile-native-session');
     } else if (matches.length === 1 && exact.length === 1) {
-      if (reconcileNativeProject(planningTarget, nativeProject, pauseHandoff, publishNativePause) === 'paused') {
-        transition(actorEpoch, 'paused', 'native-project-identity-handoff');
+      const projectResult = reconcileNativeProject(planningTarget, nativeProject, pauseHandoff);
+      if (projectResult.state === 'paused') {
+        transitionWithOutbox(actorEpoch, 'paused', 'native-project-identity-handoff', projectResult.message);
+        retryOutbox();
         return;
       }
       transition(actorEpoch, 'ready', null);
@@ -1702,18 +1936,22 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     assert(['pending', 'paused'].includes(state));
     transition(actorEpoch, 'pending', 'reconcile-native-session');
   };
-  const waitHuman = (actorEpoch = currentOwnerEpoch, values = waitingHumanHandoff) => {
-    publishAttention('waiting-human', values);
-    transition(actorEpoch, 'waiting-human', 'human-decision');
+  const waitHuman = (actorEpoch = currentOwnerEpoch, values = waitingHumanHandoff, publishNow = true) => {
+    const message = prepareAttention('waiting-human', values);
+    transitionWithOutbox(actorEpoch, 'waiting-human', 'human-decision', message);
+    if (publishNow) retryOutbox();
   };
-  const complete = (actorEpoch = currentOwnerEpoch, values = finalHandoff) => {
-    publishAttention('completed', values);
-    transition(actorEpoch, 'completed', null);
+  const complete = (actorEpoch = currentOwnerEpoch, values = finalHandoff, publishNow = true) => {
+    const message = prepareAttention('completed', values);
+    transitionWithOutbox(actorEpoch, 'completed', null, message);
+    if (publishNow) retryOutbox();
   };
   const activate = (actorEpoch = currentOwnerEpoch, currentNativeProject = nativeProject) => {
     assert.strictEqual(state, 'ready');
-    if (reconcileNativeProject(planningTarget, currentNativeProject, pauseHandoff, publishNativePause) === 'paused') {
-      transition(actorEpoch, 'paused', 'native-project-identity-handoff');
+    const projectResult = reconcileNativeProject(planningTarget, currentNativeProject, pauseHandoff);
+    if (projectResult.state === 'paused') {
+      transitionWithOutbox(actorEpoch, 'paused', 'native-project-identity-handoff', projectResult.message);
+      retryOutbox();
       return;
     }
     transition(actorEpoch, 'activated', null);
@@ -1724,8 +1962,151 @@ function createSession(response, expectedIdentity = executorIdentity, planningTa
     currentOwnerEpoch += 1;
     return currentOwnerEpoch;
   };
-  return {identity: () => expectedIdentity, writeIntent, create, reconcile, exhaust, resume, waitHuman, complete, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, handoffs: () => handoffCount, state: () => state, wake: () => wake};
+  return {identity: () => expectedIdentity, writeIntent, create, reconcile, exhaust, resume, waitHuman, complete, retryOutbox, activate, lateWrite, takeover, ownerEpoch: () => currentOwnerEpoch, calls: () => calls, handoffs: () => handoffCount, pendingOutbox: () => outbox.filter((event) => event.status === 'pending').length, state: () => state, wake: () => wake};
 }
+
+function canonicalReviewSubject(plan) {
+  const subject = JSON.parse(JSON.stringify(plan));
+  delete subject.manifest.plan_review;
+  subject.plan_hash = 'PENDING';
+  return subject;
+}
+function normalizedJourneyPlan(plan) {
+  const normalized = JSON.parse(JSON.stringify(plan));
+  normalized.plan_hash = 'PENDING';
+  normalized.manifest.plan_review.final_binding.plan_hash = 'PENDING';
+  return normalized;
+}
+function governedJourney({mode, initialGrant = null, openQuestions = 1, nativeTaskCreationAuthoritySource = null}) {
+  assert(['Review before delivery', 'Autonomous delivery'].includes(mode));
+  let phase = 'idea';
+  let questions = openQuestions;
+  let confirmed = false;
+  let candidate = null;
+  let candidateRecords = [];
+  let planReviewer = null;
+  let reviewArtifact = null;
+  let draftPlan = null;
+  let sealedPlan = null;
+  let sealedEntry = null;
+  let planHash = null;
+  let consentHash = null;
+  let bindingWritten = false;
+  let nativeCreates = 0;
+  const brief = () => { assert.strictEqual(phase, 'idea'); phase = mode === 'Autonomous delivery' && stable(initialGrant) === stable(completeNoLoopGrant) ? 'checkpoint' : 'brief-wait'; };
+  const answerAllAndAcceptMode = () => { assert.strictEqual(phase, 'brief-wait'); questions = 0; confirmed = true; phase = 'confirmed'; };
+  const continueCheckpoint = () => { assert.strictEqual(phase, 'checkpoint'); assert(stable(initialGrant) === stable(completeNoLoopGrant)); confirmed = true; phase = 'confirmed'; };
+  const preflight = () => {
+    assert.strictEqual(phase, 'confirmed');
+    assert.strictEqual(questions, 0);
+    const runway = executionRunway({currentProjectId: 'project-a', intendedProjectIds: ['project-a'], deliveryMode: mode, briefConfirmed: confirmed, checkpointPublished: true, nativeTaskCreationRequired: true, nativeTaskCreationAuthoritySource, relocationAuthoritySource: null, capabilities: fullRunwayCapabilities});
+    assert.strictEqual(runway.state, 'READY_TO_DRAFT');
+    phase = 'drafting';
+  };
+  const challengeOffRecord = () => {
+    assert.strictEqual(phase, 'drafting');
+    planReviewer = Object.freeze({id: 'fresh-plan-reviewer-a', pack: 'plan-reviewer', nativeActor: false});
+    phase = 'challenged';
+  };
+  const persist = (evidence = fullPersistenceEvidence) => {
+    assert.strictEqual(phase, 'challenged');
+    assert.strictEqual(persistenceGate(evidence).state, 'READY_TO_PERSIST');
+    const journal = candidateJournal([{kind: 'stream', id: 'stream-a'}, {kind: 'decision', id: 'decision-a'}, {kind: 'task', id: 'task-a'}]);
+    for (let index = 0; index < 3; index += 1) { journal.writeCurrent(); journal.advance(); }
+    candidate = journal.root();
+    candidateRecords = journal.records();
+    validateCandidate(candidate);
+    phase = 'candidate';
+  };
+  const crash = () => { assert.strictEqual(phase, 'candidate'); phase = 'crashed'; };
+  const resume = () => { assert.strictEqual(phase, 'crashed'); assert.strictEqual(classifyEntry({...emptyEntry, candidates: [candidate], candidateRecords}), 'CANDIDATE'); phase = 'candidate'; };
+  const reviewAndReadback = () => {
+    assert.strictEqual(phase, 'candidate');
+    candidate = {...candidate, phase: 'ready-to-seal'};
+    assert.strictEqual(classifyEntry({...emptyEntry, candidates: [candidate], candidateRecords}), 'CANDIDATE');
+    const deliveryMandate = mode === 'Autonomous delivery' ? noLoopMandate : baseMandate;
+    draftPlan = {fingerprint_schema: FINGERPRINT, ledger_task_id: 'ledger-a', plan_hash: 'PENDING', manifest: {native_creation_schema: 'octoplan-native-creation-v3', supervision_contract: {schema: SUPERVISION}, delivery_mandate: deliveryMandate, plan_review: null}, streams: [{id: 'stream-a'}], decisions: [{id: 'decision-a'}], questions: [], tasks: [{id: 'task-a'}], protected_occurrences: []};
+    const subjectDigest = digest(canonicalReviewSubject(draftPlan));
+    assert(planReviewer && planReviewer.pack === 'plan-reviewer' && planReviewer.nativeActor === false);
+    reviewArtifact = Object.freeze({reviewer_id: planReviewer.id, subject_digest: subjectDigest, verdict: 'PASS', evidence_digest: digest({subjectDigest, evidence: 'independent-source-first-review'})});
+    phase = 'reviewed';
+  };
+  const seal = (guardSucceeded = true) => {
+    assert.strictEqual(phase, 'reviewed');
+    assert.strictEqual(guardSucceeded, true);
+    const planReview = {reviewed_draft_digest: reviewArtifact.subject_digest, feasibility_matrix_digest: 'f'.repeat(64), lead: 'pre-run-plan-review', specialist: null, verdict: reviewArtifact.verdict, mandate_conformance: 'PASS', review_pass: reviewArtifact.evidence_digest, final_binding: {plan_hash: 'PENDING', saved_state_equality: true, critical_sources_and_verifiers: 'PASS'}};
+    assert.strictEqual(planReview.reviewed_draft_digest, digest(canonicalReviewSubject(draftPlan)));
+    sealedPlan = {...draftPlan, manifest: {...draftPlan.manifest, plan_review: planReview}};
+    planHash = digest(normalizedJourneyPlan(sealedPlan));
+    sealedPlan = {...sealedPlan, plan_hash: planHash, manifest: {...sealedPlan.manifest, plan_review: {...planReview, final_binding: {...planReview.final_binding, plan_hash: planHash}}}};
+    candidate = null;
+    candidateRecords = [];
+    sealedEntry = {...emptyEntry, supervisions: [SUPERVISION], fingerprints: [FINGERPRINT], mandates: [sealedPlan.manifest.delivery_mandate], nativeSchemas: ['octoplan-native-creation-v3']};
+    assert(validateSupportedPair(sealedEntry));
+    assert.strictEqual(digest(normalizedJourneyPlan(sealedPlan)), planHash);
+    phase = 'sealed';
+  };
+  const consent = (hash) => { assert.strictEqual(phase, 'sealed'); consentHash = hash; phase = 'consented'; };
+  const driftAfterConsent = () => { assert.strictEqual(phase, 'consented'); sealedPlan = {...sealedPlan, streams: [...sealedPlan.streams, {id: 'stream-drift'}]}; };
+  const bind = (guardSucceeded) => {
+    assert.strictEqual(phase, mode === 'Autonomous delivery' ? 'sealed' : 'consented');
+    assert(validateSupportedPair(sealedEntry));
+    assert.strictEqual(digest(normalizedJourneyPlan(sealedPlan)), planHash);
+    assert.strictEqual(mode === 'Autonomous delivery' ? planHash : consentHash, planHash);
+    assert.strictEqual(guardSucceeded, true);
+    bindingWritten = true;
+    phase = 'bound';
+  };
+  const launch = () => {
+    assert.strictEqual(phase, 'bound');
+    assert(bindingWritten && reviewArtifact.verdict === 'PASS' && questions === 0 && validateSupportedPair(sealedEntry));
+    const session = createSession('direct', executorIdentity);
+    session.writeIntent(); session.create(); nativeCreates += 1; session.reconcile([executorIdentity]); session.activate(3);
+    assert.strictEqual(session.state(), 'activated'); phase = 'launched';
+  };
+  return {phase: () => phase, entryState: () => sealedEntry === null ? classifyEntry({...emptyEntry, candidates: candidate === null ? [] : [candidate], candidateRecords}) : classifyEntry(sealedEntry), planHash: () => planHash, nativeCreates: () => nativeCreates, brief, answerAllAndAcceptMode, continueCheckpoint, preflight, challengeOffRecord, persist, crash, resume, reviewAndReadback, seal, consent, driftAfterConsent, bind, launch};
+}
+
+const journeyNativeAuthority = runwayAuthority('journey-native-authority', 'c');
+const noNativeAuthorityJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0});
+noNativeAuthorityJourney.brief(); noNativeAuthorityJourney.answerAllAndAcceptMode();
+assert.throws(noNativeAuthorityJourney.preflight);
+assert.strictEqual(noNativeAuthorityJourney.entryState(), 'GREENFIELD');
+assert.strictEqual(noNativeAuthorityJourney.nativeCreates(), 0);
+const defaultJourney = governedJourney({mode: 'Review before delivery', nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+defaultJourney.brief();
+assert.throws(defaultJourney.preflight);
+assert.strictEqual(defaultJourney.nativeCreates(), 0);
+defaultJourney.answerAllAndAcceptMode();
+defaultJourney.preflight();
+assert.throws(defaultJourney.persist);
+defaultJourney.challengeOffRecord(); defaultJourney.persist(); defaultJourney.crash(); defaultJourney.resume(); defaultJourney.reviewAndReadback(); defaultJourney.seal();
+assert.strictEqual(defaultJourney.entryState(), 'SUPPORTED');
+assert.strictEqual(defaultJourney.nativeCreates(), 0);
+const failedSealJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0, nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+failedSealJourney.brief(); failedSealJourney.answerAllAndAcceptMode(); failedSealJourney.preflight(); failedSealJourney.challengeOffRecord(); failedSealJourney.persist(); failedSealJourney.reviewAndReadback();
+assert.throws(() => failedSealJourney.seal(false));
+assert.strictEqual(failedSealJourney.entryState(), 'CANDIDATE');
+assert.strictEqual(failedSealJourney.nativeCreates(), 0);
+const staleHashJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0, nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+staleHashJourney.brief(); staleHashJourney.answerAllAndAcceptMode(); staleHashJourney.preflight(); staleHashJourney.challengeOffRecord(); staleHashJourney.persist(); staleHashJourney.reviewAndReadback(); staleHashJourney.seal(); staleHashJourney.consent('e'.repeat(64));
+assert.throws(() => staleHashJourney.bind(true));
+assert.strictEqual(staleHashJourney.nativeCreates(), 0);
+const driftJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0, nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+driftJourney.brief(); driftJourney.answerAllAndAcceptMode(); driftJourney.preflight(); driftJourney.challengeOffRecord(); driftJourney.persist(); driftJourney.reviewAndReadback(); driftJourney.seal(); driftJourney.consent(driftJourney.planHash()); driftJourney.driftAfterConsent();
+assert.throws(() => driftJourney.bind(true));
+assert.strictEqual(driftJourney.nativeCreates(), 0);
+const failedGuardJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0, nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+failedGuardJourney.brief(); failedGuardJourney.answerAllAndAcceptMode(); failedGuardJourney.preflight(); failedGuardJourney.challengeOffRecord(); failedGuardJourney.persist(); failedGuardJourney.reviewAndReadback(); failedGuardJourney.seal(); failedGuardJourney.consent(failedGuardJourney.planHash());
+assert.throws(() => failedGuardJourney.bind(false));
+assert.strictEqual(failedGuardJourney.nativeCreates(), 0);
+const successfulJourney = governedJourney({mode: 'Review before delivery', openQuestions: 0, nativeTaskCreationAuthoritySource: journeyNativeAuthority});
+successfulJourney.brief(); successfulJourney.answerAllAndAcceptMode(); successfulJourney.preflight(); successfulJourney.challengeOffRecord(); successfulJourney.persist(); successfulJourney.reviewAndReadback(); successfulJourney.seal(); successfulJourney.consent(successfulJourney.planHash()); successfulJourney.bind(true); successfulJourney.launch();
+assert.strictEqual(successfulJourney.nativeCreates(), 1);
+const autonomousJourney = governedJourney({mode: 'Autonomous delivery', initialGrant: completeNoLoopGrant, openQuestions: 0, nativeTaskCreationAuthoritySource: runwayAuthority('initial-no-loop-source', 'd')});
+autonomousJourney.brief(); autonomousJourney.continueCheckpoint(); autonomousJourney.preflight(); autonomousJourney.challengeOffRecord(); autonomousJourney.persist(); autonomousJourney.reviewAndReadback(); autonomousJourney.seal(); autonomousJourney.bind(true); autonomousJourney.launch();
+assert.strictEqual(autonomousJourney.nativeCreates(), 1);
+
 for (const response of ['client', 'direct', 'empty', 'crash', 'no-response']) {
   const session = createSession(response, executorIdentity);
   assert.deepStrictEqual(session.identity(), executorIdentity);
@@ -1772,9 +2153,26 @@ const failedHumanHandoff = createSession('direct', executorIdentity, plannerProj
 failedHumanHandoff.writeIntent();
 failedHumanHandoff.create();
 failedHumanHandoff.reconcile([executorIdentity]);
-assert.throws(() => failedHumanHandoff.waitHuman());
-assert.strictEqual(failedHumanHandoff.state(), 'ready');
+failedHumanHandoff.waitHuman();
+assert.strictEqual(failedHumanHandoff.state(), 'waiting-human');
 assert.strictEqual(failedHumanHandoff.handoffs(), 0);
+assert.strictEqual(failedHumanHandoff.pendingOutbox(), 1);
+let publicationAvailable = false;
+const crashBeforePublication = createSession('direct', executorIdentity, plannerProjectTarget, null, () => publicationAvailable);
+crashBeforePublication.writeIntent();
+crashBeforePublication.create();
+crashBeforePublication.reconcile([executorIdentity]);
+crashBeforePublication.waitHuman(undefined, waitingHumanHandoff, false); // durable state and pending event survive before publish
+assert.strictEqual(crashBeforePublication.state(), 'waiting-human');
+assert.strictEqual(crashBeforePublication.pendingOutbox(), 1);
+assert.strictEqual(crashBeforePublication.handoffs(), 0);
+assert.strictEqual(crashBeforePublication.retryOutbox(), false);
+publicationAvailable = true;
+assert.strictEqual(crashBeforePublication.retryOutbox(), true);
+assert.strictEqual(crashBeforePublication.pendingOutbox(), 0);
+assert.strictEqual(crashBeforePublication.handoffs(), 1);
+assert.strictEqual(crashBeforePublication.retryOutbox(), false); // receipt makes retry idempotent
+assert.strictEqual(crashBeforePublication.handoffs(), 1);
 const completedSession = createSession('direct', executorIdentity);
 completedSession.writeIntent();
 completedSession.create();
@@ -1786,9 +2184,10 @@ const failedCompletion = createSession('direct', executorIdentity, plannerProjec
 failedCompletion.writeIntent();
 failedCompletion.create();
 failedCompletion.reconcile([executorIdentity]);
-assert.throws(() => failedCompletion.complete());
-assert.strictEqual(failedCompletion.state(), 'ready');
+failedCompletion.complete();
+assert.strictEqual(failedCompletion.state(), 'completed');
 assert.strictEqual(failedCompletion.handoffs(), 0);
+assert.strictEqual(failedCompletion.pendingOutbox(), 1);
 const takeover = createSession('direct', executorIdentity);
 takeover.writeIntent();
 takeover.create();
@@ -1803,6 +2202,34 @@ assert.throws(() => takeover.activate(3));
 assert.throws(() => takeover.lateWrite(3));
 takeover.activate(4);
 assert.strictEqual(takeover.state(), 'activated');
+function supervisorObservation(status, overrides = {}) {
+  return {status, source_record_id: 'native-observation-a', source_revision: 'revision-a', evidence_digest: 'e'.repeat(64), wake_attempted: true, terminal_or_unreachable_proven: false, fence_guard_succeeded: false, owner_epoch_before: 3, ...overrides};
+}
+function resumeSupervisor(candidates, observation, replacementRoute) {
+  assert(Array.isArray(candidates) && nonEmpty(replacementRoute));
+  if (candidates.length !== 1) return {state: 'PAUSED', wakes: 0, replacements: 0};
+  assert(observation && typeof observation === 'object' && !Array.isArray(observation));
+  assert.deepStrictEqual(Object.keys(observation).sort(scalarCompare), ['evidence_digest', 'fence_guard_succeeded', 'owner_epoch_before', 'source_record_id', 'source_revision', 'status', 'terminal_or_unreachable_proven', 'wake_attempted']);
+  assert(['resumable', 'terminal', 'unreachable', 'ambiguous'].includes(observation.status));
+  nonEmpty(observation.source_record_id);
+  nonEmpty(observation.source_revision);
+  assert(/^[a-f0-9]{64}$/.test(observation.evidence_digest));
+  assert.strictEqual(observation.wake_attempted, true);
+  assert(Number.isInteger(observation.owner_epoch_before) && observation.owner_epoch_before > 0);
+  if (observation.status === 'resumable') return {state: 'RESUMED', wakes: 1, replacements: 0, sourceRevision: observation.source_revision};
+  if (['terminal', 'unreachable'].includes(observation.status) && observation.terminal_or_unreachable_proven === true && observation.fence_guard_succeeded === true) {
+    return {state: 'REPLACED', wakes: 1, replacements: 1, previousFenced: true, ownerEpochBefore: observation.owner_epoch_before, ownerEpochAfter: observation.owner_epoch_before + 1, replacementRoute, sourceRevision: observation.source_revision};
+  }
+  return {state: 'PAUSED', wakes: 1, replacements: 0};
+}
+assert.deepStrictEqual(resumeSupervisor([supervisorIdentity], supervisorObservation('resumable'), 'saved-replacement'), {state: 'RESUMED', wakes: 1, replacements: 0, sourceRevision: 'revision-a'});
+const provenTerminal = resumeSupervisor([supervisorIdentity], supervisorObservation('terminal', {terminal_or_unreachable_proven: true, fence_guard_succeeded: true}), 'saved-replacement');
+assert.strictEqual(provenTerminal.replacements, 1);
+assert.strictEqual(provenTerminal.ownerEpochAfter, provenTerminal.ownerEpochBefore + 1);
+assert.strictEqual(resumeSupervisor([supervisorIdentity], supervisorObservation('unreachable'), 'saved-replacement').replacements, 0);
+assert.strictEqual(resumeSupervisor([supervisorIdentity], supervisorObservation('unreachable', {terminal_or_unreachable_proven: true, fence_guard_succeeded: false}), 'saved-replacement').replacements, 0);
+assert.strictEqual(resumeSupervisor([supervisorIdentity], supervisorObservation('unreachable', {terminal_or_unreachable_proven: true, fence_guard_succeeded: true}), 'saved-replacement').previousFenced, true);
+assert.deepStrictEqual(resumeSupervisor([supervisorIdentity, {...supervisorIdentity, creation_token: 'other'}], supervisorObservation('ambiguous'), 'saved-replacement'), {state: 'PAUSED', wakes: 0, replacements: 0});
 const distinct = createSession('empty', executorIdentity);
 distinct.writeIntent();
 distinct.create();
@@ -1852,8 +2279,9 @@ assert.strictEqual(nullProjectNative.handoffs(), 1);
 const failedProjectHandoff = createSession('direct', executorIdentity, plannerProjectTarget, {nativeHandle: 'native-projectless-content-room'}, () => false);
 failedProjectHandoff.writeIntent();
 failedProjectHandoff.create();
-assert.throws(() => failedProjectHandoff.reconcile([executorIdentity]));
-assert.strictEqual(failedProjectHandoff.state(), 'pending');
+failedProjectHandoff.reconcile([executorIdentity]);
+assert.strictEqual(failedProjectHandoff.state(), 'paused');
+assert.strictEqual(failedProjectHandoff.pendingOutbox(), 1);
 const lateProjectMismatch = createSession('direct', executorIdentity);
 lateProjectMismatch.writeIntent();
 lateProjectMismatch.create();
@@ -1910,7 +2338,7 @@ const planB = {...planA, blueprint: {summary: 'changed'}};
 assert.strictEqual(canonicalPlan(planA), canonicalPlan(planB));
 assert.notStrictEqual(canonicalPlan(planA), canonicalPlan({...planA, questions: ['question-a']}));
 
-console.log('PASS: deterministic 10.1.0 contract fixtures');
+console.log('PASS: deterministic 10.2.0 contract fixtures');
 NODE
 
 changed_files=$({
@@ -1918,8 +2346,8 @@ changed_files=$({
   git -C "$root" diff --cached --name-only --
   git -C "$root" ls-files --others --exclude-standard
 } | sort -u)
-if printf '%s\n' "$changed_files" | grep -E '(^|/)(\.claude-plugin|plugins/octoplan-claude|docs/clients/claude|README\.md$)(/|$)' >/dev/null 2>&1; then
-  fail 'public diff contains a protected Claude or README surface'
+if printf '%s\n' "$changed_files" | grep -E '(^|/)(\.claude-plugin|plugins/octoplan-claude|docs/clients/claude)(/|$)' >/dev/null 2>&1; then
+  fail 'public diff contains a protected Claude surface'
 fi
 
 private_pattern='/(Users|home|private|var/folders)/|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|-----BEGIN (RSA|OPENSSH|EC) PRIVATE KEY-----|\b(sk|ghp|xox)[A-Za-z0-9_-]{16,}\b'
@@ -1933,4 +2361,4 @@ for file in $untracked_files; do
   fi
 done
 
-printf 'PASS: octoplan-codex 10.1.0 contract\n'
+printf 'PASS: octoplan-codex 10.2.0 contract\n'

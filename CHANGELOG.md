@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 10.2.0 — 2026-08-09
+
+Octoplan can now start from a plain idea without an existing stream or saved plan. It returns one complete brief, batches every material question, treats the user's answers and Delivery mode choice as confirmation of unchanged fields, and avoids a second confirmation loop. A two-stage execution runway checks the native project, required task-creation and relocation authority, session creation and reconciliation, Octopad access, write shapes, sources, prerequisites, and verifiers before the first durable planning write. Missing capability or authority therefore produces one precise pre-write blocker instead of failing after the plan is built.
+
+New plans are assembled through one non-authoritative, journaled candidate that can resume after a crash and cannot grant consent, PASS, protected actions, or execution. A guarded seal replaces it with the complete supported plan, recomputes the saved fingerprint, and must succeed before consent or native creation. One fresh read-only plan reviewer challenges the draft and then attests a canonical final subject; the planner alone persists the detached evidence and proves full saved-state equality, avoiding the former review/equality cycle. The planning guide is shorter and the fixture inventory no longer consumes runtime context.
+
+Execution now keeps native task-creation and relocation authority as separate source-bound grants, serializes reviewed work when no atomic group transition exists, commits human-wait state and its outbox event together before publication, and replaces an unreachable supervisor only with source-stamped proof plus a successful fence and epoch rotation. Deterministic fixtures cover the complete idea-to-launch journey, question confirmation, candidate crash and seal boundaries, stale consent, failed guards, post-consent drift, outbox retry, serial fallback evidence, supervisor recovery, and zero native creation on every rejected path. Existing 10.1.0 plans remain valid without migration. The Claude distribution is unchanged.
+
 ### 10.1.0 — 2026-08-09
 
 Octoplan now proves the execution runway before any Octopad planning write. It verifies native project identity, session creation and reconciliation capabilities, the Octopad entrypoint, required adapters, source access, and the first-frontier verifier. If the current task has no project identity or the wrong one, it relocates the untouched brief once into the exact saved project after the required authority, then restarts preflight there. Ambiguous targets or unavailable capabilities stop before durable planning.

@@ -14,12 +14,15 @@ When a skill contract or behavior changes, three files move together. Change one
 
 A repository or marketplace identity migration that changes no skill behavior keeps the existing skill versions. Document that migration in the repository installation guides instead of inventing a skill release.
 
-Then tag the release so it is visible on GitHub:
+After Alex's explicit go, publish the tag and release through the route
+authorized by the active repository `AGENTS.md`. Use the GitHub app/plugin
+first for the release record; use the authorized `git` remote for the tag push
+and `gh` only as the documented fallback.
 
 ```bash
 git tag -a <skill>-vX.Y.Z -m "<skill> X.Y.Z — <one line>"
 git push origin <skill>-vX.Y.Z
-gh release create <skill>-vX.Y.Z --title "<skill> X.Y.Z" --notes "..."
+# Use the GitHub app/plugin for the release, or the documented `gh` fallback.
 ```
 
 Tags carry the distribution name because each distribution is versioned on its own. Use `octoplan-claude-vX.Y.Z` for Claude and `octoplan-codex-vX.Y.Z` for Codex.

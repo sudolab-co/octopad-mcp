@@ -14,11 +14,13 @@ This is the only normative source for saved schemas, durable fields, extraction,
 - [Run state, adoption, and accounting](#run-state-adoption-and-accounting)
 - [Fingerprint input and exclusions](#fingerprint-input-and-exclusions)
 - [Extraction and canonicalization](#extraction-and-canonicalization)
-- [Native creation and fixtures](#native-creation-and-fixtures)
+- [Native creation](#native-creation)
 
 ## Supported contract and gate
 
-The saved pair is exactly one `octoplan-supervision-v6`, one `octoplan-fingerprint-v3`, one canonical `delivery_mandate`, and one `native_creation_schema` equal to `octoplan-native-creation-v3`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing field fails closed before any write, route, consent, resume, or native session. A plan carrying the old native creation contract is unsupported and must be replanned. Never infer a field, authority, review PASS, feasibility PASS, adoption, or consent.
+The final saved pair is exactly one `octoplan-supervision-v6`, one `octoplan-fingerprint-v3`, one canonical `delivery_mandate`, and one `native_creation_schema` equal to `octoplan-native-creation-v3`. A missing, duplicate, hybrid, changed, malformed, unknown, extra, or missing final element fails closed before execution routing, consent, resume, or a native actor. A plan carrying the old native creation contract is unsupported and must be replanned. Never infer authority, PASS, feasibility, adoption, or consent.
+
+Before a greenfield or safely fenced replacement has that pair, exactly one transient `octoplan-candidate-v1` root may exist. It contains only `schema`, non-empty `candidate_id`, lowercase SHA-256 `brief_digest`, `authority_message_digest`, exact `target`, `stream_action` (`reuse|create`), `write_set_digest`, nonnegative `journal_cursor`, and `phase` (`assembling|ready-to-seal|abandoned`). It is opened only after confirmed planning authority and both runway gates. The guarded root is the durable journal carrier: rebuild the immutable ordered write set, require its digest to equal `write_set_digest`, key operation `i` as `<candidate_id>:<i>`, read it back, then advance `journal_cursor` from `i` to `i+1` under the same guard. Resume reconciles every earlier key and the current key before writing; a different write set can only abandon the candidate. Its journal-reconciled construction records are candidate state, not conflicting contract markers. It grants no execution authority, native actor, consent, protected action, or PASS. A guarded seal computes the normalized v3 hash, replaces the root with the complete final pair, then rereads and recomputes it; abandonment keeps a read-only quarantine pointer. Any other partial state is unsupported, never greenfield.
 
 The v6 Plan manifest is enclosed by exactly one `OCTOPLAN_PLAN_MANIFEST_V6_BEGIN` and `OCTOPLAN_PLAN_MANIFEST_V6_END` pair. Markers must be ordered, non-nested, unique, and removed from the fingerprint as one byte range: from the begin-marker line's first byte through the end-marker line's LF, or EOF when final.
 
@@ -58,11 +60,11 @@ The four allowed delta classes are exactly `artifact-lineage`, `implementation-a
 
 ## Brief, activation, and review
 
-On the default path, the initial reply is only the mandatory scoping brief: understanding, explicit in/out scope including the nearest excluded result, success, assumptions with verified basis, open questions, validation mode (`gradual` or `final`), Delivery mode, and a one-line authority summary. It must contain no planning write or execution action; valid explicit-no-loop instead publishes this brief as a non-blocking checkpoint and may continue planning under the exact initial grant.
+On the default path, the initial reply is only the mandatory scoping brief: understanding, explicit in/out scope including the nearest excluded result, success, verified assumptions, one batch of open questions, Execution outlook with stream/project, blockers, missing prerequisites/capabilities and native-task authority, validation mode (`gradual|final`), Delivery mode, and authority summary. It contains no planning write or execution action; valid explicit-no-loop publishes it as a non-blocking checkpoint.
 
-On the default path, a later user reply must confirm the whole brief before a normal plan write. A later brief-only reply grants no execution authority. The explicit-no-loop checkpoint is the only non-blocking exception. A single natural-language instruction activates `outcome-bound` when, in context, it unambiguously delegates finding the plan, executing it, and adapting that plan as needed to deliver a bounded outcome. The user need not enumerate those three permissions or use an English label. A bare “do it”, urgency, trust without delivery delegation, or an unbounded request is insufficient.
+On the default path, a later reply confirms the whole brief before a candidate write. Answering every numbered question and accepting Delivery mode confirms unchanged fields; only a material delta asks again. Brief confirmation alone grants no execution. The explicit-no-loop checkpoint is the only non-blocking exception. Natural language activates `outcome-bound` only when it unambiguously delegates planning, execution, and in-envelope adaptation for a bounded outcome; “do it”, urgency, trust, or an unbounded request is insufficient. Host policy may still require explicit user-owned native-task creation authority, which the brief obtains once before the candidate.
 
-For explicit no-loop activation, publish the brief as a non-blocking checkpoint, record the exact source, resolve every material question without scope-expanding inference, keep protected occurrences separate, and continue planning under the exact initial grant. Once durable Decision IDs make the complete canonical mandate available, obtain a fresh independent activation review before Plan PASS, fingerprinting, consent, or launch; no execution session precedes it. Persist exactly one `activation_review`, fingerprint it, and repeat its `record_id` and `evidence_digest` in the launch binding. `activation_review` is JSON `null` for `confirmed-brief`; otherwise it has exactly `record_id`, `brief_digest`, `mandate_digest`, `evidence_digest`, and literal `verdict: "PASS"`.
+For explicit no-loop activation, publish the checkpoint, record its exact source, resolve every material question without scope-expanding inference, and keep protected occurrences separate. Once durable Decision IDs make the mandate available, the fresh read-only pre-run subagent uses `plan-reviewer` without a run, stream, task, or supervisor identity and returns the independent activation-review artifact; the planner alone persists it before Plan PASS, fingerprinting, consent, or launch. No execution actor precedes it. Persist exactly one `activation_review`, fingerprint it, and repeat its `record_id` and `evidence_digest` in the launch binding. It is JSON `null` for `confirmed-brief`; otherwise it has exactly `record_id`, `brief_digest`, `mandate_digest`, `evidence_digest`, and literal `verdict: "PASS"`.
 
 The only valid mode/activation combinations are `plan-bound` plus `confirmed-brief`, `outcome-bound` plus `confirmed-brief`, and `outcome-bound` plus `explicit-no-loop`. The exact review-verdict list is `PASS`, `REVISE`, `INFEASIBLE`, and `HUMAN_DECISION`; meanings are defined only in planning.
 
@@ -117,7 +119,7 @@ The manifest contains the exact v6 supervision policy, execution targets, mandat
 }
 ```
 
-`plan_hash` at the fingerprint root and `manifest.plan_review.final_binding.plan_hash` are both normalized to `PENDING` before hashing. The saved-state equality literal is `PASS` in source and JSON `true` in the canonical object. A source, verifier, matrix, adoption map, mandate, or final binding change requires fresh review and never transfers an old PASS.
+`plan_hash` at the fingerprint root and `manifest.plan_review.final_binding.plan_hash` are normalized to `PENDING` before hashing. `reviewed_draft_digest` is the lowercase SHA-256 of a separate canonical review subject: start from the complete normalized candidate fingerprint input, remove exactly the one `manifest.plan_review` property as the detached attestation envelope, and hash the remaining canonical bytes. Nothing else is excluded. The reviewer attests those bytes once. The planner then validates the artifact digest and verdict mechanically, adds the exact `plan_review` envelope with conditional equality already true, and rereads the complete candidate. Equality becomes effective only on byte-identical full readback, never by a later toggle. A review-subject, source, verifier, matrix, adoption map, or mandate change requires fresh review; an attestation-envelope or equality change invalidates seal and binding without recursively reviewing that envelope.
 
 The manifest's supervision contract is read from the durable task text, not a generated summary. Each required label occurs once, and its value includes all source whitespace after the prefix. The dedicated route and dedicated replacement labels alone accept literal `none`; an empty value is malformed.
 
@@ -125,7 +127,7 @@ Extract `native_creation_schema` as a required manifest value, fingerprint it, a
 
 The active planning session's resolved native target is the planning target and is saved as `inline_supervisor_target`; never replace it from prose or a later caller's directory. A pre-planning relocation may select a saved project only before any Octopad planning write, using the exact user-confirmed target or an unambiguous target inside valid autonomous authority. The bootstrap session is outside this saved contract, performs no Octoplan write, and cannot remain an actor; the relocated task must restart preflight, and only its verified native metadata may become the planning target. Every other target must share that Codex project identity. Resolve project targets through the current registry and retain host, path, and Git observations only as excluded evidence. A projectless target must state why it is safe. Role targets require native capability; analytical delegation has no launch authority.
 
-The exact Plan-review final binding contains the reviewed draft digest, matrix digest, literal lead route, optional specialist route, verdict, mandate-conformance verdict, matching Review PASS record, `PENDING` plan hash, saved-state equality, and critical-source/verifier PASS. A final hash is never confirmed by a reply sent before it exists.
+The exact Plan-review envelope contains the canonical review-subject digest, matrix digest, lead route, optional specialist route, verdict, mandate-conformance verdict, matching immutable review artifact, `PENDING` plan hash, conditional saved-state equality, and source/verifier PASS. Mechanically require the artifact's subject digest, evidence digest, and verdict to match that envelope. Reviewer verdict alone is not Plan PASS: the planner persists the complete candidate once, rereads exact equality, computes the normalized hash, atomically seals to the final pair, then rereads the final pair and recomputes the same hash. Consent, binding, and native creation require that sealed readback to classify as `supported`.
 
 The activation review is fingerprinted as the exact object and its launch binding repeats only its record ID and evidence digest. The mandate digest used there covers the complete canonical mandate, not a selected subset. A changed activation record, evidence digest, or mandate invalidates the binding.
 
@@ -147,7 +149,7 @@ Missing direct content is `null`, not a rendered fallback. A missing or duplicat
 
 Each Question is exactly `id`, `work_stream_id`, `question`, `status`, and `answer`. `work_stream_id` and `answer` are `null` when absent; status is never inferred from open prose. Questions are fingerprinted because an unresolved Question gates authority.
 
-Each task is exactly `id`, `work_stream_id`, `parent_task_id`, `title`, `description`, `dependencies`, `assignment`, `impact`, `impact_rationale`, and `routes`. A dependency is exactly `id` plus `rationale`; a route map is the saved route lines and `parallel_safe_with`.
+Each task is exactly `id`, `work_stream_id`, `parent_task_id`, `title`, `description`, `dependencies`, `assignment`, `impact`, `impact_rationale`, and `routes`. A dependency is exactly `id` plus `rationale`; a route map is the saved route lines and `parallel_safe_with`. Greenfield construction resolves exactly one stream by reuse or one-time creation before sealing; every native role packet requires its non-empty stream ID.
 
 The route scalars are `exec`, `review`, `review_route`, `specialist_review_route`, `fallback`, `recovery_override`, and `lineage_override`. `exec` and `review` are required for an agent task. A human task has null for all seven scalars and an empty parallel list; any mixed shape fails. A planner or recovery incident uses the affected task's saved `recovery_override`, `fallback`, or default recovery route; it never invents a route.
 
@@ -247,7 +249,7 @@ Sort object keys by Unicode scalar order over unescaped names. Sort streams, dec
 
 Serialize UTF-8 strings with only quotation mark, reverse solidus, and U+0000 through U+001F escaped as lowercase `\u00xx`; never escape solidus or non-ASCII scalars. Emit exact ASCII JSON literals and delimiters without insignificant whitespace, encode impact as one ASCII digit, SHA-256 the exact bytes, and emit lowercase hexadecimal. A changed mandate, matrix, target, source, verifier, adoption map, conformance PASS, or equality PASS needs a new review and never inherits authority.
 
-## Native creation and fixtures
+## Native creation
 
 The immutable first-line identity is exactly. The role capability profiles are fixed: `supervisor` requires `native-context`, `native-ledger`, and `native-create`; `planner` requires `native-context`; `executor` and `recovery` require `native-context` and `native-task`; `lead-reviewer` and `specialist-reviewer` require `native-context` and `native-review`; `follow-up` requires `native-context`.
 
@@ -259,20 +261,10 @@ The first prompt line is exactly literal `OCTOPLAN_CREATION`, one ASCII space, a
 
 Creation states are `intent`, `pending`, `ready`, `activated`, `failed`, and `paused`. Owner epoch fencing rejects late writes; resume reconciles an existing intent without a second create call; every nonterminal pause stores an evidence-based wake predicate. A unique match may become `ready`, then only the current fenced supervisor may activate it.
 
-Repository fixtures must cover malformed and mutated mandate fields, every mode/activation combination, raw bounded English and non-English end-to-end delegation, bare “do it”, urgency, and trust without delivery delegation, pre-write runway success and relocation from a null project, ambiguous and unavailable relocation, activation review and launch reference, canonical-order equivalence, direct Decision defaults, Question mutation, Blueprint exclusion, target parsing, same-project local/worktree acceptance, cross-project and project/projectless rejection, every-task feasibility coverage including omitted atomicity, stale source, and unavailable verifier, consent modes, state transitions, blocker identity, cutover race, adoption mutation, protected-action separation, all creation response cases, epoch/resume/late-write cases, schema-agnostic quarantine, and a projectless content/operations plan using a non-GitHub provider with publication as a separate human occurrence.
-
 Creation enters `intent` before the one call. A direct native ID, a client ID, an empty response, or no response all enter reconciliation; none is activation evidence by itself.
 
 Zero exact matches remain `pending` with a wake predicate while bounded reconciliation can still produce the event, then become `paused` with a wake predicate after exhaustion. One exact match becomes `ready`; multiple matches, a mismatched identity, or conflicting owner epoch becomes `paused` and forbids retry.
 
 `activated` is written only after the current owner epoch claims the unique native session. `failed` records a terminal creation failure only when reconciliation proves no usable session and no safe retry.
 
-Raw tabletop acceptance is deterministic: an atomic promise without a primitive yields `REVISE` and blocks its dependent frontier; an unavailable migration application remains a human occurrence while safe branches continue; plan-bound material change waits for consent.
-
-The same fixtures cover role resolution without a code or provider assumption, stricter policy over carte blanche, stable blocker recurrence, all-child fencing before cutover mutation, and duplicate or edited mandates stopping before a write.
-
-Canonical units are declared with each numeric boundary and actual; a missing unit prevents mechanical comparison. Equality, adoption, source, verifier, and conformance checks are independently reread after every replacement.
-
-All extracted values remain tied to their authoritative record and revision; generated summaries, rendered Blueprint prose, and caller-local defaults never become canonical input.
-
-Every semantically unordered collection has an explicit sort above, while persisted task text, tracker text, dependency rationales, and other unlisted sequences retain their exact order and bytes.
+Repository validation owns the required contract fixtures, including default and autonomous journeys through binding and launch.
