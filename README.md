@@ -39,7 +39,7 @@ This repository currently includes Octoplan, a planning protocol that turns an O
 | Distribution | Runtime | Version |
 |---|---|---|
 | [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.4.0 |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 10.2.0 |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 10.2.1 |
 
 Install a skill only when the user asks for Octoplan or another optional workflow. See [INSTALL.md](INSTALL.md#optional-octoplan-skills) for commands and migration steps.
 

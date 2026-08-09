@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "description": "Plan Octopad work streams, then conditionally supervise approved execution across model-routed Codex sessions.",
   "author": {
     "name": "Sudolab"
@@ -18,7 +18,7 @@
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
     "defaultPrompt": [
-      "Use $octoplan to plan this Octopad work stream."
+      "Use $octoplan to plan this Octopad work stream, surfacing any scoped Codex task-creation authorization in the first brief."
     ]
   }
 }

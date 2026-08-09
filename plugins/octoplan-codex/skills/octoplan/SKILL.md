@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, or resume a governed work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 10.2.0
+Version: 10.2.1
 
 # Octoplan for Codex
 
@@ -27,7 +27,7 @@ Only a native Codex session exposing the required orchestration capability may b
 - Use a two-stage runway: prove project, native creation/reconciliation, entrypoint, review, and authority substrate before a candidate write, then prove the drafted graph's sources, adapters, write shapes, prerequisites, and verifiers before persistence. Relocate the untouched brief first when project identity is wrong.
 - Keep every native Octoplan session in the planning session's saved Codex project. Local and worktree sessions may differ inside that project; a cross-project or project/projectless substitution stops before creation.
 - Only the fenced supervisor launches execution successors; the pre-run read-only reviewer is the sole non-actor exception. A material incident uses a fresh planner without execution authority, and a replacement repeats equality, fingerprint, feasibility, adoption, and conformance without transferring PASS.
-- Roles bind their native capability profile and immutable context packet; child incidents return to the supervisor. Tasks are independently deliverable results; probes, connections, logins, and inspections are internal steps.
+- Roles bind their native capability profile and immutable context packet; child incidents return to the supervisor. Tasks are independently deliverable results: merge steps sharing owner, artifact, route, verifier, and gate unless each has independent acceptance; probes, connections, logins, inspections, and status relay stay internal.
 - The Delivery mode never authorizes a protected action; every consequential human occurrence remains separately specified, fingerprinted, and gated.
 - Apply active instruction precedence, let local or service policy narrow authority only, resolve people from current roles, retrieve bounded context, and abstract only external adapters with GitHub conditional.
 
