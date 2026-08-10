@@ -14,11 +14,11 @@ Read this reference after valid launch authority or when resuming. Octopad holds
 
 ## Run and ownership
 
-Before a claim, write, message, PASS, or native create, verify one `octoplan-plan-v1`, its approved revision, current status, organization/workspace/stream, supervisor owner/epoch, execution authority, creation grant, and relevant gate. A mismatch causes targeted reconciliation, not inferred repair.
+Before a claim, write, message, archive, PASS, or native create, verify one `octoplan-plan-v2`, its approved revision, status, identity, dedicated supervisor owner/epoch, execution authority, covering action grant, budgets, and relevant gate. A mismatch causes targeted reconciliation, not inferred repair.
 
 Use `approved`, `active`, `replanning`, `waiting-human`, `paused`, `completed`, and `superseded`. Review verdicts are evidence, not run states. Every state or owner change uses the coordination task's `expected_updated_at`; a failed guard causes a reread and authorizes nothing.
 
-Exactly one supervisor epoch owns advancement. Inline supervision is preferred. Create a dedicated supervisor only when several remaining tasks, meaningful parallel work, multiple streams, or long waits justify durable separation. Never create a reporting-only parent.
+Exactly one dedicated native supervisor epoch owns advancement; supervision is never inline. Use title `Supervisor - <short-plan> - <mission>` within 64 characters, keep it and the planner visible, and default to compact delta-first Terra `high`. Raise route only for evidenced ambiguity. Never create a reporting-only parent.
 
 ## Supervisor loop
 
@@ -26,35 +26,39 @@ At every wake:
 
 1. refresh the coordination task, pending operation keys, open gates, current task statuses, and relevant native sessions;
 2. reconcile pending writes and actor intents before issuing new ones;
-3. identify every ready, safe, agent-owned frontier from live dependencies;
-4. claim and launch only tasks covered by the approved revision, route, project, and authority;
+3. rank the critical path and derive `eligible_safe_ready` from dependencies, gates, conflicts, routes, capabilities, and budgets;
+4. launch up to bounded capacity, then backfill from the remaining safe frontier after reconciliation;
 5. collect artifacts and run the saved review class;
 6. record accepted receipts, review outcomes, completion, incidents, and the next wake;
 7. continue independent safe work until a real pause condition remains.
 
-Use Octopad's task graph and statuses directly; do not maintain a second complete scheduler. Before parallel launch, prove members have no conflicting files, symbols, artifacts, migrations, lockfiles, scarce resources, or gates. If all-ready activation is unavailable, serialize; do not create a partial parallel group.
+Use Octopad's graph/statuses directly; do not mirror a scheduler. Exclude candidates conflicting in files, symbols, artifacts, migrations, lockfiles, scarce resources, gates, routes, or budgets. Repetitive independent items use bounded partial batches with individual artifacts, receipts, and verdicts. Never require all-ready activation: fill available WIP, reconcile, then backfill.
 
 Apply the SKILL user-visible identifier rule to recaps. Internal prompts, ledger records, arguments, and creation records retain the full correlation identifiers.
 
 ## Native actors
 
-Only the current supervisor claims tasks, creates actors, starts reviewers, records accepted outcomes, and advances the graph. Executors and reviewers return evidence to it; they never relay or launch.
+Only the current supervisor claims tasks, creates/messages/archives actors, starts reviewers, validates authority/gates, records accepted outcomes, and advances the graph. Executors may relay a received answer to it but never validate advancement, change route, or launch.
 
-Before creation, append the one intent defined in [state-and-recovery.md](state-and-recovery.md). Use a readable title such as `Supervisor - <short-plan>`, `Executor E01 - <short-plan> - <short-task>`, `Reviewer - <short-plan> - <short-task>`, or `Planner - <short-plan> - <purpose>`, capped at 64 characters and containing no opaque IDs.
+Before creation, append the intent from [state-and-recovery.md](state-and-recovery.md). Use `Supervisor - <short-plan> - <mission>`, `Executor E01 - <short-plan> - <short-task>`, `Reviewer - <short-plan> - <short-task>`, or `Planner - <short-plan> - <purpose>`, capped at 64 characters without opaque IDs.
 
 The first prompt carries the stable creation key and complete role packet. Call create once. `clientThreadId`, empty output, timeout, or crash enters bounded reconciliation. Reconcile native list/read by the creation key and project. One exact material match becomes ready; several or a wrong project pauses. After one setup window and a second zero-match read, pause that branch as `creation-dispatch-ambiguous` with the wake predicate defined in the state reference. Never retry create to improve a response.
 
 Only an actor with the current supervisor epoch may activate. On takeover, prove the prior owner fenced, increment the epoch under `expected_updated_at`, then reconcile existing actors before replacement.
 
-Use targeted reconciliation: refresh only pending operation keys, active attempts, artifact revisions, reviews, gates, and changed sources. A native session is evidence of work, not durable task completion. Display titles and response prose never substitute for plan identity, authority, project, task status, or a receipt.
+Use targeted reconciliation: refresh pending keys, attempts, lifecycle, artifacts, reviews, gates, and changed sources. A native session is evidence, not completion. Titles/prose never substitute for identity, authority, status, or receipt.
+
+Actor lifecycle is `active -> awaiting-review -> correction-needed | handoff-pending -> terminal-reconciled -> archived`. Terminal requires report, acknowledged ownership transfer, and reconciliation. Reuse a healthy executor for correction before creating another. Archive reversibly only after PASS, abandonment, or supersession, no correction/recheck/human/handoff wait, and a transfer receipt. Keep planner, supervisor, and user/handoff waiters visible. Persist archive receipts; an archive incident stays pending/reconciled but never blocks delivery.
 
 ## Execution and review
 
-Each executor first verifies its creation key, plan ID/revision, supervisor epoch, project, task ID/ref, route, and active status, then enters the exact Octopad workspace and reads the full live task. It produces only the saved artifact and evidence; a human task never becomes agent work through fallback.
+Each executor verifies key, plan/revision, epoch, project, task ref, route, and lifecycle, then enters Octopad and reads the live self-contained task. It owns the mission interaction point; a human task never becomes agent work through fallback.
 
-On return, the supervisor checks the artifact revision and runs the task's saved review class. `targeted` must inspect the actual diff or artifact and execute the named checks. `independent` and `specialist` use fresh source-first actors. All compare against **Done when**, boundaries, source revisions, and protected gates.
+Run deterministic checks first. On return, the supervisor checks artifact revision and saved review class. `targeted` inspects the actual diff/artifact and named checks. `independent` is fresh source-first for product, code, security, privacy, data, migration, or public work; `specialist` adds only a second orthogonal material domain. Integrated multi-component candidates require integrated review.
 
-Accept only explicit verdicts with executed evidence. Silence, timeout, missing checks, or review of another artifact revision is not PASS. A `REVISE` returns bounded findings to a correction actor; then recheck those findings and affected criteria. Preserve unrelated PASS evidence. The supervisor alone records accepted PASS and task completion.
+Accept only explicit verdicts with executed evidence. Silence, timeout, missing checks, or another revision is not PASS. Return stable finding keys to the healthy executor for correction, then targeted-recheck changed artifact and affected criteria. After two `REVISE` with the same key, forbid a blind third loop: diagnose plan/tool/verifier/route and repair or replan. Preserve unrelated PASS. Only the supervisor records accepted PASS or advancement.
+
+At artifact completion (`awaiting-review`), human/handoff wait, or an incident unresolved after bounded recovery, the executor publishes exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, and `Prochaine étape`; `Aucune` or `Sans objet` is valid. It may receive and transfer a reply. This report is not authority or durable gate evidence until supervisor validation.
 
 ## Incidents and replanning
 
@@ -68,7 +72,7 @@ Contact the user only for a true material choice, missing real authority, unreco
 
 ## Human gates
 
-Secrets, access grants, spend, destructive effects, merge, migration application, deployment, publication, and acceptance stay as separate human tasks. Delivery mode and plan approval never complete them.
+Secrets, access grants, spend, destructive effects, human review, merge, migration application, deployment, publication, and acceptance stay protected occurrences. Human review and merge are embedded in the owning E delivery task, not separate Octopad tasks; other kinds may use an Hxx human task. A PR is linked to that same Octopad delivery task under the active workflow; after merge, reconcile its auto-close/completion comment and closure evidence instead of creating a review or merge task. Delivery mode and plan approval never complete gates.
 
 A gate blocks only its dependent branch. Continue independent safe work. When no safe frontier remains, update state to `waiting-human` or `paused` under the concurrency guard and publish exactly:
 
@@ -87,8 +91,8 @@ On resume, follow [state-and-recovery.md](state-and-recovery.md): refresh live O
 
 A dead executor is fenced before a new attempt. If no artifact exists, restart from the saved task; if one exists, adopt or reject it explicitly and review the chosen revision. A predecessor PASS never transfers to a changed artifact.
 
-The supervisor closes only after every required delivery task has current review evidence, every desired dependency and protected gate is resolved, final validation ran, pending operations are empty, and known risks/follow-ups are recorded. Write `completed` under `expected_updated_at`.
+The supervisor writes `completed` only after current global integrated-outcome evidence, required task/review evidence, every gate is `satisfied` with evidence, final validation, empty pending operations, and every actor is terminal-reconciled or archived. Component or branch completion is insufficient. `waiting-human` and `paused` end a pass but are never terminal success.
 
-The final six-field recap reports delivered artifacts, executed checks, review results, human work, repairs, blockers, follow-ups, risks, and actual session/event counts using returned links and human references rather than opaque IDs.
+The final six-field recap reports artifacts, checks, reviews, human work, repairs, blockers, follow-ups, risks, and actual session/event counts. Include observed tokens, tool calls, compactions, and retries when available; otherwise say unavailable, without estimation. Use returned links and human references, not opaque IDs.
 
 Pause the affected branch only for the strict conditions in the state reference. Stop the whole plan only when shared identity/authority is invalid or no safe agent-owned frontier remains.
