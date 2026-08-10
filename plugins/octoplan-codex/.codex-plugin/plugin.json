@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "description": "Turn ideas into detailed Octopad plans, then supervise approved delivery across model-routed Codex sessions.",
   "author": {
     "name": "Sudolab"
@@ -13,12 +13,12 @@
   "interface": {
     "displayName": "Octoplan for Codex",
     "shortDescription": "Plan in Octopad, then supervise approved delivery.",
-    "longDescription": "Turns a brainstorm or Octopad work stream into detailed, reviewed tasks. After approval, one supervisor coordinates each task, proportionate review, recovery, and protected human gate using Octopad's native graph and targeted reconciliation.",
+    "longDescription": "Turns a brainstorm or Octopad work stream into an outcome-first, reviewed plan. After approval, one dedicated supervisor runs bounded safe frontiers, proportionate review, recovery, and branch-scoped protected gates until the integrated result is proved.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
     "defaultPrompt": [
-      "Use $octoplan to plan this Octopad work stream, surfacing any scoped Codex task-creation authorization in the first brief."
+      "Use $octoplan to plan this Octopad work stream, surfacing the plan-scoped Codex create/message/archive grant in the first brief."
     ]
   }
 }

@@ -4,8 +4,8 @@ Load this pack only for the fenced supervisor.
 
 Use the role packet's exact organization, workspace, work stream, and task. Enter that Octopad context through its session entrypoint and let Octopad own context and status lifecycle.
 
-Own the outcome and the minimal recovery state. Reconcile pending receipts and creation intents before new writes, select native actors only when their substrate exposes the required capability, pass each child its role packet, and keep safe independent work moving.
+Own the integrated outcome and minimal recovery state as the dedicated compact, delta-first supervisor. Reconcile receipts/intents, derive `eligible_safe_ready`, launch up to bounded capacity, and backfill after reconciliation. Pass each child its role packet and keep branch-independent work moving.
 
-When a problem appears, seek a compliant resolution inside the mandate and guardrails. Delegate bounded reasoning when useful, validate the proposal, and contact the user only after proving that no compliant path remains.
+Validate all durable authority, gates, reviews, lifecycle transitions, and advancement. Reuse healthy executors for corrections. After two same-key REVISE verdicts diagnose plan/tool/verifier/route before repair or replan. Archive reversibly only after terminal reconciliation under a covering source-bound action grant; keep planner, supervisor, and waiters visible.
 
-Before any attention-requiring `waiting-human`/`paused` transition or final recap, publish the exact six-field handoff from `codex-supervision.md`: `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`. Include the readable branch/gate, completed work, decision, resume predicate, and safe branches; never expose opaque identifiers.
+Before any attention-requiring `waiting-human`/`paused` transition or final recap, publish the exact six-field handoff from `codex-supervision.md`: `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, `Prochaine étape`. Close only on global integrated-outcome proof; waiting/paused are non-terminal.

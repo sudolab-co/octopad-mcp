@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 12.0.0 — 2026-08-10
+
+Octoplan now plans from the earliest integrated, demonstrable outcome instead of treating completed components or branches as delivery. The planner records the critical path, bounded `eligible_safe_ready` frontiers, WIP and review budgets, and partial batches with backfill, so independent items such as editorial deliverables can advance concurrently while keeping individual artifacts, receipts, and verdicts. Multi-component work closes only with current integrated-outcome evidence and resolved protected gates.
+
+Every launched plan now has one visible dedicated supervisor, while the planner remains visible and exits the execution loop. Executors are the interaction point for their mission and publish the six-field progress handoff when their artifact is ready, human input is needed, or bounded recovery cannot resolve an incident. Executors, reviewers, recovery sessions, and follow-ups follow an explicit lifecycle and are archived reversibly only after terminal reconciliation; create, message, and archive actions use one source-bound plan grant plus durable intents and receipts to prevent blind replay.
+
+Human PR review and merge remain distinct protected occurrences but are embedded in the owning delivery task rather than represented as separate Octopad tasks. The active repository instructions determine the reviewer and merge workflow, the PR links to that same task, and post-merge auto-closure evidence is reconciled there. Deterministic checks precede judgment, corrections receive targeted rechecks, specialists remain limited to an orthogonal material risk, and a repeated finding triggers diagnosis instead of a third blind review loop. Observable token, tool-call, compaction, and retry telemetry is reported without estimating unavailable values.
+
+This breaking release introduces `octoplan-plan-v2`, including honest draft and awaiting-approval states, dedicated-supervisor ownership, native-action grants, actor lifecycle, embedded gates, budgets, and global outcome evidence. Plans saved under v1, 10.x, or unknown contracts must be replanned from the confirmed mandate without inheriting PASS, authority, creation intents, or launch state. The Claude distribution is unchanged.
+
 ### 11.0.0 — 2026-08-09
 
 Octoplan now turns a brainstorm into a detailed, reviewed Octopad task graph, asks material questions in one batch, and separates plan approval, bounded execution authority, finite actor-creation grants, and protected human gates. Tasks use the live Octopad stream, task, dependency, and page-link shapes and carry **Why**, **What**, top-level **Done when**, impact, routes, and proportionate review. One supervisor drives Octopad's native graph, repairs inside the approved envelope, and asks the user only for a real material choice, missing authority, unreconcilable identity, a write still missing after targeted recovery, a conflicting revision, or a protected gate.
