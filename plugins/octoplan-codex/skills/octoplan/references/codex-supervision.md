@@ -42,7 +42,7 @@ Only the current supervisor claims tasks, creates/messages/archives actors, star
 
 Before creation, append the intent from [state-and-recovery.md](state-and-recovery.md). Use `Supervisor - <short-plan> - <mission>`, `Executor E01 - <short-plan> - <short-task>`, `Reviewer - <short-plan> - <short-task>`, or `Planner - <short-plan> - <purpose>`, capped at 64 characters without opaque IDs.
 
-The first prompt carries the stable creation key and complete role packet. Call create once. `clientThreadId`, empty output, timeout, or crash enters bounded reconciliation. Reconcile native list/read by the creation key and project. One exact material match becomes ready; several or a wrong project pauses. After one setup window and a second zero-match read, pause that branch as `creation-dispatch-ambiguous` with the wake predicate defined in the state reference. Never retry create to improve a response.
+The first prompt carries the stable creation key and complete role packet. Call create once. `clientThreadId`, empty output, timeout, crash, or incomplete project metadata enters bounded reconciliation. Reconcile native list/read by the creation key and the runtime identity hierarchy. One exact material match becomes ready; several candidates or a proven wrong project pauses. After one setup window and a second zero-match read, pause that branch as `creation-dispatch-ambiguous` with the wake predicate defined in the state reference. Never retry create to improve a response or escape ambiguous metadata.
 
 Only an actor with the current supervisor epoch may activate. On takeover, prove the prior owner fenced, increment the epoch under `expected_updated_at`, then reconcile existing actors before replacement.
 
@@ -64,15 +64,17 @@ At artifact completion (`awaiting-review`), human/handoff wait, or an incident u
 
 A missing tool, skill, context item, capability, environment, source, or verifier is an incident owned by the supervisor, not automatically a user blocker. Preserve safe independent work, diagnose the failed predicate, restore capability or choose a safe workaround inside the approved envelope, and use one bounded planner/recovery actor when useful. That actor proposes; it cannot claim, launch, persist, or ask the user.
 
+Before escalation, classify mismatch versus incomplete evidence; record a key, evidence, actor/mutation state, and stop boundaries; then verify and receipt at most two distinct safe, reversible remedies in scope. Reuse an existing no-mutation actor before replacement. Connector, registry, worktree, branch, dependency, CI, and recoverable tool failures remain execution hygiene while outcome, scope, target, risk, authority, acceptance, and gates stay unchanged. Exhaustion ends the loop; rewording never resets it.
+
 Treat a change as a repair when result, scope, risk, acceptance, route bounds, and protected gates remain unchanged. Record the comparison, execute the smallest correction, review the affected surface, and resume. A non-blocking follow-up gets a stable reason and deduplication key but is not a reporting-only actor in the run.
 
 If task meaning, graph, route bound, authority, protected gate, or acceptance changes, set `replanning`, stop new affected claims, and increment the proposed revision. Let demonstrably independent claimed work finish or fence it. Build a concrete delta and artifact adoption map, run proportionate independent plan review, persist and verify the new essential IDs/edges, then approve the next revision. No old plan-review or affected task PASS transfers.
 
-Contact the user only for a true material choice, missing real authority, unreconcilable identity/duplicate, a protected gate, or evidence that no compliant route remains. Record a stable blocker key so rewording or actor replacement does not reset the diagnosis.
+Contact the user only for a material choice, missing authority, identity unresolved after bounded recovery, unreconcilable duplicate, protected gate, or no compliant route. A real repository/project mismatch, unknown remote, secret/access issue, protected action, destructive recovery, or material scope/target/risk change stops immediately. Record one stable blocker key.
 
 ## Human gates
 
-Secrets, access grants, spend, destructive effects, human review, merge, migration application, deployment, publication, and acceptance stay protected occurrences. Human review and merge are embedded in the owning E delivery task, not separate Octopad tasks; other kinds may use an Hxx human task. A PR is linked to that same Octopad delivery task under the active workflow; after merge, reconcile its auto-close/completion comment and closure evidence instead of creating a review or merge task. Delivery mode and plan approval never complete gates.
+Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance stay protected. Embed applicable review/merge in the owning E task; other kinds may use Hxx. Valid initial authority needs no reapproval for a technically verified head or in-envelope repair; seek new authority only for changed scope, target, risk, or a new protected action. Link the PR to that E task and reconcile post-merge closure evidence. Delivery mode and plan approval never complete gates.
 
 A gate blocks only its dependent branch. Continue independent safe work. When no safe frontier remains, update state to `waiting-human` or `paused` under the concurrency guard and publish exactly:
 

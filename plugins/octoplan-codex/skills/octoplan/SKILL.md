@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, or resume a governed work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 12.0.0
+Version: 12.1.0
 
 # Octoplan for Codex
 
@@ -29,7 +29,7 @@ One fresh read-only subagent using `plan-reviewer` reviews a complete draft befo
 - Bind execution to a plan ID and approved integer revision. Material outcome, graph, gate, route, authority, or acceptance changes create a reviewed revision; display names, links, and response formatting do not.
 - Plan for the first integrated demonstrable candidate on the critical path before non-essential external gates. Bound WIP, actor/review/retry capacity, and batches; launch from `eligible_safe_ready` and backfill after reconciliation.
 - Scale review to effect. Never treat silence, timeout, or an unexecuted check as PASS, and recheck only the changed surface unless scope or contract changed.
-- The supervisor reconciles and repairs inside the approved envelope. A gate blocks only its branch. Pause strictly for wrong identity, unreconcilable duplicate, missing authority, proven missing write, conflicting revision, or the affected protected gate.
+- The supervisor owns ordinary in-envelope operational failures through bounded diagnosis and safe recovery. Pause only for proven wrong identity, identity still unresolved after that recovery, unreconcilable duplicate, missing authority, proven missing write, conflicting revision, or the affected protected gate.
 - Secrets, access grants, destructive effects, merge, migration application, deployment, publication, spend, and acceptance remain separately gated.
 
 Keep opaque identifiers out of visible prose and titles. Executors publish exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, and `Prochaine étape` at artifact handoff, human/handoff wait, or an unrecovered incident. Only the supervisor validates advancement and durable authority.
