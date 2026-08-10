@@ -35,11 +35,17 @@ Planning uses Sol `xhigh`, or justified `max`. The dedicated compact, delta-firs
 
 ## Native target and creation
 
-Native metadata or the project registry must prove the planning target. A path, prompt, or matching name is not proof. Every supervisor, planner, executor, reviewer, recovery, and follow-up stays in that exact project; `local` and `worktree` may differ inside it. An explicit projectless plan stays in its exact directory. Cross-project or project/projectless substitution stops before creation.
+Project identity is material; incomplete native metadata is an evidence defect, not itself a mismatch. Establish it in order:
+
+1. prefer direct native association or the saved project registry;
+2. after a targeted create with missing metadata, reuse one unique no-mutation actor only when the persisted target/receipt links its returned task and creation key, and its role packet, saved project-repository mapping, cwd/worktree, Git toplevel, and normalized remote cohere; record branch and HEAD as audit evidence;
+3. stop for a real project/repository mismatch, unknown remote/mapping, several candidates, missing creation provenance, pre-identity mutation, or recovery needing secrets, access changes, destructive effects, or a wider target.
+
+No path, prompt, title, or name alone proves identity. Record evidence, registry defect, mutation state, and disposition. Every actor stays in the reconciled project; `local` and `worktree` may differ inside it. An explicit projectless plan stays in its directory. The skill cannot repair native metadata, but a metadata-only anomaly does not block a uniquely reconciled actor.
 
 Before create/message/archive, verify plan/revision, covering source-bound action grant, role, target, task ref, route/capability, and supervisor epoch. Persist an action intent before every call; reconcile ambiguous effects by list/read and never blind replay. Never archive a user/adopted session without explicit provenance.
 
-Treat `clientThreadId` as pending setup, not a task identity. Reconcile one exact creation key through native list/read. Response formatting, display title, or a missing field is not activation evidence and not a reason to create again. Activate only the unique task whose material role packet and project match.
+Treat `clientThreadId` as pending setup, not a task identity. Reconcile one exact creation key through native list/read and the identity hierarchy above. Response formatting, display title, or a missing field is not activation evidence and not a reason to create again. Activate only the unique task whose material role packet and project identity are directly or alternatively established.
 
 The role packet names organization, workspace, work stream, task, approved revision, role, route, target, model, effort, capability, and supervisor epoch. It is explicit working context, not a byte-level contract. The actor enters Octopad using those IDs and reads its live task before acting.
 
@@ -57,7 +63,7 @@ Reviewers return `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION` with eviden
 
 ## Protected gates
 
-Secrets, access grants, destructive effects, spend, human review, merge, migration application, deployment, publication, and acceptance are distinct gate occurrences. Delivery mode and plan approval never satisfy them. Human review and merge are embedded in their E delivery task; other kinds may use a distinct Hxx human task. Every occurrence has key, location, delivery ref, owner, target/effect, evidence, state, and resume predicate.
+Secrets, access grants, destructive effects, spend, required human review, merge, migration application, deployment, publication, and acceptance are applicable gates. Embed review/merge in their E task; others may use Hxx. Initial authority survives unchanged scope, target, risk, and protected-action set. Verify base, head, effective diff, reviews, and checks technically; classify changes as repair or scope/target/risk/protected-action change before seeking authority. Every occurrence records key, location, delivery ref, owner, effect, evidence, state, and resume predicate.
 
 When one gate waits, continue every independent safe frontier. When none remains, record `waiting-human` and publish the six-field handoff. A wake supplies evidence only and never authority.
 

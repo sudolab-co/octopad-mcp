@@ -6,6 +6,12 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 12.1.0 — 2026-08-11
+
+Octoplan supervisors now own ordinary in-envelope execution failures through one bounded, receipted recovery loop before escalation. Connector, registry, worktree, branch, dependency, CI, and recoverable tool incidents are classified before action and may receive at most two distinct safe, reversible remedies. Existing no-mutation actors are reconciled and reused instead of duplicated, while rewording or waking an incident cannot reset its budget. Actual repository or project mismatches, unknown remotes, secrets or access issues, destructive recovery, protected actions, and material scope, target, or risk changes still stop.
+
+Native project identity now follows an ordered evidence hierarchy. Direct native association or the saved registry remains preferred; when metadata is incomplete after a targeted create, a unique actor may be reconciled from its persisted target and receipt, returned task and creation key, role packet, saved project-to-repository mapping, worktree and Git identity, normalized remote, branch and HEAD audit, and no-mutation state. This does not repair the native registry, and no path, prompt, title, or name is sufficient alone. Valid initial authority also remains valid across technical current-head verification and in-envelope repair; new authority is required only for changed scope, target, risk, or a new protected action.
+
 ### 12.0.0 — 2026-08-10
 
 Octoplan now plans from the earliest integrated, demonstrable outcome instead of treating completed components or branches as delivery. The planner records the critical path, bounded `eligible_safe_ready` frontiers, WIP and review budgets, and partial batches with backfill, so independent items such as editorial deliverables can advance concurrently while keeping individual artifacts, receipts, and verdicts. Multi-component work closes only with current integrated-outcome evidence and resolved protected gates.

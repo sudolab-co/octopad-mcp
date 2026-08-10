@@ -33,9 +33,9 @@ for role in planner plan-reviewer supervisor executor reviewer specialist-review
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 12\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 12.0.0'
-grep -q '"version": "12\.0\.0"' "$manifest" || fail 'Codex plugin is not 12.0.0'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 12.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
+grep -q '^Version: 12\.1\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 12.1.0'
+grep -q '"version": "12\.1\.0"' "$manifest" || fail 'Codex plugin is not 12.1.0'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 12.1.0 |' "$root/README.md" || fail 'README Codex version is stale'
 
 expected_refs='codex-runtime.md
 codex-supervision.md
@@ -80,7 +80,7 @@ require_text "$skill/SKILL.md" '`eligible_safe_ready`'
 require_text "$skill/SKILL.md" 'Every launched plan gets one dedicated native supervisor'
 require_text "$skill/SKILL.md" 'missing `structuredContent`'
 require_text "$skill/SKILL.md" 'Record one receipt per item'
-require_text "$skill/SKILL.md" 'Pause strictly for wrong identity'
+require_text "$skill/SKILL.md" 'identity still unresolved after that recovery'
 require_text "$planning" 'Ask all currently material questions in one numbered batch'
 require_text "$planning" 'never ask actor by actor'
 require_text "$planning" 'Never retry blindly'
@@ -121,6 +121,9 @@ require_text "$state" 'Targeted recovery'
 require_text "$runtime" 'One exact user source may grant enumerated create/message/archive actions'
 require_text "$runtime" 'dedicated compact, delta-first supervisor uses Terra `high` by default'
 require_text "$runtime" 'Treat `clientThreadId` as pending setup'
+require_text "$runtime" 'incomplete native metadata is an evidence defect'
+require_text "$runtime" 'persisted target/receipt'
+require_text "$runtime" 'metadata-only anomaly does not block'
 require_text "$runtime" 'Product, code, security, privacy, data, migration, and materially public changes require `independent`.'
 require_text "$runtime" 'one additional fresh reviewer only for a second material and orthogonal failure domain'
 require_text "$supervision" "Use Octopad's graph/statuses directly"
@@ -128,13 +131,16 @@ require_text "$supervision" '`eligible_safe_ready`'
 require_text "$supervision" 'Never require all-ready activation'
 require_text "$supervision" 'After two `REVISE` with the same key'
 require_text "$supervision" 'global integrated-outcome evidence'
-require_text "$supervision" 'Never retry create to improve a response.'
+require_text "$supervision" 'Never retry create to improve a response'
 require_text "$supervision" 'Silence, timeout, missing checks'
-require_text "$supervision" 'Contact the user only for a true material choice'
-require_text "$supervision" 'Secrets, access grants, spend, destructive effects, human review, merge, migration application, deployment, publication, and acceptance'
+require_text "$supervision" 'Contact the user only for a material choice'
+require_text "$supervision" 'at most two distinct safe, reversible remedies'
+require_text "$supervision" 'Reuse an existing no-mutation actor'
+require_text "$supervision" 'seek new authority only for changed scope, target, risk, or a new protected action'
+require_text "$supervision" 'Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance'
 require_text "$supervision" '`État`'
 require_text "$supervision" '`Prochaine étape`'
-require_text "$supervision" 'same Octopad delivery task'
+require_text "$supervision" 'owning E task'
 require_text "$supervision" 'tokens, tool calls, compactions, and retries'
 require_text "$manifest" 'plan-scoped Codex create/message/archive grant'
 require_text "$agent_manifest" 'plan-scoped Codex create/message/archive grant'
@@ -477,21 +483,40 @@ assert.deepStrictEqual(reconcileWrites(writes, [{operation_key: writes[0].operat
 assert.deepStrictEqual(reconcileWrites([{operation_key: 'unclear'}], [], []).map(x => x.action), ['PENDING']);
 assert.deepStrictEqual(reconcileWrites([{operation_key: 'no-structured-content'}], [{operation_key: 'no-structured-content', id: 'task-x', success: true}], []).map(x => x.action), ['CONFIRMED']);
 
+function projectIdentityDecision(evidence, recoveryAttempts = 0) {
+  if (evidence.directProject === 'expected') return 'CONFIRMED_DIRECT';
+  if (evidence.directProject && evidence.directProject !== 'expected') return 'STOP_WRONG_TARGET';
+  if (evidence.remoteKnown === false || evidence.actualMismatch === true || evidence.candidates > 1 || evidence.mutated === true) return 'STOP_UNSAFE_OR_CONFLICTING';
+  const alternate = ['targetedReceipt', 'returnedTask', 'creationKey', 'rolePacket', 'savedProjectMapping', 'cwdAndToplevel', 'normalizedRemote', 'branchAndHeadRecorded', 'noMutation']
+    .every(key => evidence[key] === true);
+  if (alternate && evidence.candidates === 1) return 'CONFIRMED_ALTERNATE';
+  return recoveryAttempts >= 2 ? 'PAUSE_IDENTITY_UNRESOLVED' : 'RECOVER_IDENTITY';
+}
+const alternateIdentity = {directProject: null, candidates: 1, targetedReceipt: true, returnedTask: true, creationKey: true, rolePacket: true, savedProjectMapping: true, cwdAndToplevel: true, normalizedRemote: true, branchAndHeadRecorded: true, noMutation: true};
+assert.strictEqual(projectIdentityDecision({directProject: 'expected'}), 'CONFIRMED_DIRECT');
+assert.strictEqual(projectIdentityDecision(alternateIdentity), 'CONFIRMED_ALTERNATE');
+assert.strictEqual(projectIdentityDecision({...alternateIdentity, normalizedRemote: false}), 'RECOVER_IDENTITY');
+assert.strictEqual(projectIdentityDecision({...alternateIdentity, normalizedRemote: false}, 2), 'PAUSE_IDENTITY_UNRESOLVED');
+assert.strictEqual(projectIdentityDecision({...alternateIdentity, directProject: 'wrong'}), 'STOP_WRONG_TARGET');
+assert.strictEqual(projectIdentityDecision({...alternateIdentity, candidates: 2}), 'STOP_UNSAFE_OR_CONFLICTING');
+assert.strictEqual(projectIdentityDecision({...alternateIdentity, mutated: true}), 'STOP_UNSAFE_OR_CONFLICTING');
+
 function creationDecision(intentExists, observed, boundedReconciliationComplete = false) {
-  const exact = observed.filter(item => item === 'exact');
-  if (observed.length === 1 && exact.length === 1) return 'ADOPT';
-  if (observed.length > 0) return 'PAUSE';
+  const exact = observed.filter(item => item === 'exact' || item === 'alternate');
+  if (intentExists && observed.length === 1 && exact.length === 1) return 'ADOPT_EXISTING';
+  if (observed.length > 0) return 'PAUSE_UNPROVEN_OR_CONFLICTING';
   if (!intentExists) return 'WRITE_INTENT_AND_CREATE_ONCE';
   return boundedReconciliationComplete ? 'PAUSE_CREATION_DISPATCH_AMBIGUOUS' : 'PENDING';
 }
 assert.strictEqual(creationDecision(false, []), 'WRITE_INTENT_AND_CREATE_ONCE');
-assert.strictEqual(creationDecision(false, ['exact']), 'ADOPT');
-assert.strictEqual(creationDecision(false, ['wrong-project']), 'PAUSE');
+assert.strictEqual(creationDecision(false, ['exact']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
+assert.strictEqual(creationDecision(true, ['alternate']), 'ADOPT_EXISTING');
+assert.strictEqual(creationDecision(false, ['wrong-project']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
 assert.strictEqual(creationDecision(true, []), 'PENDING');
 assert.strictEqual(creationDecision(true, [], true), 'PAUSE_CREATION_DISPATCH_AMBIGUOUS');
-assert.strictEqual(creationDecision(true, ['exact']), 'ADOPT');
-assert.strictEqual(creationDecision(true, ['exact', 'exact']), 'PAUSE');
-assert.strictEqual(creationDecision(true, ['wrong-project']), 'PAUSE');
+assert.strictEqual(creationDecision(true, ['exact']), 'ADOPT_EXISTING');
+assert.strictEqual(creationDecision(true, ['exact', 'exact']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
+assert.strictEqual(creationDecision(true, ['wrong-project']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
 
 function nativeActionDecision(action, intentExists, observations, absenceProven = false) {
   assert(['create', 'message', 'archive'].includes(action));
@@ -521,17 +546,20 @@ assert(validatePlan({...plan, native_action_receipts: [actionReceipt]}));
 assert.throws(() => validatePlan({...plan, native_action_receipts: [{...actionReceipt, evidence_ref: ''}]}));
 
 function bootstrapDecision(intentExists, observed, boundedReconciliationComplete = false) {
-  const exact = observed.filter(item => item === 'exact-destination');
-  if (observed.length === 1 && exact.length === 1) return 'ADOPT';
-  if (observed.length > 0) return 'PAUSE';
+  const exact = observed.filter(item => item === 'exact-destination' || item === 'alternate-destination');
+  if (intentExists && observed.length === 1 && exact.length === 1) return 'ADOPT';
+  if (observed.length > 0) return 'PAUSE_UNPROVEN_OR_CONFLICTING';
   if (!intentExists) return 'WRITE_BOOTSTRAP_INTENT_AND_CREATE_ONCE';
   return boundedReconciliationComplete ? 'PAUSE_BOOTSTRAP_DISPATCH_AMBIGUOUS' : 'PENDING';
 }
 assert.strictEqual(bootstrapDecision(false, []), 'WRITE_BOOTSTRAP_INTENT_AND_CREATE_ONCE');
+assert.strictEqual(bootstrapDecision(false, ['exact-destination']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
 assert.strictEqual(bootstrapDecision(true, []), 'PENDING');
 assert.strictEqual(bootstrapDecision(true, [], true), 'PAUSE_BOOTSTRAP_DISPATCH_AMBIGUOUS');
 assert.strictEqual(bootstrapDecision(true, ['exact-destination']), 'ADOPT');
-assert.strictEqual(bootstrapDecision(true, ['wrong-project']), 'PAUSE');
+assert.strictEqual(bootstrapDecision(true, ['alternate-destination']), 'ADOPT');
+assert.strictEqual(bootstrapDecision(true, ['exact-destination', 'alternate-destination']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
+assert.strictEqual(bootstrapDecision(true, ['wrong-project']), 'PAUSE_UNPROVEN_OR_CONFLICTING');
 
 function reviewClass(effect, secondOrthogonalDomain = false) {
   const material = new Set(['product', 'code', 'security', 'privacy', 'data', 'migration', 'public']);
@@ -610,9 +638,42 @@ function observableBudgets(telemetry) {
 assert.deepStrictEqual(observableBudgets({tokens: false, tool_calls: true, compactions: false}), {tool_calls: 1});
 assert.deepStrictEqual(observableBudgets({}), {});
 
+function needsNewHumanGo(change) {
+  return ['scope', 'target', 'risk', 'newProtectedAction'].some(key => change[key] === true);
+}
+assert.strictEqual(needsNewHumanGo({technicalHeadChanged: true, content: true, effectiveDiff: true, blockingReview: true, requiredValidation: true}), false);
+assert.strictEqual(needsNewHumanGo({scope: true}), true);
+assert.strictEqual(needsNewHumanGo({target: true}), true);
+assert.strictEqual(needsNewHumanGo({risk: true}), true);
+assert.strictEqual(needsNewHumanGo({newProtectedAction: true}), true);
+
+function recoveryDecision(incident, proposedRemedy = null) {
+  assert(typeof incident.key === 'string' && incident.key.length > 0);
+  if (incident.previousKey && incident.previousKey !== incident.key) return 'REJECT_KEY_RESET';
+  if (incident.unsafe || incident.protectedAction || incident.scopeChanged || incident.targetChanged || incident.riskChanged) return 'STOP_IMMEDIATELY';
+  const attempts = new Set((incident.attempts || []).map(item => item.remedyKey));
+  if ((incident.receipts || []).some(item => item.result === 'confirmed')) return 'RESUME';
+  if (!proposedRemedy) return attempts.size >= 2 ? 'PAUSE_EXHAUSTED' : 'PROPOSE_SAFE_REMEDY';
+  if (attempts.has(proposedRemedy)) return 'NO_REPLAY_OR_RESET';
+  return attempts.size >= 2 ? 'PAUSE_EXHAUSTED' : 'TRY_AND_RECEIPT';
+}
+const incident = {key: 'incident-a', attempts: []};
+assert.strictEqual(recoveryDecision(incident), 'PROPOSE_SAFE_REMEDY');
+assert.strictEqual(recoveryDecision(incident, 'repair-a'), 'TRY_AND_RECEIPT');
+const once = {...incident, attempts: [{remedyKey: 'repair-a'}]};
+assert.strictEqual(recoveryDecision({...once, wake: true, wording: 'changed'}, 'repair-a'), 'NO_REPLAY_OR_RESET');
+assert.strictEqual(recoveryDecision(once, 'repair-b'), 'TRY_AND_RECEIPT');
+const exhausted = {...incident, attempts: [{remedyKey: 'repair-a'}, {remedyKey: 'repair-b'}]};
+assert.strictEqual(recoveryDecision(exhausted), 'PAUSE_EXHAUSTED');
+assert.strictEqual(recoveryDecision(exhausted, 'repair-c'), 'PAUSE_EXHAUSTED');
+assert.strictEqual(recoveryDecision({...once, receipts: [{result: 'confirmed'}]}), 'RESUME');
+assert.strictEqual(recoveryDecision({...once, unsafe: true}), 'STOP_IMMEDIATELY');
+assert.strictEqual(recoveryDecision({...once, protectedAction: true}), 'STOP_IMMEDIATELY');
+assert.strictEqual(recoveryDecision({...once, previousKey: 'incident-original', key: 'incident-reworded'}), 'REJECT_KEY_RESET');
+
 console.log('PASS: Octoplan 12 outcome-first fixtures');
 NODE
 
-grep -q '^### 12\.0\.0 — 2026-08-10$' "$changelog" || fail 'Codex changelog lacks 12.0.0'
+grep -q '^### 12\.1\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 12.1.0'
 
-printf 'PASS: Octoplan Codex 12.0.0 contract\n'
+printf 'PASS: Octoplan Codex 12.1.0 contract\n'

@@ -131,14 +131,16 @@ On resume:
 
 1. refresh the exact native task, organization/workspace session, work stream, coordination task, and current task IDs;
 2. verify plan ID, proposed/approved revision, state, supervisor epoch, grant, gates, and pending keys;
-3. reconcile only pending writes/actions, claimed work, reviews, and gates;
+3. reconcile only pending writes/actions, claimed work, reviews, gates, and open incident keys through the runtime identity hierarchy where relevant;
 4. re-read full task or source content only when its meaning, revision, verifier, or authority may have changed;
 5. wake the unique dedicated resumable supervisor or fence and replace it with evidence; never create a second plausible owner.
 
 Presentation drift is a warning. A receipt with an ID is enough to target verification. Do not require every Decision, Question, task, or comment to be re-rendered exactly before useful work continues.
 
+For each incident, append one event with stable key, failed predicate, classification, evidence, actor/mutation state, remaining budget, remedies/receipts, disposition, and resume/stop predicate. One diagnosis plus two distinct remedies is the default ceiling unless the plan sets less; rewording, waking, or replacing a reasoning actor never resets it.
+
 ## Strict pauses
 
-Pause the affected branch only for a wrong or ambiguous organization/workspace/stream/project; an unreconcilable duplicate or bootstrap/creation dispatch ambiguity; absent real authority; a write proven missing after targeted recovery and not safely retryable; a conflict with the live approved revision; or a protected gate/material human decision.
+Pause the affected branch only for a wrong organization/workspace/stream; a project/repository mismatch proved by the identity hierarchy or identity still unresolved after its bounded recovery; an unreconcilable duplicate or bootstrap/creation dispatch ambiguity; absent real authority; a write proven missing after targeted recovery and not safely retryable; a conflict with the live approved revision; or a protected gate/material human decision.
 
-Stop the whole plan only when shared identity/authority is invalid or no safe agent-owned frontier remains. Tool unavailability, missing `structuredContent`, an incomplete response, a stale display field, or a recoverable incident is not by itself a human blocker.
+Stop the whole plan only when shared identity/authority is invalid or no safe agent-owned frontier remains. Tool unavailability, missing `structuredContent`, an incomplete response, incomplete project metadata, a stale display field, or a recoverable incident is not by itself a human blocker.
