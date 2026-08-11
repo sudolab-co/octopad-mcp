@@ -24,7 +24,7 @@ If two plausible planners, ledgers, streams, or native sessions claim the same p
 
 ## Clarify and creation brief
 
-Collaborate in natural language before imposing structure. Restate the intended result, then ask only questions that can change scope, success, risk, order, ownership, validation, project/workspace, protected effects, or whether work should continue after plan creation. Ask current material questions together; use a targeted follow-up only when an answer exposes a new material ambiguity. Inspect `get_goal` before recommending the native route.
+Collaborate in natural language. The current user task interviews directly; `roles/planner.md` is only for a delegated diagnostic planner that cannot ask the user. Ask together only what can change scope, success, risk, order, ownership, validation, identity, protected effects, or post-plan delivery; follow up only when an answer exposes a new material ambiguity. Inspect `get_goal` before recommending the native route.
 
 Before any Octopad write, show one **brief de création** containing:
 
@@ -34,6 +34,16 @@ Before any Octopad write, show one **brief de création** containing:
 - a recommended initiating-user review cadence: `progressive` or `final`, with the concrete reason;
 - every human checkpoint: subject, timing, why human judgment is needed, owner, blocked descendants, safe work that can continue, expected decision, and exact resume evidence;
 - mandatory organization/repository checkpoints and protected effects, even when the initiating user reviews only at the end.
+
+Render the brief in the user's language and scale its presentation to material complexity without dropping any required fact. Compress a small reversible request; expand a risky or branching one.
+
+Compact example:
+
+- **Outcome/scope/proof/identity:** update one parser; targeted tests pass; parser/tests in, deploy out; repository source, no schema change; organization/workspace/stream/project confirmed.
+- **Delivery/route/lifecycle:** approval covers bounded delivery; current task supervises one Goal; one worktree executor and reviewer; child archives only after terminal handoff.
+- **Effects/roles:** Octopad tracker/task/comment/coordination-state; native create/message/archive; supervisor/executor/reviewer; no protected runtime effect.
+- **Cadence:** final because no early choice changes the method.
+- **Checkpoint/overlay:** required PR review after green checks because the repository requires human judgment; maintainer owns it; task close/merge wait while safe docs continue; expect approve/revise for the exact head; resume only on current-head review evidence. Merge remains separately gated.
 
 Recommend progressive review only where a human choice changes downstream method or architecture, prevents material rework, governs many repeated artifacts, controls an irreversible/external effect, or cannot safely be inferred. Otherwise recommend final batch review. Ten independent articles normally fit final review; a shared methodology or pilot that governs all ten is reviewed before the rest. The user may choose either cadence, but mandatory organization rules still apply.
 
@@ -47,13 +57,13 @@ Before planning writes, prove organization/workspace membership, intended stream
 
 If the current task is already in the intended project, continue. Otherwise relocate the untouched brief only under exact authority. Emit one durable `OCTOPLAN_BOOTSTRAP_INTENT` with a unique key, target project/environment, stream action, and source references before the one create call.
 
-Treat `clientThreadId` as setup only. Reconcile through native task listing/reading, the bootstrap key, and the runtime identity hierarchy. A returned `projectId=null` is incomplete evidence, not a blocker: use the unique creation receipt, saved project/repository mapping, cwd/worktree, Git root/remote, and no-mutation state. Pending setup waits through one bounded setup window and a second list/read. Adopt one exact destination whose project is directly or alternatively established; pause on several candidates or a proven mismatch. If the second read still finds zero, pause as `bootstrap-dispatch-ambiguous`: resume only when the exact destination appears or authoritative native evidence proves no dispatch occurred, allowing the old intent to be retired and a fresh key issued once. Never retry blindly, and make no Octopad write from an unresolved source task.
+Treat `clientThreadId` as setup only. Reconcile by native list/read, bootstrap key, and the runtime identity hierarchy. A returned `projectId=null` is incomplete evidence, not a blocker: use the unique receipt, saved project/repository mapping, worktree/Git identity, and no-mutation state. After one setup window and a second read, adopt one proven destination; pause on mismatch or several candidates. Zero candidates becomes `bootstrap-dispatch-ambiguous` until the destination appears or authoritative evidence proves no dispatch, allowing one retired intent and fresh key. Never retry blindly or write Octopad from an unresolved source task.
 
 ## Draft the graph
 
 Define the first integrated demonstrable candidate or vertical slice across the critical path before any non-essential external checkpoint. A checkpoint blocks only descendants that require it; independent safe work remains eligible. Plan completion requires current global integrated-outcome evidence, never a count of completed components or branches.
 
-Use the work-stream tracker for the human-readable outcome, scope, ordering/parallelism, checkpoints, and end condition; never copy every task field or status into it. Use stable `E01` refs for delivery and `H01` only for separately owned human work. A material resolved choice affecting outcome, scope, architecture, route, checkpoint, or acceptance becomes one Octopad Decision; a material unresolved item becomes one Question with owner, affected descendants, and resolution predicate. Persist their stable refs and receipts, but do not duplicate ordinary task detail or status. Review and PR merge are not separate tasks: embed occurrences required by active instructions or repository workflow in the owning delivery task. Do not add a second go when existing authorization remains valid. Each checkpoint records its source (`user`, `organization`, or `planner-recommendation`), whether mandatory, subject, timing, reason, owner, blocked descendants, safe continuation, expected decision, state, evidence, and resume predicate. Agent review is a native session, not a human checkpoint.
+The tracker holds human-readable outcome, scope, order/parallelism, checkpoints, and end condition, never copied task fields/status. Use stable `E01` refs and `H01` only for separately owned human work. A material resolved choice affecting outcome, scope, architecture, route, checkpoint, or acceptance becomes one Octopad Decision; a material unresolved item becomes one Question with owner, affected descendants, and resolution predicate. Persist refs/receipts without ordinary task detail. Embed required review/PR merge in the owning delivery task and never add a second go when authority remains valid. Each checkpoint records source, mandatory flag, subject, timing, reason, owner, blocked descendants, safe continuation, expected decision, state, evidence, and resume predicate. Agent review is native, not human.
 
 Optimize explicit critical-path rank and `eligible_safe_ready` frontiers. Eligibility requires ready dependencies, authority, route, capability, budget, and no conflict in files, symbols, artifacts, migrations, lockfiles, scarce resources, checkpoints, routes, or budgets. Bound plan/task WIP, active child actors, retry/correction loops, review actors/checks, and repeated-item batch size. Batch independent articles or similar items while retaining individual artifacts, receipts, verdicts, and acceptance. Launch up to capacity from the safe frontier, reconcile, then backfill; never require all-ready activation or serialize merely because only a partial batch fits.
 

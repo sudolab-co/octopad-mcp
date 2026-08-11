@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "13.0.0",
+  "version": "13.1.0",
   "description": "Turn natural-language briefs into governed Octopad plans and supervise authorized delivery with native Codex Goals and tasks.",
   "author": {
     "name": "Sudolab"
@@ -18,7 +18,7 @@
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
     "defaultPrompt": [
-      "Use $octoplan to clarify this request, show the creation brief and recommended review cadence, then create and supervise the governed Octopad plan after I approve it."
+      "Use $octoplan to clarify my request, show the creation brief and checkpoints, then create and supervise the plan after approval."
     ]
   }
 }

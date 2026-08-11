@@ -6,6 +6,14 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 13.1.0 — 2026-08-11
+
+Interactive clarification and planning now stay in the current user task, while delegated role packs remain reserved for bounded child work. The creation brief is proportional in presentation but complete in authority, effects, routes, lifecycle, review cadence, and human checkpoints. User-facing handoffs are localized, and Octopad task statuses now map cleanly to `todo`, `in_progress`, `blocked`, and `done`; `waiting-human` and `paused` remain coordination states rather than invalid task statuses.
+
+Long-running recovery now revives the unique saved supervisor before considering a successor. A recovery successor requires terminal-or-unreachable evidence, current quiescence proof, and a durable takeover intent whose fence key is deterministically bound to the plan and next epoch. Owner, mode, epoch, predecessor, pause state, and the pending Goal record rotate atomically; the new Goal is created only after guarded readback, while the predecessor Goal remains historical. Existing valid v3 plans adopt 13.1 at a safe boundary without transferring authority, actors, PASS verdicts, receipts, or Goal ownership.
+
+Codex packaging removes the policy override that suppressed Octoplan from fresh sessions and uses one explicit `$octoplan` prompt capped at 128 characters across both manifests. Repository validators now fail closed on the recovery ordering, stale quiescence, invalid statuses, incomplete briefs, version drift, prompt drift, and the known suppression policy. The Claude distribution is unchanged.
+
 ### 13.0.0 — 2026-08-11
 
 Octoplan now turns the conversation into one user-readable creation brief before the first Octopad write. The brief exposes the expected result, scope, evidence, governing organization rules, planned Octopad effects, native Codex actors, and every proposed human checkpoint. Validation uses one holistic cadence: either progressive review at the meaningful checkpoints selected from the work, or final review after all safe work is ready. The confirmed tracker, tasks, graph, Decisions, and Questions embody that brief without creating a duplicate bookkeeping Page.

@@ -32,7 +32,9 @@ At every wake:
 6. record accepted receipts, review outcomes, completion, incidents, and any timed external wake;
 7. continue independent safe work until a real pause condition remains.
 
-Use Octopad's graph/statuses directly; do not mirror a scheduler. Exclude candidates conflicting in files, symbols, artifacts, migrations, lockfiles, scarce resources, checkpoints, routes, or budgets. Repetitive independent items use bounded partial batches with individual artifacts, receipts, and verdicts. Never require all-ready activation: fill available WIP, reconcile, then backfill.
+Use Octopad's graph/statuses directly; do not mirror a scheduler. The coordination task stays `in_progress` until terminal. A delivery task is `todo` until claimed, `in_progress` from claim through review and embedded checkpoints, `blocked` only by an evidenced task-level blocker, and `done` only after accepted evidence and final gates. Never send `waiting-human` or `paused` as an Octopad task status.
+
+Exclude candidates conflicting in files, symbols, artifacts, migrations, lockfiles, scarce resources, checkpoints, routes, or budgets. Repetitive independent items use bounded partial batches with individual artifacts, receipts, and verdicts. Never require all-ready activation: fill available WIP, reconcile, then backfill.
 
 At every actor safe boundary, reread `intent.revision` before the next external effect. A natural-language pause, cancellation, reprioritization, replacement, diagnostic limit, or “do not send” becomes durable state first; only then message affected actors. Stale actors stop or finish only the explicitly safe boundary recorded by the new intent. Do not rely on conversation memory or a user-facing command grammar.
 
@@ -62,7 +64,9 @@ Run deterministic checks first. On return, the supervisor checks artifact revisi
 
 Accept only explicit verdicts with executed evidence. Silence, timeout, missing checks, or another revision is not PASS. Return stable finding keys to the healthy executor for correction, then targeted-recheck changed artifact and affected criteria. After two `REVISE` with the same key, forbid a blind third loop: diagnose plan/tool/verifier/route and repair or replan. Preserve unrelated PASS. Only the supervisor records accepted PASS or advancement.
 
-At artifact completion (`awaiting-review`), human/handoff wait, or an incident unresolved after bounded recovery, the executor publishes exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, and `Prochaine étape`; `Aucune` or `Sans objet` is valid. It may receive and transfer a reply. This report is not authority or durable checkpoint evidence until supervisor validation.
+At artifact completion (`awaiting-review`), human/handoff wait, or an incident unresolved after bounded recovery, the executor publishes six semantic fields—state, done, blocked, decision expected, to unblock, next step—with labels and content localized to the user's language; the local equivalent of “none” is valid. It may receive and transfer a reply. This report is not authority or durable checkpoint evidence until supervisor validation.
+
+Compact example for an English-speaking user: **State:** method review; **Done:** pilot ready; **Blocked:** repeated artifacts; **Decision expected:** approve or revise; **To unblock:** review the pilot; **Next step:** safe work continues, then the batch resumes.
 
 ## Incidents and replanning
 
@@ -80,14 +84,7 @@ Contact the user only for a material choice, missing authority, identity unresol
 
 Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance stay protected. Embed applicable review/merge in the owning E task; separately owned human work may use Hxx. Valid initial authority needs no reapproval for a technically verified head or in-envelope repair; seek new authority only for changed scope, target, risk, or a new protected action. Link a PR to its independently reviewable E task and reconcile post-merge closure evidence. Review cadence and brief approval never complete checkpoints.
 
-A checkpoint blocks only its dependent branch. Continue independent safe work. When no safe frontier remains, update Octopad to `waiting-human` or `paused` under the concurrency guard and publish exactly:
-
-- `État`
-- `Fait`
-- `Bloqué`
-- `Décision attendue`
-- `Pour débloquer`
-- `Prochaine étape`
+A checkpoint blocks only its dependent branch. Continue independent safe work. When no safe frontier remains, set the coordination JSON state to `waiting-human` or `paused` under the concurrency guard, keep the Octopad coordination task `in_progress`, and publish the localized six-field handoff above.
 
 Record the handoff receipt idempotently. A rejection preserves artifact and evidence, reopens the same delivery task through repair or replan, and returns to the same checkpoint without duplicating it. An external wake supplies evidence only; refresh the latest intent and verify its exact target/revision before resuming.
 
@@ -95,11 +92,13 @@ Do not mark the native Goal blocked for an ordinary planned checkpoint, a first 
 
 ## Resume and close
 
-On resume, follow [state-and-recovery.md](state-and-recovery.md): refresh live Octopad, native state, installed version, and latest user intent; reconcile pending operation keys and creation intents; then continue the current-task supervisor. For an exceptional dedicated handoff, replace the destination only when native evidence proves it terminal or unreachable and guarded epoch rotation succeeds. Absence of observation is not proof.
+On resume, refresh live state and pending intents, then revive the exact saved supervisor first: read it, restore archive state only under existing lifecycle authority, wake once, and reconcile. Silence or absence is not proof of failure.
+
+Create a `recovery-successor` only when native evidence proves the saved owner terminal or unreachable, an `effects_quiescent_ref` proves no effect remains in flight, and authority still covers it. First persist `OCTOPLAN_TAKEOVER_INTENT` with the exact predecessor object and `fence_key`; then one guarded update atomically rotates owner/mode/epoch and records a pending successor Goal. Create that Goal only after successful readback, then receipt and activate. Ambiguity reconciles. The old Goal is historical, never falsely completed or blocked; a later wake stops on the newer epoch.
 
 A dead executor is fenced before a new attempt. If no artifact exists, restart from the saved task; if one exists, adopt or reject it explicitly and review the chosen revision. A predecessor PASS never transfers to a changed artifact.
 
-The supervisor writes Octopad `completed` and calls `update_goal(complete)` only after current global integrated-outcome evidence, required task/review evidence, every checkpoint is satisfied with evidence, final validation, empty pending operations, and every actor is terminal-reconciled or archived. Component or branch completion is insufficient. `waiting-human` and `paused` end a pass but are never terminal success.
+The supervisor sets coordination JSON to `completed`, marks its Octopad task `done`, and calls `update_goal(complete)` only after current global integrated-outcome evidence, required task/review evidence, every checkpoint is satisfied, final validation, no pending operation, and every actor is terminal-reconciled or archived. Component or branch completion is insufficient. `waiting-human` and `paused` end a pass but are never terminal success.
 
 The final six-field recap reports artifacts, checks, reviews, human work, repairs, blockers, follow-ups, risks, and actual session/event counts. Include observed tokens, tool calls, compactions, and retries when available; otherwise say unavailable, without estimation. Use returned links and human references, not opaque IDs.
 

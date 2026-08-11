@@ -33,9 +33,9 @@ for role in planner plan-reviewer supervisor executor reviewer specialist-review
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 13\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 13.0.0'
-grep -q '"version": "13\.0\.0"' "$manifest" || fail 'Codex plugin is not 13.0.0'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 13.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
+grep -q '^Version: 13\.1\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 13.1.0'
+grep -q '"version": "13\.1\.0"' "$manifest" || fail 'Codex plugin is not 13.1.0'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 13.1.0 |' "$root/README.md" || fail 'README Codex version is stale'
 
 expected_refs='codex-runtime.md
 codex-supervision.md
@@ -48,9 +48,10 @@ require_text "$compatibility" '# Octoplan v3 compatibility'
 require_text "$compatibility" 'Do not translate old fingerprints'
 require_text "$compatibility" 'compatible skill version is adopted at the next safe actor boundary'
 require_text "$compatibility" 'Installing v13 does not retroactively change an already-running v2 task.'
+require_text "$compatibility" 'Version 13.1 is compatible with every valid v3 plan.'
 
 active_docs="$skill/SKILL.md $planning $state $runtime $supervision"
-for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-direct-readback-v1' 'canonical review-subject' 'saved-state equality' 'byte-deterministic' 'plan_hash'; do
+for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-direct-readback-v1' 'canonical review-subject' 'saved-state equality' 'byte-deterministic' 'plan_hash' 'record Octopad `waiting-human`' 'update Octopad to `waiting-human`' 'writes Octopad `completed`'; do
   if grep -Fq "$forbidden" $active_docs; then
     fail "retired blocking contract remains active: $forbidden"
   fi
@@ -80,18 +81,24 @@ require_text "$skill/SKILL.md" 'Only `octoplan-plan-v3` is supported.'
 require_text "$skill/SKILL.md" '**brief de création**'
 require_text "$skill/SKILL.md" '`progressive` review or `final` review'
 require_text "$skill/SKILL.md" 'Do not create a Page merely to store the brief.'
+require_text "$skill/SKILL.md" 'During interactive clarification and planning, the current user task follows `planning.md` directly'
 require_text "$skill/SKILL.md" 'The current user task becomes supervisor by default'
 require_text "$skill/SKILL.md" '`projectId=null`'
 require_text "$skill/SKILL.md" 'each top-level task one independently reviewable delivery/rollback unit'
 require_text "$skill/SKILL.md" 'Use a native Goal only for authorized delivery.'
+require_text "$skill/SKILL.md" '`waiting-human` and `paused` are coordination states, never Octopad task statuses'
 require_text "$skill/SKILL.md" '`eligible_safe_ready`'
+require_text "$skill/SKILL.md" 'labels and content in the user'
 require_text "$planning" 'Before any Octopad write, show one **brief de création**'
+require_text "$planning" '`roles/planner.md` is only for a delegated diagnostic planner that cannot ask the user'
 require_text "$planning" 'Inspect `get_goal` before recommending the native route.'
 require_text "$planning" 'exact Octopad write classes/effects and native create/message/archive actions'
 require_text "$planning" '`progressive` or `final`'
 require_text "$planning" 'subject, timing, why human judgment is needed, owner, blocked descendants, safe work that can continue, expected decision, and exact resume evidence'
 require_text "$planning" 'Do not expose command syntax.'
 require_text "$planning" 'Do not create a Page merely to preserve it'
+require_text "$planning" 'scale its presentation to material complexity without dropping any required fact'
+require_text "$planning" 'Compact example:'
 require_text "$planning" 'persist a source-bound migration notice'
 require_text "$planning" 'Never assume installation propagated the correction'
 require_text "$planning" 'Never retry blindly'
@@ -119,13 +126,15 @@ require_text "$planning" 'never set `token_budget` unless the user explicitly re
 require_text "$state" 'Use `expected_updated_at` on every state-changing update.'
 require_text "$state" 'one UUID `idempotency_key` per logical event'
 require_text "$state" '"schema": "octoplan-plan-v3"'
+require_text "$state" '"proposed_review": null'
+require_text "$state" '"status": "planning|planned|active|replanning|waiting-human|paused|completed|superseded"'
 require_text "$state" '"review_cadence": "progressive|final"'
 require_text "$state" '"execution_scope": "plan-only|deliver-authorized"'
 require_text "$state" '"octopad_write_classes": ['
 require_text "$state" '"native_actions": ['
 require_text "$state" '"child_route": "native-task/worktree"'
 require_text "$state" '"brief_records": {'
-require_text "$state" '"minimum_version": "13.0.0"'
+require_text "$state" '"minimum_version": "13.1.0"'
 require_text "$state" '"intent": {"revision": 1'
 require_text "$state" '"human_checkpoints": ['
 require_text "$state" 'methodology|secret|access-grant|external-spend|destructive-effect|review|merge|migration-application|deployment|publication|acceptance'
@@ -143,6 +152,16 @@ require_text "$state" 'Every effective receipt joins exactly one intent'
 require_text "$state" 'Never message an actor about a revised instruction before the durable intent revision exists.'
 require_text "$state" 'never blind replay'
 require_text "$state" '"native_action_receipts": []'
+require_text "$state" '"mode": "current-task|dedicated-handoff|recovery-successor"'
+require_text "$state" '"predecessor": null'
+require_text "$state" '"supersedes_goal_ref": null'
+require_text "$state" '"effects_quiescent_ref":"..."'
+require_text "$state" '"fence_key":"<plan_id>:takeover:epoch:2"'
+require_text "$state" 'OCTOPLAN_TAKEOVER_INTENT'
+require_text "$state" 'derive `fence_key` exactly as `<plan_id>:takeover:epoch:<predecessor_epoch+1>`'
+require_text "$state" 'atomically sets owner, `recovery-successor` mode, incremented epoch, predecessor, coordination `paused`, and successor Goal `pending`'
+require_text "$state" 'reread it before Goal creation'
+require_text "$state" 'The predecessor Goal stays historical and is never falsely completed or blocked.'
 require_text "$state" 'Targeted recovery'
 require_text "$state" '`projectId=null`'
 require_text "$runtime" 'A Goal never grants broader sandbox, approval, or external-effect authority.'
@@ -163,6 +182,8 @@ require_text "$runtime" 'minimum Octoplan version'
 require_text "$runtime" 'Product, code, security, privacy, data, migration, and materially public changes require `independent`.'
 require_text "$runtime" 'one additional fresh reviewer only for a second material and orthogonal failure domain'
 require_text "$supervision" "Use Octopad's graph/statuses directly"
+require_text "$supervision" 'Never send `waiting-human` or `paused` as an Octopad task status.'
+require_text "$supervision" 'A delivery task is `todo` until claimed, `in_progress` from claim through review and embedded checkpoints'
 require_text "$supervision" '`eligible_safe_ready`'
 require_text "$supervision" 'Never require all-ready activation'
 require_text "$supervision" 'reread `intent.revision` before the next external effect'
@@ -183,12 +204,26 @@ require_text "$supervision" 'seek new authority only for changed scope, target, 
 require_text "$supervision" 'Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance'
 require_text "$supervision" 'same genuine impasse has recurred for three consecutive Goal turns'
 require_text "$supervision" '`update_goal(complete)` only after current global integrated-outcome evidence'
-require_text "$supervision" '`État`'
-require_text "$supervision" '`Prochaine étape`'
+require_text "$supervision" 'labels and content localized to the user'
+require_text "$supervision" 'Compact example for an English-speaking user:'
+require_text "$supervision" 'Create a `recovery-successor` only when native evidence proves the saved owner terminal or unreachable'
+require_text "$supervision" 'an `effects_quiescent_ref` proves no effect remains in flight'
+require_text "$supervision" 'First persist `OCTOPLAN_TAKEOVER_INTENT` with the exact predecessor object and `fence_key`'
+require_text "$supervision" 'one guarded update atomically rotates owner/mode/epoch and records a pending successor Goal'
+require_text "$supervision" 'Create that Goal only after successful readback'
+require_text "$supervision" 'The old Goal is historical, never falsely completed or blocked'
 require_text "$supervision" 'owning E task'
 require_text "$supervision" 'tokens, tool calls, compactions, and retries'
-require_text "$manifest" 'show the creation brief and recommended review cadence'
-require_text "$agent_manifest" 'show the creation brief and recommended review cadence'
+require_text "$manifest" 'show the creation brief and checkpoints'
+require_text "$agent_manifest" 'show the creation brief and checkpoints'
+require_text "$skill/SKILL.md" 'Use only when a Codex user explicitly invokes $octoplan'
+if grep -Fq 'allow_implicit_invocation: false' "$agent_manifest"; then
+  fail 'known-bad Codex skill suppression policy is present'
+fi
+plugin_prompt=$(node -p 'require(process.argv[1]).interface.defaultPrompt[0]' "$manifest")
+agent_prompt=$(sed -n 's/^  default_prompt: "\(.*\)"$/\1/p' "$agent_manifest")
+[ -n "$plugin_prompt" ] && [ "${#plugin_prompt}" -le 128 ] || fail 'plugin default prompt exceeds 128 characters'
+[ "$plugin_prompt" = "$agent_prompt" ] || fail 'plugin and agent default prompts differ'
 
 for role in planner supervisor executor reviewer specialist-reviewer recovery follow-up; do
   require_text "$roles/$role.md" 'role packet'
@@ -245,6 +280,15 @@ function validatePlan(plan) {
   assert(runStatuses.has(plan.status));
   assert(Number.isInteger(plan.revision) && plan.revision > 0);
   assert(plan.proposed_revision === null || (Number.isInteger(plan.proposed_revision) && plan.proposed_revision > 0));
+  assert(Object.prototype.hasOwnProperty.call(plan, 'proposed_review'));
+  assert(plan.proposed_review === null || (plan.proposed_review && Number.isInteger(plan.proposed_review.revision) && ['PASS', 'REVISE', 'INFEASIBLE', 'HUMAN_DECISION'].includes(plan.proposed_review.verdict)));
+  if (plan.status === 'replanning') {
+    assert(Number.isInteger(plan.proposed_revision) && plan.proposed_revision > plan.revision);
+    if (plan.proposed_review !== null) assert.strictEqual(plan.proposed_review.revision, plan.proposed_revision);
+  } else {
+    assert.strictEqual(plan.proposed_revision, null);
+    assert.strictEqual(plan.proposed_review, null);
+  }
   for (const key of ['organization_id', 'workspace_id', 'work_stream_id', 'coordination_task_id']) assert(typeof plan[key] === 'string' && plan[key].length > 0);
   assert(plan.outcome && /^E[0-9]+$/.test(plan.outcome.candidate_ref));
   assert(plan.brief);
@@ -261,22 +305,39 @@ function validatePlan(plan) {
   assert(plan.review && plan.review.revision === plan.revision && plan.review.verdict === 'PASS');
   assert(typeof plan.review.reviewer_ref === 'string' && plan.review.reviewer_ref.length > 0);
   assert(typeof plan.review.evidence_ref === 'string' && plan.review.evidence_ref.length > 0);
-  assert(plan.runtime && plan.runtime.minimum_version === '13.0.0');
+  assert(plan.runtime && /^13\.[0-9]+\.[0-9]+$/.test(plan.runtime.minimum_version));
   for (const key of ['loaded_version', 'installed_version']) assert(/^13\.[0-9]+\.[0-9]+$/.test(plan.runtime[key]));
   assert(plan.intent && Number.isInteger(plan.intent.revision) && plan.intent.revision > 0);
   assert(typeof plan.intent.latest_user_directive_ref === 'string' && Array.isArray(plan.intent.superseded_effect_keys));
   assert(plan.supervisor && typeof plan.supervisor.thread_ref === 'string' && plan.supervisor.thread_ref.length > 0);
   assert(Number.isInteger(plan.supervisor.epoch) && plan.supervisor.epoch > 0);
-  assert(['current-task', 'dedicated-handoff'].includes(plan.supervisor.mode));
+  assert(['current-task', 'dedicated-handoff', 'recovery-successor'].includes(plan.supervisor.mode));
   if (plan.supervisor.mode === 'dedicated-handoff') assert(typeof plan.supervisor.source_fenced_ref === 'string' && plan.supervisor.source_fenced_ref.length > 0);
+  assert(Object.prototype.hasOwnProperty.call(plan.supervisor, 'predecessor'));
   assert(plan.supervisor.goal && typeof plan.supervisor.goal.required === 'boolean');
+  assert(Object.prototype.hasOwnProperty.call(plan.supervisor.goal, 'supersedes_goal_ref'));
+  if (plan.supervisor.mode === 'recovery-successor') {
+    const predecessor = plan.supervisor.predecessor;
+    assert(predecessor && Number.isInteger(predecessor.epoch) && predecessor.epoch > 0 && plan.supervisor.epoch > predecessor.epoch);
+    for (const key of ['thread_ref', 'goal_evidence_ref', 'revival_ref', 'terminal_or_unreachable_ref', 'effects_quiescent_ref', 'fence_key']) assert(typeof predecessor[key] === 'string' && predecessor[key].length > 0);
+    assert.strictEqual(plan.supervisor.goal.supersedes_goal_ref, predecessor.goal_evidence_ref);
+  } else {
+    assert.strictEqual(plan.supervisor.predecessor, null);
+    assert.strictEqual(plan.supervisor.goal.supersedes_goal_ref, null);
+  }
   assert.strictEqual(plan.supervisor.goal.required, plan.brief.execution_scope === 'deliver-authorized');
   if (plan.supervisor.goal.required) {
     assert.strictEqual(plan.supervisor.goal.owner_thread_ref, plan.supervisor.thread_ref);
     assert(typeof plan.supervisor.goal.objective_ref === 'string' && plan.supervisor.goal.objective_ref.length > 0);
-    assert(['created', 'adopted'].includes(plan.supervisor.goal.origin));
-    assert(typeof plan.supervisor.goal.evidence_ref === 'string' && plan.supervisor.goal.evidence_ref.length > 0);
     assert(['pending', 'active', 'blocked', 'complete'].includes(plan.supervisor.goal.state));
+    if (plan.supervisor.goal.state === 'pending') {
+      assert.strictEqual(plan.supervisor.goal.origin, null);
+      assert.strictEqual(plan.supervisor.goal.evidence_ref, null);
+      assert(['planned', 'paused'].includes(plan.status));
+    } else {
+      assert(['created', 'adopted'].includes(plan.supervisor.goal.origin));
+      assert(typeof plan.supervisor.goal.evidence_ref === 'string' && plan.supervisor.goal.evidence_ref.length > 0);
+    }
     if (plan.status === 'active') assert.strictEqual(plan.supervisor.goal.state, 'active');
   } else {
     assert.strictEqual(plan.status, 'planned');
@@ -479,7 +540,7 @@ function validatePlan(plan) {
 }
 
 const plan = {
-  schema: 'octoplan-plan-v3', plan_id: 'plan-a', revision: 1, proposed_revision: null, status: 'active',
+  schema: 'octoplan-plan-v3', plan_id: 'plan-a', revision: 1, proposed_revision: null, proposed_review: null, status: 'active',
   organization_id: 'org-a', workspace_id: 'workspace-a', work_stream_id: 'stream-a', coordination_task_id: 'task-control',
   brief: {source_ref: 'message-request', approval_ref: 'message-brief-go', tracker_ref: 'tracker-a', review_cadence: 'final', execution_scope: 'deliver-authorized', octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], native_actions: ['create', 'message', 'archive'], native_roles: ['executor', 'reviewer', 'supervisor'], project_id: 'project-a', directory_name: null, native_environments: ['local', 'worktree'], child_route: 'native-task/worktree', effects: ['bounded delivery']},
   outcome: {candidate_ref: 'E01', global_evidence_ref: null, global_evidence_revision: null},
@@ -487,8 +548,8 @@ const plan = {
   brief_records: {decisions: {D01: {id: 'decision-a', receipt_ref: 'receipt-decision-a'}}, questions: {Q01: {id: 'question-a', receipt_ref: 'receipt-question-a'}}},
   desired_dependencies: [{task_ref: 'E02', depends_on_ref: 'E01', rationale: 'needs artifact'}],
   review: {revision: 1, verdict: 'PASS', reviewer_ref: 'reviewer-a', evidence_ref: 'evidence-a'},
-  supervisor: {thread_ref: 'thread-user', epoch: 1, mode: 'current-task', goal: {required: true, owner_thread_ref: 'thread-user', objective_ref: 'message-outcome', origin: 'created', evidence_ref: 'goal-create-a', state: 'active'}},
-  runtime: {minimum_version: '13.0.0', loaded_version: '13.0.0', installed_version: '13.0.0', adoption_ref: null},
+  supervisor: {thread_ref: 'thread-user', epoch: 1, mode: 'current-task', predecessor: null, goal: {required: true, owner_thread_ref: 'thread-user', objective_ref: 'message-outcome', origin: 'created', evidence_ref: 'goal-create-a', state: 'active', supersedes_goal_ref: null}},
+  runtime: {minimum_version: '13.1.0', loaded_version: '13.1.0', installed_version: '13.1.0', adoption_ref: null},
   authority: {source_ref: 'message-brief-go', delivery: true, project_id: 'project-a', directory_name: null, environments: ['local', 'worktree'], roles: ['executor', 'reviewer', 'supervisor'], actions: ['create', 'message', 'archive'], octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], child_route: 'native-task/worktree', effects: ['bounded delivery'], adopted_session_refs: []},
   intent: {revision: 1, latest_user_directive_ref: 'message-brief-go', superseded_effect_keys: []},
   budgets: {max_active_child_actors: 2, max_wip: 2, max_correction_loops: 2, max_review_actors: 2, max_review_checks: 8, batch_size: 2},
@@ -503,6 +564,22 @@ const plan = {
 };
 assert(validatePlan(plan));
 assert(validatePlan(JSON.parse(JSON.stringify(plan))));
+function adoptCompatible13_1(previous) {
+  const adopted = JSON.parse(JSON.stringify(previous));
+  if (!Object.prototype.hasOwnProperty.call(adopted, 'proposed_review')) adopted.proposed_review = null;
+  if (!Object.prototype.hasOwnProperty.call(adopted.supervisor, 'predecessor')) adopted.supervisor.predecessor = null;
+  if (!Object.prototype.hasOwnProperty.call(adopted.supervisor.goal, 'supersedes_goal_ref')) adopted.supervisor.goal.supersedes_goal_ref = null;
+  adopted.runtime.loaded_version = '13.1.0';
+  adopted.runtime.installed_version = '13.1.0';
+  adopted.runtime.adoption_ref = 'safe-boundary-adoption-a';
+  return adopted;
+}
+const priorV3 = JSON.parse(JSON.stringify(plan));
+delete priorV3.proposed_review;
+delete priorV3.supervisor.predecessor;
+delete priorV3.supervisor.goal.supersedes_goal_ref;
+priorV3.runtime = {minimum_version: '13.0.0', loaded_version: '13.0.0', installed_version: '13.0.0', adoption_ref: null};
+assert(validatePlan(adoptCompatible13_1(priorV3)));
 for (const kind of checkpointKinds) assert(validatePlan({...plan, human_checkpoints: [{...plan.human_checkpoints[0], kind}]}));
 const externalHeartbeat = {kind: 'ci', predicate_ref: 'check-head-a', intent_revision: 1, owner_thread_ref: 'thread-user', refreshes_coordination_state: true, watches_native_actor: false};
 assert(validatePlan({...plan, heartbeat: externalHeartbeat}));
@@ -512,16 +589,34 @@ const planOnly = {
   ...plan,
   status: 'planned',
   brief: {...plan.brief, review_cadence: 'progressive', execution_scope: 'plan-only', native_actions: [], native_roles: [], child_route: 'none', effects: ['plan creation']},
-  supervisor: {...plan.supervisor, goal: {required: false, owner_thread_ref: null, objective_ref: null, origin: null, evidence_ref: null, state: null}},
+  supervisor: {...plan.supervisor, goal: {required: false, owner_thread_ref: null, objective_ref: null, origin: null, evidence_ref: null, state: null, supersedes_goal_ref: null}},
   authority: {...plan.authority, delivery: false, roles: [], actions: [], child_route: 'none', effects: ['plan creation']}
 };
 assert(validatePlan(planOnly));
-const deliverPlanned = {...plan, status: 'planned', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'pending'}}};
+const deliverPlanned = {...plan, status: 'planned', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, origin: null, evidence_ref: null, state: 'pending'}}};
 assert(validatePlan(deliverPlanned));
+assert.throws(() => validatePlan({...deliverPlanned, supervisor: {...deliverPlanned.supervisor, goal: {...deliverPlanned.supervisor.goal, origin: 'created', evidence_ref: 'premature-goal'}}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, origin: null, evidence_ref: null, state: 'pending'}}}));
 assert(validatePlan({...plan, brief: {...plan.brief, project_id: null, directory_name: 'projectless-output', native_environments: [null], child_route: 'native-task/projectless'}, authority: {...plan.authority, project_id: null, directory_name: 'projectless-output', environments: [null], child_route: 'native-task/projectless'}}));
 assert(validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff', source_fenced_ref: 'fence-a'}}));
 assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff'}}));
+const predecessor = {thread_ref: 'thread-user', epoch: 1, goal_evidence_ref: 'goal-create-a', revival_ref: 'wake-attempt-a', terminal_or_unreachable_ref: 'native-terminal-a', effects_quiescent_ref: 'quiescence-read-a', fence_key: 'plan-a:takeover:epoch:2'};
+const recoverySuccessor = {...plan, supervisor: {thread_ref: 'thread-successor', epoch: 2, mode: 'recovery-successor', predecessor, goal: {...plan.supervisor.goal, owner_thread_ref: 'thread-successor', evidence_ref: 'goal-successor-a', supersedes_goal_ref: 'goal-create-a'}}};
+assert(validatePlan(recoverySuccessor));
+const pendingRecoverySuccessor = {...recoverySuccessor, status: 'paused', supervisor: {...recoverySuccessor.supervisor, goal: {...recoverySuccessor.supervisor.goal, origin: null, evidence_ref: null, state: 'pending'}}};
+assert(validatePlan(pendingRecoverySuccessor));
+assert.throws(() => validatePlan({...recoverySuccessor, supervisor: {...recoverySuccessor.supervisor, epoch: 1}}));
+assert.throws(() => validatePlan({...recoverySuccessor, supervisor: {...recoverySuccessor.supervisor, predecessor: {...predecessor, terminal_or_unreachable_ref: ''}}}));
+assert.throws(() => validatePlan({...recoverySuccessor, supervisor: {...recoverySuccessor.supervisor, predecessor: {...predecessor, effects_quiescent_ref: ''}}}));
+assert.throws(() => validatePlan({...recoverySuccessor, supervisor: {...recoverySuccessor.supervisor, goal: {...recoverySuccessor.supervisor.goal, supersedes_goal_ref: 'wrong-goal'}}}));
 assert.throws(() => validatePlan({...plan, brief: {...plan.brief, review_cadence: 'sometimes'}}));
+const {proposed_review: omittedProposedReview, ...withoutProposedReview} = plan;
+assert.throws(() => validatePlan(withoutProposedReview));
+assert.throws(() => validatePlan({...plan, proposed_review: {revision: 2, verdict: 'UNKNOWN'}}));
+assert.throws(() => validatePlan({...plan, proposed_revision: 2}));
+assert(validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: null}));
+assert(validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: {revision: 2, verdict: 'PASS'}}));
+assert.throws(() => validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: {revision: 3, verdict: 'PASS'}}));
 assert.throws(() => validatePlan({...plan, brief: {...plan.brief, approval_ref: ''}}));
 assert.throws(() => validatePlan({...plan, brief: {...plan.brief, native_actions: ['create', 'message']}}));
 assert.throws(() => validatePlan({...plan, runtime: {...plan.runtime, loaded_version: '12.1.0'}}));
@@ -613,6 +708,20 @@ assert.strictEqual(recommendCadence({independentArticles: 10}), 'final');
 assert.strictEqual(recommendCadence({independentArticles: 10, sharedRuleGovernsBatch: true}), 'progressive');
 assert.strictEqual(recommendCadence({irreversibleExternal: true}), 'progressive');
 
+function briefPresentation({materialBranches = 0, protectedEffects = 0, irreversible = false}) {
+  return materialBranches > 1 || protectedEffects > 1 || irreversible ? 'EXPANDED' : 'COMPACT_COMPLETE';
+}
+assert.strictEqual(briefPresentation({materialBranches: 0, protectedEffects: 1}), 'COMPACT_COMPLETE');
+assert.strictEqual(briefPresentation({materialBranches: 3}), 'EXPANDED');
+
+function rolePackFor({currentTask, phase, delegatedRole = null}) {
+  if (!currentTask) return delegatedRole;
+  return phase === 'active' ? 'supervisor' : null;
+}
+assert.strictEqual(rolePackFor({currentTask: true, phase: 'planning'}), null);
+assert.strictEqual(rolePackFor({currentTask: true, phase: 'active'}), 'supervisor');
+assert.strictEqual(rolePackFor({currentTask: false, phase: 'planning', delegatedRole: 'planner'}), 'planner');
+
 function versionDecision({schema, minimum, loaded, installed, safeBoundary}) {
   if (schema !== 'octoplan-plan-v3') return 'REPLAN_SCHEMA';
   const parse = value => value.split('.').map(Number);
@@ -641,6 +750,55 @@ assert.strictEqual(goalActivationDecision({existingStatus: 'active', exactMatch:
 assert.strictEqual(goalActivationDecision({existingStatus: 'complete'}), 'CREATE_OR_REPLACE');
 assert.strictEqual(goalActivationDecision({existingStatus: 'active', dedicatedDisclosed: true}), 'USE_DISCLOSED_DEDICATED_BEFORE_GOAL');
 assert.strictEqual(goalActivationDecision({existingStatus: 'active', dedicatedDisclosed: true, goalAlreadyCreated: true}), 'PROHIBIT_POST_CREATION_TRANSFER');
+
+function exactTakeoverIntent(value, {planId, predecessorEpoch, effectsQuiescentRef}) {
+  const predecessorKeys = ['thread_ref', 'goal_evidence_ref', 'revival_ref', 'terminal_or_unreachable_ref', 'effects_quiescent_ref', 'fence_key'];
+  if (!value || value.type !== 'OCTOPLAN_TAKEOVER_INTENT' || !value.predecessor) return false;
+  const predecessor = value.predecessor;
+  const expectedFenceKey = `${planId}:takeover:epoch:${predecessorEpoch + 1}`;
+  return typeof planId === 'string' && planId.length > 0 && Number.isInteger(predecessorEpoch) && predecessorEpoch > 0 && predecessor.epoch === predecessorEpoch && predecessorKeys.every(key => typeof predecessor[key] === 'string' && predecessor[key].length > 0) && predecessor.effects_quiescent_ref === effectsQuiescentRef && predecessor.fence_key === expectedFenceKey && value.fence_key === expectedFenceKey;
+}
+function supervisorRecoveryDecision({planId = 'plan-a', predecessorEpoch = 1, revivalAttempted = false, savedOwnerReachable = false, archived = false, lifecycleAuthority = false, terminalOrUnreachableProved = false, effectsQuiescentRef = null, takeoverIntent = null, guardedRotationReadback = false, successorGoalReceipt = null}) {
+  if (!revivalAttempted && archived) return lifecycleAuthority ? 'UNARCHIVE_AND_WAKE_SAVED_OWNER' : 'RECOVER_LIFECYCLE_AUTHORITY';
+  if (!revivalAttempted) return 'WAKE_SAVED_OWNER';
+  if (savedOwnerReachable) return 'RESUME_SAVED_OWNER';
+  if (!terminalOrUnreachableProved) return 'RECONCILE_NO_SUCCESSOR';
+  if (typeof effectsQuiescentRef !== 'string' || effectsQuiescentRef.length === 0) return 'FENCE_OR_WAIT_FOR_QUIESCENCE';
+  if (!exactTakeoverIntent(takeoverIntent, {planId, predecessorEpoch, effectsQuiescentRef})) return 'PERSIST_TAKEOVER_INTENT';
+  if (!guardedRotationReadback) return 'ROTATE_OWNER_MODE_EPOCH_ATOMICALLY';
+  return successorGoalReceipt ? 'ACTIVATE_SUCCESSOR' : 'CREATE_ONE_RECOVERY_SUCCESSOR';
+}
+const takeoverIntent = {type: 'OCTOPLAN_TAKEOVER_INTENT', predecessor, fence_key: predecessor.fence_key};
+const {epoch: omittedEpoch, ...predecessorWithoutEpoch} = predecessor;
+const missingEpochIntent = {...takeoverIntent, predecessor: predecessorWithoutEpoch};
+const wrongFencePredecessor = {...predecessor, fence_key: 'plan-a:takeover:epoch:99'};
+const wrongFenceIntent = {...takeoverIntent, predecessor: wrongFencePredecessor, fence_key: wrongFencePredecessor.fence_key};
+assert.strictEqual(supervisorRecoveryDecision({}), 'WAKE_SAVED_OWNER');
+assert.strictEqual(supervisorRecoveryDecision({archived: true, lifecycleAuthority: true}), 'UNARCHIVE_AND_WAKE_SAVED_OWNER');
+assert.strictEqual(supervisorRecoveryDecision({archived: true}), 'RECOVER_LIFECYCLE_AUTHORITY');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true}), 'RECONCILE_NO_SUCCESSOR');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true}), 'FENCE_OR_WAIT_FOR_QUIESCENCE');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a'}), 'PERSIST_TAKEOVER_INTENT');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a', takeoverIntent: missingEpochIntent}), 'PERSIST_TAKEOVER_INTENT');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a', takeoverIntent: wrongFenceIntent}), 'PERSIST_TAKEOVER_INTENT');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-stale', takeoverIntent}), 'PERSIST_TAKEOVER_INTENT');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a', takeoverIntent}), 'ROTATE_OWNER_MODE_EPOCH_ATOMICALLY');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a', takeoverIntent, guardedRotationReadback: true}), 'CREATE_ONE_RECOVERY_SUCCESSOR');
+assert.strictEqual(supervisorRecoveryDecision({revivalAttempted: true, terminalOrUnreachableProved: true, effectsQuiescentRef: 'quiescence-read-a', takeoverIntent, guardedRotationReadback: true, successorGoalReceipt: 'goal-successor-a'}), 'ACTIVATE_SUCCESSOR');
+
+const octopadTaskStatuses = new Set(['todo', 'in_progress', 'done', 'blocked']);
+function octopadTaskStatus({kind = 'delivery', claimed = false, accepted = false, finalGatesSatisfied = false, evidencedBlocker = false, terminal = false}) {
+  if (kind === 'coordination') return terminal ? 'done' : 'in_progress';
+  if (accepted && finalGatesSatisfied) return 'done';
+  if (evidencedBlocker) return 'blocked';
+  return claimed ? 'in_progress' : 'todo';
+}
+assert.strictEqual(octopadTaskStatus({kind: 'coordination'}), 'in_progress');
+assert.strictEqual(octopadTaskStatus({claimed: true}), 'in_progress');
+assert.strictEqual(octopadTaskStatus({claimed: true, accepted: true, finalGatesSatisfied: false}), 'in_progress');
+assert.strictEqual(octopadTaskStatus({claimed: true, accepted: true, finalGatesSatisfied: true}), 'done');
+assert.strictEqual(octopadTaskStatus({evidencedBlocker: true}), 'blocked');
+assert(!octopadTaskStatuses.has('waiting-human') && !octopadTaskStatuses.has('paused'));
 
 function goalDisposition({outcomeProved = false, pendingOperations = 0, checkpointsSatisfied = false, sameImpassTurns = 0, meaningfulProgressRoute = true}) {
   if (outcomeProved && pendingOperations === 0 && checkpointsSatisfied) return 'COMPLETE';
@@ -901,9 +1059,9 @@ assert.strictEqual(recoveryDecision({...once, unsafe: true}), 'STOP_IMMEDIATELY'
 assert.strictEqual(recoveryDecision({...once, protectedAction: true}), 'STOP_IMMEDIATELY');
 assert.strictEqual(recoveryDecision({...once, previousKey: 'incident-original', key: 'incident-reworded'}), 'REJECT_KEY_RESET');
 
-console.log('PASS: Octoplan 13 agentic-runtime fixtures');
+console.log('PASS: Octoplan 13.1 Fable-alignment fixtures');
 NODE
 
-grep -q '^### 13\.0\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 13.0.0'
+grep -q '^### 13\.1\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 13.1.0'
 
-printf 'PASS: Octoplan Codex 13.0.0 contract\n'
+printf 'PASS: Octoplan Codex 13.1.0 contract\n'
