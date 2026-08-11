@@ -7,7 +7,7 @@ planning="$skill/references/planning.md"
 state="$skill/references/state-and-recovery.md"
 runtime="$skill/references/codex-runtime.md"
 supervision="$skill/references/codex-supervision.md"
-tombstone="$skill/references/octoplan-contract-v3.md"
+compatibility="$skill/references/octoplan-contract-v3.md"
 roles="$skill/roles"
 manifest="$root/plugins/octoplan-codex/.codex-plugin/plugin.json"
 agent_manifest="$skill/agents/openai.yaml"
@@ -26,16 +26,16 @@ require_text() {
   grep -Fq -- "$2" "$1" || fail "missing contract text in $(basename "$1"): $2"
 }
 
-for file in "$skill/SKILL.md" "$planning" "$state" "$runtime" "$supervision" "$tombstone" "$manifest" "$agent_manifest"; do
+for file in "$skill/SKILL.md" "$planning" "$state" "$runtime" "$supervision" "$compatibility" "$manifest" "$agent_manifest"; do
   require_file "$file"
 done
 for role in planner plan-reviewer supervisor executor reviewer specialist-reviewer recovery follow-up; do
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 12\.1\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 12.1.0'
-grep -q '"version": "12\.1\.0"' "$manifest" || fail 'Codex plugin is not 12.1.0'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 12.1.0 |' "$root/README.md" || fail 'README Codex version is stale'
+grep -q '^Version: 13\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 13.0.0'
+grep -q '"version": "13\.0\.0"' "$manifest" || fail 'Codex plugin is not 13.0.0'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 13.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
 
 expected_refs='codex-runtime.md
 codex-supervision.md
@@ -44,8 +44,10 @@ planning.md
 state-and-recovery.md'
 actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec basename '{}' \; | sort)
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
-require_text "$tombstone" '# Legacy Octoplan contracts retired'
-require_text "$tombstone" 'Do not translate old fingerprints'
+require_text "$compatibility" '# Octoplan v3 compatibility'
+require_text "$compatibility" 'Do not translate old fingerprints'
+require_text "$compatibility" 'compatible skill version is adopted at the next safe actor boundary'
+require_text "$compatibility" 'Installing v13 does not retroactively change an already-running v2 task.'
 
 active_docs="$skill/SKILL.md $planning $state $runtime $supervision"
 for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-direct-readback-v1' 'canonical review-subject' 'saved-state equality' 'byte-deterministic' 'plan_hash'; do
@@ -53,9 +55,8 @@ for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-dir
     fail "retired blocking contract remains active: $forbidden"
   fi
 done
-if grep -Fq 'references/octoplan-contract-v3.md' "$skill/SKILL.md" "$planning" "$runtime" "$supervision"; then
-  fail 'active documents still load the retired contract'
-fi
+require_text "$skill/SKILL.md" 'references/octoplan-contract-v3.md'
+require_text "$planning" '[octoplan-contract-v3.md](octoplan-contract-v3.md)'
 
 skill_lines=$(wc -l < "$skill/SKILL.md" | tr -d ' ')
 planning_lines=$(wc -l < "$planning" | tr -d ' ')
@@ -64,86 +65,130 @@ runtime_lines=$(wc -l < "$runtime" | tr -d ' ')
 supervision_lines=$(wc -l < "$supervision" | tr -d ' ')
 [ "$skill_lines" -le 45 ] || fail "SKILL.md exceeds 45 lines: $skill_lines"
 [ "$planning_lines" -le 120 ] || fail "planning.md exceeds 120 lines: $planning_lines"
-[ "$state_lines" -le 160 ] || fail "state-and-recovery.md exceeds 160 lines: $state_lines"
+[ "$state_lines" -le 180 ] || fail "state-and-recovery.md exceeds 180 lines: $state_lines"
 [ "$runtime_lines" -le 110 ] || fail "codex-runtime.md exceeds 110 lines: $runtime_lines"
 [ "$supervision_lines" -le 140 ] || fail "codex-supervision.md exceeds 140 lines: $supervision_lines"
 active_lines=$((skill_lines + planning_lines + state_lines + runtime_lines + supervision_lines))
 active_words=$(wc -w $active_docs | awk 'END {print $1}')
-[ "$active_lines" -le 540 ] || fail "active skill documents exceed 540 lines: $active_lines"
-[ "$active_words" -le 6000 ] || fail "active skill documents exceed 6000 words: $active_words"
+[ "$active_lines" -le 520 ] || fail "active skill documents exceed 520 lines: $active_lines"
+[ "$active_words" -le 8000 ] || fail "active skill documents exceed 8000 words: $active_words"
 
 for toc_file in "$planning" "$state" "$runtime" "$supervision"; do
   require_text "$toc_file" '## Contents'
 done
-require_text "$skill/SKILL.md" 'Only `octoplan-plan-v2` is supported.'
+require_text "$skill/SKILL.md" 'Only `octoplan-plan-v3` is supported.'
+require_text "$skill/SKILL.md" '**brief de création**'
+require_text "$skill/SKILL.md" '`progressive` review or `final` review'
+require_text "$skill/SKILL.md" 'Do not create a Page merely to store the brief.'
+require_text "$skill/SKILL.md" 'The current user task becomes supervisor by default'
+require_text "$skill/SKILL.md" '`projectId=null`'
+require_text "$skill/SKILL.md" 'each top-level task one independently reviewable delivery/rollback unit'
+require_text "$skill/SKILL.md" 'Use a native Goal only for authorized delivery.'
 require_text "$skill/SKILL.md" '`eligible_safe_ready`'
-require_text "$skill/SKILL.md" 'Every launched plan gets one dedicated native supervisor'
-require_text "$skill/SKILL.md" 'missing `structuredContent`'
-require_text "$skill/SKILL.md" 'Record one receipt per item'
-require_text "$skill/SKILL.md" 'identity still unresolved after that recovery'
-require_text "$planning" 'Ask all currently material questions in one numbered batch'
-require_text "$planning" 'never ask actor by actor'
+require_text "$planning" 'Before any Octopad write, show one **brief de création**'
+require_text "$planning" 'Inspect `get_goal` before recommending the native route.'
+require_text "$planning" 'exact Octopad write classes/effects and native create/message/archive actions'
+require_text "$planning" '`progressive` or `final`'
+require_text "$planning" 'subject, timing, why human judgment is needed, owner, blocked descendants, safe work that can continue, expected decision, and exact resume evidence'
+require_text "$planning" 'Do not expose command syntax.'
+require_text "$planning" 'Do not create a Page merely to preserve it'
+require_text "$planning" 'persist a source-bound migration notice'
+require_text "$planning" 'Never assume installation propagated the correction'
 require_text "$planning" 'Never retry blindly'
 require_text "$planning" '`bootstrap-dispatch-ambiguous`'
+require_text "$planning" '`projectId=null` is incomplete evidence, not a blocker'
 require_text "$planning" 'Octoplan operation key:'
 require_text "$planning" 'depends_on_refs'
 require_text "$planning" 'streamed tasks use `work_stream_id` and omit `goal_id`'
 require_text "$planning" 'page links use `{page_id, rationale}`'
 require_text "$planning" 'It never requires exhaustive readback or byte equality.'
 require_text "$planning" 'first integrated demonstrable candidate'
-require_text "$planning" '`location=embedded`'
-require_text "$planning" '`location=human-task`'
+require_text "$planning" 'one coherent, independently acceptable, reviewable, and reversible delivery unit'
+require_text "$planning" 'one PR per task'
+require_text "$planning" 'Green CI is evidence only for covered paths.'
+require_text "$planning" 'A material resolved choice affecting outcome, scope, architecture, route, checkpoint, or acceptance becomes one Octopad Decision'
+require_text "$planning" 'a material unresolved item becomes one Question'
 require_text "$planning" 'never require all-ready activation'
 require_text "$planning" 'backfill'
 require_text "$planning" 'authoritative telemetry is observable'
-require_text "$planning" 'Follow active `AGENTS.md` and repository workflow.'
-require_text "$planning" 'persist `draft` with `proposed_revision`'
-require_text "$planning" 'Never launch before `approved`.'
+require_text "$planning" 'Follow the effective `AGENTS.md`, organization policy, and repository workflow'
+require_text "$planning" 'stop without a Goal or executor'
+require_text "$planning" 'current user task remains the supervisor'
+require_text "$planning" 'Post-creation Goal transfer is prohibited'
+require_text "$planning" 'never set `token_budget` unless the user explicitly requested one'
 require_text "$state" 'Use `expected_updated_at` on every state-changing update.'
 require_text "$state" 'one UUID `idempotency_key` per logical event'
-require_text "$state" 'The plan ID plus approved integer revision is the execution identity.'
-require_text "$state" '"schema": "octoplan-plan-v2"'
+require_text "$state" '"schema": "octoplan-plan-v3"'
+require_text "$state" '"review_cadence": "progressive|final"'
+require_text "$state" '"execution_scope": "plan-only|deliver-authorized"'
+require_text "$state" '"octopad_write_classes": ['
+require_text "$state" '"native_actions": ['
+require_text "$state" '"child_route": "native-task/worktree"'
+require_text "$state" '"brief_records": {'
+require_text "$state" '"minimum_version": "13.0.0"'
+require_text "$state" '"intent": {"revision": 1'
+require_text "$state" '"human_checkpoints": ['
+require_text "$state" 'methodology|secret|access-grant|external-spend|destructive-effect|review|merge|migration-application|deployment|publication|acceptance'
+require_text "$state" '"heartbeat": null'
 require_text "$state" '"actions": ["create", "message", "archive"]'
 require_text "$state" '`active -> awaiting-review -> correction-needed | handoff-pending -> terminal-reconciled -> archived`'
 require_text "$state" '`archive_receipt`'
-require_text "$state" '"proposed_revision": 1'
-require_text "$state" '"approved_revision": null'
-require_text "$state" '"execution_authority": null'
-require_text "$state" '"execution_authority"'
-require_text "$state" '`review-before-delivery` pairs only with exact-revision `revision-approval`'
+require_text "$state" 'first increment `intent.revision` under `expected_updated_at`'
+require_text "$state" 'compatible installed v3 update'
 require_text "$state" 'OCTOPLAN_WRITE_INTENT <operation-key>'
 require_text "$state" '`structuredContent` is useful when present but never mandatory.'
 require_text "$state" 'Never replay the whole batch because one item is unclear.'
 require_text "$state" 'Before every create, message, or archive, persist one intent'
+require_text "$state" 'Every effective receipt joins exactly one intent'
+require_text "$state" 'Never message an actor about a revised instruction before the durable intent revision exists.'
 require_text "$state" 'never blind replay'
 require_text "$state" '"native_action_receipts": []'
 require_text "$state" 'Targeted recovery'
-require_text "$runtime" 'One exact user source may grant enumerated create/message/archive actions'
-require_text "$runtime" 'dedicated compact, delta-first supervisor uses Terra `high` by default'
+require_text "$state" '`projectId=null`'
+require_text "$runtime" 'A Goal never grants broader sandbox, approval, or external-effect authority.'
+require_text "$runtime" 'Persisted authority must match that disclosure.'
+require_text "$runtime" 'The current user task remains on its selected model as supervisor'
 require_text "$runtime" 'Treat `clientThreadId` as pending setup'
 require_text "$runtime" 'incomplete native metadata is an evidence defect'
 require_text "$runtime" 'persisted target/receipt'
 require_text "$runtime" 'metadata-only anomaly does not block'
+require_text "$runtime" '`projectId=null`'
+require_text "$runtime" 'Use native subagents for bounded planning/review analysis'
+require_text "$runtime" 'Before `create_thread`, refresh `list_projects`'
+require_text "$runtime" 'isolated worktrees for durable delivery units and PRs'
+require_text "$runtime" 'cursor-based `wait_threads`'
+require_text "$runtime" 'Use `update_plan` only for the current task'
+require_text "$runtime" 'call `get_goal` first'
+require_text "$runtime" 'minimum Octoplan version'
 require_text "$runtime" 'Product, code, security, privacy, data, migration, and materially public changes require `independent`.'
 require_text "$runtime" 'one additional fresh reviewer only for a second material and orthogonal failure domain'
 require_text "$supervision" "Use Octopad's graph/statuses directly"
 require_text "$supervision" '`eligible_safe_ready`'
 require_text "$supervision" 'Never require all-ready activation'
+require_text "$supervision" 'reread `intent.revision` before the next external effect'
+require_text "$supervision" 'compact cursor-based `wait_threads`'
+require_text "$supervision" 'at most one heartbeat per plan'
+require_text "$supervision" 'never embed a copied blocker'
 require_text "$supervision" 'After two `REVISE` with the same key'
 require_text "$supervision" 'global integrated-outcome evidence'
 require_text "$supervision" 'Never retry create to improve a response'
+require_text "$supervision" 'Use $octoplan as <role>'
+require_text "$supervision" 'Once an unfinished Goal exists, never claim to transfer or fence it through an unsupported primitive'
 require_text "$supervision" 'Silence, timeout, missing checks'
+require_text "$supervision" 'Green CI does not cover an omitted path.'
 require_text "$supervision" 'Contact the user only for a material choice'
 require_text "$supervision" 'at most two distinct safe, reversible remedies'
 require_text "$supervision" 'Reuse an existing no-mutation actor'
 require_text "$supervision" 'seek new authority only for changed scope, target, risk, or a new protected action'
 require_text "$supervision" 'Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance'
+require_text "$supervision" 'same genuine impasse has recurred for three consecutive Goal turns'
+require_text "$supervision" '`update_goal(complete)` only after current global integrated-outcome evidence'
 require_text "$supervision" '`État`'
 require_text "$supervision" '`Prochaine étape`'
 require_text "$supervision" 'owning E task'
 require_text "$supervision" 'tokens, tool calls, compactions, and retries'
-require_text "$manifest" 'plan-scoped Codex create/message/archive grant'
-require_text "$agent_manifest" 'plan-scoped Codex create/message/archive grant'
+require_text "$manifest" 'show the creation brief and recommended review cadence'
+require_text "$agent_manifest" 'show the creation brief and recommended review cadence'
 
 for role in planner supervisor executor reviewer specialist-reviewer recovery follow-up; do
   require_text "$roles/$role.md" 'role packet'
@@ -182,78 +227,128 @@ current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
 node <<'NODE'
 const assert = require('assert');
 
-const materialFields = new Set(['outcome', 'candidate', 'scope', 'success', 'taskMeaning', 'dependencies', 'parallelism', 'budgets', 'protectedGates', 'owner', 'route', 'authority', 'acceptance']);
-const pauseReasons = new Set(['wrong-target', 'unreconcilable-duplicate', 'bootstrap-dispatch-ambiguous', 'creation-dispatch-ambiguous', 'missing-authority', 'proven-missing-write', 'revision-conflict', 'protected-gate', 'human-decision']);
-const protectedKinds = new Set(['secret', 'access-grant', 'external-spend', 'destructive-effect', 'human-review', 'merge', 'migration-application', 'deployment', 'publication', 'acceptance']);
-const runStatuses = new Set(['draft', 'awaiting-approval', 'approved', 'active', 'replanning', 'waiting-human', 'paused', 'completed', 'superseded']);
+const materialFields = new Set(['outcome', 'candidate', 'scope', 'success', 'taskMeaning', 'dependencies', 'parallelism', 'budgets', 'humanCheckpoints', 'owner', 'route', 'authority', 'acceptance']);
+const pauseReasons = new Set(['wrong-target', 'identity-unresolved', 'unreconcilable-duplicate', 'bootstrap-dispatch-ambiguous', 'creation-dispatch-ambiguous', 'missing-authority', 'proven-missing-write', 'revision-conflict', 'human-checkpoint', 'human-decision']);
+const checkpointKinds = new Set(['methodology', 'secret', 'access-grant', 'external-spend', 'destructive-effect', 'review', 'merge', 'migration-application', 'deployment', 'publication', 'acceptance']);
+const octopadWriteClasses = new Set(['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state']);
+const runStatuses = new Set(['planning', 'planned', 'active', 'replanning', 'waiting-human', 'paused', 'completed', 'superseded']);
 const actorRoles = new Set(['supervisor', 'planner', 'executor', 'reviewer', 'specialist-reviewer', 'recovery', 'follow-up']);
 const actorStates = new Set(['active', 'awaiting-review', 'correction-needed', 'handoff-pending', 'terminal-reconciled', 'archived']);
 
+function sameMembers(left, right) {
+  return Array.isArray(left) && Array.isArray(right) && left.length === right.length && left.every(value => right.includes(value)) && new Set(left).size === left.length && new Set(right).size === right.length;
+}
+
 function validatePlan(plan) {
-  assert.strictEqual(plan.schema, 'octoplan-plan-v2');
+  assert.strictEqual(plan.schema, 'octoplan-plan-v3');
   assert(typeof plan.plan_id === 'string' && plan.plan_id.length > 0);
   assert(runStatuses.has(plan.status));
+  assert(Number.isInteger(plan.revision) && plan.revision > 0);
   assert(plan.proposed_revision === null || (Number.isInteger(plan.proposed_revision) && plan.proposed_revision > 0));
-  assert(plan.approved_revision === null || (Number.isInteger(plan.approved_revision) && plan.approved_revision > 0));
   for (const key of ['organization_id', 'workspace_id', 'work_stream_id', 'coordination_task_id']) assert(typeof plan[key] === 'string' && plan[key].length > 0);
   assert(plan.outcome && /^E[0-9]+$/.test(plan.outcome.candidate_ref));
-  const preApproval = ['draft', 'awaiting-approval'].includes(plan.status);
-  if (preApproval) {
-    assert(Number.isInteger(plan.proposed_revision) && plan.proposed_revision > 0);
-    assert.strictEqual(plan.approved_revision, null);
-    assert.strictEqual(plan.execution_authority, null);
-    assert.strictEqual(plan.supervisor, null);
-    if (plan.status === 'awaiting-approval') assert(plan.review && plan.review.revision === plan.proposed_revision && plan.review.verdict === 'PASS');
-    if (plan.review) assert(plan.review.revision === plan.proposed_revision);
+  assert(plan.brief);
+  for (const key of ['source_ref', 'approval_ref', 'tracker_ref']) assert(typeof plan.brief[key] === 'string' && plan.brief[key].length > 0);
+  assert(['progressive', 'final'].includes(plan.brief.review_cadence));
+  assert(['plan-only', 'deliver-authorized'].includes(plan.brief.execution_scope));
+  assert(Array.isArray(plan.brief.octopad_write_classes) && plan.brief.octopad_write_classes.length > 0);
+  assert(plan.brief.octopad_write_classes.every(writeClass => octopadWriteClasses.has(writeClass)));
+  assert(Array.isArray(plan.brief.native_actions) && plan.brief.native_actions.every(action => ['create', 'message', 'archive'].includes(action)));
+  assert(Array.isArray(plan.brief.native_roles) && plan.brief.native_roles.every(role => actorRoles.has(role)));
+  assert(Array.isArray(plan.brief.native_environments) && plan.brief.native_environments.length > 0);
+  assert(['none', 'native-task/local', 'native-task/worktree', 'native-task/projectless'].includes(plan.brief.child_route));
+  assert(Array.isArray(plan.brief.effects) && plan.brief.effects.every(effect => typeof effect === 'string' && effect.length > 0));
+  assert(plan.review && plan.review.revision === plan.revision && plan.review.verdict === 'PASS');
+  assert(typeof plan.review.reviewer_ref === 'string' && plan.review.reviewer_ref.length > 0);
+  assert(typeof plan.review.evidence_ref === 'string' && plan.review.evidence_ref.length > 0);
+  assert(plan.runtime && plan.runtime.minimum_version === '13.0.0');
+  for (const key of ['loaded_version', 'installed_version']) assert(/^13\.[0-9]+\.[0-9]+$/.test(plan.runtime[key]));
+  assert(plan.intent && Number.isInteger(plan.intent.revision) && plan.intent.revision > 0);
+  assert(typeof plan.intent.latest_user_directive_ref === 'string' && Array.isArray(plan.intent.superseded_effect_keys));
+  assert(plan.supervisor && typeof plan.supervisor.thread_ref === 'string' && plan.supervisor.thread_ref.length > 0);
+  assert(Number.isInteger(plan.supervisor.epoch) && plan.supervisor.epoch > 0);
+  assert(['current-task', 'dedicated-handoff'].includes(plan.supervisor.mode));
+  if (plan.supervisor.mode === 'dedicated-handoff') assert(typeof plan.supervisor.source_fenced_ref === 'string' && plan.supervisor.source_fenced_ref.length > 0);
+  assert(plan.supervisor.goal && typeof plan.supervisor.goal.required === 'boolean');
+  assert.strictEqual(plan.supervisor.goal.required, plan.brief.execution_scope === 'deliver-authorized');
+  if (plan.supervisor.goal.required) {
+    assert.strictEqual(plan.supervisor.goal.owner_thread_ref, plan.supervisor.thread_ref);
+    assert(typeof plan.supervisor.goal.objective_ref === 'string' && plan.supervisor.goal.objective_ref.length > 0);
+    assert(['created', 'adopted'].includes(plan.supervisor.goal.origin));
+    assert(typeof plan.supervisor.goal.evidence_ref === 'string' && plan.supervisor.goal.evidence_ref.length > 0);
+    assert(['pending', 'active', 'blocked', 'complete'].includes(plan.supervisor.goal.state));
+    if (plan.status === 'active') assert.strictEqual(plan.supervisor.goal.state, 'active');
   } else {
-    assert(Number.isInteger(plan.approved_revision) && plan.approved_revision > 0);
-    assert(plan.review && plan.review.revision === plan.approved_revision && plan.review.verdict === 'PASS');
-    assert(plan.execution_authority && typeof plan.execution_authority.source_ref === 'string' && plan.execution_authority.source_ref.length > 0);
-    assert(['revision-approval', 'bounded-outcome'].includes(plan.execution_authority.kind));
-    if (plan.delivery_mode === 'review-before-delivery') {
-      assert.strictEqual(plan.execution_authority.kind, 'revision-approval');
-      assert.strictEqual(plan.execution_authority.approved_revision, plan.approved_revision);
-      assert.strictEqual(plan.execution_authority.outcome_boundary_ref, null);
-    } else {
-      assert.strictEqual(plan.delivery_mode, 'autonomous-delivery');
-      assert.strictEqual(plan.execution_authority.kind, 'bounded-outcome');
-      assert(plan.execution_authority.approved_revision === null && typeof plan.execution_authority.outcome_boundary_ref === 'string' && plan.execution_authority.outcome_boundary_ref.length > 0);
-    }
-    assert(plan.supervisor && Number.isInteger(plan.supervisor.epoch) && plan.supervisor.epoch > 0 && plan.supervisor.dedicated === true);
-    assert(typeof plan.supervisor.title === 'string' && /^Supervisor - .+ - .+/.test(plan.supervisor.title) && plan.supervisor.title.length <= 64);
+    assert.strictEqual(plan.status, 'planned');
+    assert.strictEqual(plan.supervisor.goal.origin, null);
+    assert.strictEqual(plan.supervisor.goal.evidence_ref, null);
+    assert.strictEqual(plan.supervisor.goal.state, null);
   }
-  if (plan.review) {
-    assert(typeof plan.review.reviewer_ref === 'string' && plan.review.reviewer_ref.length > 0);
-    assert(typeof plan.review.evidence_ref === 'string' && plan.review.evidence_ref.length > 0);
-  }
-  assert(plan.creation_grant && typeof plan.creation_grant.source_ref === 'string' && plan.creation_grant.source_ref.length > 0);
-  assert.strictEqual(plan.creation_grant.plan_id, plan.plan_id);
-  assert(Array.isArray(plan.creation_grant.actions) && plan.creation_grant.actions.length > 0);
-  assert(plan.creation_grant.actions.every(action => ['create', 'message', 'archive'].includes(action)));
-  assert.strictEqual(new Set(plan.creation_grant.actions).size, plan.creation_grant.actions.length);
-  assert(Array.isArray(plan.creation_grant.adopted_session_refs));
-  assert(Array.isArray(plan.creation_grant.roles) && plan.creation_grant.roles.length > 0);
-  assert(plan.creation_grant.roles.every(role => actorRoles.has(role)));
-  assert.strictEqual(new Set(plan.creation_grant.roles).size, plan.creation_grant.roles.length);
-  assert(Array.isArray(plan.creation_grant.environments) && plan.creation_grant.environments.length > 0);
-  if (plan.creation_grant.project_id === null) {
-    assert(typeof plan.creation_grant.directory_name === 'string' && plan.creation_grant.directory_name.length > 0);
-    assert.deepStrictEqual(plan.creation_grant.environments, [null]);
+  assert(plan.authority && typeof plan.authority.source_ref === 'string' && plan.authority.source_ref.length > 0);
+  assert.strictEqual(plan.authority.source_ref, plan.brief.approval_ref);
+  assert.strictEqual(plan.authority.delivery, plan.brief.execution_scope === 'deliver-authorized');
+  assert(Array.isArray(plan.authority.actions) && plan.authority.actions.every(action => ['create', 'message', 'archive'].includes(action)));
+  assert.strictEqual(new Set(plan.authority.actions).size, plan.authority.actions.length);
+  assert(Array.isArray(plan.authority.adopted_session_refs));
+  assert(Array.isArray(plan.authority.roles) && plan.authority.roles.every(role => actorRoles.has(role)));
+  assert.strictEqual(new Set(plan.authority.roles).size, plan.authority.roles.length);
+  assert(Array.isArray(plan.authority.environments) && plan.authority.environments.length > 0);
+  assert(sameMembers(plan.authority.actions, plan.brief.native_actions));
+  assert(sameMembers(plan.authority.roles, plan.brief.native_roles));
+  assert(sameMembers(plan.authority.environments, plan.brief.native_environments));
+  assert(sameMembers(plan.authority.octopad_write_classes, plan.brief.octopad_write_classes));
+  assert.strictEqual(plan.authority.child_route, plan.brief.child_route);
+  assert(sameMembers(plan.authority.effects, plan.brief.effects));
+  assert.strictEqual(plan.authority.project_id, plan.brief.project_id);
+  assert.strictEqual(plan.authority.directory_name, plan.brief.directory_name);
+  if (plan.authority.delivery) assert(plan.authority.actions.length > 0 && plan.authority.roles.length > 0);
+  else assert(plan.authority.actions.length === 0 && plan.authority.roles.length === 0);
+  if (plan.authority.project_id === null) {
+    assert(typeof plan.authority.directory_name === 'string' && plan.authority.directory_name.length > 0);
+    assert.deepStrictEqual(plan.authority.environments, [null]);
   } else {
-    assert(typeof plan.creation_grant.project_id === 'string' && plan.creation_grant.project_id.length > 0);
-    assert.strictEqual(plan.creation_grant.directory_name, null);
-    assert(plan.creation_grant.environments.every(environment => environment === 'local' || environment === 'worktree'));
-    assert.strictEqual(new Set(plan.creation_grant.environments).size, plan.creation_grant.environments.length);
+    assert(typeof plan.authority.project_id === 'string' && plan.authority.project_id.length > 0);
+    assert.strictEqual(plan.authority.directory_name, null);
+    assert(plan.authority.environments.every(environment => environment === 'local' || environment === 'worktree'));
+    assert.strictEqual(new Set(plan.authority.environments).size, plan.authority.environments.length);
   }
   const refs = new Set(Object.keys(plan.task_ids));
   assert(refs.size > 0);
   assert(Object.values(plan.task_ids).every(id => typeof id === 'string' && id.length > 0));
   assert.strictEqual(new Set(Object.values(plan.task_ids)).size, refs.size);
+  assert(plan.brief_records && plan.brief_records.decisions && plan.brief_records.questions);
+  const recordIds = new Set();
+  for (const [kind, pattern] of [['decisions', /^D[0-9]+$/], ['questions', /^Q[0-9]+$/]]) {
+    for (const [ref, record] of Object.entries(plan.brief_records[kind])) {
+      assert(pattern.test(ref));
+      assert(typeof record.id === 'string' && record.id.length > 0 && !recordIds.has(record.id));
+      assert(typeof record.receipt_ref === 'string' && record.receipt_ref.length > 0);
+      recordIds.add(record.id);
+    }
+  }
+  const edgeKeys = new Set();
+  const dependencyMap = new Map([...refs].map(ref => [ref, []]));
   for (const edge of plan.desired_dependencies) {
     assert(refs.has(edge.task_ref) && refs.has(edge.depends_on_ref));
+    assert.notStrictEqual(edge.task_ref, edge.depends_on_ref);
+    const edgeKey = `${edge.task_ref}:${edge.depends_on_ref}`;
+    assert(!edgeKeys.has(edgeKey));
     assert(typeof edge.rationale === 'string' && edge.rationale.length > 0);
+    edgeKeys.add(edgeKey);
+    dependencyMap.get(edge.task_ref).push(edge.depends_on_ref);
   }
-  const gateKeys = new Set();
+  const visiting = new Set();
+  const visited = new Set();
+  function visit(ref) {
+    assert(!visiting.has(ref));
+    if (visited.has(ref)) return;
+    visiting.add(ref);
+    dependencyMap.get(ref).forEach(visit);
+    visiting.delete(ref);
+    visited.add(ref);
+  }
+  refs.forEach(visit);
+  const checkpointKeys = new Set();
   assert(refs.has(plan.outcome.candidate_ref));
   assert(plan.budgets && plan.counters);
   for (const key of ['max_active_child_actors', 'max_wip', 'max_correction_loops', 'max_review_actors', 'max_review_checks', 'batch_size']) assert(Number.isInteger(plan.budgets[key]) && plan.budgets[key] > 0);
@@ -268,21 +363,20 @@ function validatePlan(plan) {
     assert.strictEqual(plan.telemetry_observable, true);
     for (const value of Object.values(plan.telemetry_limits)) assert(Number.isInteger(value) && value > 0);
   }
-  const humanTaskRefs = new Set();
-  for (const gate of plan.protected_gates) {
-    assert(protectedKinds.has(gate.kind) && refs.has(gate.delivery_task_ref) && /^E[0-9]+$/.test(gate.delivery_task_ref));
-    assert(typeof gate.gate_key === 'string' && gate.gate_key.length > 0 && !gateKeys.has(gate.gate_key));
-    assert(['pending', 'satisfied', 'rejected'].includes(gate.state));
-    for (const key of ['owner', 'target_effect', 'resume_predicate']) assert(typeof gate[key] === 'string' && gate[key].length > 0);
-    assert(gate.evidence_ref === null || (typeof gate.evidence_ref === 'string' && gate.evidence_ref.length > 0));
-    if (['human-review', 'merge'].includes(gate.kind)) {
-      assert.strictEqual(gate.location, 'embedded');
-      assert.strictEqual(gate.human_task_ref, null);
-    } else if (gate.location === 'human-task') {
-      assert(refs.has(gate.human_task_ref) && /^H[0-9]+$/.test(gate.human_task_ref) && !humanTaskRefs.has(gate.human_task_ref));
-      humanTaskRefs.add(gate.human_task_ref);
-    } else assert.strictEqual(gate.location, 'embedded');
-    gateKeys.add(gate.gate_key);
+  assert(Array.isArray(plan.human_checkpoints));
+  for (const checkpoint of plan.human_checkpoints) {
+    assert(checkpointKinds.has(checkpoint.kind));
+    assert(typeof checkpoint.checkpoint_key === 'string' && checkpoint.checkpoint_key.length > 0 && !checkpointKeys.has(checkpoint.checkpoint_key));
+    assert(['user', 'organization', 'planner-recommendation'].includes(checkpoint.source));
+    assert(typeof checkpoint.mandatory === 'boolean');
+    assert(['pending', 'satisfied', 'rejected'].includes(checkpoint.state));
+    for (const key of ['owner', 'subject', 'timing', 'reason', 'expected_decision', 'resume_predicate']) assert(typeof checkpoint[key] === 'string' && checkpoint[key].length > 0);
+    assert(Array.isArray(checkpoint.blocked_task_refs) && checkpoint.blocked_task_refs.every(ref => refs.has(ref)));
+    assert(Array.isArray(checkpoint.safe_continuation_refs) && checkpoint.safe_continuation_refs.every(ref => refs.has(ref)));
+    const blockedRefs = new Set(checkpoint.blocked_task_refs);
+    assert(checkpoint.safe_continuation_refs.every(ref => !blockedRefs.has(ref)));
+    assert(checkpoint.evidence_ref === null || (typeof checkpoint.evidence_ref === 'string' && checkpoint.evidence_ref.length > 0));
+    checkpointKeys.add(checkpoint.checkpoint_key);
   }
   for (const [actorRef, actor] of Object.entries(plan.actors)) {
     assert.strictEqual(actor.actor_ref, actorRef);
@@ -293,11 +387,11 @@ function validatePlan(plan) {
     } else {
       assert(typeof actor.project_id === 'string' && actor.project_id.length > 0 && ['local', 'worktree'].includes(actor.environment));
     }
-    assert(actor.provenance && typeof actor.provenance.creation_key === 'string' && typeof actor.provenance.grant_source_ref === 'string');
-    assert.strictEqual(actor.provenance.grant_source_ref, plan.creation_grant.source_ref);
+    assert(actor.provenance && typeof actor.provenance.creation_key === 'string' && typeof actor.provenance.authority_source_ref === 'string');
+    assert.strictEqual(actor.provenance.authority_source_ref, plan.authority.source_ref);
     assert(['create', 'message', 'archive'].includes(actor.provenance.action));
-    assert(actor.provenance.adopted_session_ref === null || plan.creation_grant.adopted_session_refs.includes(actor.provenance.adopted_session_ref));
-    assert(grantCovers(plan.creation_grant, {...actor, adopted_session_ref: actor.provenance.adopted_session_ref}, actor.provenance.action, plan.plan_id));
+    assert(actor.provenance.adopted_session_ref === null || plan.authority.adopted_session_refs.includes(actor.provenance.adopted_session_ref));
+    assert(authorityCovers(plan.authority, {...actor, adopted_session_ref: actor.provenance.adopted_session_ref}, actor.provenance.action));
     for (const flag of ['pending_correction', 'pending_recheck', 'waiting_human', 'handoff_pending']) assert(typeof actor[flag] === 'boolean');
     if (actor.previous_state === null) assert.strictEqual(actor.state, 'active');
     else {
@@ -313,13 +407,14 @@ function validatePlan(plan) {
       assert(actor.terminal_reason && ['PASS', 'abandoned', 'superseded'].includes(actor.terminal_reason));
       assert(actor.transfer_receipt && actor.archive_receipt);
       assert(!actor.pending_correction && !actor.pending_recheck && !actor.waiting_human && !actor.handoff_pending);
-      assert(plan.creation_grant.actions.includes('archive'));
+      assert(plan.authority.actions.includes('archive'));
     }
   }
   assert(plan.resume && Array.isArray(plan.resume.pending_operation_keys));
   assert(Array.isArray(plan.native_action_intents));
+  const intentByKey = new Map();
   for (const intent of plan.native_action_intents) {
-    for (const key of ['action_key', 'action', 'target_ref', 'effect_ref', 'grant_source_ref', 'role']) assert(typeof intent[key] === 'string' && intent[key].length > 0);
+    for (const key of ['action_key', 'action', 'target_ref', 'effect_ref', 'authority_source_ref', 'role']) assert(typeof intent[key] === 'string' && intent[key].length > 0);
     if (intent.project_id === null) {
       assert(typeof intent.directory_name === 'string' && intent.directory_name.length > 0);
       assert.strictEqual(intent.environment, null);
@@ -328,24 +423,55 @@ function validatePlan(plan) {
       assert.strictEqual(intent.directory_name, null);
       assert(['local', 'worktree'].includes(intent.environment));
     }
-    assert(['create', 'message', 'archive'].includes(intent.action) && plan.creation_grant.actions.includes(intent.action));
+    assert(['create', 'message', 'archive'].includes(intent.action) && plan.authority.actions.includes(intent.action));
     assert.strictEqual(intent.plan_id, plan.plan_id);
-    assert.strictEqual(intent.grant_source_ref, plan.creation_grant.source_ref);
-    assert(grantCovers(plan.creation_grant, {...intent, adopted_session_ref: intent.adopted_session_ref ?? null}, intent.action, plan.plan_id));
+    assert.strictEqual(intent.plan_revision, plan.revision);
+    assert.strictEqual(intent.intent_revision, plan.intent.revision);
+    assert.strictEqual(intent.authority_source_ref, plan.authority.source_ref);
+    assert(authorityCovers(plan.authority, {...intent, adopted_session_ref: intent.adopted_session_ref ?? null}, intent.action));
     assert(Number.isInteger(intent.epoch) && intent.epoch > 0);
     assert(['pending', 'confirmed', 'ambiguous', 'failed'].includes(intent.result));
+    assert(!intentByKey.has(intent.action_key));
+    intentByKey.set(intent.action_key, intent);
   }
   assert(Array.isArray(plan.native_action_receipts));
+  const receiptKeys = new Set();
   for (const receipt of plan.native_action_receipts) {
-    for (const key of ['action_key', 'target_ref', 'observed_effect_ref', 'grant_source_ref', 'evidence_ref']) assert(typeof receipt[key] === 'string' && receipt[key].length > 0);
+    for (const key of ['action_key', 'target_ref', 'observed_effect_ref', 'authority_source_ref', 'evidence_ref', 'plan_id']) assert(typeof receipt[key] === 'string' && receipt[key].length > 0);
     assert(['create', 'message', 'archive'].includes(receipt.action));
+    assert.strictEqual(receipt.plan_id, plan.plan_id);
+    assert.strictEqual(receipt.plan_revision, plan.revision);
+    assert.strictEqual(receipt.intent_revision, plan.intent.revision);
     assert(Number.isInteger(receipt.epoch) && receipt.epoch > 0);
     assert(['confirmed', 'absent', 'conflict'].includes(receipt.result));
+    assert(!receiptKeys.has(receipt.action_key));
+    const intent = intentByKey.get(receipt.action_key);
+    assert(intent);
+    assert.strictEqual(receipt.action, intent.action);
+    assert.strictEqual(receipt.target_ref, intent.target_ref);
+    assert.strictEqual(receipt.observed_effect_ref, intent.effect_ref);
+    assert.strictEqual(receipt.authority_source_ref, intent.authority_source_ref);
+    assert.strictEqual(receipt.plan_id, intent.plan_id);
+    assert.strictEqual(receipt.plan_revision, intent.plan_revision);
+    assert.strictEqual(receipt.intent_revision, intent.intent_revision);
+    assert.strictEqual(receipt.epoch, intent.epoch);
+    const expectedIntentResult = receipt.result === 'confirmed' ? 'confirmed' : receipt.result === 'conflict' ? 'ambiguous' : 'failed';
+    assert.strictEqual(intent.result, expectedIntentResult);
+    receiptKeys.add(receipt.action_key);
+  }
+  if (plan.heartbeat !== null) {
+    assert(['ci', 'human-merge', 'deployment'].includes(plan.heartbeat.kind));
+    assert(typeof plan.heartbeat.predicate_ref === 'string' && plan.heartbeat.predicate_ref.length > 0);
+    assert.strictEqual(plan.heartbeat.intent_revision, plan.intent.revision);
+    assert.strictEqual(plan.heartbeat.owner_thread_ref, plan.supervisor.thread_ref);
+    assert.strictEqual(plan.heartbeat.refreshes_coordination_state, true);
+    assert.strictEqual(plan.heartbeat.watches_native_actor, false);
   }
   if (plan.status === 'completed') {
     assert(typeof plan.outcome.global_evidence_ref === 'string' && plan.outcome.global_evidence_ref.length > 0);
-    assert.strictEqual(plan.outcome.global_evidence_revision, plan.approved_revision);
-    assert(plan.protected_gates.every(gate => gate.state === 'satisfied' && typeof gate.evidence_ref === 'string' && gate.evidence_ref.length > 0));
+    assert.strictEqual(plan.outcome.global_evidence_revision, plan.revision);
+    assert(plan.human_checkpoints.every(checkpoint => checkpoint.state === 'satisfied' && typeof checkpoint.evidence_ref === 'string' && checkpoint.evidence_ref.length > 0));
+    assert.strictEqual(plan.supervisor.goal.state, 'complete');
     assert.strictEqual(plan.resume.pending_operation_keys.length, 0);
     assert(Object.values(plan.actors).every(actor => ['terminal-reconciled', 'archived'].includes(actor.state)));
   }
@@ -353,64 +479,70 @@ function validatePlan(plan) {
 }
 
 const plan = {
-  schema: 'octoplan-plan-v2', plan_id: 'plan-a', proposed_revision: null, approved_revision: 1, status: 'approved',
+  schema: 'octoplan-plan-v3', plan_id: 'plan-a', revision: 1, proposed_revision: null, status: 'active',
   organization_id: 'org-a', workspace_id: 'workspace-a', work_stream_id: 'stream-a', coordination_task_id: 'task-control',
+  brief: {source_ref: 'message-request', approval_ref: 'message-brief-go', tracker_ref: 'tracker-a', review_cadence: 'final', execution_scope: 'deliver-authorized', octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], native_actions: ['create', 'message', 'archive'], native_roles: ['executor', 'reviewer', 'supervisor'], project_id: 'project-a', directory_name: null, native_environments: ['local', 'worktree'], child_route: 'native-task/worktree', effects: ['bounded delivery']},
   outcome: {candidate_ref: 'E01', global_evidence_ref: null, global_evidence_revision: null},
-  delivery_mode: 'autonomous-delivery', task_ids: {E01: 'task-a', E02: 'task-b', H01: 'task-c'},
-  execution_authority: {source_ref: 'message-execution', kind: 'bounded-outcome', approved_revision: null, outcome_boundary_ref: 'message-outcome'},
+  task_ids: {E01: 'task-a', E02: 'task-b', E03: 'task-c', H01: 'task-human'},
+  brief_records: {decisions: {D01: {id: 'decision-a', receipt_ref: 'receipt-decision-a'}}, questions: {Q01: {id: 'question-a', receipt_ref: 'receipt-question-a'}}},
   desired_dependencies: [{task_ref: 'E02', depends_on_ref: 'E01', rationale: 'needs artifact'}],
   review: {revision: 1, verdict: 'PASS', reviewer_ref: 'reviewer-a', evidence_ref: 'evidence-a'},
-  supervisor: {owner_thread_id: null, epoch: 1, dedicated: true, title: 'Supervisor - plan-a - delivery'},
-  creation_grant: {source_ref: 'message-a', plan_id: 'plan-a', project_id: 'project-a', directory_name: null, environments: ['local', 'worktree'], roles: ['executor', 'reviewer', 'supervisor'], actions: ['create', 'message', 'archive'], adopted_session_refs: []},
+  supervisor: {thread_ref: 'thread-user', epoch: 1, mode: 'current-task', goal: {required: true, owner_thread_ref: 'thread-user', objective_ref: 'message-outcome', origin: 'created', evidence_ref: 'goal-create-a', state: 'active'}},
+  runtime: {minimum_version: '13.0.0', loaded_version: '13.0.0', installed_version: '13.0.0', adoption_ref: null},
+  authority: {source_ref: 'message-brief-go', delivery: true, project_id: 'project-a', directory_name: null, environments: ['local', 'worktree'], roles: ['executor', 'reviewer', 'supervisor'], actions: ['create', 'message', 'archive'], octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], child_route: 'native-task/worktree', effects: ['bounded delivery'], adopted_session_refs: []},
+  intent: {revision: 1, latest_user_directive_ref: 'message-brief-go', superseded_effect_keys: []},
   budgets: {max_active_child_actors: 2, max_wip: 2, max_correction_loops: 2, max_review_actors: 2, max_review_checks: 8, batch_size: 2},
   counters: {active_child_actors: 0, wip: 0, correction_loops: {}, review_actors: 0, review_checks: 0},
-  protected_gates: [
-    {gate_key: 'review-a', kind: 'human-review', location: 'embedded', delivery_task_ref: 'E02', human_task_ref: null, owner: 'maintainer', target_effect: 'approve exact head', evidence_ref: null, state: 'pending', resume_predicate: 'review evidence matches head'},
-    {gate_key: 'merge-a', kind: 'merge', location: 'embedded', delivery_task_ref: 'E02', human_task_ref: null, owner: 'maintainer', target_effect: 'merge exact head', evidence_ref: null, state: 'pending', resume_predicate: 'merge receipt matches head'},
-    {gate_key: 'deploy-a', kind: 'deployment', location: 'human-task', delivery_task_ref: 'E02', human_task_ref: 'H01', owner: 'operator', target_effect: 'deploy release', evidence_ref: null, state: 'pending', resume_predicate: 'deployment receipt exists'}
+  human_checkpoints: [
+    {checkpoint_key: 'review-a', kind: 'review', source: 'organization', mandatory: true, owner: 'maintainer', subject: 'approve exact head', timing: 'after CI', reason: 'required repository review', blocked_task_refs: ['E02'], safe_continuation_refs: ['E03'], expected_decision: 'approve or request changes', evidence_ref: null, state: 'pending', resume_predicate: 'review evidence matches head'},
+    {checkpoint_key: 'deploy-a', kind: 'deployment', source: 'organization', mandatory: true, owner: 'operator', subject: 'deploy release', timing: 'after merge', reason: 'protected production effect', blocked_task_refs: ['E02'], safe_continuation_refs: [], expected_decision: 'approve or reject deployment', evidence_ref: null, state: 'pending', resume_predicate: 'deployment receipt exists'}
   ],
   actors: {}, native_action_intents: [], native_action_receipts: [],
+  heartbeat: null,
   resume: {last_event_id: null, pending_operation_keys: []}
 };
 assert(validatePlan(plan));
 assert(validatePlan(JSON.parse(JSON.stringify(plan))));
-const draftPlan = {...plan, status: 'draft', proposed_revision: 1, approved_revision: null, review: null, execution_authority: null, supervisor: null};
-const awaitingPlan = {...draftPlan, status: 'awaiting-approval', review: {revision: 1, verdict: 'PASS', reviewer_ref: 'reviewer-a', evidence_ref: 'evidence-a'}};
-const approvalAuthority = {source_ref: 'message-review', kind: 'revision-approval', approved_revision: 1, outcome_boundary_ref: null};
-assert(validatePlan(draftPlan));
-assert(validatePlan(awaitingPlan));
-assert.throws(() => validatePlan({...awaitingPlan, review: null}));
-assert.throws(() => validatePlan({...draftPlan, execution_authority: plan.execution_authority}));
-assert.throws(() => validatePlan({...plan, status: 'approved', approved_revision: null, proposed_revision: 1}));
-function approveCandidate(candidate, expectedUpdatedAt, actualUpdatedAt, authority, supervisor) {
-  assert.strictEqual(candidate.status, 'awaiting-approval');
-  assert.strictEqual(expectedUpdatedAt, actualUpdatedAt);
-  assert(candidate.review && candidate.review.revision === candidate.proposed_revision && candidate.review.verdict === 'PASS');
-  assert(authority && authority.source_ref);
-  return {...candidate, status: 'approved', approved_revision: candidate.proposed_revision, proposed_revision: null, execution_authority: authority, supervisor};
-}
-const awaitingReviewPlan = {...awaitingPlan, delivery_mode: 'review-before-delivery'};
-assert(validatePlan(approveCandidate(awaitingReviewPlan, 'v1', 'v1', approvalAuthority, plan.supervisor)));
-assert.throws(() => approveCandidate(awaitingReviewPlan, 'v1', 'v2', approvalAuthority, plan.supervisor));
-assert(validatePlan({...plan, creation_grant: {...plan.creation_grant, project_id: null, directory_name: 'projectless-output', environments: [null]}}));
-assert.throws(() => validatePlan({...plan, approved_revision: 2}));
-const reviewBeforePlan = {...plan, delivery_mode: 'review-before-delivery', execution_authority: approvalAuthority};
-assert(validatePlan(reviewBeforePlan));
-assert.throws(() => validatePlan({...plan, delivery_mode: 'review-before-delivery'}));
-assert.throws(() => validatePlan({...reviewBeforePlan, delivery_mode: 'autonomous-delivery'}));
+for (const kind of checkpointKinds) assert(validatePlan({...plan, human_checkpoints: [{...plan.human_checkpoints[0], kind}]}));
+const externalHeartbeat = {kind: 'ci', predicate_ref: 'check-head-a', intent_revision: 1, owner_thread_ref: 'thread-user', refreshes_coordination_state: true, watches_native_actor: false};
+assert(validatePlan({...plan, heartbeat: externalHeartbeat}));
+assert.throws(() => validatePlan({...plan, heartbeat: {...externalHeartbeat, intent_revision: 0}}));
+assert.throws(() => validatePlan({...plan, heartbeat: {...externalHeartbeat, watches_native_actor: true}}));
+const planOnly = {
+  ...plan,
+  status: 'planned',
+  brief: {...plan.brief, review_cadence: 'progressive', execution_scope: 'plan-only', native_actions: [], native_roles: [], child_route: 'none', effects: ['plan creation']},
+  supervisor: {...plan.supervisor, goal: {required: false, owner_thread_ref: null, objective_ref: null, origin: null, evidence_ref: null, state: null}},
+  authority: {...plan.authority, delivery: false, roles: [], actions: [], child_route: 'none', effects: ['plan creation']}
+};
+assert(validatePlan(planOnly));
+const deliverPlanned = {...plan, status: 'planned', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'pending'}}};
+assert(validatePlan(deliverPlanned));
+assert(validatePlan({...plan, brief: {...plan.brief, project_id: null, directory_name: 'projectless-output', native_environments: [null], child_route: 'native-task/projectless'}, authority: {...plan.authority, project_id: null, directory_name: 'projectless-output', environments: [null], child_route: 'native-task/projectless'}}));
+assert(validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff', source_fenced_ref: 'fence-a'}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff'}}));
+assert.throws(() => validatePlan({...plan, brief: {...plan.brief, review_cadence: 'sometimes'}}));
+assert.throws(() => validatePlan({...plan, brief: {...plan.brief, approval_ref: ''}}));
+assert.throws(() => validatePlan({...plan, brief: {...plan.brief, native_actions: ['create', 'message']}}));
+assert.throws(() => validatePlan({...plan, runtime: {...plan.runtime, loaded_version: '12.1.0'}}));
+assert.throws(() => validatePlan({...plan, intent: {...plan.intent, revision: 0}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, required: false}}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'blocked'}}}));
 assert.throws(() => validatePlan({...plan, status: 'revoked'}));
-assert.throws(() => validatePlan({...plan, task_ids: {E01: 'task-a', E02: 'task-a', H01: 'task-c'}}));
-assert.throws(() => validatePlan({...plan, task_ids: {E01: '', E02: 'task-b', H01: 'task-c'}}));
-assert.throws(() => validatePlan({...plan, protected_gates: [...plan.protected_gates, {...plan.protected_gates[0], gate_key: 'merge-a'}]}));
-assert.throws(() => validatePlan({...plan, protected_gates: [{...plan.protected_gates[1], location: 'human-task', human_task_ref: 'H01'}]}));
-assert.throws(() => validatePlan({...plan, protected_gates: [{...plan.protected_gates[2], human_task_ref: 'E01'}]}));
-assert.throws(() => validatePlan({...plan, protected_gates: [{gate_key: 'merge-a', kind: 'merge'}]}));
-assert.throws(() => validatePlan({...plan, creation_grant: {roles: ['executor']}}));
-assert.throws(() => validatePlan({...plan, creation_grant: {...plan.creation_grant, project_id: null, directory_name: null, environments: [null]}}));
-assert.throws(() => validatePlan({...plan, creation_grant: {...plan.creation_grant, environments: [null]}}));
-assert.throws(() => validatePlan({...plan, creation_grant: {...plan.creation_grant, actions: ['create', 'delete']}}));
-assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, dedicated: false}}));
-assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, title: 'Supervisor - ' + 'x'.repeat(70)}}));
+assert.throws(() => validatePlan({...plan, task_ids: {E01: 'task-a', E02: 'task-a', E03: 'task-c', H01: 'task-human'}}));
+assert.throws(() => validatePlan({...plan, task_ids: {E01: '', E02: 'task-b', E03: 'task-c', H01: 'task-human'}}));
+assert.throws(() => validatePlan({...plan, desired_dependencies: [{task_ref: 'E01', depends_on_ref: 'E01', rationale: 'self'}]}));
+assert.throws(() => validatePlan({...plan, desired_dependencies: [...plan.desired_dependencies, {...plan.desired_dependencies[0]}]}));
+assert.throws(() => validatePlan({...plan, desired_dependencies: [...plan.desired_dependencies, {task_ref: 'E01', depends_on_ref: 'E02', rationale: 'cycle'}]}));
+assert.throws(() => validatePlan({...plan, brief_records: {decisions: {D01: {id: 'decision-a', receipt_ref: ''}}, questions: {}}}));
+assert.throws(() => validatePlan({...plan, human_checkpoints: [...plan.human_checkpoints, {...plan.human_checkpoints[0]}]}));
+assert.throws(() => validatePlan({...plan, human_checkpoints: [{...plan.human_checkpoints[0], blocked_task_refs: ['E99']}]}));
+assert.throws(() => validatePlan({...plan, human_checkpoints: [{...plan.human_checkpoints[0], safe_continuation_refs: ['E02']}]}));
+assert.throws(() => validatePlan({...plan, human_checkpoints: [{checkpoint_key: 'review-a', kind: 'review'}]}));
+assert.throws(() => validatePlan({...plan, authority: {roles: ['executor']}}));
+assert.throws(() => validatePlan({...plan, authority: {...plan.authority, project_id: null, directory_name: null, environments: [null]}}));
+assert.throws(() => validatePlan({...plan, authority: {...plan.authority, environments: [null]}}));
+assert.throws(() => validatePlan({...plan, authority: {...plan.authority, actions: ['create', 'delete']}}));
 assert.throws(() => validatePlan({...plan, budgets: {...plan.budgets, tokens: 1000}}));
 assert.throws(() => validatePlan({...plan, counters: {...plan.counters, wip: -1}}));
 assert.throws(() => validatePlan({...plan, counters: {...plan.counters, review_checks: 9}}));
@@ -418,7 +550,7 @@ assert.throws(() => validatePlan({...plan, telemetry_limits: {tokens: 1000}, tel
 assert(validatePlan({...plan, telemetry_limits: {tool_calls: 20}, telemetry_observable: true}));
 assert.throws(() => validatePlan({...plan, review: {revision: 1, verdict: 'PASS'}}));
 assert.throws(() => validatePlan({...plan, resume: {last_event_id: null}}));
-const actorBase = {actor_ref: 'executorA', role: 'executor', task_ref: 'E01', project_id: 'project-a', environment: 'local', provenance: {creation_key: 'create-a', grant_source_ref: 'message-a', action: 'create', adopted_session_ref: null}, pending_correction: false, pending_recheck: false, waiting_human: false, handoff_pending: false};
+const actorBase = {actor_ref: 'executorA', role: 'executor', task_ref: 'E01', project_id: 'project-a', environment: 'local', provenance: {creation_key: 'create-a', authority_source_ref: 'message-brief-go', action: 'create', adopted_session_ref: null}, pending_correction: false, pending_recheck: false, waiting_human: false, handoff_pending: false};
 const awaitingActor = {...actorBase, state: 'awaiting-review', previous_state: 'active', transition_evidence_ref: 'transition-review', report_ref: 'report-review', pending_recheck: true};
 const archivedActor = {...actorBase, state: 'archived', previous_state: 'terminal-reconciled', transition_evidence_ref: 'transition-a', report_ref: 'report-a', terminal_reason: 'PASS', transfer_receipt: 'transfer-a', reconciliation_receipt: 'reconcile-a', archive_receipt: 'archive-a'};
 assert(validatePlan({...plan, actors: {executorA: awaitingActor}}));
@@ -426,17 +558,17 @@ assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor
 assert(validatePlan({...plan, actors: {executorA: archivedActor}}));
 assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, transfer_receipt: null}}}));
 assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, waiting_human: true}}}));
-assert.throws(() => validatePlan({...plan, creation_grant: {...plan.creation_grant, actions: ['create', 'message']}, actors: {executorA: archivedActor}}));
+assert.throws(() => validatePlan({...plan, authority: {...plan.authority, actions: ['create', 'message']}, actors: {executorA: archivedActor}}));
 assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, role: 'unknown'}}}));
 assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, previous_state: 'active'}}}));
 assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, transition_evidence_ref: null}}}));
 
-const satisfiedGates = plan.protected_gates.map(gate => ({...gate, state: 'satisfied', evidence_ref: `${gate.gate_key}-evidence`}));
-const completedPlan = {...plan, status: 'completed', outcome: {...plan.outcome, global_evidence_ref: 'integration-proof-a', global_evidence_revision: 1}, protected_gates: satisfiedGates, actors: {executorA: archivedActor}};
+const satisfiedCheckpoints = plan.human_checkpoints.map(checkpoint => ({...checkpoint, state: 'satisfied', evidence_ref: `${checkpoint.checkpoint_key}-evidence`}));
+const completedPlan = {...plan, status: 'completed', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'complete'}}, outcome: {...plan.outcome, global_evidence_ref: 'integration-proof-a', global_evidence_revision: 1}, human_checkpoints: satisfiedCheckpoints, actors: {executorA: archivedActor}};
 assert(validatePlan(completedPlan));
 assert.throws(() => validatePlan({...completedPlan, outcome: {...completedPlan.outcome, global_evidence_ref: null}}));
 assert.throws(() => validatePlan({...completedPlan, outcome: {...completedPlan.outcome, global_evidence_revision: 2}}));
-assert.throws(() => validatePlan({...completedPlan, protected_gates: plan.protected_gates}));
+assert.throws(() => validatePlan({...completedPlan, human_checkpoints: plan.human_checkpoints}));
 assert.throws(() => validatePlan({...completedPlan, resume: {last_event_id: null, pending_operation_keys: ['pending-a']}}));
 assert.throws(() => validatePlan({...completedPlan, actors: {executorA: {...actorBase, state: 'active', previous_state: null}}}));
 
@@ -463,6 +595,89 @@ function changeNeedsRevision(changes) {
 assert(changeNeedsRevision(['dependencies']));
 assert(changeNeedsRevision(['authority']));
 assert(!changeNeedsRevision(['displayName', 'descriptionFormatting', 'responseShape', 'links', 'status', 'receipt']));
+
+function applyDirective(previous, expectedUpdatedAt, actualUpdatedAt, sourceRef, supersededEffectKeys = []) {
+  assert.strictEqual(expectedUpdatedAt, actualUpdatedAt);
+  assert(typeof sourceRef === 'string' && sourceRef.length > 0);
+  return {...previous, intent: {revision: previous.intent.revision + 1, latest_user_directive_ref: sourceRef, superseded_effect_keys: supersededEffectKeys}};
+}
+const redirected = applyDirective(plan, 'u1', 'u1', 'message-do-not-send', ['send:campaign-a']);
+assert.strictEqual(redirected.intent.revision, 2);
+assert.deepStrictEqual(redirected.intent.superseded_effect_keys, ['send:campaign-a']);
+assert.throws(() => applyDirective(plan, 'u1', 'u2', 'message-do-not-send'));
+
+function recommendCadence(work) {
+  return work.downstreamMethodChange || work.materialRework || work.sharedRuleGovernsBatch || work.irreversibleExternal || work.unsafeToInfer ? 'progressive' : 'final';
+}
+assert.strictEqual(recommendCadence({independentArticles: 10}), 'final');
+assert.strictEqual(recommendCadence({independentArticles: 10, sharedRuleGovernsBatch: true}), 'progressive');
+assert.strictEqual(recommendCadence({irreversibleExternal: true}), 'progressive');
+
+function versionDecision({schema, minimum, loaded, installed, safeBoundary}) {
+  if (schema !== 'octoplan-plan-v3') return 'REPLAN_SCHEMA';
+  const parse = value => value.split('.').map(Number);
+  const [minimumMajor] = parse(minimum);
+  const [installedMajor] = parse(installed);
+  if (minimumMajor !== 13 || installedMajor !== 13) return 'REPLAN_BREAKING';
+  const compare = (a, b) => parse(a).reduce((result, value, index) => result || value - parse(b)[index], 0);
+  if (compare(installed, minimum) < 0) return 'PAUSE_INCOMPATIBLE';
+  if (loaded === installed) return 'CONTINUE';
+  return safeBoundary ? 'ADOPT_COMPATIBLE' : 'FINISH_SAFE_BOUNDARY';
+}
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v3', minimum: '13.0.0', loaded: '13.0.0', installed: '13.1.0', safeBoundary: true}), 'ADOPT_COMPATIBLE');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v3', minimum: '13.0.0', loaded: '13.0.0', installed: '13.1.0', safeBoundary: false}), 'FINISH_SAFE_BOUNDARY');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v3', minimum: '13.0.0', loaded: '13.0.0', installed: '14.0.0', safeBoundary: true}), 'REPLAN_BREAKING');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v2', minimum: '12.1.0', loaded: '12.1.0', installed: '13.0.0', safeBoundary: true}), 'REPLAN_SCHEMA');
+
+function goalActivationDecision({existingStatus = 'none', exactMatch = false, dedicatedDisclosed = false, goalAlreadyCreated = false}) {
+  if (goalAlreadyCreated && dedicatedDisclosed) return 'PROHIBIT_POST_CREATION_TRANSFER';
+  if (existingStatus === 'none' || existingStatus === 'complete') return 'CREATE_OR_REPLACE';
+  if (existingStatus === 'active' && exactMatch) return 'ADOPT_EXACT';
+  if (existingStatus === 'active' && dedicatedDisclosed) return 'USE_DISCLOSED_DEDICATED_BEFORE_GOAL';
+  return 'HUMAN_DECISION';
+}
+assert.strictEqual(goalActivationDecision({existingStatus: 'active', exactMatch: true}), 'ADOPT_EXACT');
+assert.strictEqual(goalActivationDecision({existingStatus: 'active', exactMatch: false}), 'HUMAN_DECISION');
+assert.strictEqual(goalActivationDecision({existingStatus: 'complete'}), 'CREATE_OR_REPLACE');
+assert.strictEqual(goalActivationDecision({existingStatus: 'active', dedicatedDisclosed: true}), 'USE_DISCLOSED_DEDICATED_BEFORE_GOAL');
+assert.strictEqual(goalActivationDecision({existingStatus: 'active', dedicatedDisclosed: true, goalAlreadyCreated: true}), 'PROHIBIT_POST_CREATION_TRANSFER');
+
+function goalDisposition({outcomeProved = false, pendingOperations = 0, checkpointsSatisfied = false, sameImpassTurns = 0, meaningfulProgressRoute = true}) {
+  if (outcomeProved && pendingOperations === 0 && checkpointsSatisfied) return 'COMPLETE';
+  if (sameImpassTurns >= 3 && !meaningfulProgressRoute) return 'BLOCKED';
+  return 'ACTIVE';
+}
+assert.strictEqual(goalDisposition({sameImpassTurns: 1, meaningfulProgressRoute: false}), 'ACTIVE');
+assert.strictEqual(goalDisposition({sameImpassTurns: 3, meaningfulProgressRoute: true}), 'ACTIVE');
+assert.strictEqual(goalDisposition({sameImpassTurns: 3, meaningfulProgressRoute: false}), 'BLOCKED');
+assert.strictEqual(goalDisposition({outcomeProved: true, pendingOperations: 0, checkpointsSatisfied: true}), 'COMPLETE');
+
+function heartbeatDecision({nativeActorActive = false, externalTimedPredicate = false, predicateResolved = false, intentChanged = false, exists = false}) {
+  if (nativeActorActive) return 'NONE';
+  if (predicateResolved) return exists ? 'DELETE' : 'NONE';
+  if (!externalTimedPredicate) return 'NONE';
+  if (intentChanged && exists) return 'UPDATE';
+  return exists ? 'KEEP' : 'CREATE';
+}
+assert.strictEqual(heartbeatDecision({nativeActorActive: true, externalTimedPredicate: true}), 'NONE');
+assert.strictEqual(heartbeatDecision({externalTimedPredicate: true}), 'CREATE');
+assert.strictEqual(heartbeatDecision({externalTimedPredicate: true, intentChanged: true, exists: true}), 'UPDATE');
+assert.strictEqual(heartbeatDecision({predicateResolved: true, exists: true}), 'DELETE');
+
+function deliveryUnitDecision(surfaces, onePrPerTask) {
+  const independentlyAcceptable = surfaces.filter(surface => surface.independentlyAcceptable).length;
+  return onePrPerTask && independentlyAcceptable > 1 ? 'SPLIT_TOP_LEVEL_TASKS' : 'COHERENT_UNIT';
+}
+const stackedSurfaces = ['database', 'api', 'dashboard'].map(name => ({name, independentlyAcceptable: true}));
+assert.strictEqual(deliveryUnitDecision(stackedSurfaces, true), 'SPLIT_TOP_LEVEL_TASKS');
+assert.strictEqual(deliveryUnitDecision([{name: 'single-artifact', independentlyAcceptable: true}], true), 'COHERENT_UNIT');
+
+function verifierCoverage(changedSurfaces, verifiers) {
+  const covered = new Set(verifiers.flatMap(verifier => verifier.coveredSurfaces));
+  return changedSurfaces.every(surface => covered.has(surface)) ? 'COVERED' : 'UNCOVERED';
+}
+assert.strictEqual(verifierCoverage(['api', 'monitoring'], [{coveredSurfaces: ['api']}]), 'UNCOVERED');
+assert.strictEqual(verifierCoverage(['api', 'monitoring'], [{coveredSurfaces: ['api', 'monitoring']}]), 'COVERED');
 
 function reconcileWrites(expected, responseItems, observations) {
   return expected.map(operation => {
@@ -526,6 +741,12 @@ function nativeActionDecision(action, intentExists, observations, absenceProven 
   if (!intentExists) return 'PERSIST_INTENT_THEN_CALL_ONCE';
   return absenceProven ? 'RETRY_SAME_ACTION_KEY' : 'RECONCILE_NO_REPLAY';
 }
+function childPromptLoadsOctoplan(prompt, role) {
+  return prompt.includes('$octoplan') && prompt.includes(`roles/${role}.md`);
+}
+assert(childPromptLoadsOctoplan('Use $octoplan as executor. Load roles/executor.md.', 'executor'));
+assert(childPromptLoadsOctoplan('Use $octoplan as reviewer. Load roles/reviewer.md.', 'reviewer'));
+assert(!childPromptLoadsOctoplan('Execute E01 with the supplied packet.', 'executor'));
 for (const action of ['create', 'message', 'archive']) {
   assert.strictEqual(nativeActionDecision(action, false, []), 'PERSIST_INTENT_THEN_CALL_ONCE');
   assert.strictEqual(nativeActionDecision(action, true, ['exact-effect']), 'CONFIRM_RECEIPT');
@@ -533,17 +754,26 @@ for (const action of ['create', 'message', 'archive']) {
   assert.strictEqual(nativeActionDecision(action, true, [], true), 'RETRY_SAME_ACTION_KEY');
   assert.strictEqual(nativeActionDecision(action, true, ['wrong-effect']), 'PAUSE_CONFLICT');
 }
-const actionIntent = {action_key: 'plan-a:r1:message:E01:1', action: 'message', target_ref: 'executorA', effect_ref: 'handoff-a', grant_source_ref: 'message-a', role: 'executor', project_id: 'project-a', directory_name: null, environment: 'local', adopted_session_ref: null, plan_id: 'plan-a', epoch: 1, result: 'pending'};
+const actionIntent = {action_key: 'plan-a:r1:i1:message:E01:1', action: 'message', target_ref: 'executorA', effect_ref: 'handoff-a', authority_source_ref: 'message-brief-go', role: 'executor', project_id: 'project-a', directory_name: null, environment: 'local', adopted_session_ref: null, plan_id: 'plan-a', plan_revision: 1, intent_revision: 1, epoch: 1, result: 'pending'};
 assert(validatePlan({...plan, native_action_intents: [actionIntent]}));
+assert.throws(() => validatePlan({...redirected, native_action_intents: [actionIntent]}));
 assert.throws(() => validatePlan({...plan, native_action_intents: [{...actionIntent, effect_ref: ''}]}));
 assert.throws(() => validatePlan({...plan, native_action_intents: [{...actionIntent, action: 'delete'}]}));
-const projectlessPlan = {...plan, creation_grant: {...plan.creation_grant, project_id: null, directory_name: 'projectless-output', environments: [null]}};
+assert.throws(() => validatePlan({...plan, native_action_intents: [actionIntent, {...actionIntent}]}));
+const projectlessPlan = {...plan, brief: {...plan.brief, project_id: null, directory_name: 'projectless-output', native_environments: [null], child_route: 'native-task/projectless'}, authority: {...plan.authority, project_id: null, directory_name: 'projectless-output', environments: [null], child_route: 'native-task/projectless'}};
 const projectlessIntent = {...actionIntent, project_id: null, directory_name: 'projectless-output', environment: null};
 assert(validatePlan({...projectlessPlan, native_action_intents: [projectlessIntent]}));
 assert.throws(() => validatePlan({...projectlessPlan, native_action_intents: [{...projectlessIntent, directory_name: null}]}));
-const actionReceipt = {action_key: actionIntent.action_key, action: 'message', target_ref: 'executorA', observed_effect_ref: 'handoff-a', grant_source_ref: 'message-a', epoch: 1, result: 'confirmed', evidence_ref: 'thread-read-a'};
-assert(validatePlan({...plan, native_action_receipts: [actionReceipt]}));
-assert.throws(() => validatePlan({...plan, native_action_receipts: [{...actionReceipt, evidence_ref: ''}]}));
+const confirmedIntent = {...actionIntent, result: 'confirmed'};
+const actionReceipt = {action_key: actionIntent.action_key, action: 'message', target_ref: 'executorA', observed_effect_ref: 'handoff-a', authority_source_ref: 'message-brief-go', plan_id: 'plan-a', plan_revision: 1, intent_revision: 1, epoch: 1, result: 'confirmed', evidence_ref: 'thread-read-a'};
+assert(validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [actionReceipt]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [actionIntent], native_action_receipts: [actionReceipt]}));
+assert.throws(() => validatePlan({...plan, native_action_receipts: [actionReceipt]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [{...actionReceipt, epoch: 2}]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [{...actionReceipt, intent_revision: 2}]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [{...actionReceipt, observed_effect_ref: 'wrong-effect'}]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [actionReceipt, {...actionReceipt}]}));
+assert.throws(() => validatePlan({...plan, native_action_intents: [confirmedIntent], native_action_receipts: [{...actionReceipt, evidence_ref: ''}]}));
 
 function bootstrapDecision(intentExists, observed, boundedReconciliationComplete = false) {
   const exact = observed.filter(item => item === 'exact-destination' || item === 'alternate-destination');
@@ -575,25 +805,25 @@ function mustPause(reason) { return pauseReasons.has(reason); }
 for (const reason of pauseReasons) assert(mustPause(reason));
 for (const warning of ['missing-structured-content', 'incomplete-response', 'display-drift', 'tool-incident', 'recoverable-write']) assert(!mustPause(warning));
 
-function grantCovers(grant, actor, action, planId) {
-  const identity = grant.project_id === null ? actor.project_id === null && grant.directory_name === actor.directory_name : grant.project_id === actor.project_id;
-  const provenance = actor.adopted_session_ref === null || grant.adopted_session_refs.includes(actor.adopted_session_ref);
-  return grant.plan_id === planId && grant.actions.includes(action) && identity && grant.environments.includes(actor.environment) && grant.roles.includes(actor.role) && provenance;
+function authorityCovers(authority, actor, action) {
+  const identity = authority.project_id === null ? actor.project_id === null && authority.directory_name === actor.directory_name : authority.project_id === actor.project_id;
+  const provenance = actor.adopted_session_ref === null || authority.adopted_session_refs.includes(actor.adopted_session_ref);
+  return authority.delivery && authority.actions.includes(action) && identity && authority.environments.includes(actor.environment) && authority.roles.includes(actor.role) && provenance;
 }
-const grantActor = {project_id: 'project-a', directory_name: null, environment: 'local', role: 'executor', adopted_session_ref: null};
-assert(grantCovers(plan.creation_grant, grantActor, 'message', 'plan-a'));
-assert(!grantCovers(plan.creation_grant, grantActor, 'message', 'plan-b'));
-assert(!grantCovers(plan.creation_grant, grantActor, 'delete', 'plan-a'));
-assert(!grantCovers(plan.creation_grant, {...grantActor, project_id: 'project-b'}, 'message', 'plan-a'));
-assert(!grantCovers(plan.creation_grant, {...grantActor, role: 'planner'}, 'message', 'plan-a'));
-assert(!grantCovers(plan.creation_grant, {...grantActor, adopted_session_ref: 'adopted-a'}, 'message', 'plan-a'));
-assert(grantCovers({...plan.creation_grant, adopted_session_refs: ['adopted-a']}, {...grantActor, adopted_session_ref: 'adopted-a'}, 'message', 'plan-a'));
+const authorityActor = {project_id: 'project-a', directory_name: null, environment: 'local', role: 'executor', adopted_session_ref: null};
+assert(authorityCovers(plan.authority, authorityActor, 'message'));
+assert(!authorityCovers(plan.authority, authorityActor, 'delete'));
+assert(!authorityCovers(plan.authority, {...authorityActor, project_id: 'project-b'}, 'message'));
+assert(!authorityCovers(plan.authority, {...authorityActor, role: 'planner'}, 'message'));
+assert(!authorityCovers(plan.authority, {...authorityActor, adopted_session_ref: 'adopted-a'}, 'message'));
+assert(authorityCovers({...plan.authority, adopted_session_refs: ['adopted-a']}, {...authorityActor, adopted_session_ref: 'adopted-a'}, 'message'));
+assert(!authorityCovers({...plan.authority, delivery: false}, authorityActor, 'message'));
 
 function beginReplan(previous) {
-  return {...previous, status: 'replanning', proposed_revision: previous.approved_revision + 1, proposed_review: null, acceptedPasses: []};
+  return {...previous, status: 'replanning', proposed_revision: previous.revision + 1, proposed_review: null, acceptedPasses: []};
 }
 const replanned = beginReplan({...plan, acceptedPasses: ['pass-a']});
-assert.strictEqual(replanned.approved_revision, 1);
+assert.strictEqual(replanned.revision, 1);
 assert.strictEqual(replanned.proposed_revision, 2);
 assert.deepStrictEqual(replanned.acceptedPasses, []);
 assert.strictEqual(replanned.proposed_review, null);
@@ -601,7 +831,7 @@ assert.strictEqual(replanned.proposed_review, null);
 function eligibleSafeReady(tasks, capacity, active = []) {
   const occupied = new Set(active.flatMap(task => task.conflicts));
   const eligible = tasks
-    .filter(task => task.ready && task.authorized && task.routeAvailable && task.withinBudget && !task.gateBlocked)
+    .filter(task => task.ready && task.authorized && task.routeAvailable && task.withinBudget && !task.checkpointBlocked)
     .sort((a, b) => a.criticalRank - b.criticalRank);
   const selected = [];
   for (const task of eligible) {
@@ -613,11 +843,11 @@ function eligibleSafeReady(tasks, capacity, active = []) {
   return selected.map(task => task.ref);
 }
 const frontier = [
-  {ref: 'E01', criticalRank: 1, ready: true, authorized: true, routeAvailable: true, withinBudget: true, gateBlocked: false, conflicts: ['file:a']},
-  {ref: 'E02', criticalRank: 2, ready: true, authorized: true, routeAvailable: true, withinBudget: true, gateBlocked: false, conflicts: ['file:b']},
-  {ref: 'E03', criticalRank: 3, ready: true, authorized: true, routeAvailable: true, withinBudget: true, gateBlocked: false, conflicts: ['file:c']},
-  {ref: 'E04', criticalRank: 4, ready: true, authorized: true, routeAvailable: true, withinBudget: true, gateBlocked: false, conflicts: ['file:a']},
-  {ref: 'E05', criticalRank: 5, ready: true, authorized: true, routeAvailable: true, withinBudget: true, gateBlocked: true, conflicts: ['file:d']}
+  {ref: 'E01', criticalRank: 1, ready: true, authorized: true, routeAvailable: true, withinBudget: true, checkpointBlocked: false, conflicts: ['file:a']},
+  {ref: 'E02', criticalRank: 2, ready: true, authorized: true, routeAvailable: true, withinBudget: true, checkpointBlocked: false, conflicts: ['file:b']},
+  {ref: 'E03', criticalRank: 3, ready: true, authorized: true, routeAvailable: true, withinBudget: true, checkpointBlocked: false, conflicts: ['file:c']},
+  {ref: 'E04', criticalRank: 4, ready: true, authorized: true, routeAvailable: true, withinBudget: true, checkpointBlocked: false, conflicts: ['file:a']},
+  {ref: 'E05', criticalRank: 5, ready: true, authorized: true, routeAvailable: true, withinBudget: true, checkpointBlocked: true, conflicts: ['file:d']}
 ];
 assert.deepStrictEqual(eligibleSafeReady(frontier, 2), ['E01', 'E02']);
 assert.deepStrictEqual(eligibleSafeReady(frontier.slice(2), 1), ['E03']);
@@ -671,9 +901,9 @@ assert.strictEqual(recoveryDecision({...once, unsafe: true}), 'STOP_IMMEDIATELY'
 assert.strictEqual(recoveryDecision({...once, protectedAction: true}), 'STOP_IMMEDIATELY');
 assert.strictEqual(recoveryDecision({...once, previousKey: 'incident-original', key: 'incident-reworded'}), 'REJECT_KEY_RESET');
 
-console.log('PASS: Octoplan 12 outcome-first fixtures');
+console.log('PASS: Octoplan 13 agentic-runtime fixtures');
 NODE
 
-grep -q '^### 12\.1\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 12.1.0'
+grep -q '^### 13\.0\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 13.0.0'
 
-printf 'PASS: Octoplan Codex 12.1.0 contract\n'
+printf 'PASS: Octoplan Codex 13.0.0 contract\n'

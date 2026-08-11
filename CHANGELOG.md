@@ -6,6 +6,16 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 13.0.0 — 2026-08-11
+
+Octoplan now turns the conversation into one user-readable creation brief before the first Octopad write. The brief exposes the expected result, scope, evidence, governing organization rules, planned Octopad effects, native Codex actors, and every proposed human checkpoint. Validation uses one holistic cadence: either progressive review at the meaningful checkpoints selected from the work, or final review after all safe work is ready. The confirmed tracker, tasks, graph, Decisions, and Questions embody that brief without creating a duplicate bookkeeping Page.
+
+The current Codex task is the supervisor by default and may bind one native Goal only to an authorized delivery. Existing unfinished Goals cannot be silently replaced or transferred. Natural-language user corrections increment a durable intent revision before actors are redirected, and every side effect must join that exact intent, plan revision, supervisor epoch, target, and authority through one receipt. Long-running plans distinguish installed, loaded, and minimum-compatible skill versions, adopt compatible updates only at safe boundaries, and fence then replan older v1 or v2 runs instead of assuming that installation propagated the fix.
+
+Delivery planning now produces coherent units that are independently acceptable, reviewable, and reversible while inheriting the active `AGENTS.md` and repository workflow. Under a one-PR-per-task policy, database, API, and dashboard deliveries therefore become separate tasks and PRs instead of one oversized feature task. Verification maps every changed surface to an actual check, explicitly treats uncovered green CI as insufficient evidence, and probes adjacent cases. Project identity recovery can reconcile a unique `projectId=null` actor from stronger saved and Git evidence without duplicating it, while cyclic graphs, impossible checkpoint frontiers, stale or orphan action receipts, and incomplete Decision or Question mappings are rejected by deterministic fixtures.
+
+This breaking release introduces `octoplan-plan-v3`. Active v1, v2, 12.x, or unknown plans must be fenced and replanned from the current user mandate without inheriting execution authority, PASS verdicts, action receipts, native actors, or Goal ownership. The Claude distribution is unchanged.
+
 ### 12.1.0 — 2026-08-11
 
 Octoplan supervisors now own ordinary in-envelope execution failures through one bounded, receipted recovery loop before escalation. Connector, registry, worktree, branch, dependency, CI, and recoverable tool incidents are classified before action and may receive at most two distinct safe, reversible remedies. Existing no-mutation actors are reconciled and reused instead of duplicated, while rewording or waking an incident cannot reset its budget. Actual repository or project mismatches, unknown remotes, secrets or access issues, destructive recovery, protected actions, and material scope, target, or risk changes still stop.
