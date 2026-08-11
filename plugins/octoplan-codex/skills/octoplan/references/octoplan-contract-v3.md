@@ -6,4 +6,6 @@ Do not translate old fingerprints, PASS records, authority, readback assertions,
 
 Within v3, a newly installed compatible skill version is adopted at the next safe actor boundary after the actor fully reads it, records the version change, and confirms that the live plan remains compatible. A higher required schema or breaking major requires a material replan; an old role packet never pins a compatible actor forever.
 
+Version 13.1 is compatible with every valid v3 plan. Existing state may omit `proposed_review`, predecessor, and Goal-supersession fields until those states are first used; adoption fills safe defaults without transferring authority, PASS, actors, or Goal ownership.
+
 Installing v13 does not retroactively change an already-running v2 task. A controlled upgrade must enumerate known live v2 supervisors/Goals, persist a source-bound migration notice, fence affected old execution, and replan under v3; never assume installation alone propagated the correction.

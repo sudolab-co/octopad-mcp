@@ -67,7 +67,7 @@ Reviewers return `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION` with eviden
 
 Secrets, access grants, destructive effects, spend, required human review, merge, migration application, deployment, publication, and acceptance are protected checkpoints. Embed review/merge in their E task; separately owned human work may use Hxx. Initial authority survives unchanged scope, target, risk, and protected-action set. Verify base, head, effective diff, reviews, and checks technically; classify changes as repair or scope/target/risk/protected-action change before seeking authority. Every occurrence carries the full checkpoint fields from the state contract.
 
-When one checkpoint waits, continue every independent safe frontier. When none remains, record Octopad `waiting-human` and publish the six-field handoff. A wake supplies evidence only and never authority.
+When one checkpoint waits, continue every independent safe frontier. When none remains, set coordination JSON to `waiting-human`, keep its Octopad task `in_progress`, and publish the six-field handoff. A wake supplies evidence only, never authority.
 
 ## Launch check
 

@@ -43,9 +43,8 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
 {
   "schema": "octoplan-plan-v3",
   "plan_id": "<stable UUID>",
-  "revision": 1,
-  "proposed_revision": null,
-  "status": "planned|active",
+  "revision": 1, "proposed_revision": null, "proposed_review": null,
+  "status": "planning|planned|active|replanning|waiting-human|paused|completed|superseded",
   "organization_id": "<ID>",
   "workspace_id": "<ID>",
   "work_stream_id": "<ID>",
@@ -74,24 +73,15 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
   "desired_dependencies": [
     {"task_ref": "E02", "depends_on_ref": "E01", "rationale": "<why>"}
   ],
-  "review": {
-    "revision": 1,
-    "verdict": "PASS",
-    "reviewer_ref": "<native task or artifact reference>",
-    "evidence_ref": "<review record reference>"
-  },
+  "review": {"revision": 1, "verdict": "PASS", "reviewer_ref": "<native task or artifact reference>", "evidence_ref": "<review record reference>"},
   "supervisor": {
     "thread_ref": "<current user task by default>",
     "epoch": 1,
-    "mode": "current-task|dedicated-handoff",
-    "goal": {"required": true, "owner_thread_ref": "<same thread>", "objective_ref": "<approved outcome>", "origin": "created|adopted", "evidence_ref": "<create/get receipt>", "state": "active"}
+    "mode": "current-task|dedicated-handoff|recovery-successor",
+    "predecessor": null,
+    "goal": {"required": true, "owner_thread_ref": "<same thread>", "objective_ref": "<approved outcome>", "origin": "created|adopted|null", "evidence_ref": "<receipt or null while pending>", "state": "pending|active|blocked|complete", "supersedes_goal_ref": null}
   },
-  "runtime": {
-    "minimum_version": "13.0.0",
-    "loaded_version": "13.0.0",
-    "installed_version": "13.0.0",
-    "adoption_ref": null
-  },
+  "runtime": {"minimum_version": "13.1.0", "loaded_version": "13.1.0", "installed_version": "13.1.0", "adoption_ref": null},
   "authority": {
     "source_ref": "<approved brief or later directive>",
     "delivery": true,
@@ -111,19 +101,19 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
   "human_checkpoints": [
     {"checkpoint_key": "<stable key>", "kind": "methodology|secret|access-grant|external-spend|destructive-effect|review|merge|migration-application|deployment|publication|acceptance", "source": "user|organization|planner-recommendation", "mandatory": true, "owner": "<person or role>", "subject": "<decision>", "timing": "<when>", "reason": "<why human>", "blocked_task_refs": ["E02"], "safe_continuation_refs": ["E03"], "expected_decision": "<decision shape>", "state": "pending|satisfied|rejected", "evidence_ref": null, "resume_predicate": "<predicate>"}
   ],
-  "actors": {},
-  "native_action_intents": [],
-  "native_action_receipts": [],
+  "actors": {}, "native_action_intents": [], "native_action_receipts": [],
   "heartbeat": null,
   "resume": {"last_event_id": null, "pending_operation_keys": []}
 }
 ```
 
-Before approval, the brief exists only in the user conversation and Octoplan performs no Octopad write. After approval and plan-review PASS, `planning` covers reconciled creation, then `planned` means the reviewed graph exists. `plan-only` keeps `supervisor.goal.required=false` and stops at `planned`; authorized delivery records the current supervisor and enters `active` only after the Goal exists. A replan keeps the current revision/authority while `proposed_revision` and `proposed_review` describe the candidate delta.
+For `recovery-successor`, replace `predecessor: null` with exactly `{"thread_ref":"...","epoch":1,"goal_evidence_ref":"...","revival_ref":"...","terminal_or_unreachable_ref":"...","effects_quiescent_ref":"...","fence_key":"<plan_id>:takeover:epoch:2"}`; otherwise keep it null.
+
+Before approval, the brief stays in the conversation; Octoplan writes nothing to Octopad. `planning` covers reconciled creation; `planned` means the reviewed graph exists. Other states describe coordination, never Octopad task statuses. `plan-only` stops at `planned` without a Goal; delivery enters `active` only after Goal creation. Replanning keeps current authority while `proposed_revision` and `proposed_review` describe the candidate delta.
 
 The authority source must equal the approved brief reference, and its actions, roles, environments, Octopad write classes, child route, and effects must exactly match the brief's normalized disclosure. The vocabulary is internal, not user-facing command syntax. Projectless execution is explicit. Later widening requires a revised brief, reviewed plan revision, and new source reference. Adopted sessions require matching provenance. User review cadence never authorizes a protected effect or removes an organization checkpoint. Review/merge remain embedded on an E task; a separately owned human deliverable may use Hxx.
 
-Persist useful budget ceilings and authoritative counters only. Token, tool-call, compaction, time, or provider-cost fields are forbidden unless their telemetry is directly observable. A ceiling never permits skipping a required check or protected checkpoint.
+Persist only useful budget ceilings and authoritative counters. Token, tool-call, compaction, time, or provider-cost fields require directly observable telemetry. Ceilings never waive checks or protected checkpoints.
 
 Actor records carry role/task, project/environment, creation or adopted provenance, lifecycle flags, previous state, and transition evidence. They use `active -> awaiting-review -> correction-needed | handoff-pending -> terminal-reconciled -> archived`. Terminal requires report, transfer receipt, and supervisor reconciliation. Archive is reversible only after PASS/abandon/supersession with no correction, recheck, human wait, or handoff. Keep planner, supervisor, and waiters visible. Record `archive_receipt`; archive incidents remain pending/reconciled but do not block delivery.
 
@@ -155,7 +145,7 @@ Before every create, message, or archive, persist one intent with stable `action
 
 After crash, timeout, or ambiguous output, list/read and reconcile observed state before acting; never blind replay. For create, match creation key plus role packet and adopt one exact actor. For message, put the action key/effect reference in the relay, then inspect the target thread and dedupe the correlated effect. For archive, inspect current visibility/archive state and record whether the intended target changed. Retry the same action key only after authoritative evidence proves the effect absent; conflicts pause that action's branch.
 
-Only the current supervisor epoch may activate or perform an action. A takeover fences the owner and increments epoch. Receipts identify action key, target, observed effect/state, authority source, epoch, result, and evidence; they never copy private payloads.
+Only the current supervisor epoch may act. Before takeover, append `OCTOPLAN_TAKEOVER_INTENT` with the exact predecessor object and current quiescence proof; derive `fence_key` exactly as `<plan_id>:takeover:epoch:<predecessor_epoch+1>`. One `expected_updated_at` update then atomically sets owner, `recovery-successor` mode, incremented epoch, predecessor, coordination `paused`, and successor Goal `pending`; reread it before Goal creation. The predecessor Goal stays historical and is never falsely completed or blocked.
 
 ## Targeted recovery
 
@@ -165,7 +155,7 @@ On resume:
 2. verify plan ID/revision, intent revision, status, supervisor/Goal owner, authority, checkpoints, runtime version, heartbeat, and pending keys;
 3. adopt a compatible installed v3 update, then reconcile only pending writes/actions, claimed work, reviews, checkpoints, and open incident keys through the runtime identity hierarchy where relevant;
 4. re-read full task or source content only when its meaning, revision, verifier, or authority may have changed;
-5. resume the current-task supervisor or, for an evidenced dedicated handoff, wake the unique destination after proving the source loop fenced; never create a second plausible owner.
+5. revive and wake the unique saved owner first; only when native evidence proves it terminal or unreachable may a guarded `recovery-successor` follow the protocol in [codex-supervision.md](codex-supervision.md). Never create a second plausible effective owner.
 
 Presentation drift is a warning. A receipt with an ID is enough to target verification. Do not require every Decision, Question, task, or comment to be re-rendered exactly before useful work continues.
 

@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, or resume a governed work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 13.0.0
+Version: 13.1.0
 
 # Octoplan for Codex
 
@@ -16,9 +16,9 @@ Read [references/planning.md](references/planning.md) for planning or replanning
 
 ## Role packs
 
-Load only the matching compact pack from `roles/`: planner, plan-reviewer, supervisor, executor, reviewer, specialist-reviewer, recovery, or follow-up.
+Role packs are role contracts, not initial interview prompts. During interactive clarification and planning, the current user task follows `planning.md` directly without a planner pack; after activation it follows `codex-supervision.md` and loads supervisor. Each child loads one matching pack.
 
-One fresh read-only subagent using `plan-reviewer` reviews a complete draft before activation. It is not an Octoplan actor and cannot persist, claim, or launch. The current user task becomes supervisor by default; a separate supervisor is an environment-driven exception requiring a fenced handoff and one surviving Goal owner.
+One fresh read-only `plan-reviewer` reviews the draft before activation but cannot persist, claim, or launch. The current user task becomes supervisor by default; an environment-driven exception needs a fenced handoff and one effective Goal owner.
 
 ## Invariants
 
@@ -29,13 +29,13 @@ One fresh read-only subagent using `plan-reviewer` reviews a complete draft befo
 - Prove the exact organization, workspace, work stream, and Codex project before writes or native creation. Missing metadata such as `projectId=null` is incomplete evidence, not a blocker or permission to duplicate; reconcile it with bounded alternative evidence.
 - Persist delivery tasks with literal **Why**, **What**, and top-level **Done when**, required impact fields, real test/CI coverage, and adjacent-risk checks where relevant. Make each top-level task one independently reviewable delivery/rollback unit; under one-PR-per-task rules, independent surfaces become separate tasks and PRs.
 - Bind execution to plan ID, integer revision, and `intent_revision`. Material outcome, graph, checkpoint, route, authority, or acceptance changes create a reviewed revision; operational instructions still propagate immediately when safely applicable.
-- Use a native Goal only for authorized delivery. The current supervisor owns it until outcome proof; planned human checkpoints use Octopad `waiting-human`, and Goal `blocked` is reserved for the native three-turn genuine-impasse rule.
+- Use a native Goal only for authorized delivery. The current supervisor owns it until outcome proof; `waiting-human` and `paused` are coordination states, never Octopad task statuses, and Goal `blocked` is reserved for the native three-turn genuine-impasse rule.
 - Plan the first integrated demonstrable candidate, bound WIP/review/retry/batches, launch from `eligible_safe_ready`, and use native waits for active tasks. Heartbeats only watch timed external predicates from refreshed shared state.
 - Scale review to effect, map every changed surface to an actually running verifier, and never treat silence, timeout, green but irrelevant CI, or an unexecuted check as PASS.
 - The supervisor owns ordinary in-envelope failures through bounded diagnosis and recovery. Pause only for proven wrong identity, unresolved identity after recovery, unreconcilable duplicate, missing authority, proven missing write, conflicting revision, or the affected protected checkpoint.
 - Secrets, access grants, destructive effects, merge, migration application, deployment, publication, spend, and acceptance remain separately gated.
 
-Keep opaque identifiers out of visible prose and titles. Executors publish exactly `État`, `Fait`, `Bloqué`, `Décision attendue`, `Pour débloquer`, and `Prochaine étape` at artifact handoff, human/handoff wait, or an unrecovered incident. Only the supervisor validates advancement and durable authority.
+Keep opaque identifiers out of visible prose and titles. At artifact handoff, human/handoff wait, or an unrecovered incident, executors publish the six fixed semantics—state, done, blocked, decision expected, to unblock, next step—with labels and content in the user's language. Only the supervisor validates advancement and durable authority.
 
 ## Changing this skill
 
