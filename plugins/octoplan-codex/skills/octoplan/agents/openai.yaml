@@ -1,7 +1,7 @@
 interface:
   display_name: "Octoplan for Codex"
-  short_description: "Turn ideas into governed plans and approved execution"
-  default_prompt: "Use $octoplan to turn this idea into a governed Octopad plan, surfacing the plan-scoped Codex create/message/archive grant in the first brief."
+  short_description: "Turn a brief into governed, supervised delivery"
+  default_prompt: "Use $octoplan to clarify this request, show the creation brief and recommended review cadence, then create and supervise the governed Octopad plan after I approve it."
 
 policy:
   allow_implicit_invocation: false
