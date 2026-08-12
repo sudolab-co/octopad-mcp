@@ -1,11 +1,3 @@
-# Octoplan v3 compatibility
+# Retired Octoplan v3 contract
 
-Octoplan 13 reads and executes only `octoplan-plan-v3`. Preserve v1, v2, 10.x, or unknown state as history, fence or reconcile its native actors, then materially replan from the confirmed mandate under [state-and-recovery.md](state-and-recovery.md).
-
-Do not translate old fingerprints, PASS records, authority, readback assertions, creation intents, supervisor ownership, or Goal state into v3. Useful source artifacts may be adopted only through the new plan's explicit artifact map and review.
-
-Within v3, a newly installed compatible skill version is adopted at the next safe actor boundary after the actor fully reads it, records the version change, and confirms that the live plan remains compatible. A higher required schema or breaking major requires a material replan; an old role packet never pins a compatible actor forever.
-
-Version 13.1 is compatible with every valid v3 plan. Existing state may omit `proposed_review`, predecessor, and Goal-supersession fields until those states are first used; adoption fills safe defaults without transferring authority, PASS, actors, or Goal ownership.
-
-Installing v13 does not retroactively change an already-running v2 task. A controlled upgrade must enumerate known live v2 supervisors/Goals, persist a source-bound migration notice, fence affected old execution, and replan under v3; never assume installation alone propagated the correction.
+Octoplan 14 does not execute v3. Read [octoplan-contract-v4.md](octoplan-contract-v4.md), preserve v3 state as history, fence its writers, and materially replan without transferring PASS, authority, actor eligibility, receipts, supervisor ownership, or Goal state.

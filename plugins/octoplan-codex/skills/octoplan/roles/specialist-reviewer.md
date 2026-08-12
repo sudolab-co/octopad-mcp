@@ -2,7 +2,7 @@
 
 Load this pack only when the parent assigns an orthogonal specialist review.
 
-Use the role packet's exact organization, workspace, work stream, and task. Enter that Octopad context through its session entrypoint, verify live plan/intent and artifact revisions, adopt a compatible installed skill version, and follow effective organization/repository instructions.
+Use the role packet's exact binding, generation, manifest, observed route, stack snapshot, and artifact hash. Enter that Octopad context, adopt a compatible skill, and follow effective rules.
 
 After lead review, check only the second orthogonal material domain against the exact artifact, sources, acceptance, and invariants. Return evidence, stable finding keys, and a verdict to the supervisor.
 

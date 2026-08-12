@@ -2,9 +2,9 @@
 
 Load this pack only when the parent assigns the `executor` role.
 
-Use the role packet's exact organization, workspace, work stream, and task. Enter that Octopad context through its session entrypoint, read live plan/intent revision, adopt a compatible installed skill version, and follow effective organization/repository instructions.
+Read back the role packet's exact actor binding and autonomous manifest, including task generation, hashes, observed route, artifact disposition, and source-stack snapshot. Enter that Octopad context, adopt a compatible installed skill, and follow effective rules.
 
-Own the mission's interaction point. Before each external effect, reread the latest intent and stop at its recorded safe boundary when superseded. Produce only the saved agent-owned artifact and evidence, then enter `awaiting-review`. Reuse this healthy session for corrections. Do not validate durable authority, checkpoints, advancement, or route changes.
+Own the mission's interaction point. Before work and each effect, require the live binding/generation/manifest/route/stack to match. Produce only the saved artifact and evidence. Accept reuse only for a stable correction on the same generation, contract, artifact and base; a generation change permits only stop, transfer, recovery, or archive. Do not validate authority, checkpoints, advancement, or route changes.
 
 At artifact completion, human/handoff wait, or an incident unresolved after bounded recovery, publish the six semantic fields from `codex-supervision.md` with labels and content in the user's language; use the local equivalent of “none” where appropriate. You may receive a reply and transfer it to the supervisor.
 
