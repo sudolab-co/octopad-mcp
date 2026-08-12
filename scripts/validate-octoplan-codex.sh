@@ -33,6 +33,52 @@ require_text() {
   grep -Fq -- "$2" "$1" || fail "missing contract text in $(basename "$1"): $2"
 }
 
+worktree_matches_oid() {
+  worktree_root=$1
+  worktree_path=$2
+  expected_oid=$3
+  worktree_oid=$(git -C "$worktree_root" hash-object --path="$worktree_path" -- "$worktree_root/$worktree_path") || return 1
+  [ "$worktree_oid" = "$expected_oid" ]
+}
+
+run_worktree_identity_fixtures() {
+  fixture_root=$(mktemp -d "${TMPDIR:-/tmp}/octoplan-codex-worktree.XXXXXX")
+  fixture_path='shared-surface.txt'
+  trap 'rm -rf "$fixture_root"' EXIT HUP INT TERM
+  git -C "$fixture_root" init -q
+  git -C "$fixture_root" config user.email 'octoplan-fixture.invalid'
+  git -C "$fixture_root" config user.name 'Octoplan fixture'
+
+  printf '%s\n' "$fixture_path text eol=lf" > "$fixture_root/.gitattributes"
+  printf 'reviewed shared surface\r\n' > "$fixture_root/$fixture_path"
+  git -C "$fixture_root" add -- .gitattributes "$fixture_path"
+  fixture_staged_oid=$(git -C "$fixture_root" ls-files --stage -- "$fixture_path" | awk '$3 == "0" {print $2}')
+  [ -n "$fixture_staged_oid" ] || fail 'worktree identity fixture did not create a staged blob'
+  worktree_matches_oid "$fixture_root" "$fixture_path" "$fixture_staged_oid" || fail 'exact staged worktree identity fixture failed'
+
+  git -C "$fixture_root" commit -qm 'fixture committed state'
+  fixture_committed_oid=$(git -C "$fixture_root" rev-parse "HEAD:$fixture_path")
+  [ "$fixture_committed_oid" = "$fixture_staged_oid" ] || fail 'staged and committed fixture OIDs differ'
+  worktree_matches_oid "$fixture_root" "$fixture_path" "$fixture_committed_oid" || fail 'exact committed worktree identity fixture failed'
+
+  printf '%s\n' 'unstaged worktree drift' > "$fixture_root/$fixture_path"
+  if worktree_matches_oid "$fixture_root" "$fixture_path" "$fixture_committed_oid"; then
+    fail 'unstaged worktree drift fixture was accepted'
+  fi
+  printf 'PASS: shared-surface worktree identity fixtures\n'
+}
+
+worktree_fixtures=${OCTOPLAN_CODEX_WORKTREE_FIXTURES:-false}
+case "$worktree_fixtures" in
+  true|false) ;;
+  *) fail 'OCTOPLAN_CODEX_WORKTREE_FIXTURES must be true or false' ;;
+esac
+if [ "$worktree_fixtures" = true ]; then
+  [ "$codex_only" = true ] || fail 'worktree fixtures require OCTOPLAN_CODEX_ONLY=true'
+  run_worktree_identity_fixtures
+  exit 0
+fi
+
 for file in "$skill/SKILL.md" "$planning" "$state" "$runtime" "$supervision" "$compatibility" "$manifest" "$agent_manifest"; do
   require_file "$file"
 done
@@ -317,7 +363,10 @@ while IFS= read -r changed; do
         base_oid=$(git -C "$root" ls-tree origin/main -- "$changed" | awk '{print $3}')
         [ -n "$staged_oid" ] && [ "$staged_oid" != "$base_oid" ] || fail "shared surface is not staged as a reviewed change: $changed"
         case "$codex_shared_reviewed" in
-          *" $changed=$staged_oid "*) skip_content_audit=true ;;
+          *" $changed=$staged_oid "*)
+            worktree_matches_oid "$root" "$changed" "$staged_oid" || fail "shared surface has unreviewed worktree drift: $changed"
+            skip_content_audit=true
+            ;;
           *) fail "shared surface lacks an exact staged-blob review receipt: $changed=$staged_oid" ;;
         esac
         ;;
