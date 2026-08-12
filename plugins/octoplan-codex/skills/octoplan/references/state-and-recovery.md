@@ -41,7 +41,7 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
 
 ```json
 {
-  "schema": "octoplan-plan-v4",
+  "schema": "octoplan-plan-v5",
   "plan_id": "<stable UUID>",
   "revision": 1, "proposed_revision": null, "proposed_review": null,
   "status": "planning|planned|active|replanning|waiting-human|paused|completed|superseded",
@@ -77,14 +77,17 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
     {"task_ref": "E02", "depends_on_ref": "E01", "rationale": "<why>"}
   ],
   "review": {"revision": 1, "task_generations": {"E01": 1}, "review_type": "full_independent_fresh|targeted_recheck", "reviewer_session_ref": "<session>", "planned_route": "gpt-5.6-luna/max", "observed_route": "gpt-5.6-luna/max", "route_evidence_ref": "<turn context>", "artifact_hash": "<hash>", "finding_keys": [], "executed_checks": ["<check>"], "verdict": "PASS", "evidence_ref": "<review record>"},
+  "planning": {"candidate_hash": "<hash>", "source_snapshot_hash": "<hash>", "active_lease_ref": "planner-lease-1", "leases": [{"lease_ref": "planner-lease-1", "session_ref": "<fresh planner>", "fresh_session_receipt": "<receipt>", "plan_revision": 1, "intent_revision": 1, "candidate_hash": "<hash>", "input_snapshot_hash": "<hash>", "planned_route": "gpt-5.6-sol/xhigh", "observed_route": "gpt-5.6-sol/xhigh", "route_evidence_ref": "<turn context>", "binding_readback_ref": "<receipt>", "status": "active|adopted|rejected|expired", "output_hash": "<hash or null>", "prior_artifact_disposition_ref": "<record>"}]},
   "supervisor": {
     "thread_ref": "<current user task by default>",
     "epoch": 1,
     "mode": "current-task|dedicated-handoff|recovery-successor",
     "predecessor": null,
+    "context_admission": {"plan_revision": 1, "intent_revision": 1, "supervisor_epoch": 1, "state_hash": "<hash>", "decision": "REUSE|REPLACE|PAUSE", "state_readback_ref": "<receipt>", "intent_readback_ref": "<receipt>", "accepted_progress_ref": null, "compaction_ref": null, "resumes_since_progress": 0, "evidence_ref": "<receipt>"},
     "goal": {"required": true, "owner_thread_ref": "<same thread>", "objective_ref": "<approved outcome>", "origin": "created|adopted|null", "evidence_ref": "<receipt or null while pending>", "state": "pending|active|blocked|complete", "supersedes_goal_ref": null}
   },
-  "runtime": {"minimum_version": "14.0.0", "loaded_version": "14.0.0", "installed_version": "14.0.0", "adoption_ref": null, "admission_checked_at": "<timestamp refreshed before dispatch/effect>", "supervisor_route": {"planned": "gpt-5.6-sol/high", "observed": "gpt-5.6-sol/high", "evidence_ref": "<turn context>", "admission": "PASS"}},
+  "runtime": {"minimum_version": "15.0.0", "loaded_version": "15.0.0", "installed_version": "15.0.0", "adoption_ref": null, "admission_checked_at": "<timestamp refreshed before dispatch/effect>", "supervisor_route": {"planned": "gpt-5.6-sol/high", "observed": "gpt-5.6-sol/high", "evidence_ref": "<turn context>", "admission": "PASS"}},
+  "legacy_migration": null,
   "authority": {
     "source_ref": "<approved brief or later directive>",
     "delivery": true,
@@ -104,10 +107,13 @@ Persist this core object. Ordinary JSON formatting is accepted; key order and wh
   "human_checkpoints": [
     {"checkpoint_key": "<stable key>", "kind": "methodology|secret|access-grant|external-spend|destructive-effect|review|merge|migration-application|deployment|publication|acceptance", "source": "user|organization|planner-recommendation", "mandatory": true, "owner": "<person or role>", "subject": "<decision>", "timing": "<when>", "reason": "<why human>", "blocked_task_refs": ["E02"], "safe_continuation_refs": ["E03"], "expected_decision": "<decision shape>", "state": "pending|satisfied|rejected", "evidence_ref": null, "resume_predicate": "<predicate>"}
   ],
-  "actors": {}, "native_action_intents": [], "native_action_receipts": [],
+  "actors": {}, "context_admissions": {}, "delegation_boundaries": [], "native_action_intents": [], "native_action_receipts": [],
+  "delivery_artifacts": {"E01": [{"kind": "branch|pull-request|document|other", "artifact_ref": "<stable ref>", "repository_ref": "<repo or null>", "base_ref": "<exact base>", "head_ref": "<exact head>", "state": "branch-only|draft|ready-for-review|waiting-human|merged|closed|superseded", "owner_actor_ref": "<actor>", "next_transition": "<action>", "blocker": null, "resume_predicate": "<predicate>", "disposition": "active|adopt|reject|rewrite|historical", "evidence_ref": "<readback>"}]},
   "stack_snapshots": {"stack-1": {"main_sha": "<sha>", "base_shas": ["<sha>"], "head_shas": ["<sha>"], "ancestry_ref": "<evidence>", "effective_diffs_ref": "<evidence>", "migration_registry_ref": "<evidence>", "checks_ref": "<evidence>", "verifier_coverage_ref": "<evidence>", "checked_at": "<timestamp>", "ttl_seconds": 300, "fresh_until": "<timestamp>", "admission": "PASS", "admission_ref": "<readback>"}},
+  "baseline_leases": {"baseline-e01-g1": {"lease_ref": "baseline-e01-g1", "task_ref": "E01", "task_generation": 1, "actor_ref": null, "stack_snapshot_ref": "stack-1", "status": "active|expired", "last_refresh_reason": "dispatch|first-effect|push|review|handoff|collision", "refresh_receipt_ref": "<receipt>"}},
   "frontier": {"parallel_safe_now": [], "blocked_on_artifact_refs": {}, "write_conflict_set": {}},
   "telemetry": {"snapshot_refs": [], "metrics": []},
+  "efficiency": {"accepted_progress_ref": null, "accepted_progress_kind": null, "comparable_cycles_without_progress": 0, "material_replan_streak": 0, "graph_hash_history": ["<hash>"], "incident": null},
   "compaction": {"size_budget": "<explicit positive connector-safe limit>", "detail_ledger_refs": [], "last_receipt": null},
   "heartbeat": null,
   "resume": {"last_event_id": null, "pending_operation_keys": []}
@@ -122,15 +128,19 @@ The authority source must equal the approved brief reference, and its actions, r
 
 Persist only useful budget ceilings and authoritative counters. Keep detailed receipts in comments/ledger refs, not C00. Before its explicit size budget, compact automatically with pre/post hashes, essential-field inventory, readback, and no-loss assertion. Typed telemetry records metric, value or `unavailable`, source, population, and time window; sessions, review passes, retries, compactions, tool calls, elapsed time, and tokens never share a counter or get added. Ceilings never waive checks or checkpoints.
 
-Actor records carry a complete `actor_binding_readback`, `fresh_session_receipt` where required, route-admission and stack receipts, lifecycle, and evidence. Reuse a healthy writer only for stable findings on the same artifact/generation when result, scope, risk, graph, route, acceptance, authority, contract, and base remain unchanged. Split/merge, changed meaning/outputs/Done when/graph/route/acceptance/authority, rejected draft, rewrite-from-scratch, generation/manifest change, or unadoptable drift increments `task_generation`; the predecessor may only stop, transfer, recover, or archive.
+Actor records carry `actor_binding_readback`, `baseline_lease_ref`, fresh-session, route/stack receipts, lifecycle, and evidence. The supervisor carries `supervisor.context_admission`; an unhealthy Goal owner pauses substantive analysis/effects and delegates one fresh PLN without transferring the Goal. After compaction, superseded intent, or two no-progress resumes, persist applicable `REUSE|REPLACE|PAUSE` with current state/intent, child binding/manifest, progress/compaction refs, count, and evidence; a third comparable resume without accepted progress cannot reuse. Stable same-generation correction remains reusable. Split/merge, changed meaning/outputs/Done when/graph/route/acceptance/authority, rejected draft, rewrite, generation/manifest change, or unadoptable drift increments `task_generation`; the predecessor may only stop, transfer, recover, or archive.
 
 Replacement lifecycle separates `active -> fence-pending -> fenced -> terminal-reconciled -> archived|archive-pending` from successor `created-pending -> active`. Activate a successor writer only after stop acknowledgement, `effects_quiescent_ref`, affected task-generation rotation, transfer receipt, fresh create receipt, binding readback, and manifest acknowledgement; never rotate the supervisor epoch for task replacement. A read-only planner may start earlier. Physical archive may follow activation once quiescence is proved. Normal completion requires PASS/reconciliation and `archive_receipt`; failure records `archive_incident_ref`, stays pending under bounded recovery, and final success waits.
 
 Plan revision identifies the reviewed graph; task ID plus `task_generation` identifies semantic meaning. `intent.revision` orders operational instructions independently. Hashes bind a bounded manifest/contract or compaction receipt, not an exhaustive mirrored plan.
 
+Every material replan expires prior planner leases and requires one unique fresh session bound exactly to plan/candidate/intent/source-snapshot hashes. An adopted lease's output hash equals its candidate; expired/rejected no-return leases may have null output. Two material replans without accepted progress, a repeated graph hash, or two comparable work cycles opens `incident: {incident_ref, kind, state: opened|diagnosed|adopted, diagnosis_ref, disposition_ref}`. Until adopted, only reconciliation, stop, archive, and bounded diagnosis are allowed; afterwards stable correction may resume. Accepted progress means newly accepted artifact/review/integrated evidence, never activity, tokens, compaction, a draft, or irrelevant CI; it resets both counters and graph history.
+
+Every branch, PR, document, or other delivery artifact has a durable lifecycle record. A draft is valid only with exact base/head, owner, next transition, blocker/resume predicate, disposition, and readback. `terminal-reconciled`, plan completion, or supersession is forbidden while any artifact lacks a terminal/disposition record. Historical artifacts and confirmed receipts never depend on current authority.
+
 ## Material revision
 
-Increment the plan revision when a reviewed change affects result, scope, success evidence, task meaning, split/merge, outputs, dependency/parallelism, checkpoint, owner, route/model bound, authority, acceptance, or required artefact. Increment every affected `task_generation`, set `new_context_required`, fence old writers, and require a new autonomous manifest plus `full_independent_fresh` review.
+Increment the plan revision when a reviewed change affects result, scope, success evidence, task meaning, split/merge, outputs, dependency/parallelism, checkpoint, owner, route/model bound, authority, acceptance, or required artefact. Increment every affected `task_generation`, set `new_context_required`, fence old writers, expire the planner lease, and require a fresh planner, new autonomous manifest, plus `full_independent_fresh` review.
 
 Do not increment it for formatting, display names, descriptions clarified without changing meaning, reordered MCP prose, links, response shapes, runtime receipts, progress, artifacts, or status changes.
 
@@ -162,7 +172,7 @@ On resume:
 
 1. refresh the exact native task, organization/workspace session, work stream, coordination task, and current task IDs;
 2. verify plan/revision, task generations/manifests, intent, status, supervisor/Goal owner, authority, checkpoints, observed routes, stack freshness, runtime, heartbeat, and pending keys;
-3. adopt a compatible installed v4 update, then reconcile only pending writes/actions, claimed work, reviews, checkpoints, and open incident keys through the runtime identity hierarchy where relevant;
+3. adopt a compatible installed v5 update, then reconcile only pending writes/actions, claimed work, planner/context leases, delivery artifacts, reviews, checkpoints, and open incident keys through the runtime identity hierarchy where relevant;
 4. re-read full task or source content only when its meaning, revision, verifier, or authority may have changed;
 5. revive and wake the unique saved owner first; only when native evidence proves it terminal or unreachable may a guarded `recovery-successor` follow the protocol in [codex-supervision.md](codex-supervision.md). Never create a second plausible effective owner.
 

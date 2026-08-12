@@ -2,12 +2,14 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+codex_only=${OCTOPLAN_CODEX_ONLY:-false}
+codex_shared_reviewed=" ${OCTOPLAN_CODEX_SHARED_REVIEWED:-} "
 skill="$root/plugins/octoplan-codex/skills/octoplan"
 planning="$skill/references/planning.md"
 state="$skill/references/state-and-recovery.md"
 runtime="$skill/references/codex-runtime.md"
 supervision="$skill/references/codex-supervision.md"
-compatibility="$skill/references/octoplan-contract-v4.md"
+compatibility="$skill/references/octoplan-contract-v5.md"
 roles="$skill/roles"
 manifest="$root/plugins/octoplan-codex/.codex-plugin/plugin.json"
 agent_manifest="$skill/agents/openai.yaml"
@@ -17,6 +19,11 @@ fail() {
   printf 'FAIL: %s\n' "$1" >&2
   exit 1
 }
+
+case "$codex_only" in
+  true|false) ;;
+  *) fail 'OCTOPLAN_CODEX_ONLY must be true or false' ;;
+esac
 
 require_file() {
   [ -f "$1" ] || fail "missing file: $1"
@@ -33,23 +40,26 @@ for role in planner plan-reviewer supervisor executor reviewer specialist-review
   require_file "$roles/$role.md"
 done
 
-grep -q '^Version: 14\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 14.0.0'
-grep -q '"version": "14\.0\.0"' "$manifest" || fail 'Codex plugin is not 14.0.0'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 14.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
+grep -q '^Version: 15\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 15.0.0'
+grep -q '"version": "15\.0\.0"' "$manifest" || fail 'Codex plugin is not 15.0.0'
+if [ "$codex_only" = false ]; then
+  grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
+fi
 
 expected_refs='codex-runtime.md
 codex-supervision.md
 octoplan-contract-v3.md
 octoplan-contract-v4.md
+octoplan-contract-v5.md
 planning.md
 state-and-recovery.md'
 actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec basename '{}' \; | sort)
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
-require_text "$compatibility" '# Octoplan v4 compatibility'
+require_text "$compatibility" '# Octoplan v5 compatibility'
 require_text "$compatibility" 'Do not translate old fingerprints'
 require_text "$compatibility" 'adopt a compatible installed update only at a safe boundary'
-require_text "$compatibility" 'Installing v14 does not change a running legacy task.'
-require_text "$compatibility" 'Version 14.0 is breaking'
+require_text "$compatibility" 'Installing v15 does not change a running legacy task.'
+require_text "$compatibility" 'Version 15.0 is breaking'
 
 active_docs="$skill/SKILL.md $planning $state $runtime $supervision"
 for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-direct-readback-v1' 'canonical review-subject' 'saved-state equality' 'byte-deterministic' 'plan_hash' 'record Octopad `waiting-human`' 'update Octopad to `waiting-human`' 'writes Octopad `completed`'; do
@@ -57,8 +67,8 @@ for forbidden in 'octoplan-supervision-v6' 'octoplan-fingerprint-v' 'octopad-dir
     fail "retired blocking contract remains active: $forbidden"
   fi
 done
-require_text "$skill/SKILL.md" 'references/octoplan-contract-v4.md'
-require_text "$planning" '[octoplan-contract-v4.md](octoplan-contract-v4.md)'
+require_text "$skill/SKILL.md" 'references/octoplan-contract-v5.md'
+require_text "$planning" '[octoplan-contract-v5.md](octoplan-contract-v5.md)'
 
 skill_lines=$(wc -l < "$skill/SKILL.md" | tr -d ' ')
 planning_lines=$(wc -l < "$planning" | tr -d ' ')
@@ -66,19 +76,19 @@ state_lines=$(wc -l < "$state" | tr -d ' ')
 runtime_lines=$(wc -l < "$runtime" | tr -d ' ')
 supervision_lines=$(wc -l < "$supervision" | tr -d ' ')
 [ "$skill_lines" -le 45 ] || fail "SKILL.md exceeds 45 lines: $skill_lines"
-[ "$planning_lines" -le 120 ] || fail "planning.md exceeds 120 lines: $planning_lines"
-[ "$state_lines" -le 180 ] || fail "state-and-recovery.md exceeds 180 lines: $state_lines"
+[ "$planning_lines" -le 125 ] || fail "planning.md exceeds 125 lines: $planning_lines"
+[ "$state_lines" -le 195 ] || fail "state-and-recovery.md exceeds 195 lines: $state_lines"
 [ "$runtime_lines" -le 110 ] || fail "codex-runtime.md exceeds 110 lines: $runtime_lines"
-[ "$supervision_lines" -le 140 ] || fail "codex-supervision.md exceeds 140 lines: $supervision_lines"
+[ "$supervision_lines" -le 150 ] || fail "codex-supervision.md exceeds 150 lines: $supervision_lines"
 active_lines=$((skill_lines + planning_lines + state_lines + runtime_lines + supervision_lines))
 active_words=$(wc -w $active_docs | awk 'END {print $1}')
-[ "$active_lines" -le 540 ] || fail "active skill documents exceed 540 lines: $active_lines"
-[ "$active_words" -le 8200 ] || fail "active skill documents exceed 8200 words: $active_words"
+[ "$active_lines" -le 565 ] || fail "active skill documents exceed 565 lines: $active_lines"
+[ "$active_words" -le 9300 ] || fail "active skill documents exceed 9300 words: $active_words"
 
 for toc_file in "$planning" "$state" "$runtime" "$supervision"; do
   require_text "$toc_file" '## Contents'
 done
-require_text "$skill/SKILL.md" 'Only `octoplan-plan-v4` is supported.'
+require_text "$skill/SKILL.md" 'Only `octoplan-plan-v5` is supported.'
 require_text "$skill/SKILL.md" '**brief de création**'
 require_text "$skill/SKILL.md" '`progressive` review or `final` review'
 require_text "$skill/SKILL.md" 'Do not create a Page merely to store the brief.'
@@ -91,7 +101,7 @@ require_text "$skill/SKILL.md" '`waiting-human` and `paused` are coordination st
 require_text "$skill/SKILL.md" '`eligible_safe_ready`'
 require_text "$skill/SKILL.md" 'labels and content in the user'
 require_text "$planning" 'Before any Octopad write, show one **brief de création**'
-require_text "$planning" '`roles/planner.md` is only for a delegated diagnostic planner that cannot ask the user'
+require_text "$planning" '`roles/planner.md` is for a delegated planner that cannot ask the user'
 require_text "$planning" 'Inspect `get_goal` before recommending the native route.'
 require_text "$planning" 'exact Octopad write classes/effects and native create/message/archive actions'
 require_text "$planning" '`progressive` or `final`'
@@ -126,7 +136,7 @@ require_text "$planning" 'Post-creation Goal transfer is prohibited'
 require_text "$planning" 'never set `token_budget` unless the user explicitly requested one'
 require_text "$state" 'Use `expected_updated_at` on every state-changing update.'
 require_text "$state" 'one UUID `idempotency_key` per logical event'
-require_text "$state" '"schema": "octoplan-plan-v4"'
+require_text "$state" '"schema": "octoplan-plan-v5"'
 require_text "$state" '"proposed_review": null'
 require_text "$state" '"status": "planning|planned|active|replanning|waiting-human|paused|completed|superseded"'
 require_text "$state" '"review_cadence": "progressive|final"'
@@ -135,7 +145,8 @@ require_text "$state" '"octopad_write_classes": ['
 require_text "$state" '"native_actions": ['
 require_text "$state" '"child_route": "native-task/worktree"'
 require_text "$state" '"brief_records": {'
-require_text "$state" '"minimum_version": "14.0.0"'
+require_text "$state" '"minimum_version": "15.0.0"'
+require_text "$state" '"legacy_migration": null'
 require_text "$state" '"task_generation": 1'
 require_text "$state" '"manifest_hash"'
 require_text "$state" '`actor_binding_readback`'
@@ -150,7 +161,7 @@ require_text "$state" '`archive_receipt`'
 require_text "$state" '`archive_incident_ref`'
 require_text "$state" 'final success waits'
 require_text "$state" 'first increment `intent.revision` under `expected_updated_at`'
-require_text "$state" 'compatible installed v4 update'
+require_text "$state" 'compatible installed v5 update'
 require_text "$state" 'OCTOPLAN_WRITE_INTENT <operation-key>'
 require_text "$state" '`structuredContent` is useful when present but never mandatory.'
 require_text "$state" 'Never replay the whole batch because one item is unclear.'
@@ -171,6 +182,16 @@ require_text "$state" 'Reread it, then obtain fresh post-fence quiescence before
 require_text "$state" 'The predecessor Goal stays historical.'
 require_text "$state" 'Targeted recovery'
 require_text "$state" '`projectId=null`'
+require_text "$state" '"active_lease_ref": "planner-lease-1"'
+require_text "$state" '"context_admissions": {}'
+require_text "$state" '"context_admission": {"plan_revision": 1'
+require_text "$state" '"delegation_boundaries": []'
+require_text "$state" '"delivery_artifacts": {'
+require_text "$state" '"baseline_leases": {'
+require_text "$state" '"efficiency": {'
+require_text "$state" 'a third comparable resume without accepted progress cannot reuse'
+require_text "$state" 'an unhealthy Goal owner pauses substantive analysis/effects'
+require_text "$state" 'A draft is valid only with exact base/head, owner, next transition, blocker/resume predicate, disposition, and readback.'
 require_text "$runtime" 'A Goal never grants broader sandbox, approval, or external-effect authority.'
 require_text "$runtime" 'Persisted authority must match that disclosure.'
 require_text "$runtime" 'The only valid automatic routes are Luna `max` and Sol `high|xhigh|max`'
@@ -191,6 +212,8 @@ require_text "$runtime" 'call `get_goal` first'
 require_text "$runtime" 'minimum version'
 require_text "$runtime" 'Product, code, security, privacy, data, migration, and materially public changes require `independent`.'
 require_text "$runtime" 'one additional fresh reviewer only for a second material and orthogonal failure domain'
+require_text "$runtime" 'Material replanning and volumetric diagnosis always use a fresh PLN lease'
+require_text "$runtime" 'non-overlapping drift alone never invalidates accepted work or forces a treadmill'
 require_text "$supervision" "Use Octopad's graph/statuses directly"
 require_text "$supervision" 'Never send `waiting-human` or `paused` as an Octopad task status.'
 require_text "$supervision" 'A delivery task is `todo` until claimed, `in_progress` from claim through review and embedded checkpoints'
@@ -229,6 +252,10 @@ require_text "$supervision" 'After successful readback, obtain a fresh post-fenc
 require_text "$supervision" 'The old Goal is historical, never falsely completed or blocked'
 require_text "$supervision" 'owning E task'
 require_text "$supervision" 'reviewer sessions versus passes'
+require_text "$supervision" 'Keep the supervisor thin'
+require_text "$supervision" 'a third such resume must replace or pause rather than reuse'
+require_text "$supervision" 'open a structured `replan|efficiency` incident'
+require_text "$supervision" 'A draft without this record is orphan debt'
 require_text "$manifest" 'show the creation brief and checkpoints'
 require_text "$agent_manifest" 'show the creation brief and checkpoints'
 require_text "$skill/SKILL.md" 'Use only when a Codex user explicitly invokes $octoplan'
@@ -248,6 +275,9 @@ require_text "$roles/plan-reviewer.md" 'fresh read-only pre-run subagent'
 require_text "$roles/plan-reviewer.md" 'typed verdict'
 require_text "$roles/plan-reviewer.md" 'Only Luna `max` or Sol `high|xhigh|max` is admissible'
 require_text "$roles/plan-reviewer.md" 'unavailable, or unobserved routes pause'
+require_text "$roles/planner.md" 'planner lease'
+require_text "$roles/planner.md" 'Never read predecessor conversation or unbounded raw history.'
+require_text "$roles/supervisor.md" 'Stay thin'
 
 [ "$(grep -Fc '| Work profile |' "$runtime")" -eq 1 ] || fail 'capacity ladder is duplicated or missing'
 [ "$(grep -Ec '^\| .*`gpt-5\.6-' "$runtime")" -eq 4 ] || fail 'capacity ladder does not have four routes'
@@ -255,19 +285,22 @@ require_text "$roles/plan-reviewer.md" 'unavailable, or unobserved routes pause'
 changes_file=$(mktemp "${TMPDIR:-/tmp}/octoplan-changes.XXXXXX")
 trap 'rm -f "$changes_file"' EXIT HUP INT TERM
 {
-  git -C "$root" diff --name-only origin/main
-  git -C "$root" diff --cached --name-only
+  git -C "$root" diff --no-renames --no-ext-diff --no-textconv --name-only origin/main
+  git -C "$root" diff --no-renames --no-ext-diff --no-textconv --cached --name-only
   git -C "$root" ls-files --others --exclude-standard
 } | sort -u > "$changes_file"
 
 private_material_pattern="/""Users/|[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY"
-origin_claude_version=$(git -C "$root" show origin/main:plugins/octoplan-claude/skills/octoplan/SKILL.md | sed -n 's/^Version: //p')
-current_claude_version=$(sed -n 's/^Version: //p' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md")
 shared_release=false
-if [ "$origin_claude_version" != "$current_claude_version" ] && [ "$current_claude_version" = "2.0.0" ]; then
-  shared_release=true
+if [ "$codex_only" = false ]; then
+  origin_claude_version=$(git -C "$root" show origin/main:plugins/octoplan-claude/skills/octoplan/SKILL.md | sed -n 's/^Version: //p')
+  current_claude_version=$(sed -n 's/^Version: //p' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md")
+  if [ "$origin_claude_version" != "$current_claude_version" ] && [ "$current_claude_version" = "2.0.0" ]; then
+    shared_release=true
+  fi
 fi
 while IFS= read -r changed; do
+  skip_content_audit=false
   case "$changed" in
     plugins/octoplan-claude/.claude-plugin/plugin.json|plugins/octoplan-claude/skills/octoplan/SKILL.md)
       [ "$shared_release" = true ] || fail "protected Claude surface changed without a versioned shared release: $changed"
@@ -276,19 +309,35 @@ while IFS= read -r changed; do
       fail "protected Claude surface changed: $changed"
       ;;
   esac
-  if [ -f "$root/$changed" ] && grep -E "$private_material_pattern" "$root/$changed" >/dev/null 2>&1; then
+  if [ "$codex_only" = true ]; then
+    case "$changed" in
+      CHANGELOG.md|README.md|INSTALL.md|CONTRIBUTING.md|scripts/validate-repository.sh|docs/clients/*)
+        staged_entry=$(git -C "$root" ls-files --stage -- "$changed")
+        staged_oid=$(printf '%s\n' "$staged_entry" | awk '$3 == "0" {print $2}')
+        base_oid=$(git -C "$root" ls-tree origin/main -- "$changed" | awk '{print $3}')
+        [ -n "$staged_oid" ] && [ "$staged_oid" != "$base_oid" ] || fail "shared surface is not staged as a reviewed change: $changed"
+        case "$codex_shared_reviewed" in
+          *" $changed=$staged_oid "*) skip_content_audit=true ;;
+          *) fail "shared surface lacks an exact staged-blob review receipt: $changed=$staged_oid" ;;
+        esac
+        ;;
+    esac
+  fi
+  if [ "$skip_content_audit" = false ] && [ -f "$root/$changed" ] && grep -E "$private_material_pattern" "$root/$changed" >/dev/null 2>&1; then
     fail "private or identifying material appears in public file: $changed"
   fi
 done < "$changes_file"
 
-origin_claude=$(git -C "$root" show origin/main:CHANGELOG.md | sed -n '/^## octoplan-claude$/,$p')
-current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
-if [ "$shared_release" = false ]; then
-  [ "$origin_claude" = "$current_claude" ] || fail 'Claude changelog section changed without a versioned shared release'
-else
-  grep -q '"version": "2\.0\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'shared Claude manifest is not 2.0.0'
-  grep -Fq 'EX-<short-work-stream-name>-<short-task-name>' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude title contract is missing'
-  grep -Fq 'archive pending' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude archive recovery contract is missing'
+if [ "$codex_only" = false ]; then
+  origin_claude=$(git -C "$root" show origin/main:CHANGELOG.md | sed -n '/^## octoplan-claude$/,$p')
+  current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
+  if [ "$shared_release" = false ]; then
+    [ "$origin_claude" = "$current_claude" ] || fail 'Claude changelog section changed without a versioned shared release'
+  else
+    grep -q '"version": "2\.0\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'shared Claude manifest is not 2.0.0'
+    grep -Fq 'EX-<short-work-stream-name>-<short-task-name>' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude title contract is missing'
+    grep -Fq 'archive pending' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude archive recovery contract is missing'
+  fi
 fi
 
 node <<'NODE'
@@ -324,7 +373,7 @@ function sameMembers(left, right) {
 }
 
 function validatePlan(plan) {
-  assert.strictEqual(plan.schema, 'octoplan-plan-v4');
+  assert.strictEqual(plan.schema, 'octoplan-plan-v5');
   assert(typeof plan.plan_id === 'string' && plan.plan_id.length > 0);
   assert(runStatuses.has(plan.status));
   assert(Number.isInteger(plan.revision) && plan.revision > 0);
@@ -362,14 +411,52 @@ function validatePlan(plan) {
   assert(typeof plan.review.artifact_hash === 'string' && plan.review.artifact_hash.length > 0);
   assert(Array.isArray(plan.review.finding_keys) && Array.isArray(plan.review.executed_checks) && plan.review.executed_checks.length > 0);
   assert(typeof plan.review.evidence_ref === 'string' && plan.review.evidence_ref.length > 0);
-  assert(plan.runtime && /^14\.[0-9]+\.[0-9]+$/.test(plan.runtime.minimum_version));
-  for (const key of ['loaded_version', 'installed_version']) assert(/^14\.[0-9]+\.[0-9]+$/.test(plan.runtime[key]));
+  assert(plan.planning && typeof plan.planning.candidate_hash === 'string' && plan.planning.candidate_hash === plan.review.artifact_hash);
+  assert(typeof plan.planning.source_snapshot_hash === 'string' && plan.planning.source_snapshot_hash.length > 0);
+  assert(typeof plan.planning.active_lease_ref === 'string' && Array.isArray(plan.planning.leases) && plan.planning.leases.length > 0);
+  const plannerLeaseRefs = new Set();
+  const plannerSessionRefs = new Set();
+  const plannerFreshSessionReceipts = new Set();
+  for (const lease of plan.planning.leases) {
+    for (const key of ['lease_ref', 'session_ref', 'fresh_session_receipt', 'candidate_hash', 'input_snapshot_hash', 'planned_route', 'observed_route', 'route_evidence_ref', 'binding_readback_ref', 'prior_artifact_disposition_ref']) assert(typeof lease[key] === 'string' && lease[key].length > 0);
+    assert(!plannerLeaseRefs.has(lease.lease_ref));
+    assert(!plannerSessionRefs.has(lease.session_ref));
+    assert(!plannerFreshSessionReceipts.has(lease.fresh_session_receipt));
+    plannerLeaseRefs.add(lease.lease_ref);
+    plannerSessionRefs.add(lease.session_ref);
+    plannerFreshSessionReceipts.add(lease.fresh_session_receipt);
+    assert(Number.isInteger(lease.plan_revision) && lease.plan_revision > 0 && lease.plan_revision <= (plan.proposed_revision ?? plan.revision));
+    assert(Number.isInteger(lease.intent_revision) && lease.intent_revision > 0 && lease.intent_revision <= plan.intent.revision);
+    assert(lease.planned_route === lease.observed_route);
+    const [plannerModel, plannerEffort] = lease.observed_route.split('/');
+    assert(plannerModel === 'gpt-5.6-sol' && ['xhigh', 'max'].includes(plannerEffort));
+    assert(['active', 'adopted', 'rejected', 'expired'].includes(lease.status));
+    if (lease.status === 'active') assert.strictEqual(lease.output_hash, null);
+    else if (lease.status === 'adopted') assert.strictEqual(lease.output_hash, lease.candidate_hash);
+    else assert(lease.output_hash === null || (typeof lease.output_hash === 'string' && lease.output_hash.length > 0));
+  }
+  const selectedPlannerLease = plan.planning.leases.find(lease => lease.lease_ref === plan.planning.active_lease_ref);
+  assert(selectedPlannerLease);
+  assert.strictEqual(selectedPlannerLease.candidate_hash, plan.planning.candidate_hash);
+  assert(selectedPlannerLease.input_snapshot_hash === plan.planning.source_snapshot_hash);
+  assert.strictEqual(selectedPlannerLease.intent_revision, plan.intent.revision);
+  if (plan.status === 'replanning') {
+    assert.strictEqual(selectedPlannerLease.status, 'active');
+    assert.strictEqual(selectedPlannerLease.plan_revision, plan.proposed_revision);
+  } else {
+    assert.strictEqual(selectedPlannerLease.status, 'adopted');
+    assert.strictEqual(selectedPlannerLease.plan_revision, plan.revision);
+  }
+  assert(plan.planning.leases.filter(lease => lease.status === 'active').length <= 1);
+  assert(plan.runtime && /^15\.[0-9]+\.[0-9]+$/.test(plan.runtime.minimum_version));
+  for (const key of ['loaded_version', 'installed_version']) assert(/^15\.[0-9]+\.[0-9]+$/.test(plan.runtime[key]));
   assert(Number.isFinite(Date.parse(plan.runtime.admission_checked_at)));
   assert(plan.runtime.supervisor_route && plan.runtime.supervisor_route.admission === 'PASS');
   assert(plan.runtime.supervisor_route.planned === plan.runtime.supervisor_route.observed);
   assert(typeof plan.runtime.supervisor_route.evidence_ref === 'string' && plan.runtime.supervisor_route.evidence_ref.length > 0);
   const [supervisorModel, supervisorEffort] = plan.runtime.supervisor_route.observed.split('/');
   assert(supervisorModel === 'gpt-5.6-sol' && ['high', 'xhigh', 'max'].includes(supervisorEffort));
+  assert(Object.prototype.hasOwnProperty.call(plan, 'legacy_migration'));
   assert(plan.intent && Number.isInteger(plan.intent.revision) && plan.intent.revision > 0);
   assert(typeof plan.intent.latest_user_directive_ref === 'string' && Array.isArray(plan.intent.superseded_effect_keys));
   assert(plan.supervisor && typeof plan.supervisor.thread_ref === 'string' && plan.supervisor.thread_ref.length > 0);
@@ -377,6 +464,18 @@ function validatePlan(plan) {
   assert(['current-task', 'dedicated-handoff', 'recovery-successor'].includes(plan.supervisor.mode));
   if (plan.supervisor.mode === 'dedicated-handoff') assert(typeof plan.supervisor.source_fenced_ref === 'string' && plan.supervisor.source_fenced_ref.length > 0);
   assert(Object.prototype.hasOwnProperty.call(plan.supervisor, 'predecessor'));
+  const supervisorAdmission = plan.supervisor.context_admission;
+  assert(supervisorAdmission && ['REUSE', 'REPLACE', 'PAUSE'].includes(supervisorAdmission.decision));
+  assert.strictEqual(supervisorAdmission.plan_revision, plan.revision);
+  assert.strictEqual(supervisorAdmission.intent_revision, plan.intent.revision);
+  assert.strictEqual(supervisorAdmission.supervisor_epoch, plan.supervisor.epoch);
+  assert(typeof supervisorAdmission.state_hash === 'string' && supervisorAdmission.state_hash.length > 0);
+  for (const key of ['state_readback_ref', 'intent_readback_ref', 'evidence_ref']) assert(typeof supervisorAdmission[key] === 'string' && supervisorAdmission[key].length > 0);
+  for (const key of ['accepted_progress_ref', 'compaction_ref']) assert(supervisorAdmission[key] === null || (typeof supervisorAdmission[key] === 'string' && supervisorAdmission[key].length > 0));
+  assert(Number.isInteger(supervisorAdmission.resumes_since_progress) && supervisorAdmission.resumes_since_progress >= 0);
+  if (supervisorAdmission.resumes_since_progress >= 3) assert.notStrictEqual(supervisorAdmission.decision, 'REUSE');
+  if (['active', 'replanning'].includes(plan.status)) assert(['REUSE', 'PAUSE'].includes(supervisorAdmission.decision));
+  if (supervisorAdmission.decision === 'REPLACE') assert(plan.status === 'paused' && plan.supervisor.mode === 'recovery-successor' && plan.supervisor.predecessor);
   assert(plan.supervisor.goal && typeof plan.supervisor.goal.required === 'boolean');
   assert(Object.prototype.hasOwnProperty.call(plan.supervisor.goal, 'supersedes_goal_ref'));
   if (plan.supervisor.mode === 'recovery-successor') {
@@ -407,6 +506,24 @@ function validatePlan(plan) {
     assert.strictEqual(plan.supervisor.goal.origin, null);
     assert.strictEqual(plan.supervisor.goal.evidence_ref, null);
     assert.strictEqual(plan.supervisor.goal.state, null);
+  }
+  if (plan.legacy_migration !== null) {
+    const migration = plan.legacy_migration;
+    assert(['octoplan-plan-v1', 'octoplan-plan-v2', 'octoplan-plan-v3', 'octoplan-plan-v4'].includes(migration.source_schema));
+    for (const key of ['legacy_goal_ref', 'inventory_ref', 'fence_ref', 'quiescence_ref']) assert(typeof migration[key] === 'string' && migration[key].length > 0);
+    assert(['active', 'blocked', 'complete'].includes(migration.legacy_goal_state));
+    assert(['waiting-owner', 'human-decision', 'resolved'].includes(migration.route));
+    if (migration.legacy_goal_state === 'complete') {
+      assert.strictEqual(migration.route, 'resolved');
+    } else {
+      assert.strictEqual(plan.status, 'paused');
+      assert.strictEqual(plan.supervisor.goal.state, 'pending');
+      assert.strictEqual(plan.supervisor.goal.origin, null);
+      assert.strictEqual(plan.supervisor.goal.evidence_ref, null);
+      assert.notStrictEqual(migration.route, 'resolved');
+    }
+    if (migration.route === 'human-decision') assert(typeof migration.decision_ref === 'string' && migration.decision_ref.length > 0);
+    else assert(migration.decision_ref === null || (typeof migration.decision_ref === 'string' && migration.decision_ref.length > 0));
   }
   assert(plan.authority && typeof plan.authority.source_ref === 'string' && plan.authority.source_ref.length > 0);
   assert.strictEqual(plan.authority.source_ref, plan.brief.approval_ref);
@@ -463,6 +580,18 @@ function validatePlan(plan) {
     const admissionCheckedAt = Date.parse(plan.runtime.admission_checked_at);
     assert(checkedAt <= admissionCheckedAt && freshUntil >= admissionCheckedAt);
     assert.strictEqual(freshUntil, checkedAt + snapshot.ttl_seconds * 1000);
+  }
+  assert(plan.baseline_leases && typeof plan.baseline_leases === 'object' && Object.keys(plan.baseline_leases).length > 0);
+  for (const [leaseRef, lease] of Object.entries(plan.baseline_leases)) {
+    assert.strictEqual(lease.lease_ref, leaseRef);
+    assert(plan.task_contracts[lease.task_ref]);
+    assert(Number.isInteger(lease.task_generation) && lease.task_generation > 0 && lease.task_generation <= plan.task_contracts[lease.task_ref].task_generation);
+    assert(lease.actor_ref === null || (typeof lease.actor_ref === 'string' && lease.actor_ref.length > 0));
+    assert(plan.stack_snapshots[lease.stack_snapshot_ref]);
+    if (lease.task_generation === plan.task_contracts[lease.task_ref].task_generation) assert.strictEqual(lease.stack_snapshot_ref, plan.task_contracts[lease.task_ref].base_stack_ref);
+    assert(['active', 'expired'].includes(lease.status));
+    assert(['dispatch', 'first-effect', 'push', 'review', 'handoff', 'collision'].includes(lease.last_refresh_reason));
+    assert(typeof lease.refresh_receipt_ref === 'string' && lease.refresh_receipt_ref.length > 0);
   }
   assert(plan.brief_records && plan.brief_records.decisions && plan.brief_records.questions);
   const recordIds = new Set();
@@ -539,6 +668,13 @@ function validatePlan(plan) {
     assert(validChildRoute(actor.model, actor.effort));
     const contract = plan.task_contracts[actor.task_ref];
     const actionable = !['fenced', 'terminal-reconciled', 'archive-pending', 'archived'].includes(actor.state);
+    const contextAdmission = plan.context_admissions?.[actorRef];
+    assert(contextAdmission && contextAdmission.actor_ref === actorRef);
+    for (const key of ['binding_readback_ref', 'manifest_readback_ref', 'intent_readback_ref', 'evidence_ref']) assert(typeof contextAdmission[key] === 'string' && contextAdmission[key].length > 0);
+    assert(['REUSE', 'REPLACE', 'PAUSE'].includes(contextAdmission.decision));
+    assert(Number.isInteger(contextAdmission.resumes_since_progress) && contextAdmission.resumes_since_progress >= 0);
+    for (const key of ['accepted_progress_ref', 'compaction_ref']) assert(contextAdmission[key] === null || (typeof contextAdmission[key] === 'string' && contextAdmission[key].length > 0));
+    if (actionable) assert(contextAdmission.decision === 'REUSE' && contextAdmission.resumes_since_progress <= 2);
     assert(contract && actor.binding && actor.binding.plan_id === plan.plan_id && actor.binding.plan_revision <= plan.revision && actor.binding.intent_revision <= plan.intent.revision);
     assert(actor.binding.supervisor_epoch <= plan.supervisor.epoch && typeof actor.binding.authority_source_ref === 'string' && actor.binding.authority_source_ref.length > 0);
     assert(actor.binding.organization_id === plan.organization_id && actor.binding.workspace_id === plan.workspace_id && actor.binding.role === actor.role);
@@ -550,8 +686,14 @@ function validatePlan(plan) {
     }
     assert(actor.binding.model === actor.model && actor.binding.effort === actor.effort && actor.binding.observed_model === actor.model && actor.binding.observed_effort === actor.effort);
     assert(typeof actor.binding.readback_ref === 'string' && actor.binding.readback_ref.length > 0 && typeof actor.binding.route_evidence_ref === 'string' && actor.binding.route_evidence_ref.length > 0);
+    const baselineLease = plan.baseline_leases[actor.binding.baseline_lease_ref];
+    assert(baselineLease && baselineLease.actor_ref === actorRef && baselineLease.task_ref === actor.task_ref && baselineLease.task_generation === actor.binding.task_generation);
+    assert.strictEqual(baselineLease.stack_snapshot_ref, actor.stack_snapshot_ref);
     assert(actor.manifest_ack_ref && typeof actor.stack_snapshot_ref === 'string' && actor.stack_snapshot_ref.length > 0);
-    if (actionable) assert(actor.stack_snapshot_ref === contract.base_stack_ref);
+    if (actionable) {
+      assert(actor.stack_snapshot_ref === contract.base_stack_ref);
+      assert.strictEqual(baselineLease.status, 'active');
+    }
     if (contract.new_context_required) assert(typeof actor.fresh_session_receipt === 'string' && actor.fresh_session_receipt.length > 0);
     if (actionable) assert.strictEqual(actor.provenance.authority_source_ref, plan.authority.source_ref);
     assert(['create', 'message', 'archive'].includes(actor.provenance.action));
@@ -582,6 +724,42 @@ function validatePlan(plan) {
       assert(!actor.pending_correction && !actor.pending_recheck && !actor.waiting_human && !actor.handoff_pending);
     }
   }
+  assert(plan.context_admissions && sameMembers(Object.keys(plan.context_admissions), Object.keys(plan.actors)));
+  assert(Array.isArray(plan.delegation_boundaries));
+  for (const boundary of plan.delegation_boundaries) {
+    for (const key of ['purpose', 'input_refs', 'max_report_shape', 'planned_route', 'observed_route', 'route_evidence_ref', 'binding_readback_ref', 'output_ref']) assert(typeof boundary[key] === 'string' && boundary[key].length > 0);
+    assert(boundary.planned_route === boundary.observed_route);
+    const [boundaryModel, boundaryEffort] = boundary.observed_route.split('/');
+    assert(validChildRoute(boundaryModel, boundaryEffort));
+  }
+  const actionableActors = Object.values(plan.actors).filter(actor => !['fenced', 'terminal-reconciled', 'archive-pending', 'archived'].includes(actor.state));
+  if (supervisorAdmission.decision === 'PAUSE' && ['active', 'replanning'].includes(plan.status)) {
+    assert(plan.delegation_boundaries.length > 0);
+    assert.strictEqual(actionableActors.length, 0);
+  }
+  assert(plan.delivery_artifacts && typeof plan.delivery_artifacts === 'object');
+  const artifactRefs = new Set();
+  for (const [taskRef, artifacts] of Object.entries(plan.delivery_artifacts)) {
+    assert(plan.task_contracts[taskRef] && Array.isArray(artifacts));
+    for (const artifact of artifacts) {
+      assert(['branch', 'pull-request', 'document', 'other'].includes(artifact.kind));
+      for (const key of ['artifact_ref', 'base_ref', 'head_ref', 'owner_actor_ref', 'next_transition', 'resume_predicate', 'evidence_ref']) assert(typeof artifact[key] === 'string' && artifact[key].length > 0);
+      assert(!artifactRefs.has(artifact.artifact_ref));
+      artifactRefs.add(artifact.artifact_ref);
+      assert(artifact.repository_ref === null || (typeof artifact.repository_ref === 'string' && artifact.repository_ref.length > 0));
+      assert(['branch-only', 'draft', 'ready-for-review', 'waiting-human', 'merged', 'closed', 'superseded'].includes(artifact.state));
+      assert(['active', 'adopt', 'reject', 'rewrite', 'historical'].includes(artifact.disposition));
+      assert(artifact.blocker === null || (typeof artifact.blocker === 'string' && artifact.blocker.length > 0));
+      const artifactTerminal = ['merged', 'closed', 'superseded'].includes(artifact.state);
+      if (artifactTerminal) assert.notStrictEqual(artifact.disposition, 'active');
+      else {
+        const owner = plan.actors[artifact.owner_actor_ref];
+        assert(owner && owner.task_ref === taskRef);
+        assert(!['fenced', 'terminal-reconciled', 'archive-pending', 'archived'].includes(owner.state));
+        if (artifact.state === 'waiting-human') assert.strictEqual(owner.waiting_human, true);
+      }
+    }
+  }
   assert(plan.resume && Array.isArray(plan.resume.pending_operation_keys));
   assert(plan.frontier && Array.isArray(plan.frontier.parallel_safe_now) && plan.frontier.parallel_safe_now.every(ref => refs.has(ref)));
   assert(plan.frontier.blocked_on_artifact_refs && plan.frontier.write_conflict_set);
@@ -590,6 +768,36 @@ function validatePlan(plan) {
     for (const key of ['metric', 'source', 'population', 'window_start', 'window_end']) assert(typeof metric[key] === 'string' && metric[key].length > 0);
     assert(metric.value === 'unavailable' || typeof metric.value === 'number');
   }
+  assert(plan.efficiency && Number.isInteger(plan.efficiency.comparable_cycles_without_progress) && plan.efficiency.comparable_cycles_without_progress >= 0);
+  assert(Number.isInteger(plan.efficiency.material_replan_streak) && plan.efficiency.material_replan_streak >= 0);
+  assert(Array.isArray(plan.efficiency.graph_hash_history) && plan.efficiency.graph_hash_history.length > 0 && plan.efficiency.graph_hash_history.every(Boolean));
+  assert((plan.efficiency.accepted_progress_ref === null) === (plan.efficiency.accepted_progress_kind === null));
+  if (plan.efficiency.accepted_progress_ref !== null) {
+    assert(typeof plan.efficiency.accepted_progress_ref === 'string' && plan.efficiency.accepted_progress_ref.length > 0);
+    assert(['artifact', 'review', 'integrated-evidence'].includes(plan.efficiency.accepted_progress_kind));
+    assert.strictEqual(plan.efficiency.comparable_cycles_without_progress, 0);
+    assert.strictEqual(plan.efficiency.material_replan_streak, 0);
+    assert.strictEqual(new Set(plan.efficiency.graph_hash_history).size, plan.efficiency.graph_hash_history.length);
+  }
+  const repeatedGraph = new Set(plan.efficiency.graph_hash_history).size !== plan.efficiency.graph_hash_history.length;
+  const efficiencyTriggered = plan.efficiency.comparable_cycles_without_progress >= 2 || plan.efficiency.material_replan_streak >= 2 || repeatedGraph;
+  const efficiencyIncident = plan.efficiency.incident;
+  if (efficiencyTriggered) assert(efficiencyIncident);
+  if (efficiencyIncident !== null) {
+    assert(typeof efficiencyIncident.incident_ref === 'string' && efficiencyIncident.incident_ref.length > 0);
+    assert(['replan', 'efficiency'].includes(efficiencyIncident.kind));
+    assert(['opened', 'diagnosed', 'adopted'].includes(efficiencyIncident.state));
+    if (efficiencyIncident.state === 'opened') {
+      assert.strictEqual(efficiencyIncident.diagnosis_ref, null);
+      assert.strictEqual(efficiencyIncident.disposition_ref, null);
+    } else {
+      assert(typeof efficiencyIncident.diagnosis_ref === 'string' && efficiencyIncident.diagnosis_ref.length > 0);
+      if (efficiencyIncident.state === 'diagnosed') assert.strictEqual(efficiencyIncident.disposition_ref, null);
+      else assert(typeof efficiencyIncident.disposition_ref === 'string' && efficiencyIncident.disposition_ref.length > 0);
+    }
+  }
+  const incidentBlocksWork = efficiencyIncident !== null && efficiencyIncident.state !== 'adopted';
+  if (incidentBlocksWork) assert.strictEqual(actionableActors.length, 0);
   assert(plan.compaction && Number.isInteger(plan.compaction.size_budget) && plan.compaction.size_budget > 0 && Array.isArray(plan.compaction.detail_ledger_refs));
   if (plan.compaction.last_receipt !== null) for (const key of ['pre_hash', 'post_hash', 'essential_fields_ref', 'readback_ref', 'no_loss_ref']) assert(typeof plan.compaction.last_receipt[key] === 'string' && plan.compaction.last_receipt[key].length > 0);
   assert(Array.isArray(plan.native_action_intents));
@@ -605,6 +813,8 @@ function validatePlan(plan) {
       assert(['local', 'worktree'].includes(intent.environment));
     }
     assert(['create', 'message', 'archive'].includes(intent.action));
+    if (supervisorAdmission.decision === 'PAUSE' && ['create', 'message'].includes(intent.action) && intent.result === 'pending') assert.fail('paused supervisor context blocks create/work intents');
+    if (incidentBlocksWork && ['create', 'message'].includes(intent.action) && intent.result === 'pending') assert.fail('unadopted efficiency incident blocks create/work intents');
     assert.strictEqual(intent.plan_id, plan.plan_id);
     assert(Number.isInteger(intent.plan_revision) && intent.plan_revision > 0 && intent.plan_revision <= plan.revision);
     assert(Number.isInteger(intent.intent_revision) && intent.intent_revision > 0 && intent.intent_revision <= plan.intent.revision);
@@ -669,6 +879,9 @@ function validatePlan(plan) {
     assert.strictEqual(plan.heartbeat.refreshes_coordination_state, true);
     assert.strictEqual(plan.heartbeat.watches_native_actor, false);
   }
+  if (['completed', 'superseded'].includes(plan.status)) {
+    assert(Object.values(plan.delivery_artifacts).flat().every(artifact => ['merged', 'closed', 'superseded'].includes(artifact.state) && artifact.disposition !== 'active'));
+  }
   if (plan.status === 'completed') {
     assert(typeof plan.outcome.global_evidence_ref === 'string' && plan.outcome.global_evidence_ref.length > 0);
     assert.strictEqual(plan.outcome.global_evidence_revision, plan.revision);
@@ -681,9 +894,9 @@ function validatePlan(plan) {
 }
 
 const plan = {
-  schema: 'octoplan-plan-v4', plan_id: 'plan-a', revision: 1, proposed_revision: null, proposed_review: null, status: 'active',
+  schema: 'octoplan-plan-v5', plan_id: 'plan-a', revision: 1, proposed_revision: null, proposed_review: null, status: 'active',
   organization_id: 'org-a', workspace_id: 'workspace-a', work_stream_id: 'stream-a', coordination_task_id: 'task-control',
-  brief: {source_ref: 'message-request', approval_ref: 'message-brief-go', tracker_ref: 'tracker-a', review_cadence: 'final', execution_scope: 'deliver-authorized', octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], native_actions: ['create', 'message', 'archive'], native_roles: ['executor', 'reviewer', 'supervisor'], project_id: 'project-a', directory_name: null, native_environments: ['local', 'worktree'], child_route: 'native-task/worktree', effects: ['bounded delivery']},
+  brief: {source_ref: 'message-request', approval_ref: 'message-brief-go', tracker_ref: 'tracker-a', review_cadence: 'final', execution_scope: 'deliver-authorized', octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], native_actions: ['create', 'message', 'archive'], native_roles: ['planner', 'executor', 'reviewer', 'supervisor'], project_id: 'project-a', directory_name: null, native_environments: ['local', 'worktree'], child_route: 'native-task/worktree', effects: ['bounded delivery']},
   outcome: {candidate_ref: 'E01', global_evidence_ref: null, global_evidence_revision: null},
   task_ids: {E01: 'task-a', E02: 'task-b', E03: 'task-c', H01: 'task-human'},
   task_contracts: {
@@ -694,9 +907,11 @@ const plan = {
   brief_records: {decisions: {D01: {id: 'decision-a', receipt_ref: 'receipt-decision-a'}}, questions: {Q01: {id: 'question-a', receipt_ref: 'receipt-question-a'}}},
   desired_dependencies: [{task_ref: 'E02', depends_on_ref: 'E01', rationale: 'needs artifact'}],
   review: {revision: 1, task_generations: {E01: 1, E02: 1, E03: 1}, review_type: 'full_independent_fresh', reviewer_session_ref: 'reviewer-a', planned_route: 'gpt-5.6-luna/max', observed_route: 'gpt-5.6-luna/max', route_evidence_ref: 'review-turn-context', artifact_hash: 'plan-artifact-a', finding_keys: [], executed_checks: ['plan-contract'], verdict: 'PASS', evidence_ref: 'evidence-a'},
-  supervisor: {thread_ref: 'thread-user', epoch: 1, mode: 'current-task', predecessor: null, goal: {required: true, owner_thread_ref: 'thread-user', objective_ref: 'message-outcome', origin: 'created', evidence_ref: 'goal-create-a', state: 'active', supersedes_goal_ref: null}},
-  runtime: {minimum_version: '14.0.0', loaded_version: '14.0.0', installed_version: '14.0.0', adoption_ref: null, admission_checked_at: '2026-08-12T08:04:00Z', supervisor_route: {planned: 'gpt-5.6-sol/high', observed: 'gpt-5.6-sol/high', evidence_ref: 'turn-context-supervisor', admission: 'PASS'}},
-  authority: {source_ref: 'message-brief-go', delivery: true, project_id: 'project-a', directory_name: null, environments: ['local', 'worktree'], roles: ['executor', 'reviewer', 'supervisor'], actions: ['create', 'message', 'archive'], octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], child_route: 'native-task/worktree', effects: ['bounded delivery'], adopted_session_refs: []},
+  planning: {candidate_hash: 'plan-artifact-a', source_snapshot_hash: 'source-snapshot-a', active_lease_ref: 'planner-lease-a', leases: [{lease_ref: 'planner-lease-a', session_ref: 'planner-a', fresh_session_receipt: 'planner-fresh-a', plan_revision: 1, intent_revision: 1, candidate_hash: 'plan-artifact-a', input_snapshot_hash: 'source-snapshot-a', planned_route: 'gpt-5.6-sol/xhigh', observed_route: 'gpt-5.6-sol/xhigh', route_evidence_ref: 'planner-turn-context-a', binding_readback_ref: 'planner-binding-a', status: 'adopted', output_hash: 'plan-artifact-a', prior_artifact_disposition_ref: 'artifact-dispositions-a'}]},
+  supervisor: {thread_ref: 'thread-user', epoch: 1, mode: 'current-task', predecessor: null, context_admission: {plan_revision: 1, intent_revision: 1, supervisor_epoch: 1, state_hash: 'supervisor-state-hash-a', decision: 'REUSE', state_readback_ref: 'supervisor-state-a', intent_readback_ref: 'supervisor-intent-a', accepted_progress_ref: null, compaction_ref: null, resumes_since_progress: 0, evidence_ref: 'supervisor-context-a'}, goal: {required: true, owner_thread_ref: 'thread-user', objective_ref: 'message-outcome', origin: 'created', evidence_ref: 'goal-create-a', state: 'active', supersedes_goal_ref: null}},
+  runtime: {minimum_version: '15.0.0', loaded_version: '15.0.0', installed_version: '15.0.0', adoption_ref: null, admission_checked_at: '2026-08-12T08:04:00Z', supervisor_route: {planned: 'gpt-5.6-sol/high', observed: 'gpt-5.6-sol/high', evidence_ref: 'turn-context-supervisor', admission: 'PASS'}},
+  legacy_migration: null,
+  authority: {source_ref: 'message-brief-go', delivery: true, project_id: 'project-a', directory_name: null, environments: ['local', 'worktree'], roles: ['planner', 'executor', 'reviewer', 'supervisor'], actions: ['create', 'message', 'archive'], octopad_write_classes: ['work-stream', 'tracker', 'task', 'dependency', 'decision', 'question', 'comment', 'coordination-state'], child_route: 'native-task/worktree', effects: ['bounded delivery'], adopted_session_refs: []},
   intent: {revision: 1, latest_user_directive_ref: 'message-brief-go', superseded_effect_keys: []},
   budgets: {max_active_child_actors: 2, max_wip: 2, max_correction_loops: 2, max_review_actors: 2, max_review_checks: 8, batch_size: 2},
   counters: {active_child_actors: 0, wip: 0, correction_loops: {}, review_actors: 0, review_checks: 0},
@@ -704,29 +919,33 @@ const plan = {
     {checkpoint_key: 'review-a', kind: 'review', source: 'organization', mandatory: true, owner: 'maintainer', subject: 'approve exact head', timing: 'after CI', reason: 'required repository review', blocked_task_refs: ['E02'], safe_continuation_refs: ['E03'], expected_decision: 'approve or request changes', evidence_ref: null, state: 'pending', resume_predicate: 'review evidence matches head'},
     {checkpoint_key: 'deploy-a', kind: 'deployment', source: 'organization', mandatory: true, owner: 'operator', subject: 'deploy release', timing: 'after merge', reason: 'protected production effect', blocked_task_refs: ['E02'], safe_continuation_refs: [], expected_decision: 'approve or reject deployment', evidence_ref: null, state: 'pending', resume_predicate: 'deployment receipt exists'}
   ],
-  actors: {}, native_action_intents: [], native_action_receipts: [],
+  actors: {}, context_admissions: {}, delegation_boundaries: [], native_action_intents: [], native_action_receipts: [],
+  delivery_artifacts: {},
   stack_snapshots: {'stack-a': {main_sha: 'main-a', base_shas: ['base-a'], head_shas: ['head-a'], ancestry_ref: 'ancestry-a', effective_diffs_ref: 'diffs-a', migration_registry_ref: 'migrations-a', checks_ref: 'checks-a', verifier_coverage_ref: 'coverage-a', checked_at: '2026-08-12T08:00:00Z', ttl_seconds: 300, fresh_until: '2026-08-12T08:05:00Z', admission: 'PASS', admission_ref: 'stack-admission-a'}},
+  baseline_leases: {'baseline-e01-g1': {lease_ref: 'baseline-e01-g1', task_ref: 'E01', task_generation: 1, actor_ref: null, stack_snapshot_ref: 'stack-a', status: 'active', last_refresh_reason: 'dispatch', refresh_receipt_ref: 'baseline-refresh-a'}},
   frontier: {parallel_safe_now: ['E01', 'E03'], blocked_on_artifact_refs: {E02: ['artifact-e01']}, write_conflict_set: {E01: ['file:a'], E03: ['file:c']}},
   telemetry: {snapshot_refs: [], metrics: []},
+  efficiency: {accepted_progress_ref: null, accepted_progress_kind: null, comparable_cycles_without_progress: 0, material_replan_streak: 0, graph_hash_history: ['graph-a'], incident: null},
   compaction: {size_budget: 32000, detail_ledger_refs: [], last_receipt: null},
   heartbeat: null,
   resume: {last_event_id: null, pending_operation_keys: []}
 };
 assert(validatePlan(plan));
 assert(validatePlan(JSON.parse(JSON.stringify(plan))));
-function adoptCompatible14(previous) {
+function adoptCompatible15(previous) {
   const adopted = JSON.parse(JSON.stringify(previous));
   if (!Object.prototype.hasOwnProperty.call(adopted, 'proposed_review')) adopted.proposed_review = null;
   if (!Object.prototype.hasOwnProperty.call(adopted.supervisor, 'predecessor')) adopted.supervisor.predecessor = null;
   if (!Object.prototype.hasOwnProperty.call(adopted.supervisor.goal, 'supersedes_goal_ref')) adopted.supervisor.goal.supersedes_goal_ref = null;
-  adopted.runtime.loaded_version = '14.0.0';
-  adopted.runtime.installed_version = '14.0.0';
+  adopted.runtime.loaded_version = '15.0.1';
+  adopted.runtime.installed_version = '15.0.1';
   adopted.runtime.adoption_ref = 'safe-boundary-adoption-a';
   return adopted;
 }
-const priorV4 = JSON.parse(JSON.stringify(plan));
-priorV4.runtime.loaded_version = '14.0.0';
-assert(validatePlan(adoptCompatible14(priorV4)));
+const priorV5 = JSON.parse(JSON.stringify(plan));
+priorV5.runtime.loaded_version = '15.0.0';
+priorV5.runtime.installed_version = '15.0.1';
+assert(validatePlan(adoptCompatible15(priorV5)));
 for (const kind of checkpointKinds) assert(validatePlan({...plan, human_checkpoints: [{...plan.human_checkpoints[0], kind}]}));
 const externalHeartbeat = {kind: 'ci', predicate_ref: 'check-head-a', intent_revision: 1, owner_thread_ref: 'thread-user', refreshes_coordination_state: true, watches_native_actor: false};
 assert(validatePlan({...plan, heartbeat: externalHeartbeat}));
@@ -747,8 +966,13 @@ assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, goal
 assert(validatePlan({...plan, brief: {...plan.brief, project_id: null, directory_name: 'projectless-output', native_environments: [null], child_route: 'native-task/projectless'}, authority: {...plan.authority, project_id: null, directory_name: 'projectless-output', environments: [null], child_route: 'native-task/projectless'}}));
 assert(validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff', source_fenced_ref: 'fence-a'}}));
 assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, mode: 'dedicated-handoff'}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, resumes_since_progress: 3}}}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, decision: 'REPLACE'}}}));
+const diagnosticBoundary = {purpose: 'material replan diagnosis', input_refs: 'bounded-input-ledger-a', max_report_shape: 'one consolidated proposal', planned_route: 'gpt-5.6-sol/xhigh', observed_route: 'gpt-5.6-sol/xhigh', route_evidence_ref: 'diagnostic-route-a', binding_readback_ref: 'diagnostic-binding-a', output_ref: 'diagnostic-report-a'};
+assert(validatePlan({...plan, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, decision: 'PAUSE', compaction_ref: 'compaction-a', resumes_since_progress: 3}}, delegation_boundaries: [diagnosticBoundary]}));
+assert.throws(() => validatePlan({...plan, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, decision: 'PAUSE', resumes_since_progress: 3}}}));
 const predecessor = {thread_ref: 'thread-user', epoch: 1, goal_evidence_ref: 'goal-create-a', revival_ref: 'wake-attempt-a', terminal_or_unreachable_ref: 'native-terminal-a', fence_key: 'plan-a:takeover:epoch:2', fence_readback_ref: 'fence-readback-a', effects_quiescent_ref: 'post-fence-quiescence-a'};
-const recoverySuccessor = {...plan, supervisor: {thread_ref: 'thread-successor', epoch: 2, mode: 'recovery-successor', predecessor, goal: {...plan.supervisor.goal, owner_thread_ref: 'thread-successor', evidence_ref: 'goal-successor-a', supersedes_goal_ref: 'goal-create-a'}}};
+const recoverySuccessor = {...plan, supervisor: {...plan.supervisor, thread_ref: 'thread-successor', epoch: 2, mode: 'recovery-successor', predecessor, context_admission: {...plan.supervisor.context_admission, supervisor_epoch: 2, state_hash: 'supervisor-state-hash-successor'}, goal: {...plan.supervisor.goal, owner_thread_ref: 'thread-successor', evidence_ref: 'goal-successor-a', supersedes_goal_ref: 'goal-create-a'}}};
 assert(validatePlan(recoverySuccessor));
 const pendingRecoverySuccessor = {...recoverySuccessor, status: 'paused', supervisor: {...recoverySuccessor.supervisor, goal: {...recoverySuccessor.supervisor.goal, origin: null, evidence_ref: null, state: 'pending'}}};
 assert(validatePlan(pendingRecoverySuccessor));
@@ -761,9 +985,38 @@ const {proposed_review: omittedProposedReview, ...withoutProposedReview} = plan;
 assert.throws(() => validatePlan(withoutProposedReview));
 assert.throws(() => validatePlan({...plan, proposed_review: {revision: 2, verdict: 'UNKNOWN'}}));
 assert.throws(() => validatePlan({...plan, proposed_revision: 2}));
-assert(validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: null}));
-assert(validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: {revision: 2, verdict: 'PASS'}}));
-assert.throws(() => validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: {revision: 3, verdict: 'PASS'}}));
+function asReplanning(previous, proposedReview = null) {
+  const proposedRevision = previous.status === 'replanning' ? previous.proposed_revision + 1 : previous.revision + 1;
+  const sourceSnapshotHash = `source-snapshot-r${proposedRevision}`;
+  const leaseRef = `planner-lease-r${proposedRevision}`;
+  const expiredLeases = previous.planning.leases.map(lease => ({...lease, status: 'expired', output_hash: lease.output_hash}));
+  return {
+    ...previous,
+    status: 'replanning',
+    proposed_revision: proposedRevision,
+    proposed_review: proposedReview,
+    planning: {
+      ...previous.planning,
+      source_snapshot_hash: sourceSnapshotHash,
+      active_lease_ref: leaseRef,
+      leases: [...expiredLeases, {lease_ref: leaseRef, session_ref: `planner-r${proposedRevision}`, fresh_session_receipt: `planner-fresh-r${proposedRevision}`, plan_revision: proposedRevision, intent_revision: previous.intent.revision, candidate_hash: previous.planning.candidate_hash, input_snapshot_hash: sourceSnapshotHash, planned_route: 'gpt-5.6-sol/xhigh', observed_route: 'gpt-5.6-sol/xhigh', route_evidence_ref: `planner-turn-r${proposedRevision}`, binding_readback_ref: `planner-binding-r${proposedRevision}`, status: 'active', output_hash: null, prior_artifact_disposition_ref: `artifact-dispositions-r${proposedRevision}`}]
+    }
+  };
+}
+assert(validatePlan(asReplanning(plan)));
+assert(validatePlan(asReplanning(plan, {revision: 2, verdict: 'PASS'})));
+assert.throws(() => validatePlan(asReplanning(plan, {revision: 3, verdict: 'PASS'})));
+const interruptedReplan = asReplanning(plan);
+const replacementReplan = asReplanning(interruptedReplan);
+const interruptedLease = replacementReplan.planning.leases.find(lease => lease.lease_ref === interruptedReplan.planning.active_lease_ref);
+const replacementLease = replacementReplan.planning.leases.find(lease => lease.lease_ref === replacementReplan.planning.active_lease_ref);
+assert(validatePlan(replacementReplan));
+assert.strictEqual(replacementReplan.proposed_revision, 3);
+assert.strictEqual(interruptedLease.status, 'expired');
+assert.strictEqual(interruptedLease.output_hash, null);
+assert.notStrictEqual(replacementLease.session_ref, interruptedLease.session_ref);
+assert.notStrictEqual(replacementLease.fresh_session_receipt, interruptedLease.fresh_session_receipt);
+assert.throws(() => validatePlan({...plan, status: 'replanning', proposed_revision: 2, proposed_review: null}));
 assert.throws(() => validatePlan({...plan, brief: {...plan.brief, approval_ref: ''}}));
 assert.throws(() => validatePlan({...plan, brief: {...plan.brief, native_actions: ['create', 'message']}}));
 assert.throws(() => validatePlan({...plan, runtime: {...plan.runtime, loaded_version: '12.1.0'}}));
@@ -802,50 +1055,71 @@ assert.throws(() => validatePlan({...plan, runtime: {...plan.runtime, admission_
 assert.throws(() => validatePlan({...plan, runtime: {...plan.runtime, admission_checked_at: '2026-08-12T07:59:00Z'}}));
 assert.throws(() => validatePlan({...plan, stack_snapshots: {'stack-a': {...plan.stack_snapshots['stack-a'], fresh_until: '2026-08-12T09:00:00Z'}}}));
 assert.throws(() => validatePlan({...plan, resume: {last_event_id: null}}));
-const actorBinding = {plan_id: 'plan-a', plan_revision: 1, intent_revision: 1, supervisor_epoch: 1, authority_source_ref: 'message-brief-go', organization_id: 'org-a', workspace_id: 'workspace-a', role: 'executor', task_id: 'task-a', task_generation: 1, contract_hash: 'contract-e01-g1', manifest_hash: 'manifest-hash-e01-g1', model: 'gpt-5.6-luna', effort: 'max', observed_model: 'gpt-5.6-luna', observed_effort: 'max', readback_ref: 'binding-readback-a', route_evidence_ref: 'turn-context-a'};
+const actorBinding = {plan_id: 'plan-a', plan_revision: 1, intent_revision: 1, supervisor_epoch: 1, authority_source_ref: 'message-brief-go', organization_id: 'org-a', workspace_id: 'workspace-a', role: 'executor', task_id: 'task-a', task_generation: 1, contract_hash: 'contract-e01-g1', manifest_hash: 'manifest-hash-e01-g1', baseline_lease_ref: 'baseline-e01-g1', model: 'gpt-5.6-luna', effort: 'max', observed_model: 'gpt-5.6-luna', observed_effort: 'max', readback_ref: 'binding-readback-a', route_evidence_ref: 'turn-context-a'};
 const actorBase = {actor_ref: 'executorA', role: 'executor', task_ref: 'E01', model: 'gpt-5.6-luna', effort: 'max', project_id: 'project-a', environment: 'local', binding: actorBinding, manifest_ack_ref: 'manifest-ack-a', stack_snapshot_ref: 'stack-a', fresh_session_receipt: 'fresh-session-a', provenance: {creation_key: 'create-a', authority_source_ref: 'message-brief-go', action: 'create', adopted_session_ref: null}, pending_correction: false, pending_recheck: false, waiting_human: false, handoff_pending: false};
 const awaitingActor = {...actorBase, state: 'awaiting-review', previous_state: 'active', transition_evidence_ref: 'transition-review', report_ref: 'report-review', pending_recheck: true};
 const archivedActor = {...actorBase, state: 'archived', previous_state: 'terminal-reconciled', transition_evidence_ref: 'transition-a', report_ref: 'report-a', terminal_reason: 'PASS', transfer_receipt: 'transfer-a', reconciliation_receipt: 'reconcile-a', archive_receipt: 'archive-a'};
 const archivePendingActor = {...actorBase, state: 'archive-pending', previous_state: 'terminal-reconciled', transition_evidence_ref: 'transition-archive-pending', report_ref: 'report-a', terminal_reason: 'PASS', transfer_receipt: 'transfer-a', reconciliation_receipt: 'reconcile-a', archive_incident_ref: 'archive-incident-a', archive_attempts: 1};
-assert(validatePlan({...plan, actors: {executorA: awaitingActor}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor, pending_recheck: false}}}));
-assert(validatePlan({...plan, actors: {executorA: archivedActor}}));
+const contextAdmissionA = {actor_ref: 'executorA', decision: 'REUSE', binding_readback_ref: 'binding-readback-a', manifest_readback_ref: 'manifest-readback-a', intent_readback_ref: 'intent-readback-a', accepted_progress_ref: null, compaction_ref: null, resumes_since_progress: 0, evidence_ref: 'context-admission-a'};
+function withActors(previous, actors, contextAdmissions = {executorA: contextAdmissionA}) {
+  const baselineLeases = JSON.parse(JSON.stringify(previous.baseline_leases));
+  for (const [actorRef, actor] of Object.entries(actors)) {
+    const lease = baselineLeases[actor.binding?.baseline_lease_ref];
+    if (lease) lease.actor_ref = actorRef;
+  }
+  return {...previous, actors, context_admissions: contextAdmissions, baseline_leases: baselineLeases};
+}
+assert(validatePlan(withActors(plan, {executorA: awaitingActor})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, pending_recheck: false}})));
+assert(validatePlan(withActors(plan, {executorA: archivedActor})));
+assert.throws(() => validatePlan({...plan, actors: {executorA: awaitingActor}}));
+assert.throws(() => validatePlan(withActors(plan, {executorA: awaitingActor}, {executorA: {...contextAdmissionA, decision: 'REPLACE'}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: awaitingActor}, {executorA: {...contextAdmissionA, resumes_since_progress: 3}})));
 const historicalAdoptedActor = {...archivedActor, provenance: {...archivedActor.provenance, adopted_session_ref: 'adopted-historical'}};
 const narrowedAuthorityPlan = {...plan, brief: {...plan.brief, native_actions: ['create']}, authority: {...plan.authority, actions: ['create']}};
-assert(validatePlan({...narrowedAuthorityPlan, actors: {executorA: historicalAdoptedActor}}));
-assert(validatePlan({...plan, actors: {executorA: archivePendingActor}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivePendingActor, archive_attempts: 3}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivePendingActor, archive_incident_ref: ''}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor, model: 'gpt-5.6-luna', effort: 'xhigh'}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor, model: 'gpt-5.6-terra', effort: 'high', binding: {...actorBinding, model: 'gpt-5.6-terra', observed_model: 'gpt-5.6-terra', effort: 'high', observed_effort: 'high'}}}}));
+assert(validatePlan(withActors(narrowedAuthorityPlan, {executorA: historicalAdoptedActor})));
+assert(validatePlan(withActors(plan, {executorA: archivePendingActor})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivePendingActor, archive_attempts: 3}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivePendingActor, archive_incident_ref: ''}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, model: 'gpt-5.6-luna', effort: 'xhigh'}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, model: 'gpt-5.6-terra', effort: 'high', binding: {...actorBinding, model: 'gpt-5.6-terra', observed_model: 'gpt-5.6-terra', effort: 'high', observed_effort: 'high'}}})));
 const solActor = {...awaitingActor, model: 'gpt-5.6-sol', effort: 'high', binding: {...actorBinding, model: 'gpt-5.6-sol', observed_model: 'gpt-5.6-sol', effort: 'high', observed_effort: 'high'}};
-assert(validatePlan({...plan, actors: {executorA: solActor}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor, binding: {...actorBinding, task_generation: 0}}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...awaitingActor, fresh_session_receipt: null}}}));
+assert(validatePlan(withActors(plan, {executorA: solActor})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, binding: {...actorBinding, task_generation: 0}}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, fresh_session_receipt: null}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...awaitingActor, binding: {...actorBinding, baseline_lease_ref: 'missing-baseline'}}})));
+const wrongTaskBaselinePlan = {...plan, baseline_leases: {...plan.baseline_leases, 'baseline-e02-g1': {lease_ref: 'baseline-e02-g1', task_ref: 'E02', task_generation: 1, actor_ref: null, stack_snapshot_ref: 'stack-a', status: 'active', last_refresh_reason: 'dispatch', refresh_receipt_ref: 'baseline-refresh-e02'}}};
+assert.throws(() => validatePlan(withActors(wrongTaskBaselinePlan, {executorA: {...awaitingActor, binding: {...actorBinding, baseline_lease_ref: 'baseline-e02-g1'}}})));
 const generation2Contract = {...plan.task_contracts.E01, task_generation: 2, contract_hash: 'contract-e01-g2', manifest_ref: 'manifest-e01-g2', manifest_hash: 'manifest-hash-e01-g2', artifact_disposition: 'reject'};
-const generation2Plan = {...plan, revision: 2, task_contracts: {...plan.task_contracts, E01: generation2Contract}, review: {...plan.review, revision: 2, task_generations: {...plan.review.task_generations, E01: 2}, reviewer_session_ref: 'reviewer-fresh-r2', artifact_hash: 'plan-artifact-r2', review_type: 'full_independent_fresh'}, outcome: {...plan.outcome, global_evidence_revision: null}};
-assert.throws(() => validatePlan({...generation2Plan, actors: {executorA: awaitingActor}}));
+const generation2Planning = {candidate_hash: 'plan-artifact-r2', source_snapshot_hash: 'source-snapshot-r2', active_lease_ref: 'planner-lease-r2', leases: [{...plan.planning.leases[0], status: 'expired'}, {lease_ref: 'planner-lease-r2', session_ref: 'planner-fresh-r2', fresh_session_receipt: 'planner-fresh-receipt-r2', plan_revision: 2, intent_revision: 1, candidate_hash: 'plan-artifact-r2', input_snapshot_hash: 'source-snapshot-r2', planned_route: 'gpt-5.6-sol/xhigh', observed_route: 'gpt-5.6-sol/xhigh', route_evidence_ref: 'planner-turn-r2', binding_readback_ref: 'planner-binding-r2', status: 'adopted', output_hash: 'plan-artifact-r2', prior_artifact_disposition_ref: 'artifact-dispositions-r2'}]};
+const generation2Plan = {...plan, revision: 2, task_contracts: {...plan.task_contracts, E01: generation2Contract}, review: {...plan.review, revision: 2, task_generations: {...plan.review.task_generations, E01: 2}, reviewer_session_ref: 'reviewer-fresh-r2', artifact_hash: 'plan-artifact-r2', review_type: 'full_independent_fresh'}, planning: generation2Planning, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, plan_revision: 2, state_hash: 'supervisor-state-hash-r2'}}, baseline_leases: {...plan.baseline_leases, 'baseline-e01-g2': {lease_ref: 'baseline-e01-g2', task_ref: 'E01', task_generation: 2, actor_ref: null, stack_snapshot_ref: 'stack-a', status: 'active', last_refresh_reason: 'dispatch', refresh_receipt_ref: 'baseline-refresh-g2'}}, outcome: {...plan.outcome, global_evidence_revision: null}, efficiency: {...plan.efficiency, material_replan_streak: 1, graph_hash_history: ['graph-a', 'graph-r2']}};
+assert.throws(() => validatePlan({...generation2Plan, planning: plan.planning}));
+assert.throws(() => validatePlan({...generation2Plan, planning: {...generation2Planning, leases: [generation2Planning.leases[0], {...generation2Planning.leases[1], session_ref: 'planner-a'}]}}));
+assert.throws(() => validatePlan({...generation2Plan, planning: {...generation2Planning, leases: [generation2Planning.leases[0], {...generation2Planning.leases[1], output_hash: 'wrong-output'}]}}));
+assert.throws(() => validatePlan({...generation2Plan, planning: {...generation2Planning, leases: [generation2Planning.leases[0], {...generation2Planning.leases[1], intent_revision: 0}]}}));
+assert(validatePlan({...generation2Plan, planning: {...generation2Planning, leases: [{...generation2Planning.leases[0], output_hash: null}, generation2Planning.leases[1]]}}));
+assert.throws(() => validatePlan(withActors(generation2Plan, {executorA: awaitingActor})));
 const fencedGeneration1Actor = {...actorBase, state: 'fenced', previous_state: 'fence-pending', transition_evidence_ref: 'fence-transition-a', stop_intent_ref: 'stop-intent-a', stop_ack_ref: 'stop-ack-a', effects_quiescent_ref: 'quiescent-a'};
-assert(validatePlan({...generation2Plan, actors: {executorA: fencedGeneration1Actor}}));
-const generation2Binding = {...actorBinding, plan_revision: 2, task_generation: 2, contract_hash: 'contract-e01-g2', manifest_hash: 'manifest-hash-e01-g2'};
+assert(validatePlan(withActors(generation2Plan, {executorA: fencedGeneration1Actor}, {executorA: {...contextAdmissionA, decision: 'REPLACE'}})));
+const generation2Binding = {...actorBinding, plan_revision: 2, task_generation: 2, contract_hash: 'contract-e01-g2', manifest_hash: 'manifest-hash-e01-g2', baseline_lease_ref: 'baseline-e01-g2'};
 const freshGeneration2Actor = {...awaitingActor, binding: generation2Binding, manifest_ack_ref: 'manifest-ack-g2', fresh_session_receipt: 'fresh-session-g2'};
-assert(validatePlan({...generation2Plan, actors: {executorA: freshGeneration2Actor}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, transfer_receipt: null}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, waiting_human: true}}}));
-assert.throws(() => validatePlan({...plan, authority: {...plan.authority, actions: ['create', 'message']}, actors: {executorA: archivedActor}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, role: 'unknown'}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, previous_state: 'active'}}}));
-assert.throws(() => validatePlan({...plan, actors: {executorA: {...archivedActor, transition_evidence_ref: null}}}));
+assert(validatePlan(withActors(generation2Plan, {executorA: freshGeneration2Actor})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivedActor, transfer_receipt: null}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivedActor, waiting_human: true}})));
+assert.throws(() => validatePlan(withActors({...plan, authority: {...plan.authority, actions: ['create', 'message']}}, {executorA: archivedActor})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivedActor, role: 'unknown'}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivedActor, previous_state: 'active'}})));
+assert.throws(() => validatePlan(withActors(plan, {executorA: {...archivedActor, transition_evidence_ref: null}})));
 
 const satisfiedCheckpoints = plan.human_checkpoints.map(checkpoint => ({...checkpoint, state: 'satisfied', evidence_ref: `${checkpoint.checkpoint_key}-evidence`}));
-const completedPlan = {...plan, status: 'completed', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'complete'}}, outcome: {...plan.outcome, global_evidence_ref: 'integration-proof-a', global_evidence_revision: 1}, human_checkpoints: satisfiedCheckpoints, actors: {executorA: archivedActor}};
+const completedPlan = withActors({...plan, status: 'completed', supervisor: {...plan.supervisor, goal: {...plan.supervisor.goal, state: 'complete'}}, outcome: {...plan.outcome, global_evidence_ref: 'integration-proof-a', global_evidence_revision: 1}, human_checkpoints: satisfiedCheckpoints}, {executorA: archivedActor});
 assert(validatePlan(completedPlan));
 assert.throws(() => validatePlan({...completedPlan, outcome: {...completedPlan.outcome, global_evidence_ref: null}}));
 assert.throws(() => validatePlan({...completedPlan, outcome: {...completedPlan.outcome, global_evidence_revision: 2}}));
 assert.throws(() => validatePlan({...completedPlan, human_checkpoints: plan.human_checkpoints}));
 assert.throws(() => validatePlan({...completedPlan, resume: {last_event_id: null, pending_operation_keys: ['pending-a']}}));
-assert.throws(() => validatePlan({...completedPlan, actors: {executorA: {...actorBase, state: 'active', previous_state: null}}}));
-assert.throws(() => validatePlan({...completedPlan, actors: {executorA: archivePendingActor}}));
+assert.throws(() => validatePlan(withActors(completedPlan, {executorA: {...actorBase, state: 'active', previous_state: null}})));
+assert.throws(() => validatePlan(withActors(completedPlan, {executorA: archivePendingActor})));
 
 function validActorTransition(from, to) {
   const allowed = {
@@ -885,9 +1159,16 @@ function applyDirective(previous, expectedUpdatedAt, actualUpdatedAt, sourceRef,
   assert(typeof sourceRef === 'string' && sourceRef.length > 0);
   return {...previous, intent: {revision: previous.intent.revision + 1, latest_user_directive_ref: sourceRef, superseded_effect_keys: supersededEffectKeys}};
 }
-const redirected = applyDirective(plan, 'u1', 'u1', 'message-do-not-send', ['send:campaign-a']);
-assert.strictEqual(redirected.intent.revision, 2);
-assert.deepStrictEqual(redirected.intent.superseded_effect_keys, ['send:campaign-a']);
+const redirectedRaw = applyDirective(plan, 'u1', 'u1', 'message-do-not-send', ['send:campaign-a']);
+assert.strictEqual(redirectedRaw.intent.revision, 2);
+assert.deepStrictEqual(redirectedRaw.intent.superseded_effect_keys, ['send:campaign-a']);
+assert.throws(() => validatePlan(redirectedRaw));
+const redirected = {
+  ...redirectedRaw,
+  planning: {...plan.planning, active_lease_ref: 'planner-lease-intent-2', leases: [{...plan.planning.leases[0], status: 'expired'}, {...plan.planning.leases[0], lease_ref: 'planner-lease-intent-2', session_ref: 'planner-intent-2', fresh_session_receipt: 'planner-fresh-intent-2', intent_revision: 2, binding_readback_ref: 'planner-binding-intent-2'}]},
+  supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, intent_revision: 2, state_hash: 'supervisor-state-hash-intent-2'}}
+};
+assert(validatePlan(redirected));
 assert.throws(() => applyDirective(plan, 'u1', 'u2', 'message-do-not-send'));
 
 function recommendCadence(work) {
@@ -937,19 +1218,39 @@ for (const role of ['supervisor', 'executor', 'planner', 'reviewer']) {
 }
 
 function versionDecision({schema, minimum, loaded, installed, safeBoundary}) {
-  if (schema !== 'octoplan-plan-v4') return 'REPLAN_SCHEMA';
+  if (schema !== 'octoplan-plan-v5') return 'REPLAN_SCHEMA';
   const parse = value => value.split('.').map(Number);
   const [minimumMajor] = parse(minimum);
   const [installedMajor] = parse(installed);
-  if (minimumMajor !== 14 || installedMajor !== 14) return 'REPLAN_BREAKING';
+  if (minimumMajor !== 15 || installedMajor !== 15) return 'REPLAN_BREAKING';
   const compare = (a, b) => parse(a).reduce((result, value, index) => result || value - parse(b)[index], 0);
   if (compare(installed, minimum) < 0) return 'PAUSE_INCOMPATIBLE';
   if (loaded === installed) return 'CONTINUE';
   return safeBoundary ? 'ADOPT_COMPATIBLE' : 'FINISH_SAFE_BOUNDARY';
 }
-assert.strictEqual(versionDecision({schema: 'octoplan-plan-v4', minimum: '14.0.0', loaded: '14.0.0', installed: '14.1.0', safeBoundary: true}), 'ADOPT_COMPATIBLE');
-assert.strictEqual(versionDecision({schema: 'octoplan-plan-v4', minimum: '14.0.0', loaded: '14.0.0', installed: '14.1.0', safeBoundary: false}), 'FINISH_SAFE_BOUNDARY');
-assert.strictEqual(versionDecision({schema: 'octoplan-plan-v3', minimum: '13.2.0', loaded: '13.2.0', installed: '14.0.0', safeBoundary: true}), 'REPLAN_SCHEMA');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v5', minimum: '15.0.0', loaded: '15.0.0', installed: '15.1.0', safeBoundary: true}), 'ADOPT_COMPATIBLE');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v5', minimum: '15.0.0', loaded: '15.0.0', installed: '15.1.0', safeBoundary: false}), 'FINISH_SAFE_BOUNDARY');
+assert.strictEqual(versionDecision({schema: 'octoplan-plan-v4', minimum: '14.0.0', loaded: '14.0.0', installed: '15.0.0', safeBoundary: true}), 'REPLAN_SCHEMA');
+
+function legacyGoalMigrationDecision({legacyGoalState, writersQuiescent = false, inventoryReceipt = false, terminationSupported = false}) {
+  if (legacyGoalState === 'complete') return writersQuiescent && inventoryReceipt ? 'CREATE_FRESH_V5_PLAN' : 'FENCE_AND_INVENTORY';
+  if (legacyGoalState === 'active' || legacyGoalState === 'blocked') {
+    if (!writersQuiescent || !inventoryReceipt) return 'FENCE_AND_INVENTORY';
+    return terminationSupported ? 'RESOLVE_LEGACY_GOAL_GENUINELY' : 'PAUSE_V5_FOR_LIFECYCLE_DECISION';
+  }
+  return 'PAUSE_UNPROVEN_LEGACY_GOAL';
+}
+assert.strictEqual(legacyGoalMigrationDecision({legacyGoalState: 'active'}), 'FENCE_AND_INVENTORY');
+assert.strictEqual(legacyGoalMigrationDecision({legacyGoalState: 'active', writersQuiescent: true, inventoryReceipt: true}), 'PAUSE_V5_FOR_LIFECYCLE_DECISION');
+assert.strictEqual(legacyGoalMigrationDecision({legacyGoalState: 'active', writersQuiescent: true, inventoryReceipt: true, terminationSupported: true}), 'RESOLVE_LEGACY_GOAL_GENUINELY');
+assert.strictEqual(legacyGoalMigrationDecision({legacyGoalState: 'complete', writersQuiescent: true, inventoryReceipt: true}), 'CREATE_FRESH_V5_PLAN');
+assert.strictEqual(legacyGoalMigrationDecision({legacyGoalState: 'unknown', writersQuiescent: true, inventoryReceipt: true}), 'PAUSE_UNPROVEN_LEGACY_GOAL');
+const legacyMigration = {source_schema: 'octoplan-plan-v4', legacy_goal_ref: 'legacy-goal-a', legacy_goal_state: 'active', inventory_ref: 'legacy-inventory-a', fence_ref: 'legacy-fence-a', quiescence_ref: 'legacy-quiescence-a', route: 'human-decision', decision_ref: 'legacy-lifecycle-gate-a'};
+const pausedLegacyMigrationPlan = {...plan, status: 'paused', legacy_migration: legacyMigration, supervisor: {...plan.supervisor, context_admission: {...plan.supervisor.context_admission, decision: 'PAUSE', state_hash: 'legacy-paused-state-a'}, goal: {...plan.supervisor.goal, origin: null, evidence_ref: null, state: 'pending'}}};
+assert(validatePlan(pausedLegacyMigrationPlan));
+assert.throws(() => validatePlan({...pausedLegacyMigrationPlan, status: 'active'}));
+assert.throws(() => validatePlan({...pausedLegacyMigrationPlan, supervisor: {...pausedLegacyMigrationPlan.supervisor, goal: {...pausedLegacyMigrationPlan.supervisor.goal, origin: 'adopted', evidence_ref: 'legacy-goal-a', state: 'active'}}}));
+assert(validatePlan({...plan, legacy_migration: {...legacyMigration, legacy_goal_state: 'complete', route: 'resolved', decision_ref: null}}));
 
 function goalActivationDecision({existingStatus = 'none', exactMatch = false, dedicatedDisclosed = false, goalAlreadyCreated = false}) {
   if (goalAlreadyCreated && dedicatedDisclosed) return 'PROHIBIT_POST_CREATION_TRANSFER';
@@ -1190,19 +1491,22 @@ const authorityActor = {project_id: 'project-a', directory_name: null, environme
 assert(authorityCovers(plan.authority, authorityActor, 'message'));
 assert(!authorityCovers(plan.authority, authorityActor, 'delete'));
 assert(!authorityCovers(plan.authority, {...authorityActor, project_id: 'project-b'}, 'message'));
-assert(!authorityCovers(plan.authority, {...authorityActor, role: 'planner'}, 'message'));
+assert(!authorityCovers(plan.authority, {...authorityActor, role: 'follow-up'}, 'message'));
 assert(!authorityCovers(plan.authority, {...authorityActor, adopted_session_ref: 'adopted-a'}, 'message'));
 assert(authorityCovers({...plan.authority, adopted_session_refs: ['adopted-a']}, {...authorityActor, adopted_session_ref: 'adopted-a'}, 'message'));
 assert(!authorityCovers({...plan.authority, delivery: false}, authorityActor, 'message'));
 
 function beginReplan(previous) {
-  return {...previous, status: 'replanning', proposed_revision: previous.revision + 1, proposed_review: null, acceptedPasses: []};
+  return {...asReplanning(previous), acceptedPasses: []};
 }
 const replanned = beginReplan({...plan, acceptedPasses: ['pass-a']});
 assert.strictEqual(replanned.revision, 1);
 assert.strictEqual(replanned.proposed_revision, 2);
 assert.deepStrictEqual(replanned.acceptedPasses, []);
 assert.strictEqual(replanned.proposed_review, null);
+assert.strictEqual(replanned.planning.leases[0].status, 'expired');
+assert.strictEqual(replanned.planning.leases[1].session_ref, 'planner-r2');
+assert.notStrictEqual(replanned.planning.leases[0].session_ref, replanned.planning.leases[1].session_ref);
 
 function eligibleSafeReady(tasks, capacity, active = []) {
   const occupied = new Set(active.flatMap(task => task.conflicts));
@@ -1287,6 +1591,35 @@ assert.strictEqual(contextDecision({splitMerge: true, sameArtifact: true, sameBa
 assert.strictEqual(contextDecision({generation: true}), 'FENCE_AND_FRESH_WRITER');
 assert.strictEqual(contextDecision({sameArtifact: true, sameBase: true}, false), 'FRESH_WRITER');
 
+function substantiveResumeDecision({materialChange = false, compacted = false, supersededIntent = false, resumesWithoutProgress = 0, acceptedProgress = false}) {
+  if (materialChange || resumesWithoutProgress >= 3) return 'REPLACE';
+  if (acceptedProgress) return 'REUSE';
+  if (compacted || supersededIntent || resumesWithoutProgress >= 2) return 'ADMIT_CONTEXT';
+  return 'REUSE';
+}
+assert.strictEqual(substantiveResumeDecision({}), 'REUSE');
+assert.strictEqual(substantiveResumeDecision({compacted: true}), 'ADMIT_CONTEXT');
+assert.strictEqual(substantiveResumeDecision({supersededIntent: true}), 'ADMIT_CONTEXT');
+assert.strictEqual(substantiveResumeDecision({resumesWithoutProgress: 2}), 'ADMIT_CONTEXT');
+assert.strictEqual(substantiveResumeDecision({resumesWithoutProgress: 3}), 'REPLACE');
+assert.strictEqual(substantiveResumeDecision({materialChange: true, acceptedProgress: true}), 'REPLACE');
+
+function planningContinuityDecision({materialReplan = false, volumetricDiagnosis = false, sameRevision = true, sameCandidate = true, sameIntent = true, sameSnapshot = true}) {
+  if (materialReplan || volumetricDiagnosis) return 'FRESH_PLANNER';
+  return sameRevision && sameCandidate && sameIntent && sameSnapshot ? 'REUSE_LEASE' : 'FRESH_PLANNER';
+}
+assert.strictEqual(planningContinuityDecision({}), 'REUSE_LEASE');
+assert.strictEqual(planningContinuityDecision({materialReplan: true}), 'FRESH_PLANNER');
+assert.strictEqual(planningContinuityDecision({volumetricDiagnosis: true}), 'FRESH_PLANNER');
+assert.strictEqual(planningContinuityDecision({sameIntent: false}), 'FRESH_PLANNER');
+
+function supervisorWorkDecision({materialReplan = false, volumetric = false}) {
+  return materialReplan || volumetric ? 'DELEGATE_FRESH_PLN' : 'HANDLE_THIN_CONTROL';
+}
+assert.strictEqual(supervisorWorkDecision({}), 'HANDLE_THIN_CONTROL');
+assert.strictEqual(supervisorWorkDecision({materialReplan: true}), 'DELEGATE_FRESH_PLN');
+assert.strictEqual(supervisorWorkDecision({volumetric: true}), 'DELEGATE_FRESH_PLN');
+
 function reviewType({materialChange, sameGeneration, sameArtifact, stableFinding, sameReviewer}) {
   if (materialChange || !sameGeneration || !sameArtifact) return 'full_independent_fresh';
   return stableFinding && sameReviewer ? 'targeted_recheck' : 'full_independent_fresh';
@@ -1322,6 +1655,65 @@ assert.strictEqual(stackGate(freshStack), 'PASS');
 assert.strictEqual(stackGate({...freshStack, migrations: false}), 'BLOCK_WRITER');
 assert.strictEqual(stackGate({...freshStack, mode: 'read-only', migrations: false}), 'CONTINUE_BOUNDED_READ_ONLY');
 
+function baselineLeaseDecision({gate, collision = false, overlappingDrift = false}) {
+  if (['dispatch', 'first-effect', 'push', 'review', 'handoff'].includes(gate) || collision || overlappingDrift) return 'REFRESH';
+  return 'KEEP';
+}
+for (const gate of ['dispatch', 'first-effect', 'push', 'review', 'handoff']) assert.strictEqual(baselineLeaseDecision({gate}), 'REFRESH');
+assert.strictEqual(baselineLeaseDecision({gate: 'poll', overlappingDrift: false}), 'KEEP');
+assert.strictEqual(baselineLeaseDecision({gate: 'poll', collision: true}), 'REFRESH');
+
+function deliveryArtifactTransition(from, to) {
+  const allowed = {
+    'branch-only': ['draft', 'closed', 'superseded'],
+    draft: ['ready-for-review', 'closed', 'superseded'],
+    'ready-for-review': ['draft', 'waiting-human', 'merged', 'closed', 'superseded'],
+    'waiting-human': ['draft', 'ready-for-review', 'merged', 'closed', 'superseded'],
+    merged: [], closed: [], superseded: []
+  };
+  return allowed[from]?.includes(to) === true;
+}
+assert(deliveryArtifactTransition('branch-only', 'draft'));
+assert(deliveryArtifactTransition('draft', 'ready-for-review'));
+assert(deliveryArtifactTransition('ready-for-review', 'waiting-human'));
+assert(deliveryArtifactTransition('waiting-human', 'merged'));
+assert(deliveryArtifactTransition('draft', 'superseded'));
+assert(!deliveryArtifactTransition('draft', 'merged'));
+assert(!deliveryArtifactTransition('merged', 'draft'));
+
+const draftArtifact = {kind: 'pull-request', artifact_ref: 'pr-616', repository_ref: 'repo-a', base_ref: 'base-a', head_ref: 'head-a', state: 'draft', owner_actor_ref: 'executorA', next_transition: 'mark ready or supersede', blocker: 'plan revision pending', resume_predicate: 'plan revision accepted', disposition: 'active', evidence_ref: 'pr-readback-a'};
+const activeWriter = {...actorBase, state: 'active', previous_state: null};
+const planWithActiveWriter = withActors(plan, {executorA: activeWriter});
+assert(validatePlan({...planWithActiveWriter, delivery_artifacts: {E01: [draftArtifact]}}));
+assert.throws(() => validatePlan({...planWithActiveWriter, delivery_artifacts: {E01: [{...draftArtifact, owner_actor_ref: ''}]}}));
+assert.throws(() => validatePlan({...plan, delivery_artifacts: {E01: [draftArtifact]}}));
+assert.throws(() => validatePlan({...completedPlan, delivery_artifacts: {E01: [draftArtifact]}}));
+assert(validatePlan({...completedPlan, delivery_artifacts: {E01: [{...draftArtifact, state: 'superseded', disposition: 'historical', blocker: null, next_transition: 'none', resume_predicate: 'terminal'}]}}));
+assert.throws(() => validatePlan({...planWithActiveWriter, status: 'superseded', delivery_artifacts: {E01: [draftArtifact]}}));
+assert(validatePlan({...plan, status: 'superseded', delivery_artifacts: {E01: [{...draftArtifact, state: 'superseded', disposition: 'historical', blocker: null, next_transition: 'none', resume_predicate: 'terminal'}]}}));
+
+function progressCircuitDecision({acceptedProgress = false, materialReplans = 0, graphHashes = [], comparableCycles = 0}) {
+  const repeatedGraph = new Set(graphHashes).size !== graphHashes.length;
+  if (!acceptedProgress && (materialReplans >= 2 || comparableCycles >= 2 || repeatedGraph)) return 'OPEN_INCIDENT_AND_DIAGNOSE';
+  return 'CONTINUE';
+}
+assert.strictEqual(progressCircuitDecision({materialReplans: 1, graphHashes: ['a', 'b'], comparableCycles: 1}), 'CONTINUE');
+assert.strictEqual(progressCircuitDecision({materialReplans: 2, graphHashes: ['a', 'b']}), 'OPEN_INCIDENT_AND_DIAGNOSE');
+assert.strictEqual(progressCircuitDecision({graphHashes: ['a', 'b', 'a']}), 'OPEN_INCIDENT_AND_DIAGNOSE');
+assert.strictEqual(progressCircuitDecision({comparableCycles: 2}), 'OPEN_INCIDENT_AND_DIAGNOSE');
+assert.strictEqual(progressCircuitDecision({acceptedProgress: true, materialReplans: 2, comparableCycles: 2}), 'CONTINUE');
+assert.throws(() => validatePlan({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2}}));
+const openedReplanIncident = {incident_ref: 'replan-incident-a', kind: 'replan', state: 'opened', diagnosis_ref: null, disposition_ref: null};
+const diagnosedReplanIncident = {...openedReplanIncident, state: 'diagnosed', diagnosis_ref: 'replan-diagnosis-a'};
+const adoptedReplanIncident = {...diagnosedReplanIncident, state: 'adopted', disposition_ref: 'replan-disposition-a'};
+assert(validatePlan({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2, incident: openedReplanIncident}}));
+assert(validatePlan({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2, incident: diagnosedReplanIncident}}));
+assert(validatePlan({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2, incident: adoptedReplanIncident}}));
+assert.throws(() => validatePlan(withActors({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2, incident: openedReplanIncident}}, {executorA: activeWriter})));
+assert(validatePlan(withActors({...plan, efficiency: {...plan.efficiency, material_replan_streak: 2, incident: adoptedReplanIncident}}, {executorA: activeWriter})));
+assert.throws(() => validatePlan({...plan, efficiency: {...plan.efficiency, accepted_progress_ref: 'accepted-a', accepted_progress_kind: 'artifact', material_replan_streak: 2}}));
+assert(validatePlan({...plan, efficiency: {...plan.efficiency, accepted_progress_ref: 'accepted-a', accepted_progress_kind: 'artifact', material_replan_streak: 0, comparable_cycles_without_progress: 0, graph_hash_history: ['graph-accepted']}}));
+
 function compactState({size, budget, receipt}) {
   if (size < budget) return 'KEEP';
   return receipt && ['pre_hash', 'post_hash', 'essential_fields_ref', 'readback_ref', 'no_loss_ref'].every(key => receipt[key]) ? 'COMPACT' : 'BLOCK_COMPACTION';
@@ -1339,10 +1731,13 @@ function metricSnapshot(metric, value, source, population, windowStart, windowEn
 assert.strictEqual(metricSnapshot('tokens', 126359, 'goal-counter', 'supervisor-goal', '08:13', '08:24').population, 'supervisor-goal');
 assert.strictEqual(metricSnapshot('tokens', 'unavailable', 'runtime', 'executor-session', '08:24', 'close').value, 'unavailable');
 
-console.log('PASS: Octoplan 14.0 generation, admission, lifecycle, review, and routing fixtures');
+console.log('PASS: Octoplan 15.0 planner, context, artifact, efficiency, lifecycle, review, and routing fixtures');
 NODE
 
-grep -q '^### 13\.1\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 13.1.0'
-grep -q '^### 14\.0\.0 — 2026-08-12$' "$changelog" || fail 'Codex changelog lacks 14.0.0'
+if [ "$codex_only" = false ]; then
+  grep -q '^### 13\.1\.0 — 2026-08-11$' "$changelog" || fail 'Codex changelog lacks 13.1.0'
+  grep -q '^### 14\.0\.0 — 2026-08-12$' "$changelog" || fail 'Codex changelog lacks 14.0.0'
+  grep -q '^### 15\.0\.0 — 2026-08-12$' "$changelog" || fail 'Codex changelog lacks 15.0.0'
+fi
 
-printf 'PASS: Octoplan Codex 14.0.0 contract\n'
+printf 'PASS: Octoplan Codex 15.0.0 contract\n'
