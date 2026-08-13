@@ -68,6 +68,18 @@ Third-party Claude marketplaces do not update automatically by default. To enabl
 
 To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-claude@octopad-mcp`, then `/reload-plugins`.
 
+### Octoplan Autopilot for Claude Code
+
+This is a separate distribution under live trial. It plans a work stream like Octoplan, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Install it instead of `octoplan-claude`, not alongside it.
+
+```text
+/plugin marketplace add sudolab-co/octopad-mcp
+/plugin install octoplan-autopilot@octopad-mcp
+/reload-plugins
+```
+
+To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-autopilot@octopad-mcp`, then `/reload-plugins`.
+
 ### Octoplan for Codex
 
 ```bash

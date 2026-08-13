@@ -63,6 +63,7 @@ These plugins are optional and separate from the MCP connection:
 |---|---|---|---|
 | [`manage-product-documentation`](plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.0.0 shared | Organizes and maintains product documentation as product work evolves. |
 | [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
+| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | 0.1.0 | Plans the work, agrees a delivery contract, then supervises delivery after an explicit go. |
 | [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 16.0.0 | Calibrates and challenges the plan, then supervises delivery after the user authorizes that scope. |
 
 Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.
@@ -92,6 +93,7 @@ docs/clients/                            Client-specific direct MCP guides
 plugins/manage-product-documentation/    Codex product-documentation distribution
 plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
 plugins/octoplan-claude/                 Optional Claude distribution
+plugins/octoplan-autopilot/              Optional Claude planning-and-delivery distribution
 plugins/octoplan-codex/                  Optional Codex distribution
 scripts/validate-repository.sh           Repository contract validation
 ```
