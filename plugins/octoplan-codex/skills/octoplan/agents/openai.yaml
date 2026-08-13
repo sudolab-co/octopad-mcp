@@ -1,7 +1,10 @@
 interface:
   display_name: "Octoplan for Codex"
-  short_description: "Turn a brief into governed, supervised delivery"
-  default_prompt: "Use $octoplan to clarify my request, show the creation brief and checkpoints, then create and supervise the plan after approval."
+  short_description: "Calibrate, challenge, and deliver governed plans"
+  default_prompt: "Use $octoplan to clarify, show the brief and checkpoints, then create and supervise the plan within my authorized scope."
+
+policy:
+  allow_implicit_invocation: false
 
 dependencies:
   tools:

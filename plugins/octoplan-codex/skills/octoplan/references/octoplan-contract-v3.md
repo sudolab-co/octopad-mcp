@@ -1,3 +1,3 @@
 # Retired Octoplan v3 contract
 
-Octoplan 15 does not execute v3. Read [octoplan-contract-v5.md](octoplan-contract-v5.md), preserve v3 state as history, fence its writers, and materially replan without transferring PASS, authority, actor eligibility, receipts, supervisor ownership, or Goal state.
+Octoplan 16 does not execute v3. Follow [state-and-recovery.md](state-and-recovery.md): stop unresolved effects, retain evidenced artifacts, reconfirm mandate and authority, and create a fresh reviewed v6 plan. Do not translate fields or transfer PASS, actors, receipts, supervisor ownership, or Goal state.

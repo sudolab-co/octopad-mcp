@@ -18,6 +18,18 @@ Pull-request, delivery, release, audit, user-documentation, release-note, Produc
 
 ## octoplan-codex
 
+### 16.0.0 — 2026-08-13
+
+Octoplan now calibrates plan shape (`simple`, `structured`, or `adaptive`) independently from consequence (`reversible`, `material`, or `protected`). Shape controls graph depth, delegation, WIP, and recovery; the plan's maximum consequence controls brief and adversarial plan-review depth, while each task's own consequence controls its delivery review and protected gates. Every revision receives exactly one fresh adversarial plan-review session, with stable corrections rechecked by that same session rather than multiplying reviewers.
+
+The runtime keeps the exact Luna/Sol model-and-effort router and verifies the observed pair before work. The current Codex task remains the default supervisor, delegates only when the benefit exceeds handoff cost, and uses the native Goal solely for continuity. Every spawned actor enters the exact production Octopad context. Obstacles are classified as transient, evidence-gap, in-envelope, material, or protected so safe recovery remains bounded and independent work can continue.
+
+The universal control plane is replaced by compact v6 recovery state hosted on a real outcome or integration task, never a bookkeeping task. Inline work omits actor bindings but retains intents for mutations and external side effects. Octopad task statuses remain project truth; derived scheduler state, raw logs, telemetry counters, stack snapshots, leases, and compatibility machinery are not persisted. Manifest hashes exclude the delimited state block, and plan-review provenance, unresolved actions, artifact versions, checkpoints, dispositions, and guarded update evidence remain durable.
+
+Artifacts use one strict generic core plus a `repository`, `content`, `research`, or `operations` profile. A coherent task may own several artifacts and profiles when their owner, acceptance, dependencies, and review boundary are shared. Repository evidence stays specific to source changes and migrations; content, research, and operations retain their own proof contracts. Publication, merge, migration application, deployment, destructive effects, spend, access, required human review, and acceptance remain separate protected checkpoints.
+
+This is a clean breaking contract: only `octoplan-plan-v6` runs. Earlier control schemas are rejected and are neither migrated nor translated; a new v6 plan starts from the live mandate. An explicit, precise plan-and-deliver request can cover a faithful creation brief without a redundant confirmation, but planning-only permission never authorizes delivery and protected actions remain separately gated. The Claude distribution is unchanged.
+
 ### 15.0.0 — 2026-08-12
 
 Every material replan now expires prior planner leases and requires a unique fresh planner session bound to the candidate, plan and intent revisions, and a bounded source snapshot. An interrupted planner may expire with no output; no stale candidate can be invented or adopted. Two material replans, a repeated graph, or two comparable cycles without accepted progress opens a blocking efficiency incident and requires diagnosis before stable correction may resume.
