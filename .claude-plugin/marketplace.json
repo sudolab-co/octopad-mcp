@@ -25,6 +25,16 @@
       "category": "productivity",
       "homepage": "https://octopad.app",
       "source": "./plugins/octoplan-claude"
+    },
+    {
+      "name": "octoplan-autopilot",
+      "description": "Turns an Octopad work stream into an execution-ready plan of detailed, ordered, self-contained tasks, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Works for engineering and non-technical work alike. Requires a connected Octopad MCP server.",
+      "author": {
+        "name": "Sudolab"
+      },
+      "category": "productivity",
+      "homepage": "https://octopad.app",
+      "source": "./plugins/octoplan-autopilot"
     }
   ]
 }

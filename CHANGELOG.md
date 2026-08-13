@@ -248,6 +248,18 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - Includes Codex-specific GPT-5.6 execution and review routing, durable recovery rules, Blueprint support, and event-driven replanning.
 - No Kickstart skill or Branch command.
 
+## octoplan-autopilot
+
+### 0.1.0 — 2026-08-13
+
+First release of a separate Claude Code distribution that plans a work stream and then delivers it. It keeps the Octoplan planning core unchanged and adds two things around it. `octoplan-claude` is untouched and stays the planning-only distribution.
+
+A new **delivery contract** step runs right after the scoping brief is confirmed. The session reads the target's own rule files, then presents one message: a forecast of every point the plan will need a person, who reviews which class of task, whether dependent changes stack, and two dials the user sets — how much may be merged without them, and how much may be resolved without asking. The rule files are a floor the dials cannot lower, and one-way doors such as schema changes, permissions, payments and deletions always stop for a named person whatever the dials say. The confirmed contract is recorded as Decisions on the stream, so the mandate outlives the conversation, and its gate map is re-confirmed as a short delta once the tasks exist.
+
+A new **supervision** reference defines delivery. On the user's explicit go, the planning session becomes a supervisor: it picks the next ready task, sends a fresh worker a pointer to it plus the mandate, and closes nothing until the task's own verification steps have run with their output recorded and any required fresh review is clean. Independent tasks may run in parallel in isolated copies of the repository. When work stops for a person, the report is six fields — state, done, blocked, decision expected, to unblock, next step — in the user's language, and a checkpoint blocks only its own branch while safe work continues. The continuation prompts stay in every task as the recovery path: if the supervising session dies, a fresh one resumes from Octopad alone.
+
+This is an experimental variant published for a live trial. Install it in place of `octoplan-claude` for the duration of the test, not alongside it: both skills trigger on the same request, so only one can be installed at a time. `octoplan-codex` is unaffected.
+
 ## octoplan-claude
 
 ### 1.5.0 — 2026-08-13

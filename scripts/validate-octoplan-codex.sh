@@ -161,6 +161,22 @@ private_material_pattern="/""Users/|[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]
 while IFS= read -r changed; do
   [ -n "$changed" ] || continue
   case "$changed" in
+    .claude-plugin/marketplace.json)
+      [ "$codex_only" = false ] || fail "protected Claude surface changed: $changed"
+      git -C "$root" show origin/main:.claude-plugin/marketplace.json | node -e '
+        const fs = require("fs");
+        const base = JSON.parse(fs.readFileSync(0, "utf8"));
+        const current = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+        const outsidePlugins = (value) => JSON.stringify({...value, plugins: null});
+        if (outsidePlugins(base) !== outsidePlugins(current)) process.exit(1);
+        for (const entry of base.plugins) {
+          const matches = current.plugins.filter((candidate) => candidate.name === entry.name);
+          if (matches.length !== 1 || JSON.stringify(matches[0]) !== JSON.stringify(entry)) process.exit(1);
+        }
+        const names = current.plugins.map((entry) => entry.name);
+        if (new Set(names).size !== names.length) process.exit(1);
+      ' "$root/.claude-plugin/marketplace.json" || fail 'Claude marketplace entries may only be added, never edited or removed'
+      ;;
     .claude-plugin|.claude-plugin/*|plugins/octoplan-claude|plugins/octoplan-claude/*)
       fail "protected Claude surface changed: $changed"
       ;;
