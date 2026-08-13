@@ -162,6 +162,7 @@ while IFS= read -r changed; do
   [ -n "$changed" ] || continue
   case "$changed" in
     .claude-plugin/marketplace.json)
+      [ "$codex_only" = false ] || fail "protected Claude surface changed: $changed"
       git -C "$root" show origin/main:.claude-plugin/marketplace.json | node -e '
         const fs = require("fs");
         const base = JSON.parse(fs.readFileSync(0, "utf8"));

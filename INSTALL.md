@@ -70,15 +70,26 @@ To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/p
 
 ### Octoplan Autopilot for Claude Code
 
-This is a separate distribution under live trial. It plans a work stream like Octoplan, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Install it instead of `octoplan-claude`, not alongside it.
+This is an experimental variant published for a live trial. It plans a work stream like Octoplan, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go.
+
+Install it **in place of** `octoplan-claude`, not alongside it: both skills trigger on the same request, a plain "Octoplan" followed by a work-stream name, so with both installed the assistant has no reliable way to tell which one you meant. Remove the planning-only one first:
 
 ```text
+/plugin uninstall octoplan-claude@octopad-mcp
 /plugin marketplace add sudolab-co/octopad-mcp
 /plugin install octoplan-autopilot@octopad-mcp
 /reload-plugins
 ```
 
 To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-autopilot@octopad-mcp`, then `/reload-plugins`.
+
+To go back to planning-only Octoplan, uninstall this one and reinstall the other:
+
+```text
+/plugin uninstall octoplan-autopilot@octopad-mcp
+/plugin install octoplan-claude@octopad-mcp
+/reload-plugins
+```
 
 ### Octoplan for Codex
 

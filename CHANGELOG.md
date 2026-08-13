@@ -258,7 +258,7 @@ A new **delivery contract** step runs right after the scoping brief is confirmed
 
 A new **supervision** reference defines delivery. On the user's explicit go, the planning session becomes a supervisor: it picks the next ready task, sends a fresh worker a pointer to it plus the mandate, and closes nothing until the task's own verification steps have run with their output recorded and any required fresh review is clean. Independent tasks may run in parallel in isolated copies of the repository. When work stops for a person, the report is six fields — state, done, blocked, decision expected, to unblock, next step — in the user's language, and a checkpoint blocks only its own branch while safe work continues. The continuation prompts stay in every task as the recovery path: if the supervising session dies, a fresh one resumes from Octopad alone.
 
-This is a first version published for a live trial, not a replacement for either existing Octoplan distribution.
+This is an experimental variant published for a live trial. Install it in place of `octoplan-claude` for the duration of the test, not alongside it: both skills trigger on the same request, so only one can be installed at a time. `octoplan-codex` is unaffected.
 
 ## octoplan-claude
 

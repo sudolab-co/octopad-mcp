@@ -74,6 +74,53 @@ claude_heading_count=$(awk -v version="$claude_skill_version" '
   END { print count + 0 }
 ' "$root/CHANGELOG.md")
 [ "$claude_heading_count" -eq 1 ] || fail 'Claude release needs one exact dated changelog heading'
+autopilot_skill="$root/plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md"
+autopilot_manifest="$root/plugins/octoplan-autopilot/.claude-plugin/plugin.json"
+autopilot_supervision="$root/plugins/octoplan-autopilot/skills/octoplan-autopilot/references/supervision.md"
+[ -f "$autopilot_skill" ] || fail 'Autopilot skill is missing'
+[ -f "$autopilot_manifest" ] || fail 'Autopilot plugin manifest is missing'
+[ -f "$autopilot_supervision" ] || fail 'Autopilot supervision reference is missing'
+grep -q '"name": "octoplan-autopilot"' "$autopilot_manifest" || fail 'Autopilot plugin ID is not octoplan-autopilot'
+autopilot_skill_version=$(sed -n 's/^Version: //p' "$autopilot_skill")
+printf '%s\n' "$autopilot_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Autopilot skill version is not semantic versioning'
+autopilot_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$autopilot_manifest")
+[ "$autopilot_manifest_version" = "$autopilot_skill_version" ] || fail 'Autopilot skill and manifest versions differ'
+autopilot_readme_row=$(printf '| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | %s | Plans the work, agrees a delivery contract, then supervises delivery after an explicit go. |' "$autopilot_skill_version")
+[ "$(grep -Fxc "$autopilot_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Autopilot version or behavior is stale'
+autopilot_latest_changelog=$(awk '/^## octoplan-autopilot$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
+[ "$autopilot_latest_changelog" = "$autopilot_skill_version" ] || fail 'latest Autopilot changelog version differs from the skill'
+autopilot_heading_count=$(awk -v version="$autopilot_skill_version" '
+  /^## octoplan-autopilot$/ { found=1; next }
+  found && /^## / { found=0 }
+  found {
+    prefix = "### " version " — "
+    if (index($0, prefix) == 1) {
+      date = substr($0, length(prefix) + 1)
+      if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) count++
+    }
+  }
+  END { print count + 0 }
+' "$root/CHANGELOG.md")
+[ "$autopilot_heading_count" -eq 1 ] || fail 'Autopilot release needs one exact dated changelog heading'
+node - "$root" "$autopilot_skill_version" <<'NODE' || fail 'Autopilot marketplace entry is invalid'
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[2];
+const version = process.argv[3];
+const marketplace = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+const entries = marketplace.plugins.filter((plugin) => plugin.name === 'octoplan-autopilot');
+if (entries.length !== 1) process.exit(1);
+const entry = entries[0];
+if (typeof entry.description !== 'string' || entry.description.length < 40) process.exit(1);
+if (entry.author?.name !== 'Sudolab' || entry.category !== 'productivity' || entry.homepage !== 'https://octopad.app') process.exit(1);
+if (typeof entry.source !== 'string' || !entry.source.startsWith('./plugins/')) process.exit(1);
+const directory = path.resolve(root, entry.source);
+if (directory !== path.join(root, 'plugins', path.basename(directory))) process.exit(1);
+const manifestPath = path.join(directory, '.claude-plugin/plugin.json');
+if (!fs.existsSync(manifestPath)) process.exit(1);
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+if (manifest.name !== 'octoplan-autopilot' || manifest.version !== version) process.exit(1);
+NODE
 [ -f "$root/plugins/manage-product-documentation/.codex-plugin/plugin.json" ] || fail 'product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation-claude/.claude-plugin/plugin.json" ] || fail 'Claude product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/agents/openai.yaml" ] || fail 'product-documentation agent metadata is missing'
