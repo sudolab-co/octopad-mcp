@@ -88,11 +88,13 @@ Any field can be "none". Keep each to a line.
 
 If the challenge dial says resolve autonomously, solve what is genuinely reversible and inside the plan, record what you did on the task, and report it afterwards. It never covers a one-way door.
 
-## Recovery
+## Recovery and handover
 
 The state is Octopad: the contract Decisions, the recorded go, each task's status, and each task's latest comment. Nothing about this run lives anywhere else, which is what makes it survivable.
 
 If this session dies, a fresh one resumes by invoking the skill on the stream: it sees the recorded go, comes straight back here, re-reads the contract Decisions, the open tasks and their latest comments, and picks the loop back up. Before resuming, check for work left half-done: a task in progress with no verification output on it is re-run, not assumed finished.
+
+Handing over is also a deliberate move, not only what a crash forces. If your own context is running low, hand the rest of the stream to a fresh supervisor before your judgement thins, rather than pushing on and stalling in the middle of a task. Close out or park the task in flight with its state written on it, then give the user the supervisor handoff block from the skill's Continuation section. The recorded go carries over: the fresh session reads it as permission already given, so nothing is re-asked and nothing already settled is reopened.
 
 ## Closing the stream
 

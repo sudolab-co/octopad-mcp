@@ -256,6 +256,16 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.2.0 — 2026-08-14
+
+Supervision can now change hands. 0.1.0 assumed the session that planned a stream would also supervise its delivery, which holds for a light planning pass and breaks after a heavy one. Supervising is cheap per task, but its verification gate is not: reading each change and each reviewer's findings, task after task, is what spends the budget. A planner that arrives at the delivery go already depleted runs out mid-stream, and by then summarising has dulled the judgement it was kept for.
+
+The delivery offer at step 11 now asks who should supervise rather than assuming, and the planner judges its own remaining context before offering. It recommends a fresh supervisor whenever the pass was heavy — an adversarial review that came back with substantial findings, a replan, a target that changed mid-session, a long exploration phase — and hands off when in doubt, because handing off costs one paste and running out stalls the stream.
+
+A **supervisor handoff block** joins the continuation prompts: the stream name plus its organisation and workspace, a pointer like every other block in this skill, with a third line allowed only for something true of the environment that Octopad cannot hold. It covers all three cases — the planner handing over at the go, a running supervisor handing over the rest, and replacing a session that died. The recorded delivery go carries across, so a fresh supervisor reads it as permission already given and never re-asks for a decision the user has made. The supervision reference gains the matching guidance: a supervisor running low hands over deliberately, before its judgement thins, rather than pushing on.
+
+No change to the planning core, the delivery contract, the verification gate, or the task format. Upgrading needs no migration, and a stream planned under 0.1.0 resumes unchanged.
+
 ### 0.1.0 — 2026-08-13
 
 First release of a separate Claude Code distribution that plans a work stream and then delivers it. It keeps the Octoplan planning core unchanged and adds two things around it. `octoplan-claude` is untouched and stays the planning-only distribution.
