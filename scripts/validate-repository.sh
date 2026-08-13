@@ -20,7 +20,7 @@ grep -Fq '**"Use Octopad. Start my onboarding."**' "$root/README.md" || fail 'RE
 grep -Fq 'https://chatgpt.com/plugins' "$root/README.md" || fail 'README ChatGPT directory link is missing'
 grep -Fq 'official Octopad app' "$root/README.md" || fail 'README ChatGPT app route is missing'
 grep -Fq 'supported customer-facing ChatGPT plugin' "$root/README.md" || fail 'README ChatGPT terminology bridge is missing'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 | Plans the work and can supervise delivery after the user authorizes that scope. |' "$root/README.md" || fail 'README Codex version or behavior is stale'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 16.0.0 | Calibrates and challenges the plan, then supervises delivery after the user authorizes that scope. |' "$root/README.md" || fail 'README Codex version or behavior is stale'
 grep -Fq 'Octopad > Settings > AI clients' "$root/README.md" || fail 'README connection-revocation path is missing'
 [ -f "$root/SECURITY.md" ] || fail 'security reporting guide is missing'
 grep -Fq 'https://mcp.octopad.app/mcp' "$root/INSTALL.md" || fail 'canonical MCP endpoint is missing'
@@ -158,8 +158,8 @@ done
 
 grep -q '^## manage-product-documentation$' "$root/CHANGELOG.md" || fail 'product-documentation changelog section is missing'
 grep -q '^### 1\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.0.0 history is missing'
-grep -q '"version": "15\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 15.0.0'
-grep -q '^Version: 15\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 15.0.0'
+grep -q '"version": "16\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 16.0.0'
+grep -q '^Version: 16\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 16.0.0'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
 grep -q '^### 10\.0\.0 — 2026-08-08$' "$root/CHANGELOG.md" || fail 'Codex 10.0.0 entry is missing'
 grep -q '^### 10\.1\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.1.0 entry is missing'
@@ -171,6 +171,7 @@ grep -q '^### 13\.0\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.0
 grep -q '^### 13\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.1.0 entry is missing'
 grep -q '^### 14\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 14.0.0 entry is missing'
 grep -q '^### 15\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 15.0.0 entry is missing'
+grep -q '^### 16\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'Codex 16.0.0 entry is missing'
 ! grep -q '^### 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
 
 node - "$claude_skill" <<'NODE'

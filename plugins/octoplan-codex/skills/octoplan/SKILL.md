@@ -2,40 +2,42 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, or resume a governed work stream or task. Do not use for generic Octopad actions, onboarding, or unapproved execution.
 ---
-Version: 15.0.0
+Version: 16.0.0
 
 # Octoplan for Codex
 
-Turn a request into an outcome-first Octopad task graph, expose checkpoints before creation, and supervise authorized delivery until the integrated result is proved or a protected checkpoint needs its owner. Planning creates no deliverable. Octopad holds the shared plan; native Codex Goals and tasks hold the live execution loop.
+Turn a request into the smallest useful governed plan, challenge it once, persist it in Octopad, and supervise authorized delivery until the integrated outcome is proved or a protected decision needs its owner. Octopad owns shared project truth; Codex owns live reasoning, agents, tools, and execution.
 
-Only `octoplan-plan-v5` is supported. Fence and replan v1-v4, 10.x, or unknown saved plans from the confirmed mandate; never inherit PASS, authority, creation intents, actor eligibility, or launch state.
+Only `octoplan-plan-v6` is supported. Reject any other control schema; never migrate or translate it. Start a new v6 plan from the live mandate.
 
 ## Loading order
 
-Read [references/planning.md](references/planning.md) for planning or replanning and [references/octoplan-contract-v5.md](references/octoplan-contract-v5.md) when legacy state or a breaking version is found. Read [references/state-and-recovery.md](references/state-and-recovery.md) before the first Octopad write or any resume. Read [references/codex-runtime.md](references/codex-runtime.md) before choosing routes, asking for authority, or creating a native task. Read [references/codex-supervision.md](references/codex-supervision.md) before launch or resume.
+Read [references/planning.md](references/planning.md) for capture, calibration, planning, and plan review. Read [references/state-and-recovery.md](references/state-and-recovery.md) before the first Octopad write or any resume. Read [references/codex-runtime.md](references/codex-runtime.md) before choosing a route or spawning an agent. Read [references/codex-supervision.md](references/codex-supervision.md) before authorized delivery.
 
-## Role packs
+## Roles
 
-Role packs are role contracts, not initial interview prompts. During interactive clarification and planning, the current user task follows `planning.md` directly without a planner pack; after activation it follows `codex-supervision.md` and loads supervisor. Each child loads one matching pack.
+The current user task plans interactively and becomes supervisor by default. Spawn a role only when isolation, specialization, parallelism, or context reduction is worth its handoff cost. Every spawned agent loads one matching role pack and enters the exact production Octopad context before work; read-only roles never write.
 
-One fresh read-only `plan-reviewer` reviews the draft before activation but cannot persist, claim, or launch. Every material replan is produced by a freshly leased `planner` from one bounded source snapshot. The current user task becomes supervisor by default; an environment-driven exception needs a fenced handoff and one effective Goal owner.
+Role packs: [planner](roles/planner.md), [plan reviewer](roles/plan-reviewer.md), [supervisor](roles/supervisor.md), [executor](roles/executor.md), [reviewer](roles/reviewer.md), [specialist reviewer](roles/specialist-reviewer.md), [recovery](roles/recovery.md), and [follow-up](roles/follow-up.md).
+
+Use one fresh `plan-reviewer` for each plan revision. Corrections to stable findings return to that same session. A material replan gets one new fresh reviewer. Delivery reviews required by the artifact, organization, or repository remain separate from this plan review.
 
 ## Invariants
 
-- Before the first Octopad write, ask only material questions and show one **brief de création**: outcome, scope, evidence, route, review cadence, and every human checkpoint with subject, timing, reason, owner, blocked descendants, safe parallel work, expected decision, and resume evidence.
-- Recommend either `progressive` review or `final` review. Add an optional intermediate checkpoint only when human judgment changes downstream method, prevents material rework, governs repeated artifacts, controls an irreversible/external effect, or is unsafe to infer. Organization and repository rules always overlay that cadence.
-- Do not create a Page merely to store the brief. The tracker, delivery tasks, dependencies, Decisions, and Questions must embody it; the tracker describes outcome, scope, order, checkpoints, and completion without copying task state.
-- Understand user updates as natural language, persist a new intent revision before messaging actors, and make every actor reread live coordination state at a safe boundary. Never expose a command grammar or let a stale instruction keep acting.
-- Prove the exact organization, workspace, work stream, and Codex project before writes or native creation. Missing metadata such as `projectId=null` is incomplete evidence, not a blocker or permission to duplicate; reconcile it with bounded alternative evidence.
-- Persist delivery tasks with literal **Why**, **What**, and top-level **Done when**, required impact fields, real test/CI coverage, and adjacent-risk checks where relevant. Make each top-level task one independently reviewable delivery/rollback unit; under one-PR-per-task rules, independent surfaces become separate tasks and PRs.
-- Bind every effect to plan/intent revisions, supervisor epoch, task ID and semantic generation, contract/manifest, authority, target, capability, observed route, and source-stack snapshot. A material change invalidates old writers; a stable correction reuses the healthy writer.
-- Admit context before reuse: compaction, superseded intent, or two no-progress resumes requires `REUSE|REPLACE|PAUSE`; material replans require a fresh planner lease.
-- Use a native Goal only for authorized delivery. The current supervisor owns it until outcome proof; `waiting-human` and `paused` are coordination states, never Octopad task statuses, and Goal `blocked` is reserved for the native three-turn genuine-impasse rule.
-- Plan the first integrated demonstrable candidate, bound WIP/review/retry/batches, launch from `eligible_safe_ready`, and use native waits for active tasks. Heartbeats only watch timed external predicates from refreshed shared state.
-- Scale review to effect, map every changed surface to an actually running verifier, and never treat silence, timeout, green but irrelevant CI, or an unexecuted check as PASS.
-- The supervisor owns in-envelope recovery. Completed executors require reversible archive receipts after PASS/reconciliation; failure uses bounded recovery and blocks close. Preserve sessions awaiting correction, review, handoff, a human gate, or evidence. Pause only for wrong/unresolved identity, unreconcilable duplicate, missing authority/write, conflicting revision, exhausted archival, or a protected checkpoint.
-- Track every branch/PR from `branch-only` through `draft`, review/wait, and `merged|closed|superseded`; orphan drafts block close. Keep the supervisor thin; delegate volumetric analysis to a bounded fresh actor.
-- Secrets, access grants, destructive effects, merge, migration application, deployment, publication, spend, and acceptance remain separately gated.
+- Before writing, capture the project contract: outcome and proof, scope and non-goals, constraints, sources, uncertainties, ownership, authority, and protected effects.
+- Calibrate two independent axes: `shape = simple|structured|adaptive` controls plan and actor topology; `consequence = reversible|material|protected` controls review and human gates. Explain both and escalate uncertainty upward.
+- Show one localized **brief de création** whose detail follows that calibration. It names the proposed graph, artifact profiles and verifiers, review cadence, delivery authority, and every human checkpoint with owner and resume evidence.
+- Do not write outside an explicit user mandate. When the brief faithfully restates an already explicit plan-and-deliver request without adding a material choice or effect, proceed under that mandate after showing it; otherwise wait for approval. Planning-only permission never authorizes delivery, and protected effects remain separately gated.
+- Use live Octopad methodology and current tool schemas rather than restating or caching them. Keep integration invariants here: exact identity, stable operation keys, guarded updates, targeted reconciliation, and no blind replay.
+- Persist coherent top-level tasks with the server-required **Why**, **What**, **Done when**, impact rationale, and dependency rationale. Do not create tasks for reads, logins, tool calls, status relays, approvals, reviews, or merges; keep those as steps or checkpoints unless a human owns a distinct deliverable.
+- Plan the first integrated demonstrable result. Parallelize only independent work, cap active work, and keep safe branches moving while another branch waits.
+- Preserve the documented Luna/Sol model-effort router exactly. Save and verify the planned and observed pair; unavailable, unknown, or mismatched routes pause without substitution.
+- Bind each active agent to the current plan revision, intent revision, task generation, manifest hash, authority, Octopad context, observed route, and artifact versions.
+- Use a native Goal only for delivery the user authorized. The current supervisor owns it through integrated proof; native `blocked` keeps its platform meaning.
+- Scale task review to consequence and changed surface. Silence, timeout, irrelevant green CI, or an unexecuted check is never PASS.
+- Recover transient and in-envelope obstacles within bounded attempts. Material change creates a new revision; protected change creates or resumes the named human checkpoint.
+- Track every artifact through a strict generic core plus exactly one profile: `repository`, `content`, `research`, or `operations`. One coherent task may own several artifacts and profiles. Never require Git evidence for a non-repository artifact or weaken profile-specific proof.
+- Complete only on current integrated outcome evidence, satisfied protected checkpoints, terminal artifact dispositions, reconciled actions, and no active delivery actor.
 
 Keep opaque identifiers out of visible prose and titles. At artifact handoff, human/handoff wait, or an unrecovered incident, executors publish the six fixed semantics—state, done, blocked, decision expected, to unblock, next step—with labels and content in the user's language. Only the supervisor validates advancement and durable authority.
 

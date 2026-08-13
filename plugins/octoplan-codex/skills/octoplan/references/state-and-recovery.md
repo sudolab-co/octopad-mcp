@@ -1,10 +1,10 @@
 # Octoplan state and recovery
 
-Persist only what a fresh supervisor needs to identify the approved brief and plan, honor the latest user intent, avoid duplicate writes or actors, respect authority and checkpoints, and resume targeted work. Octopad is not a transaction log and the saved state is not a mirror of every field.
+Persist only what a fresh supervisor cannot safely derive: identity, approved authority, current generations, live actors, unresolved effects, artifact versions, open checkpoints, and the next safe continuation. Octopad is not a scheduler or raw execution log.
 
 ## Contents
 
-- [Coordination task](#coordination-task)
+- [State host](#state-host)
 - [Minimal state](#minimal-state)
 - [Material revision](#material-revision)
 - [Write receipts](#write-receipts)
@@ -12,176 +12,116 @@ Persist only what a fresh supervisor needs to identify the approved brief and pl
 - [Targeted recovery](#targeted-recovery)
 - [Strict pauses](#strict-pauses)
 
-## Coordination task
+## State host
 
-Keep exactly one active coordination task per plan in the intended work stream. Before creating it, list the stream once and adopt the unique task carrying the plan ID. Its description uses the normal server-required task shape:
+Designate exactly one reviewed `Exx` delivery task as the state host. It must own or integrate the observable outcome. In a one-task plan it is that task; in a multi-task plan it is the existing outcome/integration task. Its status follows live actionability and dependencies, and once active it closes only on integrated proof. Never create a bookkeeping or status task.
+
+Append the state after the task's stable delivery manifest:
 
 ```markdown
-**Why**
-Keep the approved plan resumable without duplicating work or bypassing checkpoints.
-
-**What**
-Hold the minimal Octoplan state for this plan. Execution details remain in the linked tasks and source systems.
-
-**Done when**
-The plan is completed with every protected checkpoint resolved, or superseded with any remaining checkpoint explicitly handed off.
-
 OCTOPLAN_STATE_BEGIN
 <JSON object>
 OCTOPLAN_STATE_END
 ```
 
-Set `agent_executable: false`. Use `expected_updated_at` on every state-changing update. A failed concurrency guard causes a reread and reconciliation, never an inferred overwrite.
+The manifest hash covers the normalized autonomous delivery manifest and artifact contracts, excluding the delimited state block. A state-only edit changes neither manifest hash nor generation. Use `expected_updated_at` on every update; a failed guard causes reread and reconciliation, never overwrite. The host becomes `done` only with accepted integrated proof.
 
-Append recovery events as task comments with one UUID `idempotency_key` per logical event. Reuse that UUID only when retrying the same comment. Keep comments below the connector limit and do not copy entire task payloads.
+Append bounded recovery comments with one UUID `idempotency_key` per event; reuse it only for the same retry.
 
 ## Minimal state
 
-Persist this core object. Ordinary JSON formatting is accepted; key order and whitespace are irrelevant.
+Persist one compact control object. The live Octopad graph remains authoritative for task content, dependencies, and statuses. Confirmed receipts go in bounded comments. Omit empty optional runtime sections. Ordinary JSON formatting is accepted.
 
 ```json
 {
-  "schema": "octoplan-plan-v5",
+  "schema": "octoplan-plan-v6",
   "plan_id": "<stable UUID>",
-  "revision": 1, "proposed_revision": null, "proposed_review": null,
+  "revision": 1,
   "status": "planning|planned|active|replanning|waiting-human|paused|completed|superseded",
-  "organization_id": "<ID>",
-  "workspace_id": "<ID>",
-  "work_stream_id": "<ID>",
-  "coordination_task_id": "<ID>",
-  "brief": {
-    "source_ref": "<request reference>",
-    "approval_ref": "<approved creation-brief reference>",
-    "tracker_ref": "<work-stream tracker reference>",
-    "review_cadence": "progressive|final",
-    "execution_scope": "plan-only|deliver-authorized",
-    "octopad_write_classes": ["work-stream", "tracker", "task", "dependency", "decision", "question", "comment", "coordination-state"],
-    "native_actions": ["create", "message", "archive"],
-    "native_roles": ["supervisor", "planner", "executor", "reviewer", "specialist-reviewer", "recovery", "follow-up"],
-    "project_id": "<ID or null for explicit projectless>",
-    "directory_name": "<explicit projectless directory or null>",
-    "native_environments": ["local", "worktree"],
-    "child_route": "native-task/worktree",
-    "effects": ["<bounded disclosed effects>"]
+  "calibration": {"shape": "simple|structured|adaptive", "consequence": "reversible|material|protected", "rationale": "<short reasons>"},
+  "context": {"organization_id": "<ID>", "workspace_id": "<ID>", "work_stream_id": "<ID>", "state_host_ref": "E01", "native_target_ref": "<current task by default>", "project_ref": null},
+  "contract": {"brief_hash": "<hash>", "source_ref": "<durable user turn or approval receipt>", "outcome": "<compact outcome>", "proof": "<compact completion proof>", "authority": "plan-only|<bounded delivery effects>", "delivery_authorized": true, "review_cadence": "progressive|final", "completion_evidence_ref": null},
+  "intent": {"revision": 1, "latest_user_ref": "<directive>", "superseded_action_keys": []},
+  "supervisor": {"thread_ref": "<current task>", "epoch": 1, "goal_ref": "<Goal receipt or null for plan-only>", "planned_route": "gpt-5.6-sol/high", "observed_route": "gpt-5.6-sol/high", "route_evidence_ref": "<observation>"},
+  "tasks": {
+    "E01": {"task_id": "<ID>", "generation": 1, "consequence": "reversible|material|protected", "manifest_hash": "<hash>", "artifact_refs": ["A01", "A02"]}
   },
-  "outcome": {"candidate_ref": "E01", "global_evidence_ref": null, "global_evidence_revision": null},
-  "task_ids": {"E01": "<ID>", "E02": "<ID>", "H01": "<ID only for separately owned human work>"},
-  "task_contracts": {
-    "E01": {"task_generation": 1, "contract_hash": "<hash>", "manifest_ref": "<bounded manifest>", "manifest_hash": "<hash>", "new_context_required": true, "artifact_disposition": "adopt|reject|rewrite", "base_stack_ref": "<snapshot>"}
+  "plan_review": {
+    "revision": 1,
+    "fresh": {"review_type": "full_independent_fresh", "reviewer_session_ref": "<session>", "packet_hash": "<hash>", "planned_route": "gpt-5.6-sol/high", "observed_route": "gpt-5.6-sol/high", "route_evidence_ref": "<observation>", "octopad_context_ref": "<read-only session and exact context>", "finding_keys": [], "executed_checks": ["<check>"], "verdict": "PASS|REVISE", "evidence_ref": "<record>"},
+    "latest_recheck": null
   },
-  "brief_records": {
-    "decisions": {"D01": {"id": "<ID>", "receipt_ref": "<receipt>"}},
-    "questions": {"Q01": {"id": "<ID>", "receipt_ref": "<receipt>"}}
+  "open_checkpoints": {
+    "C01": {"task_refs": ["E01"], "owner": "<person or role>", "subject": "<decision>", "resume_predicate": "<exact evidence>", "evidence_ref": null}
   },
-  "desired_dependencies": [
-    {"task_ref": "E02", "depends_on_ref": "E01", "rationale": "<why>"}
-  ],
-  "review": {"revision": 1, "task_generations": {"E01": 1}, "review_type": "full_independent_fresh|targeted_recheck", "reviewer_session_ref": "<session>", "planned_route": "gpt-5.6-luna/max", "observed_route": "gpt-5.6-luna/max", "route_evidence_ref": "<turn context>", "artifact_hash": "<hash>", "finding_keys": [], "executed_checks": ["<check>"], "verdict": "PASS", "evidence_ref": "<review record>"},
-  "planning": {"candidate_hash": "<hash>", "source_snapshot_hash": "<hash>", "active_lease_ref": "planner-lease-1", "leases": [{"lease_ref": "planner-lease-1", "session_ref": "<fresh planner>", "fresh_session_receipt": "<receipt>", "plan_revision": 1, "intent_revision": 1, "candidate_hash": "<hash>", "input_snapshot_hash": "<hash>", "planned_route": "gpt-5.6-sol/xhigh", "observed_route": "gpt-5.6-sol/xhigh", "route_evidence_ref": "<turn context>", "binding_readback_ref": "<receipt>", "status": "active|adopted|rejected|expired", "output_hash": "<hash or null>", "prior_artifact_disposition_ref": "<record>"}]},
-  "supervisor": {
-    "thread_ref": "<current user task by default>",
-    "epoch": 1,
-    "mode": "current-task|dedicated-handoff|recovery-successor",
-    "predecessor": null,
-    "context_admission": {"plan_revision": 1, "intent_revision": 1, "supervisor_epoch": 1, "state_hash": "<hash>", "decision": "REUSE|REPLACE|PAUSE", "state_readback_ref": "<receipt>", "intent_readback_ref": "<receipt>", "accepted_progress_ref": null, "compaction_ref": null, "resumes_since_progress": 0, "evidence_ref": "<receipt>"},
-    "goal": {"required": true, "owner_thread_ref": "<same thread>", "objective_ref": "<approved outcome>", "origin": "created|adopted|null", "evidence_ref": "<receipt or null while pending>", "state": "pending|active|blocked|complete", "supersedes_goal_ref": null}
+  "artifacts": {
+    "A01": {"task_ref": "E01", "profile": "repository|content|research|operations", "locator": "<stable locator>", "version": "<SHA, document revision, synthesis hash, or run ID>", "state": "draft|ready|waiting-human|terminal", "owner_ref": "<actor>", "verifier_ref": "<profile verifier>", "evidence_ref": "<evidence or null>", "disposition": "active|adopt|reject|rewrite|historical", "profile_data": {"<required profile fields>": "<bounded evidence>"}}
   },
-  "runtime": {"minimum_version": "15.0.0", "loaded_version": "15.0.0", "installed_version": "15.0.0", "adoption_ref": null, "admission_checked_at": "<timestamp refreshed before dispatch/effect>", "supervisor_route": {"planned": "gpt-5.6-sol/high", "observed": "gpt-5.6-sol/high", "evidence_ref": "<turn context>", "admission": "PASS"}},
-  "legacy_migration": null,
-  "authority": {
-    "source_ref": "<approved brief or later directive>",
-    "delivery": true,
-    "project_id": "<ID or null for explicit projectless>",
-    "directory_name": "<explicit projectless directory or null>",
-    "environments": ["local", "worktree"],
-    "roles": ["supervisor", "planner", "executor", "reviewer", "specialist-reviewer", "recovery", "follow-up"],
-    "actions": ["create", "message", "archive"],
-    "octopad_write_classes": ["work-stream", "tracker", "task", "dependency", "decision", "question", "comment", "coordination-state"],
-    "child_route": "native-task/worktree",
-    "effects": ["<bounded disclosed effects>"],
-    "adopted_session_refs": []
-  },
-  "intent": {"revision": 1, "latest_user_directive_ref": "<reference>", "superseded_effect_keys": []},
-  "budgets": {"max_active_child_actors": 3, "max_wip": 3, "max_correction_loops": 2, "max_review_actors": 2, "max_review_checks": 8, "batch_size": 3},
-  "counters": {"active_child_actors": 0, "wip": 0, "correction_loops": {}, "review_actors": 0, "review_checks": 0},
-  "human_checkpoints": [
-    {"checkpoint_key": "<stable key>", "kind": "methodology|secret|access-grant|external-spend|destructive-effect|review|merge|migration-application|deployment|publication|acceptance", "source": "user|organization|planner-recommendation", "mandatory": true, "owner": "<person or role>", "subject": "<decision>", "timing": "<when>", "reason": "<why human>", "blocked_task_refs": ["E02"], "safe_continuation_refs": ["E03"], "expected_decision": "<decision shape>", "state": "pending|satisfied|rejected", "evidence_ref": null, "resume_predicate": "<predicate>"}
-  ],
-  "actors": {}, "context_admissions": {}, "delegation_boundaries": [], "native_action_intents": [], "native_action_receipts": [],
-  "delivery_artifacts": {"E01": [{"kind": "branch|pull-request|document|other", "artifact_ref": "<stable ref>", "repository_ref": "<repo or null>", "base_ref": "<exact base>", "head_ref": "<exact head>", "state": "branch-only|draft|ready-for-review|waiting-human|merged|closed|superseded", "owner_actor_ref": "<actor>", "next_transition": "<action>", "blocker": null, "resume_predicate": "<predicate>", "disposition": "active|adopt|reject|rewrite|historical", "evidence_ref": "<readback>"}]},
-  "stack_snapshots": {"stack-1": {"main_sha": "<sha>", "base_shas": ["<sha>"], "head_shas": ["<sha>"], "ancestry_ref": "<evidence>", "effective_diffs_ref": "<evidence>", "migration_registry_ref": "<evidence>", "checks_ref": "<evidence>", "verifier_coverage_ref": "<evidence>", "checked_at": "<timestamp>", "ttl_seconds": 300, "fresh_until": "<timestamp>", "admission": "PASS", "admission_ref": "<readback>"}},
-  "baseline_leases": {"baseline-e01-g1": {"lease_ref": "baseline-e01-g1", "task_ref": "E01", "task_generation": 1, "actor_ref": null, "stack_snapshot_ref": "stack-1", "status": "active|expired", "last_refresh_reason": "dispatch|first-effect|push|review|handoff|collision", "refresh_receipt_ref": "<receipt>"}},
-  "frontier": {"parallel_safe_now": [], "blocked_on_artifact_refs": {}, "write_conflict_set": {}},
-  "telemetry": {"snapshot_refs": [], "metrics": []},
-  "efficiency": {"accepted_progress_ref": null, "accepted_progress_kind": null, "comparable_cycles_without_progress": 0, "material_replan_streak": 0, "graph_hash_history": ["<hash>"], "incident": null},
-  "compaction": {"size_budget": "<explicit positive connector-safe limit>", "detail_ledger_refs": [], "last_receipt": null},
-  "heartbeat": null,
-  "resume": {"last_event_id": null, "pending_operation_keys": []}
+  "continuation": {"last_progress_ref": null, "next_safe_task_refs": ["E01"], "blocked": {}, "incident": null}
 }
 ```
 
-For `recovery-successor`, replace `predecessor: null` with exactly `{"thread_ref":"...","epoch":1,"goal_evidence_ref":"...","revival_ref":"...","terminal_or_unreachable_ref":"...","fence_key":"<plan_id>:takeover:epoch:2","fence_readback_ref":"...","effects_quiescent_ref":"<post-fence evidence>"}`; otherwise keep it null.
+Inline work omits actor bindings, not effect intents. Add these optional sections only while they are non-empty; `pending_actions` remains mandatory during any inline mutation or external side effect:
 
-Before approval, the brief stays in the conversation; Octoplan writes nothing to Octopad. `planning` covers reconciled creation; `planned` means the reviewed graph exists. Other states describe coordination, never Octopad task statuses. `plan-only` stops at `planned` without a Goal; delivery enters `active` only after Goal creation. Replanning keeps current authority while `proposed_revision` and `proposed_review` describe the candidate delta.
+```json
+"active_actors": {"E01:g1:executor": {"thread_ref": "<native task>", "role": "<role>", "task_ref": "E01", "generation": 1, "binding_hash": "<binding>", "planned_route": "gpt-5.6-sol/high", "observed_route": "gpt-5.6-sol/high", "route_evidence_ref": "<observation>", "octopad_context_ref": "<session/context>", "state": "starting|active|waiting|correction|terminal"}},
+"pending_actions": {"<stable action key>": {"kind": "create|directive|effect|archive", "task_ref": "E01", "generation": 1, "target_ref": "<target>", "authority_ref": "<authority>", "result": "pending|ambiguous"}}
+```
 
-The authority source must equal the approved brief reference, and its actions, roles, environments, Octopad write classes, child route, and effects must exactly match the brief's normalized disclosure. The vocabulary is internal, not user-facing command syntax. Projectless execution is explicit. Later widening requires a revised brief, reviewed plan revision, and new source reference. Adopted sessions require matching provenance. User review cadence never authorizes a protected effect or removes an organization checkpoint. Review/merge remain embedded on an E task; a separately owned human deliverable may use Hxx.
+Before the brief is covered by the user mandate, it stays in the conversation. `planned` means the reviewed Octopad graph and compact state exist; plan-only keeps `goal_ref: null`. Delivery becomes `active` only after Goal creation. Control status records recovery conditions; Octopad tasks remain the project-progress truth.
 
-Persist only useful budget ceilings and authoritative counters. Keep detailed receipts in comments/ledger refs, not C00. Before its explicit size budget, compact automatically with pre/post hashes, essential-field inventory, readback, and no-loss assertion. Typed telemetry records metric, value or `unavailable`, source, population, and time window; sessions, review passes, retries, compactions, tool calls, elapsed time, and tokens never share a counter or get added. Ceilings never waive checks or checkpoints.
+`plan_review.fresh` is immutable and mandatory for each revision. When it is `REVISE`, `latest_recheck` must record `targeted_recheck`, the same reviewer session, the corrected packet, every original finding key, executed checks, PASS, and evidence. A targeted recheck alone never activates a plan.
 
-Actor records carry `actor_binding_readback`, `baseline_lease_ref`, fresh-session, route/stack receipts, lifecycle, and evidence. The supervisor carries `supervisor.context_admission`; an unhealthy Goal owner pauses substantive analysis/effects and delegates one fresh PLN without transferring the Goal. After compaction, superseded intent, or two no-progress resumes, persist applicable `REUSE|REPLACE|PAUSE` with current state/intent, child binding/manifest, progress/compaction refs, count, and evidence; a third comparable resume without accepted progress cannot reuse. Stable same-generation correction remains reusable. Split/merge, changed meaning/outputs/Done when/graph/route/acceptance/authority, rejected draft, rewrite, generation/manifest change, or unadoptable drift increments `task_generation`; the predecessor may only stop, transfer, recover, or archive.
+The contract stores a compact outcome, proof, authority envelope, immutable brief hash, and durable source or approval receipt. If a native turn will not resolve for a successor, persist its receipt before launch. Review cadence never widens authority or satisfies a checkpoint; keep only open resume contracts here.
 
-Replacement lifecycle separates `active -> fence-pending -> fenced -> terminal-reconciled -> archived|archive-pending` from successor `created-pending -> active`. Activate a successor writer only after stop acknowledgement, `effects_quiescent_ref`, affected task-generation rotation, transfer receipt, fresh create receipt, binding readback, and manifest acknowledgement; never rotate the supervisor epoch for task replacement. A read-only planner may start earlier. Physical archive may follow activation once quiescence is proved. Normal completion requires PASS/reconciliation and `archive_receipt`; failure records `archive_incident_ref`, stays pending under bounded recovery, and final success waits.
+`active_actors` contains only spawned actors that may still act or need reconciliation; remove them after archive receipt. Each binding hash covers plan/intent revisions, supervisor epoch, task generation/manifest, authority, context, target, route, and artifact versions. A material mismatch permits only stop or recovery.
 
-Plan revision identifies the reviewed graph; task ID plus `task_generation` identifies semantic meaning. `intent.revision` orders operational instructions independently. Hashes bind a bounded manifest/contract or compaction receipt, not an exhaustive mirrored plan.
+Keep the object small by moving confirmed receipts and terminal lifecycle events to bounded comments with stable references. Never compact away an unresolved action, open checkpoint, active actor, artifact disposition, or continuation predicate. Do not persist mirrored dependency graphs, derived frontiers, raw logs, token estimates, or telemetry counters.
 
-Every material replan expires prior planner leases and requires one unique fresh session bound exactly to plan/candidate/intent/source-snapshot hashes. An adopted lease's output hash equals its candidate; expired/rejected no-return leases may have null output. Two material replans without accepted progress, a repeated graph hash, or two comparable work cycles opens `incident: {incident_ref, kind, state: opened|diagnosed|adopted, diagnosis_ref, disposition_ref}`. Until adopted, only reconciliation, stop, archive, and bounded diagnosis are allowed; afterwards stable correction may resume. Accepted progress means newly accepted artifact/review/integrated evidence, never activity, tokens, compaction, a draft, or irrelevant CI; it resets both counters and graph history.
-
-Every branch, PR, document, or other delivery artifact has a durable lifecycle record. A draft is valid only with exact base/head, owner, next transition, blocker/resume predicate, disposition, and readback. `terminal-reconciled`, plan completion, or supersession is forbidden while any artifact lacks a terminal/disposition record. Historical artifacts and confirmed receipts never depend on current authority.
+Every artifact uses the generic core and exactly one profile. A task may own several artifacts with different profiles; its `artifact_refs` are the ownership boundary. Its bounded `profile_data` must satisfy that profile, and repository base/head is invalid as a universal requirement. No artifact can become terminal without verifier evidence and a non-active disposition. Plan completion is forbidden while an artifact is draft, ready, waiting, or missing a disposition.
 
 ## Material revision
 
-Increment the plan revision when a reviewed change affects result, scope, success evidence, task meaning, split/merge, outputs, dependency/parallelism, checkpoint, owner, route/model bound, authority, acceptance, or required artefact. Increment every affected `task_generation`, set `new_context_required`, fence old writers, expire the planner lease, and require a fresh planner, new autonomous manifest, plus `full_independent_fresh` review.
+Increment the plan revision when outcome, proof, scope, task meaning, graph, calibration, owner, route, authority, acceptance, artifact contract, or protected action changes. Increment every affected task generation, stop old actors before further effects, disposition their artifacts, create new manifests, and run one fresh plan-review session. A fresh planner is required only when the changed problem benefits from isolated re-decomposition.
 
-Do not increment it for formatting, display names, descriptions clarified without changing meaning, reordered MCP prose, links, response shapes, runtime receipts, progress, artifacts, or status changes.
+Formatting, display names, clarified prose with unchanged meaning, receipts, progress, and artifact state transitions do not create a revision.
 
-For every user directive, first increment `intent.revision` under `expected_updated_at`, store its source and superseded effect keys, then notify affected actors. If meaning changes, set `replanning`, stop affected claims, rotate generations, map `adopt|reject|rewrite`, create manifests, run fresh full review, verify receipts/edges, then replace the revision under the guard. Old actor eligibility and PASS never transfer. Stable corrections keep generation and use targeted recheck.
+For every user directive, first increment `intent.revision` with `expected_updated_at`, save its source and superseded action keys, then notify actors. A material change sets `replanning`; old plan PASS and actor eligibility do not transfer. A stable finding correction keeps revision and generation and returns to the same reviewer session.
 
 ## Write receipts
 
-Use one stable operation key per intended write, for example `<plan-id>:r1:task:E01` or `<plan-id>:r1:edge:E02:E01`. Before a write without server-side idempotency, persist that key in `resume.pending_operation_keys`; before the work stream or coordination task exists, emit `OCTOPLAN_WRITE_INTENT <operation-key>` in the durable planning transcript. Record one compact journal event per item and clear the pending key only after confirmation:
+Use one stable operation key per write, such as `<plan-id>:r1:task:E01`. Before a non-idempotent write, record `OCTOPLAN_WRITE_INTENT <operation-key>` on the state host. Record one receipt per item:
 
 ```text
 OCTOPLAN_RECEIPT {"operation_key":"...","entity":"task","ref":"E01","id":"...","result":"confirmed","evidence":"write-response|targeted-read"}
 ```
 
-An explicit returned item ID or success receipt confirms the item. `structuredContent` is useful when present but never mandatory. If the response is incomplete, malformed for display, or missing one item, add a warning and verify only uncertain items by bounded stream list, internal operation marker, stable task reference, returned ID, targeted `get`, or exact dependency inspection.
-
-For a timed-out batch, assume neither failure nor success. List once, match each stable ref, get only ambiguous candidates, and produce per-item receipts. Retry only writes proven absent, with their original operation keys. Never replay the whole batch because one item is unclear. A still-ambiguous item remains pending and blocks only dependent work while reconciliation continues.
+A returned ID or explicit receipt confirms an item. After incomplete or timed-out output, assume neither failure nor success: list once, verify only uncertain items by key/ref/ID or exact edge, and retry only proven absences with the original key. Never replay the batch; ambiguity remains pending and blocks only dependent work.
 
 ## Native action intents
 
-Before every create, work-message, source effect, or archive, persist one intent with a stable key. A create intent carries the current creation packet, planned route, and fresh stack while observed route/readback remain pending; after dispatch, persist observation evidence before any work message/effect. Work, archive, and other receipts match the actor's historical binding tuple; only unresolved/actionable intents must match current state. Never rewrite confirmed historical receipts or message revised work before durable intent/generation state exists.
+Before every native create or archive, instruction-changing actor directive, source mutation, or external side effect, add one `pending_actions` entry under a stable key. Reads, deterministic local checks, waits, and routine status polling need no action intent. A create entry carries the bounded role packet and planned route. After creation, prove the observed route and exact Octopad context before work; after confirmation, append a receipt comment and remove the pending entry.
 
-After uncertain output, reconcile observed state before acting; never blind replay. Match create by key/role packet; correlate message by action/effect key; inspect archive visibility/target. Retry only after authoritative absence; conflicts pause that branch. Exhausted archive recovery preserves `archive-pending`, pauses final close, and reports the failed predicate/resume evidence.
+After uncertain output, reconcile observed state before acting. Match create by key and role packet, directive/effect by action key, and archive by exact target. Retry only after authoritative absence; ambiguity pauses that branch without blocking independent safe work.
 
-Only the current supervisor epoch may act. Before takeover, append `OCTOPLAN_TAKEOVER_INTENT` and derive `fence_key` exactly as `<plan_id>:takeover:epoch:<predecessor_epoch+1>`. One `expected_updated_at` update atomically fences the predecessor by setting owner, recovery mode, incremented epoch, predecessor, `paused`, and successor Goal `pending`. Reread it, then obtain fresh post-fence quiescence before Goal creation. The predecessor Goal stays historical.
+Only the current supervisor epoch may act. A successor is allowed only after waking the saved owner fails, native evidence proves it terminal or unreachable, a guarded update rotates owner and epoch, and post-fence evidence proves effects quiescent. The predecessor Goal remains historical; never manufacture a transfer or terminal state.
 
 ## Targeted recovery
 
 On resume:
 
-1. refresh the exact native task, organization/workspace session, work stream, coordination task, and current task IDs;
-2. verify plan/revision, task generations/manifests, intent, status, supervisor/Goal owner, authority, checkpoints, observed routes, stack freshness, runtime, heartbeat, and pending keys;
-3. adopt a compatible installed v5 update, then reconcile only pending writes/actions, claimed work, planner/context leases, delivery artifacts, reviews, checkpoints, and open incident keys through the runtime identity hierarchy where relevant;
-4. re-read full task or source content only when its meaning, revision, verifier, or authority may have changed;
-5. revive and wake the unique saved owner first; only when native evidence proves it terminal or unreachable may a guarded `recovery-successor` follow the protocol in [codex-supervision.md](codex-supervision.md). Never create a second plausible effective owner.
+1. start a production Octopad session and refresh the state host, exact work stream/tasks, installed skill, native Goal, and native task list;
+2. verify v6 plan and intent revisions, supervisor epoch, authority, calibration, task generations/manifests, plan review, checkpoints, active actors, artifact versions, and pending actions;
+3. reconcile only unresolved writes/actions, live actors, artifacts, checkpoints, and the open incident; derive the safe frontier from live Octopad dependencies and those records;
+4. read full source content only when its meaning, version, verifier, or authority may have changed;
+5. wake the unique saved owner first. Create a guarded successor only after terminal-or-unreachable and post-fence quiescence evidence; never create a second plausible owner.
 
-Presentation drift is a warning. A receipt with an ID is enough to target verification. Do not require every Decision, Question, task, or comment to be re-rendered exactly before useful work continues.
+Reject every non-v6 schema. Do not validate, migrate, translate, or resume it; start a new reviewed v6 plan from the live mandate.
 
-For each incident, append one event with stable key, failed predicate, classification, evidence, actor/mutation state, remaining budget, remedies/receipts, disposition, and resume/stop predicate. One diagnosis plus two distinct remedies is the default ceiling unless the plan sets less; rewording, waking, or replacing a reasoning actor never resets it.
+For each incident, save one compact record with stable key, failed predicate, classification, evidence, attempted distinct remedies, disposition, and resume predicate. One diagnosis plus two distinct safe remedies is the ceiling. Rewording, waking, or replacing an actor does not reset it.
 
 ## Strict pauses
 
-Pause the affected branch for wrong identity; unresolved/duplicate dispatch; absent authority; proven missing write; plan/intent/generation/manifest/binding mismatch; unobserved or noncompliant route; stale stack for a writer; failed fence/quiescence; or a human checkpoint/material decision.
+Pause the affected branch for wrong identity; duplicate or ambiguous dispatch; absent authority; proven missing write; revision, generation, manifest, binding, context, route, or artifact-version mismatch; failed fence/quiescence; or an open protected decision.
 
-Stop the whole plan only when shared identity/authority is invalid or no safe agent-owned frontier remains. Tool unavailability, missing `structuredContent`, incomplete output, `projectId=null`, stale display metadata, or a recoverable incident is not by itself a human blocker. Diagnose and try bounded safe alternatives first; never turn passive observation into completion or a permanent block.
+Stop the whole plan only when shared identity or authority is invalid, the approved outcome is infeasible, or no safe agent-owned frontier remains. Tool unavailability, incomplete output, `projectId=null`, stale display metadata, or a recoverable incident is not by itself a human blocker. Diagnose and try bounded alternatives first; passive observation is never completion.

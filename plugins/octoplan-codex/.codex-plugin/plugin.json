@@ -1,7 +1,7 @@
 {
   "name": "octoplan-codex",
-  "version": "15.0.0",
-  "description": "Turn natural-language briefs into governed Octopad plans and supervise authorized delivery with native Codex Goals and tasks.",
+  "version": "16.0.0",
+  "description": "Calibrate natural-language briefs into governed Octopad plans, challenge them once, and supervise authorized delivery.",
   "author": {
     "name": "Sudolab"
   },
@@ -12,13 +12,13 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Octoplan for Codex",
-    "shortDescription": "Brief, plan, and supervise governed delivery.",
-    "longDescription": "Turns a natural request into an outcome-first Octopad plan, exposes useful human checkpoints before creation, then lets the current Codex task supervise authorized work through native Goals, review, recovery, and protected effects.",
+    "shortDescription": "Calibrate, challenge, and supervise governed delivery.",
+    "longDescription": "Turns a natural request into the smallest adequate Octopad plan, calibrates plan shape and consequence independently, challenges each revision once, then lets Codex supervise authorized work across repository, content, research, and operations artifacts.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
     "defaultPrompt": [
-      "Use $octoplan to clarify my request, show the creation brief and checkpoints, then create and supervise the plan after approval."
+      "Use $octoplan to clarify, show the brief and checkpoints, then create and supervise the plan within my authorized scope."
     ]
   }
 }
