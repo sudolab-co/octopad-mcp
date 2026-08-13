@@ -121,18 +121,18 @@ if (!fs.existsSync(manifestPath)) process.exit(1);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.name !== 'octoplan-autopilot' || manifest.version !== version) process.exit(1);
 NODE
-[ -f "$root/plugins/manage-product-documentation/.codex-plugin/plugin.json" ] || fail 'product-documentation plugin manifest is missing'
+[ -f "$root/plugins/manage-product-documentation-codex/.codex-plugin/plugin.json" ] || fail 'product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation-claude/.claude-plugin/plugin.json" ] || fail 'Claude product-documentation plugin manifest is missing'
-[ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/agents/openai.yaml" ] || fail 'product-documentation agent metadata is missing'
+[ -f "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/agents/openai.yaml" ] || fail 'product-documentation agent metadata is missing'
 [ ! -e "$root/plugins/manage-product-documentation-claude/skills/manage-product-documentation/agents" ] || fail 'Claude product-documentation distribution contains Codex agent metadata'
-[ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/documentation-model.md" ] || fail 'product-documentation model reference is missing'
-[ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/artifact-shapes.md" ] || fail 'product-documentation artifact reference is missing'
-[ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/lifecycle-playbooks.md" ] || fail 'product-documentation lifecycle reference is missing'
+[ -f "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/documentation-model.md" ] || fail 'product-documentation model reference is missing'
+[ -f "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/artifact-shapes.md" ] || fail 'product-documentation artifact reference is missing'
+[ -f "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/lifecycle-playbooks.md" ] || fail 'product-documentation lifecycle reference is missing'
 node - "$root" <<'NODE' || fail 'product-documentation distribution metadata is invalid'
 const fs = require('fs');
 const path = require('path');
 const root = process.argv[2];
-const codexManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/manage-product-documentation/.codex-plugin/plugin.json'), 'utf8'));
+const codexManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/.codex-plugin/plugin.json'), 'utf8'));
 const claudeManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-claude/.claude-plugin/plugin.json'), 'utf8'));
 const prompt = 'Use $manage-product-documentation to organize and maintain my product documentation while we work.';
 if (codexManifest.name !== 'manage-product-documentation' || codexManifest.version !== '1.1.0' || codexManifest.skills !== './skills/' || codexManifest.license !== 'MIT') process.exit(1);
@@ -141,7 +141,7 @@ if (claudeManifest.name !== 'manage-product-documentation' || claudeManifest.ver
 if (codexManifest.version !== claudeManifest.version) process.exit(1);
 const codexMarketplace = JSON.parse(fs.readFileSync(path.join(root, '.agents/plugins/marketplace.json'), 'utf8'));
 const codexEntries = codexMarketplace.plugins.filter((plugin) => plugin.name === 'manage-product-documentation');
-if (codexEntries.length !== 1 || codexEntries[0].source?.source !== 'local' || codexEntries[0].source?.path !== './plugins/manage-product-documentation') process.exit(1);
+if (codexEntries.length !== 1 || codexEntries[0].source?.source !== 'local' || codexEntries[0].source?.path !== './plugins/manage-product-documentation-codex') process.exit(1);
 const claudeMarketplace = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
 const claudeEntries = claudeMarketplace.plugins.filter((plugin) => plugin.name === 'manage-product-documentation');
 if (claudeEntries.length !== 1 || claudeEntries[0].source !== './plugins/manage-product-documentation-claude') process.exit(1);
@@ -155,7 +155,7 @@ const expectedOctoplanClaudeEntry = {
   source: './plugins/octoplan-claude'
 };
 if (octoplanClaudeEntries.length !== 1 || JSON.stringify(octoplanClaudeEntries[0]) !== JSON.stringify(expectedOctoplanClaudeEntry)) process.exit(1);
-const agent = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation/skills/manage-product-documentation/agents/openai.yaml'), 'utf8');
+const agent = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/skills/manage-product-documentation/agents/openai.yaml'), 'utf8');
 const expectedAgent = `interface:
   display_name: "Manage Product Documentation"
   short_description: "Keep product knowledge aligned as work evolves"
@@ -173,7 +173,7 @@ policy:
   allow_implicit_invocation: true
 `;
 if (agent !== expectedAgent) process.exit(1);
-const skill = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md'), 'utf8');
+const skill = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md'), 'utf8');
 if (!/^---\nname: manage-product-documentation\ndescription: [^\n]+\n---\nVersion: 1\.1\.0\n/.test(skill) || skill.includes('[TODO:')) process.exit(1);
 const claudeSkill = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-claude/skills/manage-product-documentation/SKILL.md'), 'utf8');
 const versionOf = (text) => text.match(/^Version: (\d+\.\d+\.\d+)$/m)?.[1];
@@ -181,26 +181,26 @@ if (versionOf(skill) !== codexManifest.version || versionOf(claudeSkill) !== cod
 for (const required of ['literal `Why` and `What` sections', '`Done when` for every top-level Task', '`impact` from 1 to 5', '`impact_rationale`', '`parent_task_id`', 'rationale for every dependency edge']) {
   if (!skill.includes(required)) process.exit(1);
 }
-const artifactShapes = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation/skills/manage-product-documentation/references/artifact-shapes.md'), 'utf8');
+const artifactShapes = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/artifact-shapes.md'), 'utf8');
 for (const required of ['literal `Why`, `What`, and `Done when` sections', '`impact` from 1 to 5', '`impact_rationale`', '`parent_task_id`', 'dependency edge']) {
   if (!artifactShapes.includes(required)) process.exit(1);
 }
 NODE
-grep -q '^Version: 1\.1\.0$' "$root/plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md" || fail 'product-documentation skill is not 1.1.0'
+grep -q '^Version: 1\.1\.0$' "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md" || fail 'product-documentation skill is not 1.1.0'
 grep -q '^Version: 1\.1\.0$' "$root/plugins/manage-product-documentation-claude/skills/manage-product-documentation/SKILL.md" || fail 'Claude product-documentation skill is not 1.1.0'
 
 for relative in SKILL.md references/documentation-model.md references/artifact-shapes.md references/lifecycle-playbooks.md; do
   cmp -s \
-    "$root/plugins/manage-product-documentation/skills/manage-product-documentation/$relative" \
+    "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/$relative" \
     "$root/plugins/manage-product-documentation-claude/skills/manage-product-documentation/$relative" \
     || fail "product-documentation shared contract drifted at $relative"
 done
 
 ! grep -Eiq '\b(Codex|Claude)\b' \
-  "$root/plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md" \
-  "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/documentation-model.md" \
-  "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/artifact-shapes.md" \
-  "$root/plugins/manage-product-documentation/skills/manage-product-documentation/references/lifecycle-playbooks.md" \
+  "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md" \
+  "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/documentation-model.md" \
+  "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/artifact-shapes.md" \
+  "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/references/lifecycle-playbooks.md" \
   || fail 'product-documentation shared contract contains runtime-specific wording'
 
 grep -q '^## manage-product-documentation$' "$root/CHANGELOG.md" || fail 'product-documentation changelog section is missing'
