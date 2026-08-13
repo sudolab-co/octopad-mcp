@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "13.1.0",
+  "version": "15.0.0",
   "description": "Turn natural-language briefs into governed Octopad plans and supervise authorized delivery with native Codex Goals and tasks.",
   "author": {
     "name": "Sudolab"

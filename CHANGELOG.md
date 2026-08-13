@@ -6,6 +6,26 @@ Each skill is versioned independently in its own `Version:` line and plugin mani
 
 ## octoplan-codex
 
+### 15.0.0 — 2026-08-12
+
+Every material replan now expires prior planner leases and requires a unique fresh planner session bound to the candidate, plan and intent revisions, and a bounded source snapshot. An interrupted planner may expire with no output; no stale candidate can be invented or adopted. Two material replans, a repeated graph, or two comparable cycles without accepted progress opens a blocking efficiency incident and requires diagnosis before stable correction may resume.
+
+Supervisor and child context admission is now versioned and operational. Compaction, superseded intent, or repeated no-progress resumes require an explicit `REUSE`, `REPLACE`, or `PAUSE`; unhealthy Goal owners pause substantive work and delegate bounded analysis while retaining ownership. Supervisors remain thin authority and reconciliation shells rather than re-reading unbounded traces.
+
+Every branch, PR, document, and other delivery artifact now has a durable lifecycle through terminal disposition, so orphan drafts block completion and supersession. Baseline leases bind source and stack evidence to the exact actor, task, and semantic generation, while non-overlapping drift no longer creates an automatic refresh treadmill.
+
+This breaking release introduces `octoplan-plan-v5`. Active v4 or older plans are fenced and replanned; an unfinished legacy Goal keeps v5 paused until a genuine terminal state or explicit human lifecycle decision, without false completion, false blocking, or a competing Goal. The v14 route floor, compact title convention, fresh-writer rule, and mandatory reversible archive lifecycle remain enforced. The Claude distribution is unchanged.
+
+### 14.0.0 — 2026-08-12
+
+Octoplan now binds every writer to a semantic task generation and an autonomous manifest. A split, merge, changed task meaning, graph, output, route, authority, acceptance, or rewrite contract fences the predecessor and requires a fresh writer plus a fresh full independent review; a healthy actor may still handle a stable same-generation correction with a targeted recheck. Successor activation requires stop acknowledgement, post-fence quiescence, transfer and creation receipts, binding readback, manifest acknowledgement, and a fresh full-stack admission covering main, stacked bases and heads, ancestry, effective diffs, migrations, checks, verifier coverage, and TTL.
+
+Actor bindings now include plan and intent revisions, supervisor epoch, authority and target identity, role, task ID and generation, contract and manifest hashes, observed model and effort, and stack evidence. Planned and observed routes must agree before work. The automatic ladder is restricted to Luna `max` and Sol `high|xhigh|max`; Terra, Luna below `max`, Sol below `high`, unknown, unavailable, or unobserved routes pause without downgrade. Supervisors require observed Sol `high` or above, and planning remains Sol `xhigh` or justified `max`.
+
+Completed executors must be archived reversibly after accepted evidence and supervisor reconciliation. Archive failure is receipted, retried through bounded recovery, and blocks final close; sessions awaiting correction, review, handoff, a human checkpoint, or unresolved evidence are preserved. Native titles use the single compact convention `<PREFIX>-<short-work-stream-name>-<short-task-name>` with `SUP`, `EX`, `PLN`, and `REV`, while opaque identifiers stay in prompts and durable state.
+
+This breaking release introduces `octoplan-plan-v4`, typed review and telemetry records, explicit parallel frontiers, bounded state compaction, and immutable historical receipts. Active v3 or older plans must be fenced and replanned from the current mandate rather than migrating authority, PASS verdicts, actors, or action receipts. The Claude distribution is unchanged.
+
 ### 13.1.0 — 2026-08-11
 
 Interactive clarification and planning now stay in the current user task, while delegated role packs remain reserved for bounded child work. The creation brief is proportional in presentation but complete in authority, effects, routes, lifecycle, review cadence, and human checkpoints. User-facing handoffs are localized, and Octopad task statuses now map cleanly to `todo`, `in_progress`, `blocked`, and `done`; `waiting-human` and `paused` remain coordination states rather than invalid task statuses.
