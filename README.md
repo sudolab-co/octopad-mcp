@@ -61,7 +61,7 @@ Octoplan turns an idea or work stream into a detailed, ordered plan in Octopad. 
 
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.4.0 | Plans the work. It never carries out the plan. |
+| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
 | [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 | Plans the work and can supervise delivery after the user authorizes that scope. |
 
 Install a skill only when you want Octoplan. See [INSTALL.md](INSTALL.md#optional-octoplan-skills) for commands and migration steps.

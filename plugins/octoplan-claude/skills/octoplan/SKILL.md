@@ -1,8 +1,8 @@
 ---
 name: octoplan
-description: Use when the user says "Octoplan <work stream>", when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
+description: Use when the user says "Octoplan" followed by a work-stream name, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
 ---
-Version: 1.4.0
+Version: 1.5.0
 
 # Octoplan — work-stream planning protocol for Octopad
 
@@ -90,18 +90,35 @@ Creation parameters alongside the description: `impact` (1–5) and `impact_rati
 
 ## Exec & Review recommendations
 
-**Exec.** The planner just read the real sources and specced the task, so it knows how hard the task is — record a model recommendation the user applies when launching the executor session. Express it in the model names or tiers the team's environment actually offers (settled in step 1), with the depth-of-reasoning setting if the environment has one. Rubric:
+**Exec.** The planner just read the real sources and specced the task, so it knows how hard the task is — record a model recommendation the user applies when launching the executor session. Use the exact model names and effort settings the team's environment offers (settled in step 1). When the current Claude models are available, use this capability-first rubric; it deliberately values avoiding a failed session over minimizing spend:
 
 | Task profile | Recommend |
 |---|---|
-| Mechanical, well-specced copy of an existing pattern or template | mid-tier model, standard depth |
-| Standard delivery with a clear pattern to copy — a routine feature, a templated deliverable | mid-tier model, deeper reasoning |
-| Hard but well-bounded work — tricky logic or structure, no open design questions | mid-tier model, maximum depth |
-| Cross-file or cross-document coordination, data migrations, permissions/security, money, or high-stakes hard-to-reverse deliverables (brand-defining copy, legal text, anything published where wrong is costly) | top-tier model, deeper reasoning |
-| Genuinely open design problem where the approach itself is uncertain | top-tier model, maximum depth (rare) |
-| Broad read-only audit or "find/verify every X" sweep | a multi-agent sweep mode if the environment offers one — costly, needs the user's opt-in |
+| Mechanical, fully specced copy of a verified pattern; reversible and concretely checkable | **Sonnet 5 · xhigh** — the only default Sonnet lane |
+| Standard bounded delivery with a clear pattern — a routine feature, analysis, or templated deliverable | **Opus 5 · high** |
+| Hard but well-bounded work — tricky logic, hidden invariants, or dense structure | **Opus 5 · xhigh** |
+| Cross-file or cross-document coordination, data migrations, permissions/security, money, or high-stakes hard-to-reverse work (brand-defining copy, legal text, anything published where wrong is costly) | **Opus 5 · xhigh**, with Review required |
+| Genuinely open design or long-horizon problem where the approach itself is uncertain | **Fable 5 · xhigh**, only after confirming availability and that its mandatory 30-day data retention is acceptable; otherwise **Opus 5 · xhigh** |
+| Broad read-only audit or "find/verify every X" sweep | **Opus 5 · xhigh**, plus `/effort ultracode` only with the user's explicit opt-in |
 
-Recommend generously — a failed session usually costs more than a stronger model would have. The recommendation is not a lock: the executor escalates if the task turns out harder than specced.
+Apply the effort vocabulary precisely:
+
+| Setting | Octoplan policy |
+|---|---|
+| `low` | Native effort, but do not recommend it for Sonnet 5, Opus 5, or Fable 5 work. |
+| `medium` | Native effort, but recommend it only when the user explicitly prioritizes latency or cost; never use it for Sonnet 5. |
+| `high` | Default substantive route for Opus 5. It may be used with Fable 5 when the user already chose Fable for a bounded capability-sensitive task. Never use it for Sonnet 5. |
+| extra high (`xhigh`) | Minimum Sonnet 5 route and the default for hard, long-running, or consequential work. |
+| `max` | Rare. Recommend it only when `xhigh` has proved insufficient or the task is explicitly unconstrained and the extra latency, cost, and risk of overthinking are justified; write that reason in the Exec line. Prefer moving from Sonnet 5 to Opus 5 before maxing Sonnet. |
+| `ultra` / `ultracode` | Not a native effort above `max`. The `/effort ultracode` session setting combines `xhigh` with automatic workflow orchestration; the `ultracode` prompt keyword starts one workflow at the session's current effort. Save the actual native effort, name the separate opt-in, and never write `effort: ultra`. |
+
+Every Fable 5 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention. If either condition fails, use Opus 5 at the best compatible effort for the task.
+
+Sonnet 5 below `xhigh` is outside this rubric. That floor is an Octoplan quality policy, not a claim that lower effort has a universally measured defect rate. Opus 4.6 is a deliberate compatibility or interaction-style lane, never an automatic downgrade: it has no `xhigh`, so use `high` for routine work; use `max` only when the user's live workload or tuned prompts favor 4.6 **and** the rare-`max` rule above is independently satisfied. Opus 4.6 and Opus 5 have the same list price; the older tokenizer can use fewer tokens for equivalent text, but that alone does not prove lower cost per successful task.
+
+The native effort ladder and model defaults come from Anthropic's [effort guide](https://platform.claude.com/docs/en/build-with-claude/effort) and [model-selection guide](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model). The Opus 4.6 compatibility facts come from the [migration guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide). Claude Code's separate orchestration modes are defined in its [workflow guide](https://code.claude.com/docs/en/workflows).
+
+Recommend generously. The executor may escalate when live work proves harder than specced, but it must not silently weaken the Sonnet floor or substitute a model that cannot provide the saved effort. If the exact route is unavailable or its data-retention policy is unacceptable, say so and recommend the best compatible fallback.
 
 **Review.** `required` whenever a mistake would be costly: real decision-making, security/permissions, a data migration, cross-file logic, anything published or client-facing. `skip` only for genuinely trivial mechanical changes a fresh pass would find nothing in. When required, the executor has a separate fresh agent — no memory of writing the work — attack just the finished change, worst problems first, and fixes confirmed findings before delivering. Default to `required` when unsure.
 
