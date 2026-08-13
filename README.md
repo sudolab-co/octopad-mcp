@@ -5,7 +5,7 @@ Connect supported AI clients to [Octopad](https://octopad.app). Octopad is the c
 This public repository contains:
 
 - setup guides for Octopad's hosted MCP connection
-- optional Octoplan skills for Claude Code and Codex
+- optional skills for product documentation and planning
 
 It does not contain the Octopad service source code. MCP is the open standard that lets an AI client use tools from another service.
 
@@ -31,7 +31,7 @@ After the connection works:
 2. Start a new conversation or task.
 3. Send: **"Use Octopad. Start my onboarding."**
 
-This starts guided onboarding inside your AI. Connecting the MCP does not install Octoplan.
+This starts guided onboarding inside your AI. Connecting the MCP does not install optional skills.
 
 Direct setup guides are available for:
 
@@ -53,18 +53,19 @@ For regular ChatGPT conversations, install the official Octopad app. This is the
 
 Use the direct MCP guides in this repository for Codex, Claude, Cursor, Gemini CLI and other compatible MCP clients.
 
-Both routes connect to Octopad. The marketplaces in this repository distribute optional Octoplan plugins. Those plugins add the skills described below; they are not the official Octopad app for ChatGPT.
+Both routes connect to Octopad. The marketplaces in this repository distribute optional skills. Those plugins add the skills described below; they are not the official Octopad app for ChatGPT.
 
-## Optional Octoplan skills
+## Optional skills
 
-Octoplan turns an idea or work stream into a detailed, ordered plan in Octopad. It is optional and has a different contract in each runtime:
+These plugins are optional and separate from the MCP connection:
 
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
+| [`manage-product-documentation`](plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.0.0 shared | Organizes and maintains product documentation as product work evolves. |
 | [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
 | [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 | Plans the work and can supervise delivery after the user authorizes that scope. |
 
-Install a skill only when you want Octoplan. See [INSTALL.md](INSTALL.md#optional-octoplan-skills) for commands and migration steps.
+Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.
 
 ## Privacy, access and removal
 
@@ -78,7 +79,7 @@ For a sensitive security report, follow [SECURITY.md](SECURITY.md).
 
 ## Help
 
-- For a problem with these guides or an Octoplan skill, [open a GitHub issue](https://github.com/sudolab-co/octopad-mcp/issues/new).
+- For a problem with these guides or an optional skill, [open a GitHub issue](https://github.com/sudolab-co/octopad-mcp/issues/new).
 - For an account or product problem, email [support@octopad.ai](mailto:support@octopad.ai).
 
 ## Repository layout
@@ -88,6 +89,8 @@ INSTALL.md                               AI-readable install guide
 docs/clients/                            Client-specific direct MCP guides
 .claude-plugin/marketplace.json          Claude marketplace manifest
 .agents/plugins/marketplace.json         Codex marketplace manifest
+plugins/manage-product-documentation/    Codex product-documentation distribution
+plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
 plugins/octoplan-claude/                 Optional Claude distribution
 plugins/octoplan-codex/                  Optional Codex distribution
 scripts/validate-repository.sh           Repository contract validation
@@ -95,7 +98,7 @@ scripts/validate-repository.sh           Repository contract validation
 
 ## Releases
 
-Each optional skill has its own version. Existing Claude releases use `octoplan-vX.Y.Z`. Future Claude releases use `octoplan-claude-vX.Y.Z`. Codex releases use `octoplan-codex-vX.Y.Z`. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+Each Octoplan distribution has its own version. The Claude Code and Codex product-documentation distributions share one synchronized version and use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z` tags. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

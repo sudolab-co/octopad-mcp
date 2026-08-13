@@ -356,9 +356,31 @@ if [ "$codex_only" = false ]; then
     claude_release=true
   fi
 fi
+
+validate_octoplan_claude_marketplace_entry() {
+  node - "$root" <<'NODE'
+const { execFileSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[2];
+const current = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+const base = JSON.parse(execFileSync('git', ['-C', root, 'show', 'origin/main:.claude-plugin/marketplace.json'], { encoding: 'utf8' }));
+const entries = (marketplace) => marketplace.plugins.filter((plugin) => plugin.name === 'octoplan-claude');
+const currentEntries = entries(current);
+const baseEntries = entries(base);
+if (currentEntries.length !== 1 || baseEntries.length !== 1) process.exit(1);
+if (JSON.stringify(currentEntries[0]) !== JSON.stringify(baseEntries[0])) process.exit(1);
+NODE
+}
+
 while IFS= read -r changed; do
   skip_content_audit=false
   case "$changed" in
+    .claude-plugin/marketplace.json)
+      validate_octoplan_claude_marketplace_entry || fail 'existing Claude Octoplan marketplace entry changed'
+      ;;
+    plugins/manage-product-documentation-claude|plugins/manage-product-documentation-claude/*)
+      ;;
     plugins/octoplan-claude/.claude-plugin/plugin.json|plugins/octoplan-claude/skills/octoplan/SKILL.md)
       [ "$claude_release" = true ] || fail "protected Claude surface changed without a versioned Claude release: $changed"
       ;;

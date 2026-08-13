@@ -2,9 +2,19 @@
 
 All notable changes to the skills in this repository.
 
-Each skill is versioned independently in its own `Version:` line and plugin manifest. Standard semantic versioning applies to each distribution's public contract: major changes are incompatible and may require migration or replanning, minor changes add backward-compatible functionality, and patches are backward-compatible fixes or clarifications.
+Each Octoplan distribution is versioned independently in its own `Version:` line and plugin manifest. The Claude Code and Codex product-documentation distributions share one synchronized version. Standard semantic versioning applies to each public contract: major changes are incompatible and may require migration or replanning, minor changes add backward-compatible functionality, and patches are backward-compatible fixes or clarifications.
 
 This file records versioned contract changes. GitHub tags and releases are the publication record. Some intermediate Codex versions were superseded before they received a separate GitHub release.
+
+## manage-product-documentation
+
+### 1.0.0 — 2026-08-13
+
+Introduces one AI-neutral product-documentation skill, distributed with the same contract and version for Claude Code and Codex. It supports both greenfield products and existing products: it establishes or adopts one Product Map, maintains one evolving Product Spec per significant system, adds Behavioral Contracts only when precision warrants them, and keeps engineering guidance to one short Architecture Map plus targeted references when durable knowledge cannot be cheaply derived from current code.
+
+During active product work, the skill distinguishes exploration from commitment, recognizes accepted new systems and changes, and makes the smallest evidence-based documentation update without turning brainstorming into a form. It reuses Octopad Pages, work streams, Tasks, Decisions, and links; follows Octopad's Task-creation contract; preserves proposed, approved, implemented, merged, and released as distinct states; and retrieves only the relevant documentation and current code for implementation.
+
+Pull-request, delivery, release, audit, user-documentation, release-note, Product Facts, and marketing playbooks keep drafts tied to exact source and release evidence while preserving normal review and publication gates. The skill can synchronize documentation while an AI session or event-driven workflow is running, but it does not claim background execution: unattended GitHub-to-Octopad updates still require a separately installed and authorized trigger. This release adds both marketplace packages, installation guidance, synchronized versioning rules, and deterministic validation of their shared contract.
 
 ## octoplan-codex
 
