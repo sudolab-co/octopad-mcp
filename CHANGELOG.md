@@ -4,6 +4,8 @@ All notable changes to the skills in this repository.
 
 Each skill is versioned independently in its own `Version:` line and plugin manifest. Standard semantic versioning applies to each distribution's public contract: major changes are incompatible and may require migration or replanning, minor changes add backward-compatible functionality, and patches are backward-compatible fixes or clarifications.
 
+This file records versioned contract changes. GitHub tags and releases are the publication record. Some intermediate Codex versions were superseded before they received a separate GitHub release.
+
 ## octoplan-codex
 
 ### 15.0.0 — 2026-08-12
