@@ -1,116 +1,96 @@
 # Codex supervision
 
-Read this reference after valid launch authority or when resuming. Octopad holds the approved plan and recovery state; native Codex provides working-session evidence.
+Read this after delivery is authorized or when a fresh task resumes supervision. Octopad holds the plan and mandate; Codex holds the live run.
 
-## Contents
+## Enter or resume
 
-- [Run and ownership](#run-and-ownership)
-- [Supervisor loop](#supervisor-loop)
-- [Native actors](#native-actors)
-- [Execution and review](#execution-and-review)
-- [Incidents and replanning](#incidents-and-replanning)
-- [Human checkpoints and Goal state](#human-checkpoints-and-goal-state)
-- [Resume and close](#resume-and-close)
+Start or refresh a production Octopad session. Read the `Octoplan 17 plan contract`, `Octoplan 17 delivery authorization`, and `Octoplan 17 supervisor lease` Decisions; the latest `OCTOPLAN_PLAN_REVIEW` receipt; open tasks and dependencies; each in-progress task's latest comments and dispatch receipts; current native Goal/tasks; effective target rules; and real artifact state.
 
-## Run and ownership
+Delivery may continue only when the authorization still covers the exact scope and effects. Do not ask again merely because supervision changed tasks. If authority was withdrawn, the contract changed, a protected action is next, or an unfinished effect is ambiguous, pause only the affected branch and reconcile it.
 
-Before native create, verify the v6 role packet and planned route. After creation, require binding, production Octopad context, and observed-route readbacks before work, effect, archive, or PASS. The binding covers plan and intent revisions, supervisor epoch, authority, identity, task generation, manifest, target, and artifact versions; mismatch permits only stop or recovery.
+The supervisor acts only while the guarded lease names its exact native-task identity and Goal. Reread it before every spawn, external effect, task close, checkpoint clearance, and Goal transition. The supervisor owns one native Goal through integrated proof. If this task has an unrelated unfinished Goal, do not mutate it; use the already disclosed fresh-supervisor route or ask the user. Set a token budget only when the user explicitly requested one.
 
-Use `planning`, `planned`, `active`, `replanning`, `waiting-human`, `paused`, `completed`, and `superseded`. These are recovery conditions, not a progress mirror; task statuses remain authoritative. Every state, intent, or owner change uses the state host's `expected_updated_at`; a failed guard causes a reread and authorizes nothing.
+## The loop
 
-Exactly one supervisor epoch owns advancement. The current user task is supervisor by default; its native Goal is only a continuity/wake handle, never shared plan or progress truth. A separate supervisor is chosen and fenced before Goal creation only when evidenced project or runtime isolation requires it. Never create a reporting-only parent, competing Goal, or unsupported Goal transfer.
+Repeat until the integrated outcome is proved or no safe work remains:
 
-Keep the supervisor thin: it owns authority, compact state, receipts, actor and artifact lifecycle, integration, and dispatch. Delegate long exploration, material re-decomposition, or orthogonal review only with a bounded packet and report shape; consume the report, not raw history.
+1. **Refresh.** Read latest user intent, lease owner/generation, reviewed plan fingerprint, ready tasks, dependencies, assignments, current artifact versions, checks, dispatch receipts, and protected checkpoints.
+2. **Pick.** Choose the next ready task. Do not take a task assigned to another person. Set the owning task in progress before work.
+3. **Route.** Work inline for small sequential work. Spawn a worker only when the benefit exceeds the handoff; apply the task's exact saved route and verify the observed pair.
+4. **Collect.** Require the real deliverable, changed version, executed verification output, decisions, and blockers to be written on the owning task.
+5. **Review.** Run targeted checks, plus the task's required fresh or human review. A protected clearance records exact subject/version, owner, evidence, and invalidation rule; artifact drift reopens it. Confirmed findings return to the same healthy worker when scope is stable.
+6. **Advance.** Close the task only after current proof is accepted. Report one short progress line, then refresh the ready frontier.
 
-## Supervisor loop
+Do not mirror a scheduler or artifact registry. Task statuses and dependencies are the plan state; task comments carry receipts and recovery evidence. The Goal is a continuity handle, not a second source of project truth.
 
-At every wake:
+## Worker prompt
 
-1. start or refresh the production Octopad session, state host, exact graph, native Goal/tasks, installed skill, and latest user intent;
-2. reconcile pending writes/actions, active actors, artifact versions, and open checkpoints before issuing a new effect;
-3. derive the safe frontier from live dependencies, protected gates, real write conflicts, admitted routes, and active actors;
-4. execute inline or launch only the bounded actors whose benefit exceeds handoff cost; parallelize only independent work;
-5. collect artifacts, run their saved review class, integrate the current candidate, and record accepted evidence;
-6. handle obstacles within the recovery budget, replan material change, and continue every independent safe branch.
+Send a bounded prompt; do not paste predecessor history:
 
-Use Octopad's graph and statuses directly; do not mirror a scheduler. The outcome task hosts state and stays `in_progress` through integration, review, and gates; it becomes `done` only on accepted integrated proof. `waiting-human` and `paused` exist only in compact recovery state.
+```text
+Deliver one Octopad task: <task title>.
+Octopad: <organization> / <workspace> / <work stream>.
+Use <saved model and effort>; verify the observed pair before work.
 
-For `simple` work default to one active delivery path. For `structured` or `adaptive` work fill only independent WIP supported by current capacity and conflict evidence, then backfill after reconciliation. Repetitive items use bounded partial batches with individual artifacts and verdicts.
+Start production Octopad, build exact context on this task, read the stream's
+Octoplan 17 Decisions, and read the target's effective rules. Work only this
+task and only within its recorded authority. Run its exact Verify steps and
+write the real output, artifact version, decisions, and blockers on the task.
 
-At every actor safe boundary, reread `intent.revision` before the next external effect. Persist a natural-language pause, cancellation, reprioritization, or “do not send” before an instruction-changing actor directive. A stale actor stops at the recorded safe boundary.
+Do not close the task, advance the plan, launch another actor, approve a gate,
+or perform a protected action. Return the six-field handoff if attention is
+needed; otherwise return one line naming the artifact and verification result.
+```
 
-Follow native tasks with compact cursor-based waits; commentary or silence is not plan state. Use at most one timed wake only for a real external predicate when native waiting cannot persist it. The wake refreshes current state and intent before acting and never becomes a second supervisor.
+A worker that errors, disappears, or returns unverifiable work gets one fresh retry on the same task only after native evidence proves it stopped, its dispatch is terminal, and authoritative targets prove its effects quiescent. The replacement gets a new dispatch key. If the retry also fails, stop that branch and report it; never finish covertly under another identity.
 
-Apply the SKILL user-visible identifier rule to recaps. Internal prompts, ledger records, arguments, and creation records retain the full correlation identifiers.
+## Proof and review
 
-## Native actors
+Verify the exact artifact version that will advance. Repository work refreshes base, head, diff, and applicable checks before mutation, push, review, and handoff. Content, research, and operations use their own proof lenses from planning; never invent Git evidence for them.
 
-Only the supervisor creates, messages, or archives actors; validates authority and checkpoints; accepts artifacts; and advances the graph. Executors may relay an answer but never validate advancement, change route, or launch.
+Green CI proves only what it ran. An unavailable verifier is a blocker, not permission to skip it. A targeted review may run inline; an independent review uses one fresh source-first task. Reuse that reviewer only for stable finding corrections; changed scope, contract, route, acceptance, or deliverable gets a new review.
 
-Persist creation intent first. Every title is `<PREFIX>-<short-work-stream-name>-<short-task-name>`: `SUP` supervisor; `EX` executor/follow-up; `PLN` planner/recovery; `REV` plan/lead/specialist reviewer. Normalize non-empty components, shorten the stream first, then the task only if still needed, to fit 64 characters; never emit an empty component. Omit `octoplanned`; opaque IDs stay in prompt/state. Examples: `SUP-company-brain-delivery`, `EX-company-brain-work-graph`, `PLN-company-brain-replan`, `REV-company-brain-work-graph`.
+Only the supervisor validates advancement and durable authority. A worker or reviewer verdict is evidence, not permission.
 
-The first child prompt says `Use $octoplan as <role>`, names its role pack, requires a production Octopad session and exact context, and carries the creation key, full binding, autonomous manifest, schema, and minimum version. The actor returns binding, manifest, Octopad-context, and observed-route readbacks before work. Create once; reconcile uncertain dispatch and never retry merely to improve a response.
+## Non-idempotent effects
 
-Only an actor with the current supervisor epoch, task generation, manifest, context, and artifact versions may act. Replacement rotates the affected task generation: persist intent, stop and prove effects quiescent, disposition prior artifacts, then activate a fresh bound actor. Supervisor epoch changes only for supervisor takeover.
+Before any external effect that could duplicate or be hard to undo, add a task comment with `OCTOPLAN_ACTION <stable-key>`, the exact target, authority source, intended effect, and pre-effect state. Use the same key for one retry of that same intent.
 
-Reconcile only unresolved actions, active actors, artifacts, checkpoints, current intent, and changed sources. A session or title is evidence, never identity, authority, or completion. Reuse only for a stable correction on the same task generation, manifest, and artifact versions. Archive a terminal actor after its output and lifecycle reconcile; archive ambiguity remains pending and blocks close.
+After a timeout or incomplete response, assume neither success nor failure. Inspect the authoritative target, record the receipt if present, and retry only when absence is proved. An unresolved action stays on the owning task and blocks its descendants, not independent work.
 
-## Execution and review
+Use `expected_updated_at` on guarded Octopad updates. A conflict causes reread and reconciliation, never overwrite.
 
-Each executor verifies its binding, observed route, Octopad context, manifest, and artifact versions, then reads the live task and effective rules. Repository work refreshes exact base/head before source mutations; other profiles refresh their own versions and verifier evidence. A human task never becomes agent work through fallback.
+## Problems and replanning
 
-Run deterministic checks first. On return, the supervisor verifies every exact artifact version, changed-surface coverage, profile evidence, and the review class derived from that task's consequence. `targeted` inspects the artifacts and named checks; `independent` adds one fresh source-first review for material work; `specialist` adds only a second orthogonal material domain. One coherent task may integrate several profiles in the same review. The plan-level maximum never raises unaffected tasks. Integrated candidates require integrated review.
+Classify an obstacle just enough to choose the next move:
 
-Accept only explicit verdicts with typed evidence. A stable correction may return to the healthy executor and same reviewer for targeted recheck. Scope, graph, contract, route, acceptance, or generation change requires a material replan and fresh review. Two `REVISE` verdicts with the same key trigger diagnosis before another pass; changing reviewer does not reset the loop.
+- **Transient:** retry once with the same operation key.
+- **Evidence gap:** refresh the authoritative source; never infer.
+- **In scope:** try at most two distinct safe, reversible remedies.
+- **Plan change:** stop affected work, update the brief/Decisions/tasks/dependencies, and run one fresh plan review.
+- **Protected:** open or resume the named human checkpoint.
 
-At artifact `ready`, human/handoff wait, or an incident unresolved after bounded recovery, the executor publishes six semantic fields—state, done, blocked, decision expected, to unblock, next step—with labels and content localized to the user's language; the local equivalent of “none” is valid. It may receive and transfer a reply. This report is not authority or durable checkpoint evidence until supervisor validation.
+A wording fix or stable finding correction is not a replan. A changed outcome, scope, task meaning, graph, authority, route, proof, deliverable, or protected action is. Stop and reconcile any old worker before a replacement writes; keep useful evidenced artifacts only when the new task explicitly adopts them.
 
-Compact example for an English-speaking user: **State:** method review; **Done:** pilot ready; **Blocked:** repeated artifacts; **Decision expected:** approve or revise; **To unblock:** review the pilot; **Next step:** safe work continues, then the batch resumes.
+After two comparable work/review cycles without newly accepted artifact, review, or integrated proof, diagnose the plan, context, task size, route, tool, and verifier before launching more work. Activity, drafts, tokens, or irrelevant checks are not progress.
 
-## Incidents and replanning
+## Human checkpoints
 
-A missing tool, skill, context, environment, source, or verifier is an incident owned by the supervisor, not automatically a user blocker. Preserve safe independent work, diagnose the failed predicate, restore capability or choose an in-envelope workaround, and use one bounded planner or recovery actor when that improves diagnosis. It proposes and cannot claim, launch, write Octopad, or ask the user.
+Before accepting a protected checkpoint, refresh its exact subject/version and require the named owner and evidence. A changed subject invalidates the old receipt. At a protected checkpoint or unrecovered problem, report in the user's language with these six labels and one line each:
 
-Classify each obstacle:
+- **State** — where the outcome stands.
+- **Done** — what is finished and proved.
+- **Blocked** — what is waiting and why.
+- **Decision expected** — the exact human decision or action.
+- **To unblock** — who must provide what evidence.
+- **Next step** — what resumes immediately afterwards and what safe work continues meanwhile.
 
-1. `transient`: retry once with the same operation key;
-2. `evidence-gap`: refresh the authoritative source and never infer;
-3. `in-envelope`: try at most two distinct safe, reversible remedies;
-4. `material`: create a new plan revision and one fresh plan review;
-5. `protected`: open or resume the named human checkpoint.
+Any field may say the local equivalent of “none”. Do not mark the Goal blocked for an ordinary planned checkpoint or a first recoverable incident. Use native blocked only after the same real impasse persists for three consecutive Goal turns and no meaningful in-scope progress remains.
 
-Record the classification, evidence, mutation state, attempts, and resume predicate. Rewording, waking, or replacing an actor never resets the ceiling.
+## Handover and close
 
-Treat a change as repair only when outcome, scope, consequence, graph, route, acceptance, authority, generation, manifest, and artifact identity remain unchanged. Reuse the healthy actor, make the smallest correction, and targeted-recheck it.
+Choose a fresh supervisor before Goal creation whenever the planning pass was heavy. If takeover is needed later, stop at a safe boundary before judgment degrades. Write in-flight state, artifact versions, verification output, dispatch state, ambiguous effects, and the next ready task onto their owning tasks; record a quiescence receipt; then update the supervisor lease with `expected_updated_at` to the successor identity and incremented generation. The predecessor is fenced immediately and may perform no further effect if it wakes.
 
-If a task splits or merges, or meaning, output, Done when, graph, route, authority, checkpoint, acceptance, or artifact contract changes, set `replanning`, increment affected generations, stop old actors, disposition their artifacts, and build a new candidate. Use a fresh bounded planner only when re-decomposition benefits from isolation. Run exactly one fresh plan review for the new revision, persist it, then activate fresh actors. Old eligibility and affected PASS do not transfer.
+A successor first verifies the predecessor terminal or unreachable, the guarded lease rotation, and post-fence effect quiescence; then it creates a new Goal and records its identity on the lease. The predecessor Goal remains historical and is never claimed transferred or marked complete unless its own objective was actually achieved. The recorded authorization carries, so settled choices are not reopened.
 
-After two material replans or two comparable work/review cycles without newly accepted artifact, review, or integrated evidence, open one efficiency incident. Diagnose plan, context, tool, verifier, route, actor topology, and task size before another work actor. Activity, tokens, drafts, commits, or irrelevant green checks are not progress.
-
-Contact the user only for a material choice, missing authority, identity unresolved after bounded recovery, unreconcilable duplicate, protected checkpoint, infeasibility, or no compliant route. Record one stable blocker key and keep independent safe work moving.
-
-## Human checkpoints and Goal state
-
-Secrets, access grants, spend, destructive effects, required human review, merge, migration application, deployment, publication, and acceptance stay protected as `Cxx` checkpoints in the owning E task. Use `Hxx` only for a distinct human-produced artifact, never for an approval, review, merge, publication, or other gate. Valid authority needs no reapproval for an in-envelope repair; seek new authority only for changed scope, target, consequence, or protected action. Review cadence and brief approval never complete a checkpoint.
-
-A checkpoint blocks only its dependent branch. Continue independent safe work. When no safe frontier remains, set control status to `waiting-human` or `paused` under the concurrency guard, keep affected delivery tasks open, and publish the localized six-field handoff above.
-
-Record the handoff receipt idempotently. A rejection preserves artifact and evidence, reopens the same delivery task through repair or replan, and returns to the same checkpoint without duplicating it. An external wake supplies evidence only; refresh the latest intent and verify its exact target/revision before resuming.
-
-Do not mark the native Goal blocked for an ordinary planned checkpoint, a first recoverable incident, or passive waiting while another safe route exists. Keep it active across normal continuation. Use `update_goal(blocked)` only after the same genuine impasse has recurred for three consecutive Goal turns and no meaningful in-scope progress remains. A resumed blocked Goal starts a fresh three-turn audit. Never call a Goal complete merely because a pass ended.
-
-## Resume and close
-
-On resume, refresh production Octopad state, native Goal/tasks, and pending actions, then wake the exact saved supervisor first. Silence or absence is not proof of failure.
-
-Create a recovery successor only when native evidence proves the saved owner terminal or unreachable and authority still covers it. Persist takeover intent, guard the owner/epoch rotation, reread it, and prove post-fence effect quiescence before creating one successor. The old Goal stays historical and any late wake fails the new epoch.
-
-A dead or stale actor is stopped and quiesced before a successor activates. The new manifest explicitly adopts, rejects, or rewrites its artifact. Version drift permits read-only refresh when the contract is unchanged; material drift creates a new generation.
-
-Track every artifact through `draft`, `ready`, `waiting-human`, and `terminal` using its generic core and profile evidence. Refresh its version at dispatch, effect, review, handoff, and any evidenced collision. A draft without a lifecycle record is orphan debt and blocks close.
-
-Set control status to `completed`, mark the outcome task done, and complete the Goal only after current integrated-outcome proof, required task/review evidence, every checkpoint satisfied, final validation, no pending action, no active actor, and every artifact terminal with a non-active disposition. Component completion is insufficient; `waiting-human` and `paused` are not success.
-
-The final localized six-field recap reports accepted outcome evidence, current revision, actor reuse or replacement, artifact dispositions, review session and passes, remaining safe work, and every open checkpoint or incident.
-
-Pause the affected branch only for the strict conditions in the state reference. Stop the whole plan only when shared identity/authority is invalid or no safe agent-owned frontier remains.
+Complete only when the current integrated outcome is proved, the live plan fingerprint still matches its PASS receipt, every required review and version-bound checkpoint is satisfied, no task or dispatch remains active, and no ambiguous effect is unresolved. Close the outcome task and current Goal, retire the supervisor lease, then publish the same six-field recap with accepted evidence and any follow-up that remains outside scope.
