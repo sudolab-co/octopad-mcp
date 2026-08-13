@@ -1,0 +1,24 @@
+{
+  "name": "manage-product-documentation",
+  "version": "1.0.0",
+  "description": "Organize and maintain evidence-based product documentation in Octopad as product work evolves.",
+  "author": {
+    "name": "Sudolab"
+  },
+  "homepage": "https://github.com/sudolab-co/octopad-mcp",
+  "repository": "https://github.com/sudolab-co/octopad-mcp",
+  "license": "MIT",
+  "keywords": ["octopad", "product-documentation", "product-management", "codex"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Manage Product Documentation",
+    "shortDescription": "Keep product knowledge aligned as work evolves.",
+    "longDescription": "Helps an AI assistant establish, adopt, connect, and maintain product documentation in Octopad during normal product discussion, implementation, pull-request, release, and audit work without inventing facts or confusing merge with release.",
+    "developerName": "Sudolab",
+    "category": "Productivity",
+    "capabilities": ["Product Documentation", "Knowledge Management"],
+    "defaultPrompt": [
+      "Use $manage-product-documentation to organize and maintain my product documentation while we work."
+    ]
+  }
+}

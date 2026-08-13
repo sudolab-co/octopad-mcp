@@ -1,27 +1,29 @@
 # Contributing
 
-This public repository contains direct MCP setup guides. It also contains two Octoplan distributions. Keep each pull request narrow and state which surface it changes.
+This public repository contains direct MCP setup guides and optional skill distributions. Keep each pull request narrow and state which surface it changes.
 
 ## Choose the scope
 
 - **Connection docs:** `README.md`, `INSTALL.md` and `docs/clients/`.
 - **Claude Octoplan:** `.claude-plugin/` and `plugins/octoplan-claude/`.
 - **Codex Octoplan:** `.agents/` and `plugins/octoplan-codex/`.
+- **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
+- **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
-Claude Octoplan and Codex Octoplan are separate public contracts. Do not change both unless the pull request clearly covers both.
+Each Octoplan plugin is a separate public contract. The two product-documentation plugins distribute one shared contract. Do not change several unrelated contracts unless the pull request clearly covers them.
 
 ## Skill contract changes ship with a version bump
 
-When a skill contract or behavior changes, three files move together. Change one without the others and the repo lies about itself:
+For an independently versioned distribution such as Octoplan, three surfaces move together. The paired product-documentation distributions follow the synchronized rule below. Change a required surface without the others and the repo lies about itself:
 
-1. **The skill's `Version:` line**, at the top of its `SKILL.md`.
-2. **The plugin's `version`**, in `plugins/<plugin>/.claude-plugin/plugin.json` for Claude or `plugins/<plugin>/.codex-plugin/plugin.json` for Codex. Same number.
+1. **That distribution's skill `Version:` line**, at the top of its `SKILL.md`.
+2. **That distribution's plugin `version`**, in `plugins/<plugin>/.claude-plugin/plugin.json` for Claude or `plugins/<plugin>/.codex-plugin/plugin.json` for Codex. Same number.
 3. **`CHANGELOG.md`**, a new entry under that skill, dated, saying what changed in plain language.
 
 An identity migration that changes no skill behavior keeps the existing skill versions. Document it in the connection guides. Do not invent a skill release.
 
-Repository maintainers publish tags and releases after review. Existing Claude releases use `octoplan-vX.Y.Z`. Future Claude releases use `octoplan-claude-vX.Y.Z`. Codex releases use `octoplan-codex-vX.Y.Z`.
+Repository maintainers publish tags and releases after review. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. Product-documentation releases use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z`. Codex Octoplan releases use `octoplan-codex-vX.Y.Z`.
 
 ## Which number moves
 
@@ -35,13 +37,15 @@ When in doubt, ask whether existing valid inputs need editing or migration. If y
 
 ## Keep the distributions separate
 
-A Claude-only change may edit Claude files, the Claude changelog and shared docs about that change. A Codex-only change follows the same rule.
+A Claude-only Octoplan change may edit Claude files, its changelog entry and shared docs about that change. A Codex-only Octoplan change follows the same rule.
 
 Do not copy behavior between distributions without checking each contract. Describe both runtimes accurately in shared docs. Test both paths when an edit touches both.
 
+The two `manage-product-documentation` distributions have one synchronized release version and one shared AI-neutral contract. Their skill `Version:` lines, both plugin manifest versions, `SKILL.md`, `documentation-model.md`, `artifact-shapes.md`, and `lifecycle-playbooks.md` must move together and remain byte-identical where shared. Any behavior or runtime-packaging change bumps the synchronized version in both distributions and creates one shared changelog entry. Publish the Claude and Codex tags with that same version.
+
 ## The Octopad contract is not yours to change
 
-Octoplan writes tasks through Octopad's MCP server. The server rejects tasks that break these rules. Do not change them here:
+Skills that write Tasks through Octopad's MCP server must follow the server contract. The server rejects Tasks that break these rules. Do not change them here:
 
 - Descriptions need literal **Why** and **What** sections. Top-level tasks also need **Done when**. Valid headers are `**Why**`, `## Why`, or `Why:` at line start.
 - `impact` (1 to 5) and `impact_rationale` are required creation parameters on every task, subtasks included.

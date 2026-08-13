@@ -35,6 +35,10 @@ codex mcp list
 
 Start a new Codex task and send: **"Use Octopad. Start my onboarding."**
 
+## Optional Codex skills
+
+The `manage-product-documentation` and `octoplan-codex` plugins are separate from the MCP connection. Do not install either unless the user asks for it. See [INSTALL.md](../../INSTALL.md#optional-skills).
+
 ## Why this differs from the ChatGPT app
 
 The official Octopad app serves regular ChatGPT conversations. The direct MCP connection on this page serves Codex. Both connect to Octopad. You install them in different parts of ChatGPT.
