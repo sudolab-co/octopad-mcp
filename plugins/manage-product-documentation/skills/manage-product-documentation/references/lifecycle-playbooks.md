@@ -10,12 +10,12 @@ Begin this setup only after the user explicitly asks to establish product docume
 
 1. Confirm the product, users, problem, and current commitment from the conversation. Ask only about a material missing boundary or intent.
 2. Follow the workspace's existing folder and page-preparation guidance, then create one minimal Product Map from [artifact-shapes.md](artifact-shapes.md). Record confirmed foundation, known capability areas, and explicit unknowns. Do not invent milestones, architecture, integrations, or implementation choices.
-3. Keep early ideas in the active discussion until a system boundary is accepted.
+3. Keep early ideas in the active discussion until a system boundary is accepted. Park an idea that survives the discussion uncommitted as one line on the Ideas page, created on the first such idea and linked from the map. Create no spec, contract, or architecture record for it.
 4. When a system is accepted or the user says to build it, add it to the map and create a `Draft` Product Spec with the confirmed purpose, boundary, behavior, Decisions, and evidence gaps.
 5. Reuse the user's work stream and Tasks or create only the finite execution work needed by the normal workflow. Link that work to the spec; do not copy its changing status into the page.
 6. Do not create an Architecture Map as if architecture exists. Before a repository exists, retain only confirmed technical constraints or Decisions. Create the canonical repository map once code provides evidence; use an explicitly provisional Octopad fallback only when orientation is already useful.
 
-Example: a user explores three collaboration features. Make no three speculative specs. Once the user chooses shared review and says “build it,” create or adopt that system's `Draft` spec, link its execution work, and leave implementation architecture unknown until evidence exists.
+Example: a user explores three collaboration features. Make no three speculative specs. Once the user chooses shared review and says “build it,” create or adopt that system's `Draft` spec, link its execution work, and leave implementation architecture unknown until evidence exists. Park the other two as one line each.
 
 ## Existing-product setup
 
@@ -35,12 +35,14 @@ Use before creating structure for a product that already has code, docs, or Octo
 
 Classify impact continuously without making the conversation feel like a form:
 
-- `no impact`: discarded ideas or exploration with no accepted product change;
+- `no impact`: exploration with no accepted product change, which may still leave a parked idea, or discarded ideas, which never do;
 - `existing-system change`: accepted behavior inside a known system boundary;
 - `new system`: a new coherent capability or responsibility with an accepted boundary;
 - `technical-only`: implementation or operational work with no product behavior change.
 
-During exploration, keep the classification local and make no speculative durable writes. Commitment is clear when the user accepts a direction, says “build it,” implementation starts, or a delivery artifact is active. Then act without redundant confirmation. If the system boundary remains materially ambiguous, ask one focused question and continue unaffected organization work.
+During exploration, keep the classification local and write no Product Spec, Behavioral Contract, architecture record, or new Product Map system entry; parking an idea stays allowed throughout. Commitment is clear when the user accepts a direction, says “build it,” implementation starts, or a delivery artifact is active. Then act without redundant confirmation. If the system boundary remains materially ambiguous, ask one focused question and continue unaffected organization work.
+
+At the end of a brainstorm, park the ideas the user engaged with and left open, without asking. Park an idea raised in passing during other work the same way. Park nothing the user turned down or dropped. Each line carries the date it was parked, the idea, and one clause on the problem it addresses; [documentation-model.md](documentation-model.md) states where the line lives and how it leaves the list.
 
 ## Implementation context retrieval
 
@@ -84,8 +86,9 @@ If repository policy explicitly proves that merge equals release, record that po
 3. Repair safe metadata and broken links directly when the correct target is unambiguous.
 4. Compare high-value claims with current code, release evidence, Decisions, and user-facing behavior. Mark unsupported claims stale or unverified instead of guessing.
 5. Consolidate duplicates only after preserving unique knowledge and history. Require explicit approval before deletion or irreversible overwrite.
-6. Create or reuse one bounded documentation-debt Task for related missing evidence, unresolved conflicts, or substantial rewrites. Do not create one task per broken link.
-7. Report repairs, remaining uncertainty, and the evidence needed to resolve it.
+6. Review parked ideas and the Ideas page. Propose removing lines whose problem has lapsed, in one batch; do not remove them silently.
+7. Create or reuse one bounded documentation-debt Task for related missing evidence, unresolved conflicts, or substantial rewrites. Do not create one task per broken link.
+8. Report repairs, remaining uncertainty, and the evidence needed to resolve it.
 
 ## Downstream documents
 
