@@ -1,15 +1,20 @@
-# Install Octopad
+# Connect Octopad
 
-This file is the installation entrypoint for AI assistants.
+This is the connection guide for AI assistants.
 
-## Installation contract
+## Connection contract
 
 1. Detect the current client from the runtime. Do not ask the user when the runtime already identifies itself.
-2. Install the MCP connection only by default. Do not install Octoplan or another optional skill unless the user asks for it.
-3. Use the client guide below. Do not invent a command or edit another client's configuration.
+2. Add the MCP connection only by default. Do not install Octoplan or another optional skill unless the user asks for it.
+3. Use the matching client guide below. Do not invent a command or edit another client's configuration.
 4. Use only this endpoint: `https://mcp.octopad.app/mcp`.
-5. Complete OAuth in the browser. The user may sign in to an existing Octopad account or create one during that flow.
-6. Verify the connection by listing the server or tools, then ask Octopad to start a session. Never claim success from a saved config alone.
+5. In the browser, have the user sign in or create an Octopad account.
+6. Have the user complete any required organization or membership setup.
+7. Have the user authorize the AI client where they started.
+8. Return to that client and verify that it can list the Octopad server or tools. A saved configuration or completed browser screen is not enough.
+9. Tell the user to start a new conversation or task in that client and send exactly: **"Use Octopad. Start my onboarding."**
+
+Do not replace the last step with a generic instruction to "start a session." Authorization, connection and guided onboarding are separate steps.
 
 ## Choose the current client
 
@@ -20,9 +25,11 @@ This file is the installation entrypoint for AI assistants.
 | Claude Code | [Claude Code](docs/clients/claude-code.md) |
 | Cursor | [Cursor](docs/clients/cursor.md) |
 | Gemini CLI | [Gemini CLI](docs/clients/gemini-cli.md) |
-| Another MCP client | Add `https://mcp.octopad.app/mcp` as a remote Streamable HTTP server, complete OAuth, and verify the tools before use. |
+| Another MCP client | Add `https://mcp.octopad.app/mcp` as a remote Streamable HTTP server, then follow steps 5 to 9 above. |
 
-If the current client cannot add remote Streamable HTTP MCP servers with OAuth, explain that limitation and stop. Do not substitute a proxy, token, package, or local server without the user's approval.
+If the client cannot add a remote Streamable HTTP MCP server with OAuth, explain that limit and stop. Do not substitute another method without the user's approval.
+
+For regular ChatGPT conversations, install the official Octopad app. This is the supported customer-facing ChatGPT plugin. Open the current [ChatGPT directory](https://chatgpt.com/plugins) and search for `Octopad`. That route is separate from the direct MCP setup in this file.
 
 ## Optional Octoplan skills
 
@@ -33,9 +40,12 @@ Octoplan is separate from the MCP connection. Install it only when the user expl
 ```text
 /plugin marketplace add sudolab-co/octopad-mcp
 /plugin install octoplan-claude@octopad-mcp
+/reload-plugins
 ```
 
-Third-party Claude marketplaces do not auto-update by default. In `/plugin`, open **Marketplaces**, select `octopad-mcp`, and enable auto-update if the user wants automatic skill updates.
+Third-party Claude marketplaces do not update automatically by default. To enable updates, open `/plugin`, select **Marketplaces**, then select `octopad-mcp`.
+
+To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-claude@octopad-mcp`, then `/reload-plugins`.
 
 ### Codex
 
@@ -50,6 +60,8 @@ Refresh later releases with:
 codex plugin marketplace upgrade octopad-mcp
 ```
 
+This command refreshes the marketplace and reinstalls its configured plugins. Start a new Codex task after installing or refreshing the skill.
+
 ### Migrate an existing Octoplan install
 
 The repository and marketplace rename is intentionally breaking. Remove the old identity before adding the new one.
@@ -61,6 +73,7 @@ Claude Code:
 /plugin marketplace remove octopad-skills
 /plugin marketplace add sudolab-co/octopad-mcp
 /plugin install octoplan-claude@octopad-mcp
+/reload-plugins
 ```
 
 Codex:
@@ -71,3 +84,5 @@ codex plugin marketplace remove octopad-skills
 codex plugin marketplace add sudolab-co/octopad-mcp --ref main
 codex plugin add octoplan-codex@octopad-mcp
 ```
+
+Start a new task after either migration.

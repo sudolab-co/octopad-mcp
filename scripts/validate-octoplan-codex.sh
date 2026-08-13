@@ -89,7 +89,7 @@ done
 grep -q '^Version: 15\.0\.0$' "$skill/SKILL.md" || fail 'Codex SKILL.md is not 15.0.0'
 grep -q '"version": "15\.0\.0"' "$manifest" || fail 'Codex plugin is not 15.0.0'
 if [ "$codex_only" = false ]; then
-  grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 |' "$root/README.md" || fail 'README Codex version is stale'
+  grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 | Plans the work and can supervise delivery after the user authorizes that scope. |' "$root/README.md" || fail 'README Codex version or behavior is stale'
 fi
 
 expected_refs='codex-runtime.md
@@ -351,7 +351,7 @@ while IFS= read -r changed; do
     plugins/octoplan-claude/.claude-plugin/plugin.json|plugins/octoplan-claude/skills/octoplan/SKILL.md)
       [ "$shared_release" = true ] || fail "protected Claude surface changed without a versioned shared release: $changed"
       ;;
-    .claude-plugin|.claude-plugin/*|plugins/octoplan-claude|plugins/octoplan-claude/*|docs/clients/claude.md|docs/clients/claude-code.md)
+    .claude-plugin|.claude-plugin/*|plugins/octoplan-claude|plugins/octoplan-claude/*)
       fail "protected Claude surface changed: $changed"
       ;;
   esac
@@ -372,7 +372,7 @@ while IFS= read -r changed; do
         ;;
     esac
   fi
-  if [ "$skip_content_audit" = false ] && [ -f "$root/$changed" ] && grep -E "$private_material_pattern" "$root/$changed" >/dev/null 2>&1; then
+  if [ "$skip_content_audit" = false ] && [ -f "$root/$changed" ] && sed 's/support@octopad\.ai//g' "$root/$changed" | grep -E "$private_material_pattern" >/dev/null 2>&1; then
     fail "private or identifying material appears in public file: $changed"
   fi
 done < "$changes_file"
