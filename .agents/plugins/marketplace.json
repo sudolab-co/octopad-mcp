@@ -20,7 +20,7 @@
       "name": "manage-product-documentation",
       "source": {
         "source": "local",
-        "path": "./plugins/manage-product-documentation"
+        "path": "./plugins/manage-product-documentation-codex"
       },
       "policy": {
         "installation": "AVAILABLE",

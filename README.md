@@ -61,7 +61,7 @@ These plugins are optional and separate from the MCP connection:
 
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
-| [`manage-product-documentation`](plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.1.0 shared | Organizes and maintains product documentation as product work evolves. |
+| [`manage-product-documentation`](plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.1.0 shared | Organizes and maintains product documentation as product work evolves. |
 | [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
 | [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | 0.1.0 | Plans the work, agrees a delivery contract, then supervises delivery after an explicit go. |
 | [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 16.0.0 | Calibrates and challenges the plan, then supervises delivery after the user authorizes that scope. |
@@ -86,16 +86,16 @@ For a sensitive security report, follow [SECURITY.md](SECURITY.md).
 ## Repository layout
 
 ```text
-INSTALL.md                               AI-readable install guide
-docs/clients/                            Client-specific direct MCP guides
-.claude-plugin/marketplace.json          Claude marketplace manifest
-.agents/plugins/marketplace.json         Codex marketplace manifest
-plugins/manage-product-documentation/    Codex product-documentation distribution
+INSTALL.md                                   AI-readable install guide
+docs/clients/                                Client-specific direct MCP guides
+.claude-plugin/marketplace.json              Claude marketplace manifest
+.agents/plugins/marketplace.json             Codex marketplace manifest
 plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
-plugins/octoplan-claude/                 Optional Claude distribution
-plugins/octoplan-autopilot/              Optional Claude planning-and-delivery distribution
-plugins/octoplan-codex/                  Optional Codex distribution
-scripts/validate-repository.sh           Repository contract validation
+plugins/manage-product-documentation-codex/  Codex product-documentation distribution
+plugins/octoplan-claude/                     Optional Claude distribution
+plugins/octoplan-autopilot/                  Optional Claude planning-and-delivery distribution
+plugins/octoplan-codex/                      Optional Codex distribution
+scripts/validate-repository.sh               Repository contract validation
 ```
 
 ## Releases

@@ -9,7 +9,7 @@ This public repository contains direct MCP setup guides and optional skill distr
 - **Claude Octoplan Autopilot:** `.claude-plugin/` and `plugins/octoplan-autopilot/`.
 - **Codex Octoplan:** `.agents/` and `plugins/octoplan-codex/`.
 - **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
-- **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation/`.
+- **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation-codex/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
 Each Octoplan plugin is a separate public contract. The two product-documentation plugins distribute one shared contract. Do not change several unrelated contracts unless the pull request clearly covers them.
