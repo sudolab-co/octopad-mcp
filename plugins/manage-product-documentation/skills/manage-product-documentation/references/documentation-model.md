@@ -10,6 +10,7 @@ Keep one concise Product Map per product documentation set as the entry point. I
 - significant product systems and each system's lifecycle state;
 - links to each Product Spec and, when useful, its active work stream;
 - the canonical Architecture Map, when architecture exists;
+- the Ideas page, when one exists;
 - important cross-system relationships;
 - explicit gaps, stale areas, and last-verification metadata.
 
@@ -20,6 +21,14 @@ Do not turn the map into a second backlog, full architecture document, or copied
 Keep one evolving Product Spec per significant product system. A system is significant when it owns a coherent user capability, durable behavior, or boundary that people need to reason about independently.
 
 Use the compact shape in [artifact-shapes.md](artifact-shapes.md). Update the existing spec as the system evolves. Split only when distinct system boundaries have emerged. Supersede or link duplicates after preserving unique facts and links; require explicit approval before destructive consolidation.
+
+## Parked ideas
+
+Keep an idea the user engaged with and left open as one line in the `Parked ideas` section of the Product Spec it concerns. An idea the user turned down or dropped is discarded; never park it. Give the line the date it was parked, the idea, and one clause on the problem it addresses. Add no owner, priority, status, origin, or rationale: that weight is what stops the list from being written at all, and its absence is what stops the list from becoming a second backlog. Finite execution, owners, and status stay in work streams and Tasks.
+
+An idea that concerns no existing system yet goes on one Ideas page for this product documentation set. Create that page on the first such idea, never in advance, and link it from the Product Map so it stays findable; creating the page and its map link is part of parking, not a separate authority. Move a line to a system's Product Spec once that system exists. Parking begins once a Product Map exists; before then, keep ideas in the conversation and follow the setup playbooks.
+
+Keep the list self-emptying. When an idea is committed, move its line into the spec's proposed or approved changes and let ordinary commitment handling take over. When the user rejects an idea, remove its line and record at most a one-clause reason in its place. Moving or removing a parked line, or dropping an emptied section, is routine list maintenance, not the content deletion that needs approval. During maintenance and audit, propose removing lines whose problem has lapsed, in one batch; do not remove them silently. Never grow either list into a status report.
 
 ## Behavioral Contract
 

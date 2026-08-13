@@ -8,6 +8,12 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## manage-product-documentation
 
+### 1.1.0 — 2026-08-13
+
+Adds parked ideas, so ideas a user engaged with and left open no longer evaporate when the conversation ends. During exploration the skill still creates no Product Spec, Behavioral Contract, or architecture record; parking an idea is now the single exception. At the end of a brainstorm, and for ideas raised in passing, it appends one line per open idea (the date it was parked, the idea, and the problem it addresses) to a `Parked ideas` section of the Product Spec it concerns, or to a single Ideas page when no system owns the idea yet, created on first use and linked from the Product Map. Lines carry no owner, priority, or status, so neither list can become a second backlog.
+
+A line leaves the list when its idea is committed, where normal commitment handling takes over, or when the user rejects it; maintenance audits propose removing lapsed lines in one batch rather than deleting silently. Ideas the user turned down are never parked, and parking begins only once a Product Map exists. Upgrading from 1.0.0 changes default behavior: brainstorms now leave these one-line writes without asking. Existing pages and specs need no migration; the new sections appear only when the first idea is parked.
+
 ### 1.0.0 — 2026-08-13
 
 Introduces one AI-neutral product-documentation skill, distributed with the same contract and version for Claude Code and Codex. It supports both greenfield products and existing products: it establishes or adopts one Product Map, maintains one evolving Product Spec per significant system, adds Behavioral Contracts only when precision warrants them, and keeps engineering guidance to one short Architecture Map plus targeted references when durable knowledge cannot be cheaply derived from current code.

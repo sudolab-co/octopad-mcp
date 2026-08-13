@@ -2,7 +2,7 @@
 name: manage-product-documentation
 description: Organize and maintain product documentation in Octopad while a user explores, builds, changes, ships, or audits a product. Use during ordinary product discussion, accepted feature or system work, implementation and pull-request activity, release sync, documentation cleanup, architecture documentation, user-documentation work, release-note preparation, and Product Facts or marketing drafting. Support both greenfield products with no repository or docs and existing products whose pages, tasks, decisions, repositories, and docs must be adopted before anything new is created.
 ---
-Version: 1.0.0
+Version: 1.1.0
 
 # Manage Product Documentation
 
@@ -11,7 +11,7 @@ Keep product knowledge useful without turning product work into a documentation 
 ## Load the needed guidance
 
 - Read [references/documentation-model.md](references/documentation-model.md) before creating, adopting, splitting, merging, or substantially restructuring product documentation.
-- Read [references/artifact-shapes.md](references/artifact-shapes.md) when creating or materially reshaping a Product Map, Product Spec, Behavioral Contract, Architecture Map, or documentation-debt Task.
+- Read [references/artifact-shapes.md](references/artifact-shapes.md) when creating or materially reshaping a Product Map, Product Spec, Behavioral Contract, Architecture Map, Ideas page, or documentation-debt Task.
 - Read [references/lifecycle-playbooks.md](references/lifecycle-playbooks.md) for setup, brainstorm classification, implementation context, PR or release sync, audits, and downstream drafts. Load only the section needed for the current work.
 
 ## Operate with evidence
@@ -46,14 +46,16 @@ During casual brainstorming, silently classify the likely documentation impact a
 - `new system`
 - `technical-only`
 
-Do not interrupt exploration or write speculative docs merely because an idea was mentioned. Act when commitment becomes clear through an explicit decision such as “build it,” acceptance of a system boundary or behavior, creation or start of implementation work, or an active delivery workflow. An explicit build decision is sufficient authority for ordinary in-scope drafting and linking; do not ask for the same confirmation again.
+Do not interrupt exploration. While exploration continues, create no Product Spec, Behavioral Contract, architecture record, or new Product Map system entry; parking an idea is the single exception, because a parked line is cheap and trivially reversible. Act when commitment becomes clear through an explicit decision such as “build it,” acceptance of a system boundary or behavior, creation or start of implementation work, or an active delivery workflow. An explicit build decision is sufficient authority for ordinary in-scope drafting and linking; do not ask for the same confirmation again.
+
+Park what exploration leaves behind. At the end of a brainstorm, and whenever an idea is raised in passing during other work, append each idea the user engaged with and left open, without asking: one line carrying the date it was parked, the idea, and the problem it addresses, in the `Parked ideas` section of the Product Spec it concerns, or on the single Ideas page when it concerns no existing system yet. Creating that page on first use and linking it from the Product Map is part of parking, not a separate authority. Add no owner, priority, or status, and keep each line within the persisted-evidence rules. Never park an idea the user turned down or dropped. A line leaves the list when the idea is committed, where ordinary commitment handling takes over, or when the user rejects it; moving or removing a parked line is routine list maintenance, not the content deletion that needs approval. Before a Product Map exists, keep ideas in the conversation and follow the setup playbooks.
 
 When commitment is clear, make the smallest useful update:
 
 - For a new accepted system, add it to the Product Map and create its Product Spec as `Draft`.
 - For an existing-system change, update the evolving Product Spec with clearly labeled proposed or approved behavior and link the existing execution work.
 - For technical-only work, update architecture or a targeted Engineering Reference only when the change creates durable, non-derivable knowledge.
-- For no impact, make no documentation artifact.
+- For no impact, create no documentation artifact beyond any parked idea line and, on first use, the Ideas page that holds it.
 
 ## Preserve lifecycle truth
 
@@ -70,7 +72,7 @@ When creating an Octopad Task, follow the server contract: write literal `Why` a
 
 ## Keep human authority narrow and meaningful
 
-Administer templates, folders, links, classifications, drafts, routine sync, and safe metadata or link repair without asking. Ask the user only for:
+Administer templates, folders, links, classifications, drafts, parked ideas, routine sync, and safe metadata or link repair without asking. Ask the user only for:
 
 - material ambiguity in product intent or a significant system boundary;
 - an unresolved conflict over which source is authoritative;

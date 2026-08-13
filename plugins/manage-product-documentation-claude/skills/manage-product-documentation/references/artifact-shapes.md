@@ -19,6 +19,9 @@ Use these as adaptable shapes, not forms that must be filled. Omit irrelevant se
 ## Architecture
 - Canonical Architecture Map: <repository link, provisional Octopad fallback, or Not established>
 
+## Ideas
+- Ideas page: <link, only when one exists>
+
 ## Cross-system relationships
 - <only important relationships>
 
@@ -43,6 +46,9 @@ Use these as adaptable shapes, not forms that must be filled. Omit irrelevant se
 ## Rules and edge cases
 <Only behavior people must understand. Link a Behavioral Contract when needed.>
 
+## Parked ideas
+- <date parked>: <idea>, <the problem it addresses>.
+
 ## Connections
 - Product Map: <link>
 - Architecture Map: <link or relevant section>
@@ -59,6 +65,22 @@ Use these as adaptable shapes, not forms that must be filled. Omit irrelevant se
 ```
 
 Do not mix proposed behavior into the released section. Put lifecycle state on each material claim or change, not on the Product Spec as a whole. A Product Spec may contain items in several states when they remain visibly separated.
+
+Keep every parked idea to that one line. Omit the section until the system has a parked idea, and drop the section again once the last line leaves it.
+
+## Ideas
+
+Create this page only when an idea concerns no existing system yet. Keep one per product documentation set and link it from the Product Map.
+
+```markdown
+# Ideas
+
+Ideas with no system yet. One line each.
+
+- <date parked>: <idea>, <the problem it addresses>.
+```
+
+Carry no owner, priority, status, or other Task field here. Move a line into a system's Product Spec once that system exists. Remove a line the user rejects, recording at most a one-clause reason in its place.
 
 ## Behavioral Contract
 
