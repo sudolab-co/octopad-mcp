@@ -337,12 +337,23 @@ trap 'rm -f "$changes_file"' EXIT HUP INT TERM
 } | sort -u > "$changes_file"
 
 private_material_pattern="/""Users/|[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY"
-shared_release=false
+claude_release=false
 if [ "$codex_only" = false ]; then
   origin_claude_version=$(git -C "$root" show origin/main:plugins/octoplan-claude/skills/octoplan/SKILL.md | sed -n 's/^Version: //p')
   current_claude_version=$(sed -n 's/^Version: //p' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md")
-  if [ "$origin_claude_version" != "$current_claude_version" ] && [ "$current_claude_version" = "2.0.0" ]; then
-    shared_release=true
+  if [ "$origin_claude_version" != "$current_claude_version" ]; then
+    for version in "$origin_claude_version" "$current_claude_version"; do
+      printf '%s\n' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Claude release version is not semantic versioning'
+    done
+    node -e '
+      const parse = value => value.split(".").map(Number);
+      const [before, after] = process.argv.slice(1).map(parse);
+      const greater = after[0] > before[0] ||
+        (after[0] === before[0] && after[1] > before[1]) ||
+        (after[0] === before[0] && after[1] === before[1] && after[2] > before[2]);
+      if (!greater) process.exit(1);
+    ' "$origin_claude_version" "$current_claude_version" || fail 'Claude release version must increase'
+    claude_release=true
   fi
 fi
 
@@ -371,7 +382,7 @@ while IFS= read -r changed; do
     plugins/manage-product-documentation-claude|plugins/manage-product-documentation-claude/*)
       ;;
     plugins/octoplan-claude/.claude-plugin/plugin.json|plugins/octoplan-claude/skills/octoplan/SKILL.md)
-      [ "$shared_release" = true ] || fail "protected Claude surface changed without a versioned shared release: $changed"
+      [ "$claude_release" = true ] || fail "protected Claude surface changed without a versioned Claude release: $changed"
       ;;
     .claude-plugin|.claude-plugin/*|plugins/octoplan-claude|plugins/octoplan-claude/*)
       fail "protected Claude surface changed: $changed"
@@ -402,12 +413,25 @@ done < "$changes_file"
 if [ "$codex_only" = false ]; then
   origin_claude=$(git -C "$root" show origin/main:CHANGELOG.md | sed -n '/^## octoplan-claude$/,$p')
   current_claude=$(sed -n '/^## octoplan-claude$/,$p' "$changelog")
-  if [ "$shared_release" = false ]; then
+  if [ "$claude_release" = false ]; then
     [ "$origin_claude" = "$current_claude" ] || fail 'Claude changelog section changed without a versioned shared release'
   else
-    grep -q '"version": "2\.0\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'shared Claude manifest is not 2.0.0'
-    grep -Fq 'EX-<short-work-stream-name>-<short-task-name>' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude title contract is missing'
-    grep -Fq 'archive pending' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'shared Claude archive recovery contract is missing'
+    claude_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json")
+    [ "$claude_manifest_version" = "$current_claude_version" ] || fail 'Claude skill and manifest versions differ'
+    claude_readme_row=$(printf '| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | %s | Plans the work. It never carries out the plan. |' "$current_claude_version")
+    [ "$(grep -Fxc "$claude_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Claude version or behavior is stale'
+    claude_heading_count=$(awk -v version="$current_claude_version" '
+      /^## octoplan-claude$/ { found=1; next }
+      found {
+        prefix = "### " version " — "
+        if (index($0, prefix) == 1) {
+          date = substr($0, length(prefix) + 1)
+          if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) count++
+        }
+      }
+      END { print count + 0 }
+    ' "$changelog")
+    [ "$claude_heading_count" -eq 1 ] || fail 'Claude release needs one exact dated changelog heading'
   fi
 fi
 

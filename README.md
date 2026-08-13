@@ -62,7 +62,7 @@ These plugins are optional and separate from the MCP connection:
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
 | [`manage-product-documentation`](plugins/manage-product-documentation/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.0.0 shared | Organizes and maintains product documentation as product work evolves. |
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.4.0 | Plans the work. It never carries out the plan. |
+| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
 | [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 15.0.0 | Plans the work and can supervise delivery after the user authorizes that scope. |
 
 Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.

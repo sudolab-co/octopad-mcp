@@ -238,6 +238,15 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-claude
 
+### 1.5.0 — 2026-08-13
+
+- Exec recommendations now name the current Claude routes instead of generic tiers: Sonnet 5 `xhigh` only for bounded, reversible, concretely verifiable work; Opus 5 `high` for standard substantive delivery and `xhigh` for hard or consequential work; Fable 5 `xhigh` for genuinely open or long-horizon problems only after its mandatory 30-day retention is accepted, with Opus 5 as the fallback.
+- The skill now covers every exposed depth label without pretending they form one ladder: `low`, `medium`, `high`, `xhigh`, and `max` are native efforts. Claude Code's `/effort ultracode` session setting adds automatic workflow orchestration to `xhigh`, while the one-prompt `ultracode` keyword leaves the current effort unchanged. `max` stays rare because more reasoning can overthink rather than reliably improve a result.
+- Opus 4.6 is an explicit compatibility or interaction-style lane, not a presumed cheap fallback. It cannot satisfy an `xhigh` route, has the same list price as Opus 5, and may use fewer tokens for equivalent text without being universally cheaper per successful task.
+- The trigger description now says "Octoplan followed by a work-stream name" instead of using angle-bracket placeholder syntax rejected by the generic skill validator; triggering behavior is unchanged.
+- This is backward-compatible guidance. Existing task descriptions and saved plans remain valid; a future Octoplan pass can refresh their Exec lines.
+- Repository validation now requires a valid increasing semantic version and exact agreement across the skill, manifest, README, and one changelog heading. It also checks the Sonnet floor, native effort set, Fable retention gate, Opus 4.6 `xhigh` prohibition, and Ultra distinction as routing invariants.
+
 ### 1.4.0 — 2026-07-30
 
 - New step 2, **Scoping brief — reflect back, then wait**: before locking any decision, drafting any design page, or writing any task, the planner hands the user one short brief merging what the user said with what the sources hold — understanding restated in its own words, in/out of scope, definition of success, an explicit Assumptions list (every point settled by inference rather than a source or the user's words), and open questions — then stops. The old flow only forced a question when a spec slot could not be filled at all; a plausible-but-wrong inference could fill the slot and ship silently. The Assumptions list makes those inferences visible so the user can veto them before planning starts.

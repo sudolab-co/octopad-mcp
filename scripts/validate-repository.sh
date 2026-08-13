@@ -52,6 +52,28 @@ grep -Fq 'sh scripts/validate-repository.sh' "$root/CONTRIBUTING.md" || fail 'pu
 grep -q '"name": "octopad-mcp"' "$root/.claude-plugin/marketplace.json" || fail 'Claude marketplace ID is not octopad-mcp'
 grep -q '"name": "octopad-mcp"' "$root/.agents/plugins/marketplace.json" || fail 'Codex marketplace ID is not octopad-mcp'
 grep -q '"name": "octoplan-claude"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin ID is not octoplan-claude'
+claude_skill="$root/plugins/octoplan-claude/skills/octoplan/SKILL.md"
+claude_manifest="$root/plugins/octoplan-claude/.claude-plugin/plugin.json"
+claude_skill_version=$(sed -n 's/^Version: //p' "$claude_skill")
+printf '%s\n' "$claude_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Claude skill version is not semantic versioning'
+claude_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$claude_manifest")
+[ "$claude_manifest_version" = "$claude_skill_version" ] || fail 'Claude skill and manifest versions differ'
+claude_readme_row=$(printf '| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | %s | Plans the work. It never carries out the plan. |' "$claude_skill_version")
+[ "$(grep -Fxc "$claude_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Claude version or behavior is stale'
+claude_latest_changelog=$(awk '/^## octoplan-claude$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
+[ "$claude_latest_changelog" = "$claude_skill_version" ] || fail 'latest Claude changelog version differs from the skill'
+claude_heading_count=$(awk -v version="$claude_skill_version" '
+  /^## octoplan-claude$/ { found=1; next }
+  found {
+    prefix = "### " version " — "
+    if (index($0, prefix) == 1) {
+      date = substr($0, length(prefix) + 1)
+      if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) count++
+    }
+  }
+  END { print count + 0 }
+' "$root/CHANGELOG.md")
+[ "$claude_heading_count" -eq 1 ] || fail 'Claude release needs one exact dated changelog heading'
 [ -f "$root/plugins/manage-product-documentation/.codex-plugin/plugin.json" ] || fail 'product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation-claude/.claude-plugin/plugin.json" ] || fail 'Claude product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation/skills/manage-product-documentation/agents/openai.yaml" ] || fail 'product-documentation agent metadata is missing'
@@ -136,8 +158,6 @@ done
 
 grep -q '^## manage-product-documentation$' "$root/CHANGELOG.md" || fail 'product-documentation changelog section is missing'
 grep -q '^### 1\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.0.0 history is missing'
-grep -q '"version": "1\.4\.0"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin did not preserve 1.4.0'
-grep -q '^Version: 1\.4\.0$' "$root/plugins/octoplan-claude/skills/octoplan/SKILL.md" || fail 'Claude skill did not preserve 1.4.0'
 grep -q '"version": "15\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 15.0.0'
 grep -q '^Version: 15\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 15.0.0'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
@@ -152,6 +172,39 @@ grep -q '^### 13\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.1
 grep -q '^### 14\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 14.0.0 entry is missing'
 grep -q '^### 15\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 15.0.0 entry is missing'
 ! grep -q '^### 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
+
+node - "$claude_skill" <<'NODE'
+const assert = require('assert');
+const fs = require('fs');
+const text = fs.readFileSync(process.argv[2], 'utf8');
+const lines = text.split(/\r?\n/);
+
+function tableRows(header) {
+  const start = lines.indexOf(header);
+  assert(start >= 0, `missing table: ${header}`);
+  const rows = [];
+  for (let i = start + 2; i < lines.length && lines[i].startsWith('|'); i++) rows.push(lines[i]);
+  return rows;
+}
+
+const routes = tableRows('| Task profile | Recommend |');
+const sonnetRoutes = routes.filter(line => line.includes('Sonnet 5'));
+assert.strictEqual(sonnetRoutes.length, 1, 'routing table must contain one Sonnet 5 lane');
+assert(sonnetRoutes[0].includes('**Sonnet 5 · xhigh**'), 'Sonnet 5 lane must use xhigh');
+for (const forbidden of ['Sonnet 5 · low', 'Sonnet 5 · medium', 'Sonnet 5 · high']) {
+  assert(!text.includes(forbidden), `forbidden Sonnet route: ${forbidden}`);
+}
+
+const effortRows = tableRows('| Setting | Octoplan policy |');
+const effortLabels = effortRows.map(line => line.split('|')[1].trim().replaceAll('`', ''));
+assert.deepStrictEqual(effortLabels, ['low', 'medium', 'high', 'extra high (xhigh)', 'max', 'ultra / ultracode']);
+assert(text.includes('Every Fable 5 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention.'), 'global Fable retention gate is missing');
+assert(text.includes('If either condition fails, use Opus 5 at the best compatible effort for the task.'), 'Fable fallback is missing');
+assert(!text.includes('Opus 4.6 · xhigh'), 'Opus 4.6 cannot satisfy xhigh');
+assert(text.includes('The `/effort ultracode` session setting combines `xhigh` with automatic workflow orchestration'), '/effort ultracode contract is missing');
+assert(text.includes('the `ultracode` prompt keyword starts one workflow at the session\'s current effort'), 'one-prompt ultracode distinction is missing');
+assert(text.includes('never write `effort: ultra`'), 'native ultra prohibition is missing');
+NODE
 
 find "$root" -type f -name '*.json' -not -path '*/.git/*' -exec sh -c '
   for file do
