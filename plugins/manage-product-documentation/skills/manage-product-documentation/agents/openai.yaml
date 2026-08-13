@@ -1,0 +1,15 @@
+interface:
+  display_name: "Manage Product Documentation"
+  short_description: "Keep product knowledge aligned as work evolves"
+  default_prompt: "Use $manage-product-documentation to organize and maintain my product documentation while we work."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "octopad"
+      description: "Read and update Octopad pages, work streams, tasks, decisions, and links"
+      transport: "streamable_http"
+      url: "https://mcp.octopad.app/mcp"
+
+policy:
+  allow_implicit_invocation: true

@@ -5,7 +5,7 @@ This is the connection guide for AI assistants.
 ## Connection contract
 
 1. Detect the current client from the runtime. Do not ask the user when the runtime already identifies itself.
-2. Add the MCP connection only by default. Do not install Octoplan or another optional skill unless the user asks for it.
+2. Add the MCP connection only by default. Do not install an optional skill unless the user asks for it.
 3. Use the matching client guide below. Do not invent a command or edit another client's configuration.
 4. Use only this endpoint: `https://mcp.octopad.app/mcp`.
 5. In the browser, have the user sign in or create an Octopad account.
@@ -31,11 +31,32 @@ If the client cannot add a remote Streamable HTTP MCP server with OAuth, explain
 
 For regular ChatGPT conversations, install the official Octopad app. This is the supported customer-facing ChatGPT plugin. Open the current [ChatGPT directory](https://chatgpt.com/plugins) and search for `Octopad`. That route is separate from the direct MCP setup in this file.
 
-## Optional Octoplan skills
+## Optional skills
 
-Octoplan is separate from the MCP connection. Install it only when the user explicitly asks for Octoplan.
+Skills are separate from the MCP connection. Install one only when the user explicitly asks for it.
 
-### Claude Code
+### Manage product documentation
+
+This skill helps an AI assistant organize and maintain product documentation in Octopad during normal product work. It can activate while the assistant is running, but it is not a background service.
+
+Claude Code:
+
+```text
+/plugin marketplace add sudolab-co/octopad-mcp
+/plugin install manage-product-documentation@octopad-mcp
+/reload-plugins
+```
+
+Codex:
+
+```bash
+codex plugin marketplace add sudolab-co/octopad-mcp --ref main
+codex plugin add manage-product-documentation@octopad-mcp
+```
+
+For Claude Code, refresh with `/plugin marketplace update octopad-mcp`, `/plugin update manage-product-documentation@octopad-mcp`, then `/reload-plugins`. For Codex, run `codex plugin marketplace upgrade octopad-mcp`. Start a new session or task after refreshing.
+
+### Octoplan for Claude Code
 
 ```text
 /plugin marketplace add sudolab-co/octopad-mcp
@@ -47,7 +68,7 @@ Third-party Claude marketplaces do not update automatically by default. To enabl
 
 To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-claude@octopad-mcp`, then `/reload-plugins`.
 
-### Codex
+### Octoplan for Codex
 
 ```bash
 codex plugin marketplace add sudolab-co/octopad-mcp --ref main
