@@ -35,7 +35,7 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '17.0.0' ] || fail 'Codex SKILL.md is not 17.0.0'
+[ "$skill_version" = '17.1.0' ] || fail 'Codex SKILL.md is not 17.1.0'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Builds a lean governed plan, challenges it once, then supervises authorized delivery from Octopad. |' "$skill_version")
@@ -89,6 +89,9 @@ require_text "$supervision" 'guarded lease names its exact native-task identity 
 require_text "$supervision" '`OCTOPLAN_ACTION <stable-key>`'
 require_text "$supervision" 'retry only when absence is proved'
 require_text "$supervision" 'one fresh retry on the same task'
+require_text "$supervision" 'A reviewer may expose risk but cannot enlarge `Done when`.'
+require_text "$supervision" 'absent from the reviewed plan is a material plan change, not a verification detail.'
+require_text "$supervision" 'Share the two-route verification-recovery budget across the supervisor, workers, and reviewers.'
 require_text "$supervision" 'After two comparable work/review cycles'
 require_text "$supervision" 'Use native blocked only after the same real impasse persists for three consecutive Goal turns'
 require_text "$supervision" 'record a quiescence receipt'
@@ -236,6 +239,34 @@ assert.strictEqual(reviewAdmitted({...packet, rules: 'rules@b2'}, review), false
 assert.strictEqual(reviewAdmitted(packet, {...review, reviewerTaskId: 'plan-1'}), false);
 assert.strictEqual(reviewAdmitted(packet, {...review, observed: false}), false);
 
+function findingDisposition({effectiveRule = false, reviewedVerify = false, reviewedDoneWhen = false,
+  unclearedCheckpoint = false, correctnessFailure = false}) {
+  return effectiveRule || reviewedVerify || reviewedDoneWhen || unclearedCheckpoint || correctnessFailure ?
+    'BLOCKING' : 'RESIDUAL_RISK';
+}
+
+assert.strictEqual(findingDisposition({}), 'RESIDUAL_RISK'); // An unplanned, unrun pgTAP suggestion.
+for (const basis of ['effectiveRule', 'reviewedVerify', 'reviewedDoneWhen', 'unclearedCheckpoint', 'correctnessFailure']) {
+  assert.strictEqual(findingDisposition({[basis]: true}), 'BLOCKING');
+}
+
+function persistentVerifierDecision({inReviewedPlan = false, requiredByRule = false, requiredByOutcome = false}) {
+  if (inReviewedPlan) return 'USE_REVIEWED_PLAN';
+  return requiredByRule || requiredByOutcome ? 'REPLAN_BEFORE_BUILD' : 'REJECT_SCOPE_EXPANSION';
+}
+
+assert.strictEqual(persistentVerifierDecision({}), 'REJECT_SCOPE_EXPANSION'); // A new generic CI harness.
+assert.strictEqual(persistentVerifierDecision({requiredByRule: true}), 'REPLAN_BEFORE_BUILD');
+
+function verificationRecovery(failedRoutes) {
+  return failedRoutes.length >= 2 ? 'HANDOFF_EVIDENCE_GAP' : 'TRY_NEXT_SAFE_ROUTE';
+}
+
+assert.strictEqual(verificationRecovery([{actor: 'worker', route: 'local-postgres'}]), 'TRY_NEXT_SAFE_ROUTE');
+assert.strictEqual(verificationRecovery([
+  {actor: 'worker', route: 'local-postgres'}, {actor: 'reviewer', route: 'container-postgres'},
+]), 'HANDOFF_EVIDENCE_GAP');
+
 function clearanceValid(checkpoint, artifact) {
   return checkpoint.subject === artifact.subject && checkpoint.version === artifact.version &&
     checkpoint.owner === artifact.owner && checkpoint.evidence && checkpoint.invalidated !== true;
@@ -340,10 +371,10 @@ assert.strictEqual(supervisorRoute({heavyPlanning: false, contextThinning: false
 assert.strictEqual(supervisorRoute({heavyPlanning: true, contextThinning: false, unrelatedGoal: false}), 'FRESH_SUPERVISOR');
 assert.strictEqual(supervisorRoute({heavyPlanning: false, contextThinning: true, unrelatedGoal: false}), 'FRESH_SUPERVISOR');
 
-console.log('PASS: Octoplan 17 adversarial routing, graph, review, gate, dispatch, lease, effect, and completion fixtures');
+console.log('PASS: Octoplan 17 adversarial routing, graph, review, proof recovery, gate, dispatch, lease, effect, and completion fixtures');
 NODE
 
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
 
-printf 'PASS: Octoplan Codex 17.0.0 lean contract\n'
+printf 'PASS: Octoplan Codex 17.1.0 lean contract\n'

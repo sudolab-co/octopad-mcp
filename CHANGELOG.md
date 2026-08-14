@@ -30,6 +30,12 @@ Pull-request, delivery, release, audit, user-documentation, release-note, Produc
 
 ## octoplan-codex
 
+### 17.1.0 — 2026-08-14
+
+Keeps verification proportional to the reviewed work. A delivery reviewer may expose risk but cannot enlarge `Done when`; findings block only when grounded in an effective rule, a reviewed `Verify` or `Done when` requirement, an uncleared reviewed checkpoint, or a concrete correctness failure. Persistent CI, generic test harnesses, services, dependencies, and cross-repository artifacts absent from the reviewed plan are rejected as scope expansion, or trigger replanning when a real rule or accepted outcome requires them.
+
+The two-route verification-recovery budget is now shared across the supervisor, workers, and reviewers. After two failed routes, the run preserves its strongest evidence and hands off the gap instead of attempting a third route or building generic infrastructure for one-off proof. Deterministic fixtures cover an unplanned pgTAP suggestion, generic-CI expansion, required replanning, and a cross-actor recovery budget. Existing v17 plans need no migration. The Claude and Autopilot distributions are unchanged.
+
 ### 17.0.0 — 2026-08-14
 
 Codex Octoplan now follows a lean Octopad-native contract informed by Octoplan Autopilot 0.2. The current task builds the smallest useful graph, runs one fresh plan challenge, and either supervises authorized delivery itself or hands it to a fresh task before Goal creation when planning consumed substantial context. Delivery authorization carries across that handoff, while protected actions remain separately gated. Octopad tasks, dependencies, Decisions, Questions, and comments hold durable project truth; a native Goal is only the active supervisor's continuity handle.
