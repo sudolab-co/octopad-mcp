@@ -13,7 +13,7 @@ Begin this setup only after the user explicitly asks to establish product docume
 3. Keep early ideas in the active discussion until a system boundary is accepted. Park an idea that survives the discussion uncommitted as one line on the Ideas page, created on the first such idea and linked from the map. Create no spec, contract, or architecture record for it.
 4. When a system is accepted or the user says to build it, add it to the map and create a `Draft` Product Spec with the confirmed purpose, boundary, behavior, Decisions, and evidence gaps.
 5. Reuse the user's work stream and Tasks or create only the finite execution work needed by the normal workflow. Link that work to the spec; do not copy its changing status into the page.
-6. Do not create an Architecture Map as if architecture exists. Before a repository exists, retain only confirmed technical constraints or Decisions. Create the canonical repository map once code provides evidence; use an explicitly provisional Octopad fallback only when orientation is already useful.
+6. Do not create an Architecture Map as if architecture exists. Before code exists, retain only confirmed technical constraints or Decisions. Create the map once code gives evidence of stable architecture, in Octopad or in the repository when the team wants it beside the code.
 
 Example: a user explores three collaboration features. Make no three speculative specs. Once the user chooses shared review and says “build it,” create or adopt that system's `Draft` spec, link its execution work, and leave implementation architecture unknown until evidence exists. Park the other two as one line each.
 
@@ -27,7 +27,7 @@ Use before creating structure for a product that already has code, docs, or Octo
 4. Build a temporary adoption table: artifact, current authority, evidence revision, model destination, duplicate or conflict, and action.
 5. Designate or reshape one Product Map for this product documentation set. Treat an existing Product Overview or index as the first adoption candidate when it already owns the entry-point role. Adopt existing product or feature docs as evolving Product Specs when they already own coherent system boundaries.
 6. Preserve useful unique content and inbound links before consolidation. Use redirects, superseded markers, or links by default. Require explicit approval before deleting content or irreversibly overwriting history.
-7. Adopt one credible architecture overview. Otherwise create the smallest canonical Architecture Map from verified code and configuration, preferably in the repository.
+7. Adopt one credible architecture overview wherever it already lives, and record that home. Otherwise create the smallest canonical Architecture Map from verified code and configuration, in Octopad or in the repository when the team wants it beside the code.
 8. Link existing streams, Tasks, Decisions, PRs, and docs. Do not recreate completed history or replace an Octoplan task graph with a documentation-owned plan.
 9. Mark conflicts, gaps, and unverifiable claims as documentation debt. Ask about authority only when evidence and normal review cannot resolve it.
 

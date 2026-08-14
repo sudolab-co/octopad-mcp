@@ -8,6 +8,12 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## manage-product-documentation
 
+### 1.2.0 — 2026-08-13
+
+Moves the Architecture Map home. Octopad is now the default, beside the Product Map it serves, where the workspace's own search reaches it. A repository file remains the alternative for a team that wants architecture to change in the same review as the code; that file is then canonical and the Octopad entry carries its link, ownership, status, related systems, and verification metadata. Either way the skill names one canonical home and does not maintain both. Greenfield setup, existing-product adoption, the Product Map shape, and the durable-knowledge rule all follow that default, and the creation threshold is now the same in every file: build the map only once code gives evidence of stable architecture. An existing map is adopted where it already lives, never moved, so no migration follows from upgrading.
+
+The skill's other uses of a connected repository are unchanged, because they are evidence rather than storage: deriving architecture, file paths, symbols, and dependencies from current code; reading pull requests, merges, and the repository's release policy to establish lifecycle state; and honoring repository review and merge controls.
+
 ### 1.1.0 — 2026-08-13
 
 Adds parked ideas, so ideas a user engaged with and left open no longer evaporate when the conversation ends. During exploration the skill still creates no Product Spec, Behavioral Contract, or architecture record; parking an idea is now the single exception. At the end of a brainstorm, and for ideas raised in passing, it appends one line per open idea (the date it was parked, the idea, and the problem it addresses) to a `Parked ideas` section of the Product Spec it concerns, or to a single Ideas page when no system owns the idea yet, created on first use and linked from the Product Map. Lines carry no owner, priority, or status, so neither list can become a second backlog.
