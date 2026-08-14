@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "17.0.0",
+  "version": "17.1.0",
   "description": "Turn natural-language briefs into lean governed Octopad plans, challenge them once, and supervise authorized delivery.",
   "author": {
     "name": "Sudolab"

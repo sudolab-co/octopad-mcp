@@ -52,6 +52,10 @@ Green CI proves only what it ran. An unavailable verifier is a blocker, not perm
 
 Only the supervisor validates advancement and durable authority. A worker or reviewer verdict is evidence, not permission.
 
+A reviewer may expose risk but cannot enlarge `Done when`. A finding blocks only when it cites an effective rule, a reviewed `Verify` or `Done when` requirement, an uncleared reviewed checkpoint, or a concrete correctness failure; otherwise record residual risk and continue to the existing checkpoint.
+
+A persistent CI workflow, generic test harness, service, dependency, or cross-repository artifact absent from the reviewed plan is a material plan change, not a verification detail. Reject it as scope expansion unless an effective rule or accepted outcome requires it; if so, replan before building it.
+
 ## Non-idempotent effects
 
 Before any external effect that could duplicate or be hard to undo, add a task comment with `OCTOPLAN_ACTION <stable-key>`, the exact target, authority source, intended effect, and pre-effect state. Use the same key for one retry of that same intent.
@@ -69,6 +73,8 @@ Classify an obstacle just enough to choose the next move:
 - **In scope:** try at most two distinct safe, reversible remedies.
 - **Plan change:** stop affected work, update the brief/Decisions/tasks/dependencies, and run one fresh plan review.
 - **Protected:** open or resume the named human checkpoint.
+
+Share the two-route verification-recovery budget across the supervisor, workers, and reviewers. After two failed routes, preserve the strongest evidence and report the gap through the existing checkpoint or incident handoff; attempt no third route and build no generic infrastructure for one-off proof.
 
 A wording fix or stable finding correction is not a replan. A changed outcome, scope, task meaning, graph, authority, route, proof, deliverable, or protected action is. Stop and reconcile any old worker before a replacement writes; keep useful evidenced artifacts only when the new task explicitly adopts them.
 
