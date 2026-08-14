@@ -24,6 +24,14 @@ Pull-request, delivery, release, audit, user-documentation, release-note, Produc
 
 ## octoplan-codex
 
+### 17.0.0 — 2026-08-14
+
+Codex Octoplan now follows a lean Octopad-native contract informed by Octoplan Autopilot 0.2. The current task builds the smallest useful graph, runs one fresh plan challenge, and either supervises authorized delivery itself or hands it to a fresh task before Goal creation when planning consumed substantial context. Delivery authorization carries across that handoff, while protected actions remain separately gated. Octopad tasks, dependencies, Decisions, Questions, and comments hold durable project truth; a native Goal is only the active supervisor's continuity handle.
+
+The lighter contract retains Codex's exact Luna/Sol route admission, branch-local checkpoints, version-bound human clearances, source-first proof, and six-field handoffs. A canonical review fingerprint uses immutable plan-local refs and reconstructs the persisted graph through a verified one-to-one mapping to returned Octopad IDs. Small review, dispatch, action, and supervisor-lease receipts prevent stale PASS reuse, duplicate native-task creation, ambiguous effect replay, concurrent takeover, and Goal transfer without reinstating a universal actor registry or artifact ledger. Deterministic negative fixtures exercise those failure paths and refuse completion while tasks, dispatches, gates, or effects remain unresolved.
+
+This breaking release removes the v6 private JSON control plane, recovery-state guide, historical v3-v5 contract stubs, and eight role packs. Plans created under private Octoplan v3-v6 state are historical evidence only: reconcile any live actor or effect, reread the current mandate and real graph, then create one fresh reviewed v17 plan without carrying forward PASS, authority, pending actions, supervisor ownership, or Goal state. The Claude and Autopilot distributions are unchanged.
+
 ### 16.0.0 — 2026-08-13
 
 Octoplan now calibrates plan shape (`simple`, `structured`, or `adaptive`) independently from consequence (`reversible`, `material`, or `protected`). Shape controls graph depth, delegation, WIP, and recovery; the plan's maximum consequence controls brief and adversarial plan-review depth, while each task's own consequence controls its delivery review and protected gates. Every revision receives exactly one fresh adversarial plan-review session, with stable corrections rechecked by that same session rather than multiplying reviewers.

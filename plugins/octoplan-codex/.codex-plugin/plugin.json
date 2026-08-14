@@ -1,7 +1,7 @@
 {
   "name": "octoplan-codex",
-  "version": "16.0.0",
-  "description": "Calibrate natural-language briefs into governed Octopad plans, challenge them once, and supervise authorized delivery.",
+  "version": "17.0.0",
+  "description": "Turn natural-language briefs into lean governed Octopad plans, challenge them once, and supervise authorized delivery.",
   "author": {
     "name": "Sudolab"
   },
@@ -12,8 +12,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Octoplan for Codex",
-    "shortDescription": "Calibrate, challenge, and supervise governed delivery.",
-    "longDescription": "Turns a natural request into the smallest adequate Octopad plan, calibrates plan shape and consequence independently, challenges each revision once, then lets Codex supervise authorized work across repository, content, research, and operations artifacts.",
+    "shortDescription": "Plan, challenge, and supervise governed delivery.",
+    "longDescription": "Turns a natural request into the smallest adequate Octopad task graph, challenges each plan once, then lets Codex supervise authorized work using Octopad as durable state and native Codex tasks for live execution.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
