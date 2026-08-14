@@ -4,7 +4,7 @@ Load this after the user's delivery go on a finished plan, or when resuming a st
 
 ## The mandate comes from Octopad
 
-Re-read the delivery contract's Decisions on the stream before the first task and after any interruption: the two dials, the reviewer routing, the stacking choice, the gate map, and the recorded go. Those Decisions are the mandate. Nothing agreed only in the chat counts, and nothing remembered from the planning conversation counts either — if it matters and it is not recorded, ask again and record it.
+Re-read the delivery contract's Decisions on the stream before the first task and after any interruption: the two dials, the reviewer routing, the stacking choice, the gate map, and the recorded go. Those Decisions are the mandate. Nothing agreed only in the chat counts, and nothing remembered from the planning conversation counts either — if it matters and it is not recorded, ask again and record it. A go that exists only as a clause inside another Decision is not the recorded go: look for it as its own Decision, and if it is not there, there is none — ask.
 
 The target's own rule files stay the floor. Where they and the dials disagree, the rule files win.
 
@@ -19,6 +19,8 @@ Repeat until the stream is done or nothing is left that the mandate lets you tou
 5. **Report.** Post one short line to the user naming the task and how it ended — even under a full merge mandate. Silence is not a progress report.
 6. **Advance.** Move to the next ready task, or stop at a gate.
 
+**Say a thing exists only once the call that created it has returned, and name what came back.** A reviewer, a worker, a task, a Decision, a message: until then you have an intention, not a fact. Nothing you have not seen return goes into a report — the user cannot see the work, so your account is its only witness, and an intention told as a fact is the one failure this design cannot absorb.
+
 Workers in this mode do NOT emit the task's continuation block — you own the sequencing. The Next lines exist for the manual fallback.
 
 Keep your own context small. You read task comments and gate results, not the workers' working history.
@@ -32,7 +34,9 @@ Send this, with the real names filled in. Nothing else: everything the worker ne
 ```
 Deliver one Octopad task.
 Task: <#N - title> · Organisation: <organisation> · Workspace: <workspace>
-Model and effort: <the task's saved Exec line, applied exactly — no substitution>
+Model: <the task's saved model — set on you by this launch, never substituted>
+Reasoning depth: <the task's saved depth> — requested, not enforced: this launch call
+cannot set it. Run at it if you can; if you cannot, say so in your status line.
 Work in: <its own branch inside a git worktree or equivalent isolated checkout>
 
 Brief yourself from Octopad: start a session on the workspace, build context on the
@@ -56,6 +60,7 @@ the supervisor owns sequencing. Answer with one line of status.
 - **The task's Verify steps run for real, and their real output lands on the task.** Whoever runs them — the worker, or you when a step needs your access — the output is pasted into the task before the close. A claim that checks passed is not evidence. No output on the task, no close.
 - **Honor the task's Review line.** When it says required, YOU spawn a separate fresh reviewer subagent — one that did not write the work — to attack the finished change against the real sources, worst problems first. The worker never spawns its own reviewer. Confirmed findings go back to a worker, get fixed, and are re-verified before the close.
 - **Machine review always runs; human routing decides who ALSO clears it.** The contract's reviewer routing names the person for a class of task; that person's clearance is added on top of the fresh review, never instead of it.
+- **One comment of yours on the task before it closes:** name the reviewer you spawned and what it returned, what the gate found, any retry it took, anything you decided along the way, and anything the job revealed about how this delivery is going. No comment, no close. The task is what a later session reads; a run whose record lives only in your chat is a run nobody can reconstruct, and nobody can improve.
 - A dial can remove a human's waiting time. It can never remove a check.
 
 If a Verify step turns out to be unrunnable, that is a blocker, not a licence to skip it.
@@ -65,7 +70,7 @@ If a Verify step turns out to be unrunnable, that is a blocker, not a licence to
 - **One task, one branch.** The worker branches from the current base, does its job, and opens the change for review when the target's process uses pull requests. Follow the target's rules for how a change is named, described and checked; read them, do not assume them.
 - **Merge dial set to "user validates":** the change waits. Report it, name who has to clear it, and move on to independent work.
 - **Merge dial set to "mandate to land":** once every gate for that task has passed — checks green, fresh review clean, any routed human cleared it — land it and record that on the task. Still stop for anything on the one-way-door list.
-- **Stacking on:** a dependent change branches off the open change it needs and targets it; when the base lands, retarget it to the main line. **Stacking off:** the dependent task waits for the base to land.
+- **Stacking on:** a dependent change branches off the open change it needs and targets it; when the base lands, retarget it to the main line. **Stacking off:** the dependent task waits for the base to land. Either way, **a base that moves under you is a replan trigger you own** — no worker will report it: re-read what every open change actually sits on, write the new landing order onto the stream, and run the skill's Replanning rules before sending the next task.
 - Anything the contract did not forecast — a migration nobody expected, a permission change, a publish, a spend — expires the contract for that item. Stop it, report it, get the user's decision, update the contract Decisions, then continue.
 
 ## Running workers in parallel

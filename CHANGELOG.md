@@ -276,6 +276,26 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.3.0 — 2026-08-14
+
+The first live run of Autopilot delivered a whole work stream end to end. It also showed where the skill lets a session look more finished, more checked and more honest than it was. This release folds those findings back in. Most of it rewrites rules that were already there but too soft to bite; the rest closes gaps the run exposed.
+
+**A task no longer claims a finish line the session cannot reach.** The task template used to define a code task as done at the merged and deployed state, while most teams stop an agent at an open change it may not merge. Nothing said which won, so the run closed seven tasks whose work had not landed, and the board read delivered while nothing had shipped. Now a delivery task ends where the session can actually end — open, checks green, handed off — and the step that finishes the job becomes one human-only landing task, owned by the named person, wired last: it depends on the final validation task, which depends on the delivery tasks. The stream ends on it. A new continuation pattern covers that terminal gate, and a self-check row catches the edge wired the wrong way round.
+
+**Saved reasoning depth is described honestly.** The skill claimed a task's model and depth were applied exactly, with no substitution. Half of that was never true: the call that launches a worker carries a model and no depth, so a supervisor can only ask. Depth is now binding on the manual path, where the user sets it, and requested rather than enforced under supervision — a gap that closes once a team ships one agent definition per rubric lane, not a policy. The worker launch template says the same thing and asks a worker that cannot honour the depth to say so. Reviewers, who had no route at all, now get one: never cheaper than the work they attack.
+
+**Specs describe the outcome, not the technique.** A row demanding a concrete example to copy pushed the planner into dictating exact methods it had never tested, and six of them were wrong on the merits — a colour that failed contrast, a mechanism silent for the case it was added for. The How now asks for the outcome and the constraint, and a precedent may be named only where the session checked that it carries.
+
+**Checks that were never runnable are caught at planning time.** Three triggers say a step is not a check: it needs a login, a seat on a third-party product, or a browser the executor cannot drive. Access the team can grant becomes a task wired first; access only a person can exercise becomes a human-only task. The environment survey now settles what the executor can drive, so the third trigger is answerable.
+
+**The supervisor's own account of itself is held to the evidence rule the skill applies to specs.** Twice in the run it reported work it had not done, once telling the user reviewers were attacking a change before any had been launched. Nothing exists until the call that created it returns, and nothing unreturned goes into a report. A supervisor comment now lands on every task before it closes, naming the reviewer it spawned and what came back, so the run leaves a record a later session can read rather than a transcript nobody will.
+
+**Smaller, from the same run.** A go recorded only as a clause inside another Decision is not the recorded go, in both the resume gate and the supervision reference. A base that moves under the supervisor is a replan trigger it owns, since no worker will report it, and the final validation task is the first spec to re-read because nothing else corrects it. Tracker logic is rewritten in place, never corrected underneath stale text. One task owns each piece of user-facing text, so no earlier task invents wording a later one is scoped to rewrite. And a mechanical dependency test: every task whose How, Verify or Preconditions names another task's output carries an edge to it.
+
+Deliberately not in this release: enforcing reasoning depth through shipped agent definitions, which needs an install path that does not yet exist and fails silently if half-shipped; and the run's two judgement failures, over-escalating to the user and over-speccing discoveries, which already have rules and want a second run before they cost lines.
+
+Upgrading needs no migration. A stream planned under 0.2.0 keeps working; its tasks simply carry the older Done when shape and no landing task until it is replanned.
+
 ### 0.2.0 — 2026-08-14
 
 Supervision can now change hands. 0.1.0 assumed the session that planned a stream would also supervise its delivery, which holds for a light planning pass and breaks after a heavy one. Supervising is cheap per task, but its verification gate is not: reading each change and each reviewer's findings, task after task, is what spends the budget. A planner that arrives at the delivery go already depleted runs out mid-stream, and by then summarising has dulled the judgement it was kept for.
