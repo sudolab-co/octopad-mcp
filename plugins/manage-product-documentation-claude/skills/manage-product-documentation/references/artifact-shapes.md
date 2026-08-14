@@ -17,7 +17,7 @@ Use these as adaptable shapes, not forms that must be filled. Omit irrelevant se
 |---|---|---|---|---|
 
 ## Architecture
-- Canonical Architecture Map: <repository link, provisional Octopad fallback, or Not established>
+- Canonical Architecture Map: <Octopad page, repository link when the team keeps it beside the code, or Not established>
 
 ## Ideas
 - Ideas page: <link, only when one exists>

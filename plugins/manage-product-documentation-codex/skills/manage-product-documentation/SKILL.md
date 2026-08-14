@@ -2,7 +2,7 @@
 name: manage-product-documentation
 description: Organize and maintain product documentation in Octopad while a user explores, builds, changes, ships, or audits a product. Use during ordinary product discussion, accepted feature or system work, implementation and pull-request activity, release sync, documentation cleanup, architecture documentation, user-documentation work, release-note preparation, and Product Facts or marketing drafting. Support both greenfield products with no repository or docs and existing products whose pages, tasks, decisions, repositories, and docs must be adopted before anything new is created.
 ---
-Version: 1.1.0
+Version: 1.2.0
 
 # Manage Product Documentation
 
@@ -30,10 +30,10 @@ Use this asymmetric structure:
 - Keep exactly one **Product Map** per product documentation set as its entry point. Adopt an existing Product Overview or index when it already serves that authority.
 - Keep one evolving **Product Spec** for each significant product system.
 - Add a **Behavioral Contract** only when risk, ambiguity, or cross-boundary precision warrants one.
-- Prefer one short canonical **Architecture Map** in a connected repository. When stable architecture is already useful but no suitable repository exists, use an explicitly provisional Octopad page.
+- Keep one short canonical **Architecture Map** in Octopad. Put it in a connected repository instead when the team wants architecture to change in the same review as the code; then keep the Octopad entry as its link, ownership, status, related systems, and verification metadata. Either way, name the one canonical home and do not maintain both.
 - Add targeted **Engineering References** only for stable, important knowledge that cannot be cheaply derived from code. Never create one per Product Spec by default.
 
-Keep durable knowledge in Pages or repository docs. Keep finite execution, owners, and current status in existing work streams and Tasks. Link them rather than copying task state into pages. Reuse an existing Octoplan-created stream or task graph when present; do not require Octoplan and do not create a parallel planning system.
+Keep durable knowledge in Pages, or in the repository docs that already hold it. Keep finite execution, owners, and current status in existing work streams and Tasks. Link them rather than copying task state into pages. Reuse an existing Octoplan-created stream or task graph when present; do not require Octoplan and do not create a parallel planning system.
 
 Derive file paths, symbols, imports, dependencies, and call graphs from current code on demand. Put enforceable invariants in tests, types, schemas, lint rules, or CI instead of relying on prose. Retrieve only the smallest relevant slice of the Product Spec, any applicable contract, Architecture Map, decisions, and current code for implementation.
 

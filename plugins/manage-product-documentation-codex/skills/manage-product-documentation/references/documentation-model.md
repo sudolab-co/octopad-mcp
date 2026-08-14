@@ -45,7 +45,7 @@ State inputs, outputs, invariants, failure behavior, compatibility, and evidence
 
 Keep architecture intentionally asymmetric: one short map, not one engineering document per Product Spec.
 
-Prefer canonical Markdown in a connected repository when code exists. Choose a discoverable docs location consistent with that repository. Keep Octopad as the index for its link, ownership, status, related systems, and verification metadata. If no repository exists, create an explicitly provisional Octopad page only when stable architecture is already useful; otherwise leave the map uncreated and record the gap.
+Keep the map in Octopad by default, beside the Product Map it serves, where the workspace's own search reaches it. A repository file is the alternative, for a team that wants architecture to change in the same review as the code; choose a docs location consistent with that repository, treat that file as canonical, and keep the Octopad entry as its link, ownership, status, related systems, and verification metadata. Name one canonical home and do not maintain both. Adopt an existing map where it already lives rather than moving it. Create the map only once code gives evidence of stable architecture; otherwise leave it uncreated and record the gap.
 
 Include only stable orientation:
 
