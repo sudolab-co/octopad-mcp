@@ -51,6 +51,7 @@ in <their language>.
 
 Do the one job the task describes. Run its Verify steps and paste the real output into
 the task. Write your results, decisions and blockers onto the task before you answer.
+If you had to write any wording a user will read, list each string on the task.
 Do NOT close the task, do NOT start the next one, and IGNORE the task's Next line —
 the supervisor owns sequencing. Answer with one line of status.
 ```
@@ -71,6 +72,7 @@ If a Verify step turns out to be unrunnable, that is a blocker, not a licence to
 - **Merge dial set to "user validates":** the change waits. Report it, name who has to clear it, and move on to independent work.
 - **Merge dial set to "mandate to land":** once every gate for that task has passed — checks green, fresh review clean, any routed human cleared it — land it and record that on the task. Still stop for anything on the one-way-door list.
 - **Stacking on:** a dependent change branches off the open change it needs and targets it; when the base lands, retarget it to the main line. **Stacking off:** the dependent task waits for the base to land. Either way, **a base that moves under you is a replan trigger you own** — no worker will report it: re-read what every open change actually sits on, write the new landing order onto the stream, and run the skill's Replanning rules before sending the next task.
+- **Wording a worker invented is new scope.** Where a later task is scoped to write or rewrite wording a user will read, no earlier task should have written any, so a worker that had to is reporting a miss in the plan, not a detail. Copy each string it recorded into that task's How before it launches, then run the per-task self-check on the task you changed. If that task has already started or closed, stop and run the skill's Replanning rules instead: a copy pass cannot settle text it never saw.
 - Anything the contract did not forecast — a migration nobody expected, a permission change, a publish, a spend — expires the contract for that item. Stop it, report it, get the user's decision, update the contract Decisions, then continue.
 
 ## Running workers in parallel

@@ -276,6 +276,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.4.0 — 2026-08-14
+
+Closes the delivery-side half of a planning rule 0.3.0 added. The plan already forbids an early task from writing wording that a later task is scoped to write or rewrite. But the first live run showed workers inventing such wording mid-run — button labels and messages that did not exist when the plan was written, which no planning rule can reach. Two additions to the supervision reference cover that path. The worker launch template now tells every worker to list any wording a user will read that it had to write. The supervisor treats each such string as a miss in the plan: it copies the string into the owning task's How before that task launches and re-runs the self-check on it, and if the owning task has already started or closed, it stops and runs the Replanning rules instead, because a copy pass cannot settle text it never saw. Existing saved plans stay valid; no migration.
+
 ### 0.3.0 — 2026-08-14
 
 The first live run of Autopilot delivered a whole work stream end to end. It also showed where the skill lets a session look more finished, more checked and more honest than it was. This release folds those findings back in. Most of it rewrites rules that were already there but too soft to bite; the rest closes gaps the run exposed.

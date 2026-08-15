@@ -2,7 +2,7 @@
 name: octoplan-autopilot
 description: Use when the user says "Octoplan Autopilot" followed by a work-stream name, when the user asks for a work stream to be planned and then delivered under supervision or autonomously, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning is implementation-free until the user's explicit delivery go; after that go the stream is supervised, by that same session or by a fresh supervisor session it hands to. When installed it supersedes the planning-only Octoplan skill, so use it for a plain "Octoplan" request too. Requires a connected Octopad MCP server.
 ---
-Version: 0.3.0
+Version: 0.4.0
 
 # Octoplan Autopilot — work-stream planning and supervised delivery for Octopad
 
