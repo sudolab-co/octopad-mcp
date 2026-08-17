@@ -10,6 +10,7 @@ This public repository contains direct MCP setup guides and optional skill distr
 - **Codex Octoplan:** `.agents/` and `plugins/octoplan-codex/`.
 - **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
 - **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation-codex/`.
+- **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
 Each Octoplan plugin is a separate public contract. The two product-documentation plugins distribute one shared contract. Do not change several unrelated contracts unless the pull request clearly covers them.
@@ -24,7 +25,7 @@ For an independently versioned distribution such as Octoplan, three surfaces mov
 
 An identity migration that changes no skill behavior keeps the existing skill versions. Document it in the connection guides. Do not invent a skill release.
 
-Repository maintainers publish tags and releases after review. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. Product-documentation releases use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z`. Codex Octoplan releases use `octoplan-codex-vX.Y.Z`. Claude Octoplan Autopilot releases use `octoplan-autopilot-vX.Y.Z`.
+Repository maintainers publish tags and releases after review. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. Product-documentation releases use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z`. Codex Octoplan releases use `octoplan-codex-vX.Y.Z`. Claude Octoplan Autopilot releases use `octoplan-autopilot-vX.Y.Z`. Meeting to Octopad releases use `meeting-to-octopad-vX.Y.Z`.
 
 ## Which number moves
 

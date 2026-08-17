@@ -121,6 +121,51 @@ if (!fs.existsSync(manifestPath)) process.exit(1);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.name !== 'octoplan-autopilot' || manifest.version !== version) process.exit(1);
 NODE
+meeting_skill="$root/plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md"
+meeting_manifest="$root/plugins/meeting-to-octopad/.claude-plugin/plugin.json"
+[ -f "$meeting_skill" ] || fail 'Meeting to Octopad skill is missing'
+[ -f "$meeting_manifest" ] || fail 'Meeting to Octopad plugin manifest is missing'
+grep -q '"name": "meeting-to-octopad"' "$meeting_manifest" || fail 'Meeting to Octopad plugin ID is not meeting-to-octopad'
+meeting_skill_version=$(sed -n 's/^Version: //p' "$meeting_skill")
+printf '%s\n' "$meeting_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Meeting to Octopad skill version is not semantic versioning'
+meeting_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$meeting_manifest")
+[ "$meeting_manifest_version" = "$meeting_skill_version" ] || fail 'Meeting to Octopad skill and manifest versions differ'
+meeting_readme_row=$(printf '| [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | %s | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |' "$meeting_skill_version")
+[ "$(grep -Fxc "$meeting_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Meeting to Octopad version or behavior is stale'
+meeting_latest_changelog=$(awk '/^## meeting-to-octopad$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
+[ "$meeting_latest_changelog" = "$meeting_skill_version" ] || fail 'latest Meeting to Octopad changelog version differs from the skill'
+meeting_heading_count=$(awk -v version="$meeting_skill_version" '
+  /^## meeting-to-octopad$/ { found=1; next }
+  found && /^## / { found=0 }
+  found {
+    prefix = "### " version " — "
+    if (index($0, prefix) == 1) {
+      date = substr($0, length(prefix) + 1)
+      if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) count++
+    }
+  }
+  END { print count + 0 }
+' "$root/CHANGELOG.md")
+[ "$meeting_heading_count" -eq 1 ] || fail 'Meeting to Octopad release needs one exact dated changelog heading'
+node - "$root" "$meeting_skill_version" <<'NODE' || fail 'Meeting to Octopad marketplace entry is invalid'
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[2];
+const version = process.argv[3];
+const marketplace = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+const entries = marketplace.plugins.filter((plugin) => plugin.name === 'meeting-to-octopad');
+if (entries.length !== 1) process.exit(1);
+const entry = entries[0];
+if (typeof entry.description !== 'string' || entry.description.length < 40) process.exit(1);
+if (entry.author?.name !== 'Sudolab' || entry.category !== 'productivity' || entry.homepage !== 'https://octopad.app') process.exit(1);
+if (typeof entry.source !== 'string' || !entry.source.startsWith('./plugins/')) process.exit(1);
+const directory = path.resolve(root, entry.source);
+if (directory !== path.join(root, 'plugins', path.basename(directory))) process.exit(1);
+const manifestPath = path.join(directory, '.claude-plugin/plugin.json');
+if (!fs.existsSync(manifestPath)) process.exit(1);
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+if (manifest.name !== 'meeting-to-octopad' || manifest.version !== version) process.exit(1);
+NODE
 [ -f "$root/plugins/manage-product-documentation-codex/.codex-plugin/plugin.json" ] || fail 'product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation-claude/.claude-plugin/plugin.json" ] || fail 'Claude product-documentation plugin manifest is missing'
 [ -f "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/agents/openai.yaml" ] || fail 'product-documentation agent metadata is missing'

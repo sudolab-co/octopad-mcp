@@ -35,6 +35,16 @@
       "category": "productivity",
       "homepage": "https://octopad.app",
       "source": "./plugins/octoplan-autopilot"
+    },
+    {
+      "name": "meeting-to-octopad",
+      "description": "Turns a meeting transcript into validated Octopad changes: decisions, action items, progress updates, open questions, and goal signals, each backed by a verbatim quote, matched against the tasks, pages, work streams, and goals you already have, and proposed in one table that you approve before anything is written. Requires a connected Octopad MCP server.",
+      "author": {
+        "name": "Sudolab"
+      },
+      "category": "productivity",
+      "homepage": "https://octopad.app",
+      "source": "./plugins/meeting-to-octopad"
     }
   ]
 }
