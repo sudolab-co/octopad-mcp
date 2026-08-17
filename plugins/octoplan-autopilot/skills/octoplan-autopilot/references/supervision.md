@@ -85,7 +85,7 @@ A worker that discovers something the plan got wrong stops and reports it instea
 
 ## When to stop, and how
 
-Stop for a human when the contract's gate map says so, when a one-way door is next, when the challenge dial says consult, or when a problem survives the retry above. Then report in the user's language, six fields, nothing else:
+Stop for a human when the contract's gate map says so, when a one-way door is next, when the challenge dial says consult, or when a problem survives the retry above. Then report in the user's language, in plain words per the skill's Non-negotiables, six fields, nothing else:
 
 **State** — where the stream stands. **Done** — what is finished and proven. **Blocked** — what is stuck and why. **Decision expected** — the exact call you need from the user. **To unblock** — what has to happen, and by whom. **Next step** — what resumes the moment it clears.
 
