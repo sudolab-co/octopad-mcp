@@ -1,0 +1,10 @@
+{
+  "name": "meeting-to-octopad",
+  "description": "Turns a meeting transcript into validated Octopad changes. One session extracts decisions, action items, updates, open questions, and goal signals with verbatim evidence, matches them against what Octopad already holds, and proposes every change in one table before writing anything.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Sudolab"
+  },
+  "homepage": "https://github.com/sudolab-co/octopad-mcp",
+  "license": "MIT"
+}

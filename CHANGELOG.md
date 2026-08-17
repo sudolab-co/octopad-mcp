@@ -28,6 +28,20 @@ During active product work, the skill distinguishes exploration from commitment,
 
 Pull-request, delivery, release, audit, user-documentation, release-note, Product Facts, and marketing playbooks keep drafts tied to exact source and release evidence while preserving normal review and publication gates. The skill can synchronize documentation while an AI session or event-driven workflow is running, but it does not claim background execution: unattended GitHub-to-Octopad updates still require a separately installed and authorized trigger. This release adds both marketplace packages, installation guidance, synchronized versioning rules, and deterministic validation of their shared contract.
 
+## meeting-to-octopad
+
+### 0.1.0 — 2026-08-17
+
+First release of a Claude Code skill that turns a meeting transcript into validated Octopad changes. It takes a file path or pasted text, reads it to the last line, works out what the meeting decided and who owes what, checks each item against what Octopad already holds, and proposes every change in one table. Nothing is written until the user approves that table in the chat, and there is no flag to skip it.
+
+The skill runs in five phases. Intake settles the meeting date, the participants, and the workspace, and asks rather than guessing when one is missing. Extraction sorts the transcript into decisions, action items, updates on existing work, open questions, and goal signals, with a verbatim quote behind every single item. Reconciliation is read-only: it searches Octopad for what each item refers to, resolves participants to workspace members, records whether each match is sure, probable, or absent, searches a second time with different words before concluding that nothing exists, and looks for an earlier meeting record page by tag, date, and participants so a transcript processed twice does not duplicate everything. An item that contradicts what Octopad records becomes a top-of-table question quoting both sides, never a silent update.
+
+Validation is one table and one typed go. Every row names the exact change, old value to new value, with its evidence quote and an owner column. Probable matches are questions naming every candidate, and an unanswered question means that row is skipped. Only then does the skill write: decisions and open questions become Octopad knowledge items with the speaker and meeting as provenance, new tasks follow Octopad's task-creation contract and join the work stream they matched, and one tagged meeting record page anchors the re-run protection. The apply phase keeps a ledger, stops on the first failure, and retries only named failed rows. It never deletes, archives, or closes anything, and it never writes to a goal: closing a goal cascades into archived streams and tasks, so goal signals are reported to the user instead.
+
+The transcript is treated as untrusted data throughout. Text inside it that addresses the AI, such as an instruction to ignore its rules or a claim that changes were pre-approved, is never followed and never copied into Octopad; it is reported to the user as an anomaly.
+
+Out of scope in this release: audio, which the user transcribes first; several meetings in one run; goal changes; and writing without the user's go.
+
 ## octoplan-codex
 
 ### 17.1.0 — 2026-08-14

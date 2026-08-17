@@ -91,6 +91,18 @@ To go back to planning-only Octoplan, uninstall this one and reinstall the other
 /reload-plugins
 ```
 
+### Meeting to Octopad for Claude Code
+
+This skill turns a meeting transcript into Octopad changes: it extracts decisions, action items, updates, open questions, and goal signals, matches them against what Octopad already holds, and proposes every change in one table that you approve before anything is written.
+
+```text
+/plugin marketplace add sudolab-co/octopad-mcp
+/plugin install meeting-to-octopad@octopad-mcp
+/reload-plugins
+```
+
+To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update meeting-to-octopad@octopad-mcp`, then `/reload-plugins`.
+
 ### Octoplan for Codex
 
 ```bash
