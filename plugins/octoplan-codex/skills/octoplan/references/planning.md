@@ -50,7 +50,7 @@ Every executable task carries:
 <one job, scope, and important non-goals>
 
 **How**
-<verified paths or sources, patterns to reuse, and edge cases>
+<verified paths or sources, required outcome and constraint, edge cases, and only a precedent verified to fit this case>
 
 **Verify**
 <exact commands or concrete checks available now>
@@ -67,7 +67,11 @@ Every executable task carries:
 
 Use the live task schema. Top-level tasks require literal **Why**, **What**, and **Done when** sections plus `impact` and `impact_rationale`; subtasks require **Why** and **What** plus their impact fields. Every dependency edge carries a rationale. Add `**Preconditions**` only when a prior artifact must be live or a dated event must mature.
 
-Do not create tasks for reads, logins, ordinary tool calls, progress reports, approvals, reviews, merges, or publications. Keep those as steps or protected checkpoints unless a person owns a distinct artifact. Use subtasks only as a checklist for three or more internal steps inside one deliverable.
+Write `How` as the required outcome and constraint. Prescribe a technique only when a verified trap makes it necessary, and say why; name a precedent only when current evidence shows it fits this case.
+
+Plan only `Verify` steps the executor can run now. A required login, third-party seat, or UI the executor cannot drive is a named access or human checkpoint with an owner and evidence, not a `Verify` step.
+
+Do not create tasks for reads, logins, ordinary tool calls, progress reports, approvals, reviews, merges, or publications. Keep those as steps or protected checkpoints unless a person owns a distinct artifact. Use subtasks only as a checklist for three or more internal steps inside one deliverable. If `How`, `Verify`, or `Preconditions` consumes another task's output, add its dependency edge with a rationale. Give each user-facing text surface one task that owns its final wording; earlier tasks supply standards or constraints, not draft text for that task to rewrite.
 
 Match proof to the deliverable:
 

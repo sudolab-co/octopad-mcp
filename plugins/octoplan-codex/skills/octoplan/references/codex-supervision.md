@@ -21,6 +21,10 @@ Repeat until the integrated outcome is proved or no safe work remains:
 5. **Review.** Run targeted checks, plus the task's required fresh or human review. A protected clearance records exact subject/version, owner, evidence, and invalidation rule; artifact drift reopens it. Confirmed findings return to the same healthy worker when scope is stable.
 6. **Advance.** Close the task only after current proof is accepted. Report one short progress line, then refresh the ready frontier.
 
+Treat a worker, reviewer, message, or effect as created only after its call returns or the authoritative target confirms it; record the returned or reconciled identity or result before reporting it. Before task close, add one compact supervisor comment that references existing receipts and names the checks, review or checkpoint outcome, and any retry or material decision. Do not create another log.
+
+If a worker had to write wording a user will read, require the exact strings and surface. When another unstarted task owns that surface, record them in one comment on that task without changing its reviewed specification; if its owner started or closed, replan instead.
+
 Do not mirror a scheduler or artifact registry. Task statuses and dependencies are the plan state; task comments carry receipts and recovery evidence. The Goal is a continuity handle, not a second source of project truth.
 
 ## Worker prompt
@@ -36,6 +40,8 @@ Start production Octopad, build exact context on this task, read the stream's
 Octoplan 17 Decisions, and read the target's effective rules. Work only this
 task and only within its recorded authority. Run its exact Verify steps and
 write the real output, artifact version, decisions, and blockers on the task.
+List the exact strings and surface of any wording a user will read that you had
+to write.
 
 Do not close the task, advance the plan, launch another actor, approve a gate,
 or perform a protected action. Return the six-field handoff if attention is
