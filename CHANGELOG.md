@@ -296,7 +296,13 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
-### 0.5.0 — 2026-08-17
+### 0.6.0 — 2026-08-17
+
+Standardizes the hand-off so the user always approves a plan they can see, and always knows how to launch what comes next. A live run ended its planning pass by asking for the delivery go without showing the plan's steps, and handed over the next-session prompt with no model or reasoning-effort recommendation — the user rightly called the go meaningless.
+
+Step 11's hand-off message now has a fixed five-part shape, in the same order every time: the plan shown as one line per step with every human step in bold and its owner named, plus the plan's open questions and unfinished placeholders (a go signs off known unknowns too); the changes to what was agreed before the tasks existed; the delivery offer, which now names the model and reasoning effort for a fresh supervisor session — never cheaper than the strongest route saved in the plan — and whether it runs solo; a bolded one-sentence go request saying what the go does; and the prompt block for the recommended path, saying plainly which block it is and that a supervisor block is pasted only after the go is recorded.
+
+Two supporting rules make the settings travel. Every block handed to the user in chat now carries one plain line under it: model, reasoning effort, and solo or parallel-safe. The Next-line patterns say it in their own words, because the session emitting a block from a saved task has never read this skill — it quotes the target task's saved Exec line. And the go Decision now records the supervisor's route alongside the go itself, so a replacement supervisor finds its settings in Octopad instead of a dead chat. Existing saved plans stay valid; Next lines written under 0.5.0 keep working, they just hand over bare blocks until replanned. No migration.
 
 Makes the skill write to the user in plain words. A live run showed the delivery contract reaching the user as a wall of the skill's own vocabulary — gates, routing, stacking, dials, floors, one-way doors — with whoever acts left out of nearly every sentence, and it closed by asking the user to confirm a choice their own rules had already made for them. A reader who does not code could not answer it; a reader who does would skim past the one question that needed them.
 
