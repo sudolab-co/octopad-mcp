@@ -44,6 +44,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 17.2.0 — 2026-08-17
+
+Keeps task specifications outcome-led and runnable. `How` states the required outcome and constraint, and prescribes a technique or precedent only when current evidence justifies it. A login, third-party seat, or user interface the executor cannot access becomes a named checkpoint instead of an impossible `Verify` step. Any task that consumes another task's output now needs the matching dependency edge, and each user-facing text surface has one owner for its final wording.
+
+Supervision reports an actor or effect only after a returned result or authoritative reconciliation, and leaves one compact close comment that reuses existing receipts. Workers surface any user-facing wording they had to invent; the supervisor records it once on the unstarted owner task without changing the reviewed specification, or replans if that task already started. Deterministic fixtures cover unsupported technique and precedent, unavailable access, missing dependency edges, duplicate wording ownership, mid-run wording, unresolved calls, and reconciled results. Existing v17 plans need no migration. The Claude and Autopilot distributions are unchanged.
+
 ### 17.1.0 — 2026-08-14
 
 Keeps verification proportional to the reviewed work. A delivery reviewer may expose risk but cannot enlarge `Done when`; findings block only when grounded in an effective rule, a reviewed `Verify` or `Done when` requirement, an uncleared reviewed checkpoint, or a concrete correctness failure. Persistent CI, generic test harnesses, services, dependencies, and cross-repository artifacts absent from the reviewed plan are rejected as scope expansion, or trigger replanning when a real rule or accepted outcome requires them.

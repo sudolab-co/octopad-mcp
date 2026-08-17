@@ -35,7 +35,7 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '17.1.0' ] || fail 'Codex SKILL.md is not 17.1.0'
+[ "$skill_version" = '17.2.0' ] || fail 'Codex SKILL.md is not 17.2.0'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Builds a lean governed plan, challenges it once, then supervises authorized delivery from Octopad. |' "$skill_version")
@@ -76,6 +76,11 @@ require_text "$planning" '`Octoplan 17 plan contract`'
 require_text "$planning" '`Octoplan 17 delivery authorization`'
 require_text "$planning" '`Octoplan 17 supervisor lease`'
 require_text "$planning" 'Never replay the whole batch.'
+require_text "$planning" 'required outcome and constraint'
+require_text "$planning" 'name a precedent only when current evidence shows it fits this case.'
+require_text "$planning" 'A required login, third-party seat, or UI the executor cannot drive'
+require_text "$planning" "If \`How\`, \`Verify\`, or \`Preconditions\` consumes another task's output"
+require_text "$planning" 'one task that owns its final wording'
 require_text "$runtime" 'The only automatic routes are Luna `max` and Sol `high|xhigh|max`.'
 require_text "$runtime" 'Role admission is stricter:'
 require_text "$runtime" 'Prompt text, title, or the requested route is not observation.'
@@ -97,6 +102,11 @@ require_text "$supervision" 'Use native blocked only after the same real impasse
 require_text "$supervision" 'record a quiescence receipt'
 require_text "$supervision" 'The predecessor Goal remains historical and is never claimed transferred'
 require_text "$supervision" 'no task or dispatch remains active, and no ambiguous effect is unresolved'
+require_text "$supervision" 'only after its call returns or the authoritative target confirms it'
+require_text "$supervision" 'one compact supervisor comment that references existing receipts'
+require_text "$supervision" 'require the exact strings and surface'
+require_text "$supervision" 'without changing its reviewed specification'
+require_text "$supervision" 'if its owner started or closed, replan instead.'
 
 for retired in OCTOPLAN_STATE_BEGIN manifest_hash task_generation active_actors pending_actions supervisor_epoch creation_key binding_hash artifact_refs; do
   if grep -Fq "$retired" "$main" "$planning" "$runtime" "$supervision"; then
@@ -267,6 +277,83 @@ assert.strictEqual(verificationRecovery([
   {actor: 'worker', route: 'local-postgres'}, {actor: 'reviewer', route: 'container-postgres'},
 ]), 'HANDOFF_EVIDENCE_GAP');
 
+function specInstruction({hasOutcome, hasConstraint, prescribesTechnique = false,
+  verifiedTrap = false, namesPrecedent = false, precedentFits = false}) {
+  if (!hasOutcome || !hasConstraint) return 'REVISE';
+  if (prescribesTechnique && !verifiedTrap) return 'REVISE';
+  if (namesPrecedent && !precedentFits) return 'REVISE';
+  return 'ACCEPT';
+}
+
+assert.strictEqual(specInstruction({hasOutcome: true, hasConstraint: true}), 'ACCEPT');
+assert.strictEqual(specInstruction({hasOutcome: false, hasConstraint: true}), 'REVISE');
+assert.strictEqual(specInstruction({hasOutcome: true, hasConstraint: false}), 'REVISE');
+assert.strictEqual(specInstruction({hasOutcome: true, hasConstraint: true,
+  prescribesTechnique: true}), 'REVISE');
+assert.strictEqual(specInstruction({hasOutcome: true, hasConstraint: true,
+  prescribesTechnique: true, verifiedTrap: true}), 'ACCEPT');
+assert.strictEqual(specInstruction({hasOutcome: true, hasConstraint: true,
+  namesPrecedent: true, precedentFits: false}), 'REVISE');
+
+function verificationPlacement({requiresLogin = false, requiresThirdPartySeat = false,
+  requiresUndrivableUi = false, accessAvailable = true}) {
+  return !accessAvailable && (requiresLogin || requiresThirdPartySeat || requiresUndrivableUi) ?
+    'PROTECTED_CHECKPOINT' : 'VERIFY';
+}
+
+assert.strictEqual(verificationPlacement({requiresLogin: true, accessAvailable: false}), 'PROTECTED_CHECKPOINT');
+assert.strictEqual(verificationPlacement({requiresThirdPartySeat: true, accessAvailable: false}), 'PROTECTED_CHECKPOINT');
+assert.strictEqual(verificationPlacement({requiresUndrivableUi: true, accessAvailable: false}), 'PROTECTED_CHECKPOINT');
+assert.strictEqual(verificationPlacement({requiresLogin: true, accessAvailable: true}), 'VERIFY');
+
+function planWiringValid(tasks, edges) {
+  const edgeKeys = new Set(edges.map(([from, to]) => `${from}->${to}`));
+  const textOwners = new Set();
+  for (const task of tasks) {
+    for (const source of task.consumes || []) {
+      if (!edgeKeys.has(`${source}->${task.ref}`)) return false;
+    }
+    for (const surface of task.finalText || []) {
+      if (textOwners.has(surface)) return false;
+      textOwners.add(surface);
+    }
+  }
+  return true;
+}
+
+const wiredTasks = [
+  {ref: 'E01', finalText: ['settings.empty-state']},
+  {ref: 'E02', consumes: ['E01'], finalText: ['settings.help']},
+];
+assert.strictEqual(planWiringValid(wiredTasks, [['E01', 'E02']]), true);
+assert.strictEqual(planWiringValid(wiredTasks, []), false);
+assert.strictEqual(planWiringValid([
+  ...wiredTasks, {ref: 'E03', finalText: ['settings.empty-state']},
+], [['E01', 'E02']]), false);
+
+function routeMintedWording({hasOwner, ownerStarted = false, ownerClosed = false}) {
+  if (!hasOwner || ownerStarted || ownerClosed) return 'REPLAN';
+  return 'COMMENT_ON_OWNER';
+}
+
+assert.strictEqual(routeMintedWording({hasOwner: true, ownerStarted: false}), 'COMMENT_ON_OWNER');
+assert.strictEqual(routeMintedWording({hasOwner: true, ownerStarted: true}), 'REPLAN');
+assert.strictEqual(routeMintedWording({hasOwner: true, ownerClosed: true}), 'REPLAN');
+assert.strictEqual(routeMintedWording({hasOwner: false, ownerStarted: false}), 'REPLAN');
+
+function supervisorCloseEvidence({callReturned = false, authoritativeConfirmation = false,
+  identity, checks, outcome, retriesRecorded = true}) {
+  return (callReturned || authoritativeConfirmation) && identity && checks.length > 0 && outcome && retriesRecorded ?
+    'CLOSE_EVIDENCED' : 'KEEP_OPEN';
+}
+
+assert.strictEqual(supervisorCloseEvidence({callReturned: false, identity: null,
+  checks: ['test'], outcome: 'PASS'}), 'KEEP_OPEN');
+assert.strictEqual(supervisorCloseEvidence({callReturned: true, identity: 'review-1',
+  checks: ['test'], outcome: 'PASS'}), 'CLOSE_EVIDENCED');
+assert.strictEqual(supervisorCloseEvidence({authoritativeConfirmation: true, identity: 'review-1',
+  checks: ['test'], outcome: 'PASS'}), 'CLOSE_EVIDENCED');
+
 function clearanceValid(checkpoint, artifact) {
   return checkpoint.subject === artifact.subject && checkpoint.version === artifact.version &&
     checkpoint.owner === artifact.owner && checkpoint.evidence && checkpoint.invalidated !== true;
@@ -377,4 +464,4 @@ NODE
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
 
-printf 'PASS: Octoplan Codex 17.1.0 lean contract\n'
+printf 'PASS: Octoplan Codex 17.2.0 lean contract\n'
