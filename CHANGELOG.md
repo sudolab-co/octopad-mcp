@@ -296,6 +296,16 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.7.0 — 2026-08-18
+
+Applies the lessons of the first two supervised runs, which delivered real merged work but let two defects reach the main branch, spent most of one session's budget on review rounds, and reported themselves so poorly the operator could not follow. Every change below traces to a recorded failure, and the release itself passed a two-agent adversarial review.
+
+Plans now close the artifact graph: the planning review's executability lens, the self-check, and a new mistakes-table row all require that everything a task produces has a named production consumer and a named producer, populator, or trigger, and that a task deferring work to another appears in that task's own spec — the rule that would have caught the scheduling seam and the writer-less registry both runs paid for. Tasks that change production code carry a call-site proof in their Verify slot (remove the real path, show the suite fail, restore, show it pass), the supervisor adds one at the gate when the plan lacks it, and workers prove their own new tests can fail — the single most repeated review finding, moved to where it costs almost nothing. Review lines now name their lenses (one by default, two or three only where a mistake cannot be taken back, a wiring lens where tasks share artifacts), and every review finding gets an explicit disposition before the next round so a known defect can no longer cross a round unfixed.
+
+Supervised delivery gains a delivery report: one page on the stream, created at the start, holding the phase map and one plainly-worded state line per task — built, reviewed, merged, applied, verified, never a bare "done" — updated in place as a view of the task graph, never a second record of it. Chat shrinks to one plain line per event, with one exception that never compresses: any judgement call the user could reasonably disagree with. Workers are launched with a template that now tells them the spec and the stream's Decisions may be wrong and to verify claims at the source, forbids them spawning their own reviewers, and has them write findings onto the task incrementally so a crashed session loses nothing. Supervisors verify a claim before handing an item to a human, do reversible in-plan actions instead of reporting them as risks, retry infrastructure deaths without asking while still escalating unverifiable work, and decide their own handover instead of posing it as a question.
+
+Model-and-depth routing becomes enforceable: where the environment defines one agent per rubric lane (a named set of five), the supervisor dispatches workers and reviewers by lane and both model and depth are pinned; where lanes are absent the depth is declared, once per run, as a request nothing verifies. Existing saved plans remain valid; new guidance applies to plans and dispatches made from this version on.
+
 ### 0.6.0 — 2026-08-17
 
 Standardizes the hand-off so the user always approves a plan they can see, and always knows how to launch what comes next. A live run ended its planning pass by asking for the delivery go without showing the plan's steps, and handed over the next-session prompt with no model or reasoning-effort recommendation — the user rightly called the go meaningless.
