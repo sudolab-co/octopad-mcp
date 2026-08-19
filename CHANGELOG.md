@@ -296,6 +296,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.8.0 — 2026-08-19
+
+Fixes the failure that let a whole stream idle overnight: a supervisor held three ready tasks because their dependencies' code sat on open, unmerged branches, even though the stream's own delivery contract said to stack dependent work on those branches. The rule existed as prose; nothing forced the supervisor to obey it at the moment it picked work.
+
+What now happens differently. When Octopad reports a task ready, the supervisor works it — the dependency graph is the only judge of waiting, and every real wait must have a written source: a dependency edge, a human-only task, a gate in the contract, or the contract's stacking choice set to wait. Code on an unmerged branch is never a reason to hold a task when the contract stacks. Before a supervisor may tell the user that nothing can proceed, it must walk the open tasks and name each one's written wait; a wait that exists only in its own reasoning is either work to start now or a plan defect to wire into the graph. On the planning side, a real-world state only a person can create (a migration applied, a deploy run, an approval given) must be wired as a human-only task with a dependency edge, not left as a prose Preconditions line the machine order cannot see — with the matching self-check row. A new mistakes-table row names the idling failure so the cost stays visible.
+
+No gate weakens: humans still merge, migrations are still applied by their named person, and one-way doors still stop.
+
 ### 0.7.0 — 2026-08-18
 
 Applies the lessons of the first two supervised runs, which delivered real merged work but let two defects reach the main branch, spent most of one session's budget on review rounds, and reported themselves so poorly the operator could not follow. Every change below traces to a recorded failure, and the release itself passed a two-agent adversarial review.
