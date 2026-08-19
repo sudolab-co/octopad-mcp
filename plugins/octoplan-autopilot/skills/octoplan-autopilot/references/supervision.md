@@ -18,7 +18,7 @@ Before the first task (or on resume, when none exists yet), create ONE page on t
 
 Repeat until the stream is done or nothing is left that the mandate lets you touch:
 
-1. **Pick.** Take the next task Octopad reports as ready — dependencies done, nobody else's assignment, not blocked. A task whose What carries "Octoplan flesh-out required" is a placeholder: never send it to a worker, stop and tell the user it needs a planning pass first. Otherwise set the task in progress.
+1. **Pick.** Take the next task Octopad reports as ready — dependencies done, nobody else's assignment, not blocked. **The graph is the only judge of waiting: ready means work it now.** Never add a wait of your own on top of what Octopad reports — dependent code sitting on an unmerged branch is the stacking rule's normal case (see Delivering the work), not a reason to hold the task; the real waits all have a written source, as a dependency edge not yet done, a human-only task, a gate in the contract, or the contract's stacking choice set to wait for the base to land. One exception you resolve at pick time: a ready task whose Preconditions name a state that is not live yet and that only a person can make true (a migration applied, a deploy) is a plan defect — the planner should have wired that wait as a human-only task with an edge; wire it now, per Replanning, and proceed on whatever is actually ready. A task whose What carries "Octoplan flesh-out required" is a placeholder: never send it to a worker, stop and tell the user it needs a planning pass first. Otherwise set the task in progress.
 2. **Send.** Launch a fresh worker subagent with the template below. One task per worker, always.
 3. **Collect.** The worker does the one job, writes what it did, what it decided and anything it hit onto the task, and returns a one-line status. Treat the one-liner as a signal only: the task is the record.
 4. **Check.** Run the verification gate below. Only then close the task.
@@ -111,6 +111,8 @@ Stop for a human when the contract's gate map says so, when a one-way door is ne
 **State** — where the stream stands. **Done** — what is finished and proven. **Blocked** — what is stuck and why. **Decision expected** — the exact call you need from the user. **To unblock** — what has to happen, and by whom. **Next step** — what resumes the moment it clears.
 
 Any field can be "none". Keep each to a line.
+
+Before telling the user that nothing can proceed, walk the open tasks and name, per task, the written source of its wait — a dependency edge not yet done, a human-only task, a gate, the stacking choice set to wait. A wait that exists nowhere but in your own reasoning is not a blocker: it is either work (a ready task, sent to a worker now) or a plan defect (a real-world wait the graph never carried — wire it, per Replanning). A stream that idles while ready tasks sit on the board is the supervisor failing, not the stream waiting.
 
 **A checkpoint blocks only its own branch.** Everything independent and safe keeps running while a person decides. Stop the whole stream only when nothing safe is left to do.
 
