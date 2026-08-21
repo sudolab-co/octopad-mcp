@@ -296,6 +296,16 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.9.0 — 2026-08-21
+
+Scales Octoplan from one work stream to a whole effort, and lets a supervisor renew itself without user intervention. Every new mechanism is gated on what the session's environment actually provides and degrades to the existing single-session behavior where it doesn't.
+
+Planning: the multi-stream cut now has concrete signals — cut when the definition of success only reads as several independent successes, or when the work spans domains with different owners each holding three or more tasks' worth; a large single-domain plan is grounds to hunt for a seam, never a cut by itself — and the test runs in step 1, with a self-check row so a stream that stayed single can show why. After the effort brief and Blueprint, the master planner may fork one sub-planner per stream: each inherits the master's full conversation, plans its own stream (main Steps 4–8 and 10), and sends every seam question and every user-facing decision back to the master, which alone talks to the user, wires cross-stream dependencies, runs the effort-level adversarial review, and hands off. Forking is dearer in tokens and cheaper in time; the text says so and says when not to.
+
+Delivery: a multi-stream effort gets one supervisor per stream. The go Decision, the contract Decisions, and the octoplanned suffix now land on every stream so each supervisor's resume check passes without re-asking the user. Shared landing targets are ordered in the dependency graph, never in chat; each supervisor rebalances only its own stream and stops for the user at any seam; discoveries that matter to a sibling stream are written to Octopad first, with inter-session messages as nudges to go read them. Independent task groups may launch as background workers together, with the verification gate still run per task and failure classes kept distinct.
+
+Renewal: a supervisor low on context may spawn one fresh sub-supervisor (never a fork — a fork inherits the spent budget) at the recorded supervisor route, whose prompt opens with the supervisor handoff block so it briefs itself from Octopad like any successor. The original session becomes a pure relay: it announces the delegation, forwards reports and escalations verbatim, and carries the user's decisions back. One level only — a sub-supervisor never delegates; the relay retires it before handing off itself, so two supervisors never run one stream. Where the environment cannot message a running subagent, delegation is unavailable and the pasted handoff block remains the path.
+
 ### 0.8.0 — 2026-08-19
 
 Fixes the failure that let a whole stream idle overnight: a supervisor held three ready tasks because their dependencies' code sat on open, unmerged branches, even though the stream's own delivery contract said to stack dependent work on those branches. The rule existed as prose; nothing forced the supervisor to obey it at the moment it picked work.
