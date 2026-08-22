@@ -1,7 +1,7 @@
 {
   "name": "octoplan-autopilot",
   "description": "Work-stream planning and supervised delivery for Octopad. One session plans a work stream into detailed, ordered, self-contained tasks, agrees a delivery contract with the user, and — on an explicit go — supervises the delivery of that plan.",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "author": {
     "name": "Sudolab"
   },
