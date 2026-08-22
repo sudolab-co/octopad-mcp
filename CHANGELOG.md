@@ -296,6 +296,12 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 0.10.0 — 2026-08-22
+
+Restructures the skill so each session loads only what its job needs. `SKILL.md` shrinks to the always-needed core — the resume check, the non-negotiables, the task template, the per-task self-check, the replanning rules, and a load index that names which reference file to load at which moment. Four new reference files carry the rest: `references/planning.md` holds the eleven planning steps, the stream-type lenses, the multi-stream cut test, the per-plan self-check, and the planning-mistakes table; `references/routing.md` holds the Exec rubric, the effort vocabulary, lane dispatch, and the review-lens rules; `references/continuation.md` holds the two block formats and the six Next-line patterns, verbatim from 0.9.0; `references/multi-stream.md` holds the Blueprint protocol. `references/supervision.md` is unchanged apart from six load-instruction edits.
+
+Behavior is unchanged with two exceptions. The Opus 4.6 compatibility lane is removed: the rubric now covers only the current model set, and a team on different models maps to the nearest equivalents. And sessions that plan, rebalance, or supervise a stream belonging to a multi-stream effort are now explicitly told to load the multi-stream reference, closing a gap the restructure would otherwise have opened. Saved plans, task descriptions, Next lines, and recorded delivery contracts from 0.9.0 remain valid with no migration; the Next-line patterns, block formats, rubric table, and effort table are byte-identical to 0.9.0.
+
 ### 0.9.0 — 2026-08-21
 
 Scales Octoplan from one work stream to a whole effort, and lets a supervisor renew itself without user intervention. Every new mechanism is gated on what the session's environment actually provides and degrades to the existing single-session behavior where it doesn't.
