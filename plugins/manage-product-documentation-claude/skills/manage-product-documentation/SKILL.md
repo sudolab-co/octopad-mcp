@@ -2,7 +2,7 @@
 name: manage-product-documentation
 description: Organize and maintain product documentation in Octopad while a user explores, builds, changes, ships, or audits a product. Use during ordinary product discussion, accepted feature or system work, implementation and pull-request activity, release sync, documentation cleanup, architecture documentation, user-documentation work, release-note preparation, and Product Facts or marketing drafting. Support both greenfield products with no repository or docs and existing products whose pages, tasks, decisions, repositories, and docs must be adopted before anything new is created.
 ---
-Version: 1.2.0
+Version: 1.3.0
 
 # Manage Product Documentation
 

@@ -180,9 +180,9 @@ const root = process.argv[2];
 const codexManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/.codex-plugin/plugin.json'), 'utf8'));
 const claudeManifest = JSON.parse(fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-claude/.claude-plugin/plugin.json'), 'utf8'));
 const prompt = 'Use $manage-product-documentation to organize and maintain my product documentation while we work.';
-if (codexManifest.name !== 'manage-product-documentation' || codexManifest.version !== '1.2.0' || codexManifest.skills !== './skills/' || codexManifest.license !== 'MIT') process.exit(1);
+if (codexManifest.name !== 'manage-product-documentation' || codexManifest.version !== '1.3.0' || codexManifest.skills !== './skills/' || codexManifest.license !== 'MIT') process.exit(1);
 if (!Array.isArray(codexManifest.interface?.defaultPrompt) || codexManifest.interface.defaultPrompt.length !== 1 || codexManifest.interface.defaultPrompt[0] !== prompt) process.exit(1);
-if (claudeManifest.name !== 'manage-product-documentation' || claudeManifest.version !== '1.2.0' || claudeManifest.license !== 'MIT') process.exit(1);
+if (claudeManifest.name !== 'manage-product-documentation' || claudeManifest.version !== '1.3.0' || claudeManifest.license !== 'MIT') process.exit(1);
 if (codexManifest.version !== claudeManifest.version) process.exit(1);
 const codexMarketplace = JSON.parse(fs.readFileSync(path.join(root, '.agents/plugins/marketplace.json'), 'utf8'));
 const codexEntries = codexMarketplace.plugins.filter((plugin) => plugin.name === 'manage-product-documentation');
@@ -219,7 +219,7 @@ policy:
 `;
 if (agent !== expectedAgent) process.exit(1);
 const skill = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md'), 'utf8');
-if (!/^---\nname: manage-product-documentation\ndescription: [^\n]+\n---\nVersion: 1\.2\.0\n/.test(skill) || skill.includes('[TODO:')) process.exit(1);
+if (!/^---\nname: manage-product-documentation\ndescription: [^\n]+\n---\nVersion: 1\.3\.0\n/.test(skill) || skill.includes('[TODO:')) process.exit(1);
 const claudeSkill = fs.readFileSync(path.join(root, 'plugins/manage-product-documentation-claude/skills/manage-product-documentation/SKILL.md'), 'utf8');
 const versionOf = (text) => text.match(/^Version: (\d+\.\d+\.\d+)$/m)?.[1];
 if (versionOf(skill) !== codexManifest.version || versionOf(claudeSkill) !== codexManifest.version) process.exit(1);
@@ -231,8 +231,8 @@ for (const required of ['literal `Why`, `What`, and `Done when` sections', '`imp
   if (!artifactShapes.includes(required)) process.exit(1);
 }
 NODE
-grep -q '^Version: 1\.2\.0$' "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md" || fail 'product-documentation skill is not 1.2.0'
-grep -q '^Version: 1\.2\.0$' "$root/plugins/manage-product-documentation-claude/skills/manage-product-documentation/SKILL.md" || fail 'Claude product-documentation skill is not 1.2.0'
+grep -q '^Version: 1\.3\.0$' "$root/plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md" || fail 'product-documentation skill is not 1.3.0'
+grep -q '^Version: 1\.3\.0$' "$root/plugins/manage-product-documentation-claude/skills/manage-product-documentation/SKILL.md" || fail 'Claude product-documentation skill is not 1.3.0'
 
 for relative in SKILL.md references/documentation-model.md references/artifact-shapes.md references/lifecycle-playbooks.md; do
   cmp -s \
@@ -252,6 +252,7 @@ grep -q '^## manage-product-documentation$' "$root/CHANGELOG.md" || fail 'produc
 grep -q '^### 1\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.0.0 history is missing'
 grep -q '^### 1\.1\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.1.0 entry is missing'
 grep -q '^### 1\.2\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.2.0 entry is missing'
+grep -q '^### 1\.3\.0 — 2026-08-22$' "$root/CHANGELOG.md" || fail 'product-documentation 1.3.0 entry is missing'
 grep -q '"version": "17\.2\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 17.2.0'
 grep -q '^Version: 17\.2\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 17.2.0'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'

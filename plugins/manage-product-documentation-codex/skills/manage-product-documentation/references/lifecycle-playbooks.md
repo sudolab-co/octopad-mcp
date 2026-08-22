@@ -56,7 +56,7 @@ Do not load every Product Spec or the whole repository merely because the Produc
 
 ## Pull request and delivery sync
 
-1. Determine documentation impact: none, existing-system change, new system, or technical-only.
+1. Determine documentation impact: none, existing-system change, new system, or technical-only. Record it on the PR itself in the repository's normal way — a short documentation-impact line naming the affected doc, or an explicit "none" with a reason (technical-only records as "none — technical-only" plus the reason) — so release sync can consume it later.
 2. Link the existing Task or work stream to the PR through the repository's normal fields, and link the affected Product Spec back to that work.
 3. Record exact head and base revisions. Re-check after material drift.
 4. Make the smallest draft update needed to preserve intent and reviewability. Keep proposed, approved, and implemented labels separate.
@@ -69,13 +69,17 @@ Follow repository review and merge controls. This skill grants no merge authorit
 
 ## Release sync
 
+Run one full pass per release, when changes actually reach users. This pass is the safety net that keeps shipped truth current: it must end with either updated docs or named debt, never a silent skip. Keep one durable record per release — a release page or runbook entry: step 9 writes it, and step 2 reads the previous one. On the first pass ever, no previous record exists; bound on the oldest evidence you can verify and say so.
+
 1. Verify the repository's release policy, exact released revision, and included changes.
-2. Re-read each affected draft against released code and observed product behavior when available.
-3. Update released behavior in affected Product Specs and relevant Architecture Map sections. Preserve exact release provenance.
-4. Keep unverified claims out of shipped truth. Track them as documentation debt.
-5. Assess downstream impact across user docs, release notes, Product Facts, and marketing claims.
-6. Reconcile any pre-release user-documentation or release-note draft against verified released evidence before removing its pre-release label.
-7. Draft Product Facts, marketing claims, and final shipped wording only from verified released evidence. Route all downstream material through normal review and publication gates; never publish automatically.
+2. Bound the release window. Read the boundary the previous release pass recorded: an exact revision, or failing that a date resolved to a revision. Collect every change between that boundary and this release's exact revision. Never bound on a moving branch head or a bare date; a date boundary silently drops same-day changes. When the boundary is imprecise, over-collect toward the older side and say so in the closing record — a duplicate is visible, a dropped change is not.
+3. Consume each change's documentation-impact mark when the delivery workflow records one (see Pull request and delivery sync). A mark naming a maintained doc puts that doc on the update list with the change as evidence. An explicit "none" still gets checked against the change's title and diff; when that check fails — the change plainly affects user-facing behavior — treat the mark as missing. A missing mark means infer the impact from the change itself, or file documentation debt. A mark naming a doc this pass does not maintain is not an edit order: update the maintained doc that owns the behavior, or file debt naming the gap — creating the missing doc is the user's call, not a side effect.
+4. Re-read each affected draft against released code and observed product behavior when available.
+5. Update released behavior in affected Product Specs and relevant Architecture Map sections. Preserve exact release provenance.
+6. Keep unverified claims out of shipped truth. Track them as documentation debt.
+7. Resolve and open each canon document first — the Product Map or equivalent entry point, Product Facts, and any other document the product treats as locked authority — and assess the release as a whole against its actual current text: did anything shipped change what the product does or its headline story? Most releases change neither; record that outcome explicitly. If a canon document cannot be found, stop and report that as a failed step; a mandatory step that resolves to nothing must never pass silently. When one needs a change, draft the edit against the text you just read — never re-assert what is already there — and put the exact before and after in front of the accountable user; never apply canon silently. An approved edit that cannot be applied in-session becomes a tracking task carrying the approved text and who must apply it.
+8. Reconcile any pre-release user-documentation or release-note draft against verified released evidence before removing its pre-release label. Draft Product Facts, marketing claims, and final shipped wording only from verified released evidence. Route all downstream material through normal review and publication gates; never publish automatically.
+9. Close the loop on the release record: the boundary covered and this release's exact revision (the next pass's lower bound), each doc updated with its evidence, each canon outcome (not needed, validated and applied, pending task, or escalated), and a link to the documentation-debt work.
 
 If repository policy explicitly proves that merge equals release, record that policy as evidence. Otherwise keep merge and release separate.
 
