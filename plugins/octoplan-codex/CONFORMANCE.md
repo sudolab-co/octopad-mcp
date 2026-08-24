@@ -1,4 +1,4 @@
-# Octoplan Codex 18.0.0 conformance
+# Octoplan Codex 18.0.1 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 

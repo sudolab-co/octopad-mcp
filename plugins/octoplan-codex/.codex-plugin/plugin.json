@@ -1,6 +1,6 @@
 {
   "name": "octoplan-codex",
-  "version": "18.0.0",
+  "version": "18.0.1",
   "description": "Confirm a Brief, review a governed Octopad Plan, and supervise authorized Delivery with explicit interruption levels.",
   "author": {
     "name": "Sudolab"
@@ -8,7 +8,12 @@
   "homepage": "https://github.com/sudolab-co/octopad-mcp",
   "repository": "https://github.com/sudolab-co/octopad-mcp",
   "license": "MIT",
-  "keywords": ["octopad", "planning", "codex", "orchestration"],
+  "keywords": [
+    "octopad",
+    "planning",
+    "codex",
+    "orchestration"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Octoplan for Codex",
@@ -16,7 +21,10 @@
     "longDescription": "Turns a confirmed Brief into the smallest useful Octopad work graph, binds independent review to the exact Plan, then supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step interruption.",
     "developerName": "Sudolab",
     "category": "Productivity",
-    "capabilities": ["Planning", "Orchestration"],
+    "capabilities": [
+      "Planning",
+      "Orchestration"
+    ],
     "defaultPrompt": [
       "Use $octoplan to confirm my Brief, show the Plan and interruption choice, then supervise authorized Delivery."
     ]
