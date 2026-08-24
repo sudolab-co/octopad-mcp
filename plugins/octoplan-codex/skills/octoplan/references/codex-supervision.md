@@ -18,7 +18,7 @@ Repeat until the integrated outcome is proved or no safe work remains:
 
 1. **Refresh.** Read latest user intent, lease owner and generation, reviewed Plan fingerprint and lens set, ready tasks, dependencies, assignments, current artifact versions, checks, dispatch receipts, disclosed effects, and house-rule gates.
 2. **Pick.** Choose the next ready task. Do not take a task assigned to another person. Set the owning task in progress before work.
-3. **Route.** Work inline for small sequential work. Spawn a worker only when the benefit exceeds the handoff; apply the task's exact saved route and verify the observed pair.
+3. **Route.** Keep small work inline. Spawn only for net benefit; apply the saved route, checking observation when exposed or using the recorded degradation.
 4. **Collect.** Require the real deliverable, changed version, executed verification output, decisions, and blockers to be written on the owning task.
 5. **Review.** Run targeted checks. Every material executable change gets at least one fresh independent review; a one-way-door surface gets a second focused independent lens. A house-rule clearance records exact subject/version, owner, evidence, and invalidation rule; artifact drift reopens it. Confirmed stable findings return to the same healthy worker.
 6. **Advance.** Close the task only after current proof is accepted and every finding is dispositioned. Persist the evidence immediately, then refresh the ready frontier without interrupting Full autonomy.
@@ -36,7 +36,8 @@ Send a bounded prompt; do not paste predecessor history:
 ```text
 Deliver one Octopad task: <task title>.
 Octopad: <organization> / <workspace> / <work stream>.
-Use <saved model and effort>; verify the observed pair before work.
+Use <saved model and effort>; verify observation when exposed, otherwise use
+the run's persisted degradation.
 
 Start production Octopad, build exact context on this task, read the stream's
 Octoplan 18 Decisions, and read the target's effective rules. Work only this

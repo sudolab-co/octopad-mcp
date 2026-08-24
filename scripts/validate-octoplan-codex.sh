@@ -119,6 +119,8 @@ require_text "$planning" '`**Plan ref**`'
 require_text "$planning" 'One reviewer applying two checklists does not satisfy the higher floor.'
 require_text "$planning" 'failure containment'
 require_text "$planning" 'Draft one `OCTOPLAN_PLAN_REVIEW` receipt'
+require_text "$planning" 'When observation capability is absent, the review counts on its admitted declared route'
+require_text "$planning" 'exactly one affected receipt per run'
 require_text "$planning" 'Persist the complete set only in step 4 below after the full floor reaches PASS.'
 require_text "$planning" 'Server-generated stream/task IDs, statuses, assignees, timestamps, and the later user choice are excluded.'
 require_text "$planning" 'require one-to-one ref-to-ID mappings'
@@ -137,6 +139,9 @@ require_text "$planning" 'one task that owns its final wording'
 require_text "$runtime" 'The only automatic routes are Luna `max` and Sol `high|xhigh|max`.'
 require_text "$runtime" 'Role admission is stricter:'
 require_text "$runtime" 'Prompt text, title, or the requested route is not observation.'
+require_text "$runtime" 'Positive evidence of either a wrong model or wrong effort pauses that actor without substitution.'
+require_text "$runtime" 'Missing route metadata never makes a review fail or become `INFEASIBLE`.'
+require_text "$runtime" 'route declared, not provable in this runtime — capability absent'
 require_text "$runtime" 'Keep a small sequential task inline.'
 require_text "$runtime" '`OCTOPLAN_DISPATCH <stable-key>`'
 require_text "$runtime" 'Ambiguous creation pauses that branch'
@@ -221,28 +226,42 @@ node <<'NODE'
 const assert = require('assert');
 const crypto = require('crypto');
 
-function routeDecision(role, model, effort, observed = false, available = false) {
-  const automatic = (model === 'gpt-5.6-luna' && effort === 'max') ||
-    (model === 'gpt-5.6-sol' && ['high', 'xhigh', 'max'].includes(effort));
+const ROUTE_DEGRADATION_NOTE = 'route declared, not provable in this runtime — capability absent';
+
+function routeDecision(role, declaredModel, declaredEffort,
+  {capability = 'absent', observedModel, observedEffort} = {}) {
+  const automatic = (declaredModel === 'gpt-5.6-luna' && declaredEffort === 'max') ||
+    (declaredModel === 'gpt-5.6-sol' && ['high', 'xhigh', 'max'].includes(declaredEffort));
   const roleAdmitted = role === 'worker' ? automatic :
-    role === 'planner' ? model === 'gpt-5.6-sol' && ['xhigh', 'max'].includes(effort) :
+    role === 'planner' ? declaredModel === 'gpt-5.6-sol' && ['xhigh', 'max'].includes(declaredEffort) :
     ['plan-reviewer', 'supervisor', 'delivery-reviewer'].includes(role) ?
-      model === 'gpt-5.6-sol' && ['high', 'xhigh', 'max'].includes(effort) : false;
-  return automatic && roleAdmitted && observed === true && available === true ?
+      declaredModel === 'gpt-5.6-sol' && ['high', 'xhigh', 'max'].includes(declaredEffort) : false;
+  if (!automatic || !roleAdmitted) return 'PAUSE_NO_SUBSTITUTION';
+  if (capability === 'absent' && observedModel === undefined && observedEffort === undefined) {
+    return 'USE_DECLARED_DEGRADED';
+  }
+  if (capability !== 'exposed') return 'PAUSE_NO_SUBSTITUTION';
+  return observedModel === declaredModel && observedEffort === declaredEffort ?
     'USE_EXACT' : 'PAUSE_NO_SUBSTITUTION';
 }
 
-assert.strictEqual(routeDecision('worker', 'gpt-5.6-luna', 'max'), 'PAUSE_NO_SUBSTITUTION');
-assert.strictEqual(routeDecision('worker', 'gpt-5.6-luna', 'max', true, true), 'USE_EXACT');
-assert.strictEqual(routeDecision('planner', 'gpt-5.6-sol', 'xhigh', true, true), 'USE_EXACT');
-assert.strictEqual(routeDecision('plan-reviewer', 'gpt-5.6-sol', 'high', true, true), 'USE_EXACT');
-assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'max', true, true), 'USE_EXACT');
+assert.strictEqual(routeDecision('worker', 'gpt-5.6-luna', 'max'), 'USE_DECLARED_DEGRADED');
+assert.strictEqual(routeDecision('worker', 'gpt-5.6-luna', 'max',
+  {capability: 'exposed', observedModel: 'gpt-5.6-luna', observedEffort: 'max'}), 'USE_EXACT');
+assert.strictEqual(routeDecision('planner', 'gpt-5.6-sol', 'xhigh',
+  {capability: 'exposed', observedModel: 'gpt-5.6-sol', observedEffort: 'xhigh'}), 'USE_EXACT');
+assert.strictEqual(routeDecision('plan-reviewer', 'gpt-5.6-sol', 'high',
+  {capability: 'exposed', observedModel: 'gpt-5.6-sol', observedEffort: 'high'}), 'USE_EXACT');
+assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'max',
+  {capability: 'exposed', observedModel: 'gpt-5.6-sol', observedEffort: 'max'}), 'USE_EXACT');
 assert.strictEqual(routeDecision('planner', 'gpt-5.6-sol', 'high'), 'PAUSE_NO_SUBSTITUTION');
 assert.strictEqual(routeDecision('plan-reviewer', 'gpt-5.6-luna', 'max'), 'PAUSE_NO_SUBSTITUTION');
 assert.strictEqual(routeDecision('worker', 'gpt-5.6-luna', 'high'), 'PAUSE_NO_SUBSTITUTION');
 assert.strictEqual(routeDecision('worker', 'gpt-5.6-terra', 'max'), 'PAUSE_NO_SUBSTITUTION');
-assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'high', false), 'PAUSE_NO_SUBSTITUTION');
-assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'high', 'observed'), 'PAUSE_NO_SUBSTITUTION');
+assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'high',
+  {capability: 'exposed', observedModel: 'gpt-5.6-luna', observedEffort: 'max'}), 'PAUSE_NO_SUBSTITUTION');
+assert.strictEqual(routeDecision('supervisor', 'gpt-5.6-sol', 'high',
+  {capability: 'exposed', observedModel: 'gpt-5.6-sol', observedEffort: 'max'}), 'PAUSE_NO_SUBSTITUTION');
 assert.strictEqual(routeDecision('unknown', 'gpt-5.6-sol', 'max'), 'PAUSE_NO_SUBSTITUTION');
 
 function descendantsOf(rootId, edges) {
@@ -389,8 +408,27 @@ function reviewAdmitted(packet, receipt) {
     Array.isArray(receipt.checks) && receipt.checks.length > 0 &&
     Array.isArray(receipt.evidence) && receipt.evidence.length > 0 && receipt.evidence.every(Boolean) &&
     findingsComplete &&
-    routeDecision('plan-reviewer', receipt.model, receipt.effort,
-    receipt.observed, receipt.available) === 'USE_EXACT';
+    ['USE_EXACT', 'USE_DECLARED_DEGRADED'].includes(routeDecision('plan-reviewer',
+      receipt.declaredModel, receipt.declaredEffort, {
+        capability: receipt.routeCapability,
+        observedModel: receipt.observedModel,
+        observedEffort: receipt.observedEffort,
+      }));
+}
+
+function degradationNotesValid(receipts) {
+  const byRun = new Map();
+  for (const receipt of receipts) {
+    if (typeof receipt.runId !== 'string' || receipt.runId.length === 0) return false;
+    if (!byRun.has(receipt.runId)) byRun.set(receipt.runId, []);
+    byRun.get(receipt.runId).push(receipt);
+  }
+  for (const runReceipts of byRun.values()) {
+    const degraded = runReceipts.some(receipt => receipt.routeCapability === 'absent');
+    const notes = runReceipts.filter(receipt => receipt.degradationNote === ROUTE_DEGRADATION_NOTE);
+    if ((degraded && notes.length !== 1) || (!degraded && notes.length !== 0)) return false;
+  }
+  return true;
 }
 
 function requiredPlanReviewCount({taskCount = 0, schema = false, permissions = false,
@@ -409,7 +447,7 @@ function reviewSetAdmitted(packet, receipts) {
   };
   const triggeredLensesPresent = Object.entries(packet.reviewTriggers).every(([trigger, active]) =>
     !active || triggerLenses[trigger].some(lens => lenses.has(lens)));
-  return admitted.length >= required && identities.size === admitted.length &&
+  return degradationNotesValid(admitted) && admitted.length >= required && identities.size === admitted.length &&
     identities.size >= required && lenses.size >= required && triggeredLensesPresent;
 }
 
@@ -498,15 +536,25 @@ for (const [field, changed] of Object.entries({
 }
 const review = {
   verdict: 'PASS', fingerprint: fingerprint(packet), plannerTaskId: 'plan-1', reviewerTaskId: 'review-1',
-  primaryLens: 'integration', sourceRulesSnapshot: 'rules@a1', checks: ['scope', 'proof'],
-  evidence: ['source inspection'], findings: [], model: 'gpt-5.6-sol', effort: 'high',
-  observed: true, available: true,
+  runId: 'run-1', primaryLens: 'integration', sourceRulesSnapshot: 'rules@a1', checks: ['scope', 'proof'],
+  evidence: ['source inspection'], findings: [], declaredModel: 'gpt-5.6-sol', declaredEffort: 'high',
+  routeCapability: 'exposed', observedModel: 'gpt-5.6-sol', observedEffort: 'high',
 };
 assert.strictEqual(reviewAdmitted(packet, review), true);
 assert.strictEqual(reviewAdmitted({...packet, rules: 'rules@b2'}, review), false);
 assert.strictEqual(reviewAdmitted(packet, {...review, reviewerTaskId: 'plan-1'}), false);
-assert.strictEqual(reviewAdmitted(packet, {...review, observed: false}), false);
-assert.strictEqual(reviewAdmitted(packet, {...review, available: false}), false);
+assert.strictEqual(reviewAdmitted(packet, {...review, observedModel: 'gpt-5.6-luna'}), false);
+assert.strictEqual(reviewAdmitted(packet, {...review, observedEffort: 'max'}), false);
+assert.strictEqual(reviewAdmitted(packet, {...review, declaredModel: 'gpt-5.6-terra'}), false);
+const degradedReview = {...review, routeCapability: 'absent', observedModel: undefined,
+  observedEffort: undefined, degradationNote: ROUTE_DEGRADATION_NOTE};
+assert.strictEqual(reviewAdmitted(packet, degradedReview), true);
+assert.strictEqual(reviewSetAdmitted(packet, [degradedReview]), true);
+assert.strictEqual(reviewSetAdmitted(packet, [{...degradedReview, degradationNote: undefined}]), false);
+assert.strictEqual(degradationNotesValid([degradedReview,
+  {...degradedReview, reviewerTaskId: 'review-2'}]), false);
+assert.strictEqual(degradationNotesValid([degradedReview,
+  {...degradedReview, runId: 'run-2'}]), true);
 assert.strictEqual(reviewAdmitted(packet, {...review, sourceRulesSnapshot: 'wrong'}), false);
 assert.strictEqual(reviewAdmitted(packet, {...review, evidence: []}), false);
 assert.strictEqual(reviewAdmitted(packet, {...review, findings: undefined}), false);

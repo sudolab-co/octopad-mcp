@@ -21,9 +21,9 @@ Choose by detection difficulty and reversibility. Save the exact model, effort, 
 | Difficult, open-ended, weakly verified, or high-consequence work | `gpt-5.6-sol · effort xhigh` |
 | Open architecture or investigation without a reliable verifier | `gpt-5.6-sol · effort max` |
 
-The only automatic routes are Luna `max` and Sol `high|xhigh|max`. Terra, Luna below `max`, Sol below `high`, unknown, unavailable, or unobserved pairs pause without substitution. Role admission is stricter: planner = Sol `xhigh|max`; plan reviewer, supervisor, and delivery reviewer = Sol `high|xhigh|max`; worker = the exact table route. These floors apply to the current inline task and spawned tasks alike.
+The only automatic routes are Luna `max` and Sol `high|xhigh|max`. Other declarations pause without substitution. Role admission is stricter: planner = Sol `xhigh|max`; plan reviewer, supervisor, and delivery reviewer = Sol `high|xhigh|max`; worker = the table route.
 
-Before planning or inline delivery, verify the current task's observed model and effort from system or native task/session evidence. After spawning, do the same for the returned task before work or effects. Prompt text, title, or the requested route is not observation. If the host cannot expose the pair, pause that actor; do not treat a planned route as an observed one.
+Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and persist `route declared, not provable in this runtime — capability absent` in the first affected review receipt. State it once per run; later receipts reference it. Missing route metadata never makes a review fail or become `INFEASIBLE`.
 
 ## Native tasks and delegation
 

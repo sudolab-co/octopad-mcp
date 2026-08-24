@@ -20,7 +20,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | F12, fixed visible program | `SKILL.md` > One visible program; exact banners repeated in the phase references |
 | F13, spend protected by default | `SKILL.md` > F13 billing trigger; `references/planning.md` > Phase 2 disclosed-effects catch-all; `references/codex-runtime.md` > Delivery review and protected effects inventory |
 | Review floors | `SKILL.md` > Review floors; `references/planning.md` > Phase 3 floor and failure-containment lens; `references/codex-supervision.md` > Phase 4 review trigger and Phase 6 closure predicate |
-| Plan-review receipt durability | `references/planning.md` > Phase 3 draft-receipt rule; Persist and hand off step 4 durability trigger |
+| Plan-review receipt durability and one-per-run route degradation | `references/planning.md` > Phase 3 draft-receipt rule; Persist and hand off step 4 durability trigger |
 | Undisclosed-event consent | `references/codex-runtime.md` > Authority consent-recording rule; `references/codex-supervision.md` > Phase 5 undisclosed-event branch and material-replan trigger |
 | Shared work-state vocabulary | `SKILL.md` > F10 domain-equivalence rule; `references/multi-stream.md` > Close precisely; `references/codex-supervision.md` > Phase 6 recap trigger |
 | Shared/runtime boundary | `SKILL.md` > Shared/runtime boundary; runtime mechanics in `references/codex-runtime.md` and `references/recovery.md` |
@@ -44,7 +44,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | Fresh plan challenge, stable recheck, material-replan reset, and complete finding dispositions | `references/planning.md` > Phase 3 floor trigger, finding-disposition rule, and targeted-recheck rule. The former one-review rule remains for low risk and rises to two independent lenses at the shared high-risk floor. |
 | Canonical SHA-256 review packet excludes generated state and must match persisted stream/task refs, membership, and edges exactly | `references/planning.md` > Phase 3 fingerprint recipe and activation match; Persist and hand off ref-to-ID reconstruction |
 | Plan contract, delivery authorization, and guarded supervisor lease remain distinct | `references/planning.md` > Persist and hand off steps 4–5, delivery-authorization paragraph, and supervisor-lease paragraph |
-| Exact Luna/Sol route table, role floors, observed-route proof, and no substitution | `references/codex-runtime.md` > Exact route table |
+| Exact Luna/Sol route table, role floors, capability-conditional observed-route proof, declared-route degradation, and no substitution on a known mismatch | `references/codex-runtime.md` > Exact route table |
 | Small sequential work stays inline; delegation requires net benefit and bounded prompts | `references/codex-runtime.md` > Native tasks and delegation; `references/codex-supervision.md` > Worker prompt |
 | Readable native titles, exact task binding, and write-conflict-aware parallelism | `references/codex-runtime.md` > Native tasks and delegation; `references/multi-stream.md` |
 | Disclosed effects, selected user checkpoints, and house-rule clearances bind to the exact reviewed Plan | `references/planning.md` > Phase 2 disclosure and default-marking triggers plus delivery-authorization selection; `references/codex-supervision.md` > Phase 5 selected-checkpoint and house-rule branches |
@@ -70,5 +70,5 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 - [x] Skill `Version:` and plugin manifest use `18.0.0`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
-- [x] Deterministic validation covers fixed banners, review floors, interruption semantics, state binding, routing, recovery, and closure.
+- [x] Deterministic validation covers fixed banners, review floors, interruption semantics, state binding, exact and degraded routing, known-mismatch refusal, recovery, and closure.
 - [x] Autopilot sources are outside this release.
