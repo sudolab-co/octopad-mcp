@@ -1,7 +1,7 @@
 {
   "name": "manage-product-documentation",
   "description": "Organize and maintain evidence-based product documentation in Octopad as product work evolves.",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "author": {
     "name": "Sudolab"
   },
