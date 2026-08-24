@@ -11,7 +11,7 @@ The scoping brief (`references/planning.md`, step 2) is written ONCE for the who
 5. **Deliver with one supervisor per stream.** At the hand-off of a multi-stream effort:
    - **Every stream carries the full delivery record.** On the user's go, record the go Decision on EVERY stream of the effort — each carrying that stream's own supervisor route — copy the contract Decisions onto every stream, and rename every stream with the ` (octoplanned)` suffix. The resume check runs per stream: a stream missing any of this sends its supervisor back to planning, or back to the user for a go already given.
    - **One supervisor handoff block per stream**, each with its settings line, saying which streams are safe to start together — those with no undone cross-stream dependency between them. Octopad's readiness serializes the rest: a task whose dependency sits in another stream is simply not ready until that stream lands it.
-   - **Shared landings are ordered in the graph, not in chat.** Where two streams land changes into the same repository or surface, the Blueprint names which stream lands first and the graph carries it — a cross-stream dependency edge or a human-only landing task (the landing-task rule in `references/planning.md`, step 5). This never moves the merge dial, the gate map, or a landing task's named human owner.
+   - **Shared landings are ordered in the graph, not in chat.** Where two streams land changes into the same repository or surface, the Blueprint names which stream lands first and the graph carries it — a cross-stream dependency edge or a human-only landing task (the landing-task rule in `references/planning.md`, step 5). This never moves the delivery mode, the gate map, or a landing task's named human owner.
    - **Rebalancing is per stream.** A supervisor rebalances only its own stream. A change touching a seam — a cross-stream dependency, the Blueprint's order, the effort's end condition — stops for the user, like any out-of-contract discovery (see Replanning in SKILL.md).
    - **Durable information crosses streams through Octopad, never through chat.** A discovery that matters to a sibling stream is written to the task or the stream's knowledge FIRST; where the environment lets sessions message each other, the message to the sibling supervisor is a nudge to go read it, never the record itself. Supervisors on a multi-stream effort re-read the Blueprint before their first task (see `references/supervision.md`).
 
@@ -21,9 +21,3 @@ The scoping brief (`references/planning.md`, step 2) is written ONCE for the who
 - At the delivery go, every stream carries the contract Decisions, its own go Decision with its own supervisor route, and the ` (octoplanned)` suffix.
 - Cross-stream dependencies are wired as edges; shared landings are ordered in the graph.
 - No stream supervisor's territory crosses a seam.
-
-## Effort mistakes
-
-| Mistake | Consequence |
-|---|---|
-| A stream supervisor rebalancing beyond its own stream | Two sessions rewrite the same order — seams belong to the user; rebalance your stream, escalate the rest |
