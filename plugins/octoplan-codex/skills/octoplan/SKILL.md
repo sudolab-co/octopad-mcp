@@ -1,49 +1,67 @@
 ---
 name: octoplan
-description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an idea into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, resume, or supervise a governed work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
+description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an outcome into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, resume, or supervise a governed work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 17.2.0
+Version: 18.0.0
 
 # Octoplan for Codex
 
-Turn a request into the smallest useful Octopad plan, challenge that plan once, and supervise only the delivery the user authorized. Octopad owns durable project truth; Codex owns live reasoning, tools, agents, and execution.
+Turn a confirmed outcome into the smallest useful Octopad work graph, then advance every safe ready branch until the outcome is proved or a real human consequence decision is required. Octopad is the control plane. Codex supplies live planning, routing, delegation, review, and supervision.
 
-## The simple contract
+## One visible program
 
-Store the plan where the team already works: tasks, dependencies, Decisions, Questions, and task comments. Use a native Codex Goal only as the active supervisor's continuity handle. Do not mirror the plan into a private JSON control object, universal actor registry, per-task generation/manifest system, or artifact ledger.
+Every user-facing Octoplan message starts with exactly one applicable Markdown banner as its first line. Do not rename, decorate, combine, or skip these byte-identical banners:
 
-A later supervisor must be able to resume by reading the work stream's Decisions, open tasks, latest task comments, supervisor lease, current Goal, target rules, and real artifact state. If those sources cannot establish authority, unique ownership, or what an unfinished effect did, pause only the affected branch and reconcile it.
+```markdown
+**Octoplan · Step 1 of 3 — Brief**
+**Octoplan · Step 2 of 3 — Plan**
+**Octoplan · Step 3 of 3 — Delivery**
+```
 
-## Loading order
+The six internal phases are: confirm the Brief; compose the Plan; challenge and activate it; advance Delivery; reconcile change; prove closure or hand off. Internal runtime mechanics never create another user-facing stage.
 
-Read [references/planning.md](references/planning.md) to capture, challenge, and persist a plan. Read [references/codex-runtime.md](references/codex-runtime.md) before choosing a model, delegating, or asking for authority. Read [references/codex-supervision.md](references/codex-supervision.md) before delivery or resume.
+## Load only what the active phase needs
 
-## Roles
+- Read [references/planning.md](references/planning.md) for Brief, Plan, plan review, and activation.
+- Read [references/codex-supervision.md](references/codex-supervision.md) before Delivery or resume.
+- Read [references/codex-runtime.md](references/codex-runtime.md) only when choosing or checking a route, delegating, creating a Goal, or interpreting runtime authority.
+- Read [references/multi-stream.md](references/multi-stream.md) only when topology selects more than one work stream.
+- Read [references/recovery.md](references/recovery.md) only for ambiguous effects, failed or missing actors, takeover, material replan, legacy state, or handoff.
 
-The current user task plans interactively and becomes supervisor by default. Use one fresh read-only reviewer for the plan. During delivery, work inline when the task is small and sequential; spawn a worker or reviewer only when isolation, specialization, parallelism, independence, or context reduction is worth the handoff.
+## Shared foundation
 
-## Invariants
+- **F1, control plane.** Read current Octopad and target state before planning or resuming. Persist the confirmed brief, accepted graph, decisions, authority, evidence, and progress as work happens. Keep no shadow plan, scheduler, artifact ledger, or delivery report.
+- **F2, adaptive topology.** Reuse work that already owns the outcome. Use the fewest streams, tasks, and dependency edges that make independently valuable deliverables and real waits explicit.
+- **F3, progressive complexity.** Simple work does not load or report multi-stream coordination, advanced routing, or recovery mechanics it does not need.
+- **F4, confirmed intent.** Every new or materially changed outcome receives a scaled Brief playback and explicit confirmation. Never infer or skip confirmation. Resume the same persisted confirmed brief without asking again.
+- **F5, falsifiable plan.** Treat user statements, repository files, Octopad records, and earlier plans as evidence. Verify material premises and challenge the complete artifact graph before activation.
+- **F6, state-bound review.** Bind review to the exact persisted graph or artifact revision. Record material drift and the focused recheck. Never carry PASS across affected drift.
+- **F7, ready work moves.** Advance every safe ready branch inside the recorded mandate. A wait or failure blocks only descendants that need it.
+- **F8, invariant safety.** Interruption level changes when the user hears from Octoplan, never the applicable rules, verification, review, persistence, or evidence floor.
+- **F9, recoverable ownership.** Keep one fenced supervisor per delivery frontier. Record dispatch before creation, use idempotency and guarded updates, and reconcile authoritative state before any retry or takeover.
+- **F10, integrated closure.** Close only from current integrated evidence, using the exact states `built`, `reviewed`, `merged`, `applied`, `verified`, `released`, and `accepted`. Silence, timeout, irrelevant green checks, and unrun checks are not PASS.
+- **F11, consequence language.** Every user-facing consent or pause states the practical consequence in words a non-expert can answer. Never ask the user to certify technical correctness.
+- **F12, one program.** Brief, Plan, and Delivery use the fixed banners above across implementations; model-specific phases and agents remain invisible product mechanics.
+- **F13, spend protected.** Any step that bills money to any party is a protected effect and must be disclosed at Plan, even when no house rule mentions it.
 
-- Capture outcome and proof, in/out of scope, constraints and sources, uncertainties, ownership, authorized effects, and protected checkpoints before writes.
-- Show one localized creation brief. If it faithfully restates an explicit plan-and-deliver mandate without adding a material choice or effect, proceed after showing it; otherwise wait for approval. Planning-only permission never authorizes delivery.
-- Read live Octopad methodology, current tool schemas, and the target's effective rules. They are the floor; a delivery mandate never lowers them.
-- Create the fewest coherent tasks that deliver the first integrated result. Keep approvals, reviews, merges, and status relays as checkpoints or steps unless a human owns a distinct deliverable.
-- Run exactly one fresh plan challenge for each new or materially changed plan. Stable corrections return to the same reviewer; delivery review remains separate.
-- Bind plan review to a canonical plan fingerprint, distinct reviewer identity, source/rules snapshot, checks, findings, and verdict. Recompute the fingerprint before activation.
-- Preserve the exact Luna/Sol route table and verify a spawned task's observed route. Unknown, unavailable, or mismatched routes pause without substitution.
-- Treat secrets, access grants, spend, destructive actions, required human review, merge, migration application, deployment, publication, and acceptance as protected checkpoints.
-- Bind each checkpoint clearance to its exact subject/version, owner, evidence, and invalidation rule; changed artifacts reopen stale clearance.
-- Close work only from current artifact evidence and executed checks. Silence, timeout, irrelevant green CI, or an unrun check is never PASS.
-- Before a non-idempotent external effect, record one stable operation key on the owning task. After ambiguous output, inspect the target and retry only an effect proven absent.
-- Before spawning, record one stable dispatch key. Reconcile ambiguous creation through native task reads; a replacement waits for predecessor stop and effect quiescence.
-- A checkpoint blocks only its dependent branch. Continue every independent safe branch.
-- Choose a fresh supervisor before Goal creation after a heavy planning pass. A later takeover uses a guarded supervisor-lease rotation and quiescence proof; Goals never transfer.
-- At a human wait, artifact handoff, unrecovered incident, or completion, report six localized fields: state, done, blocked, decision expected, to unblock, next step.
+## Interruption levels
 
-## Older Octoplan plans
+The reviewed Plan ends with one choice:
 
-Do not execute private Octoplan v3-v6 control objects. Treat them only as historical evidence: stop or reconcile any actor or effect that may still be live, reread the current mandate and real task graph, then make a fresh reviewed v17 plan. Never transfer an old PASS, authority claim, pending action, supervisor ownership, or Goal state.
+- **Full autonomy.** The user's go authorizes every effect the Plan disclosed. Delivery then runs uninterrupted to the end and reports when done. Octoplan contacts the user mid-delivery only for an undisclosed effect, outcome change, or authority need, which requires new consent for that new fact.
+- **Checkpoints.** Apply Full autonomy semantics and also pause at the user checkpoints named in the reviewed Plan.
+- **Step-by-step.** Pause after every agreed step.
+
+House rules are not a level. When the effective rules route an action to a named person or require exact later evidence, show that wait and owner in the Plan and honor it. Octoplan adds no such wait for a user whose rules do not require one. Persist progress and evidence immediately in every level.
+
+## Review floors
+
+Before activation, every Plan gets at least one fresh independent review. Use at least two independent judgments with distinct primary lenses when the Plan has eight or more tasks or touches schema, permissions, money, privacy, or destructive operations. Every material executable change gets at least one fresh independent review; use a second focused independent lens for a one-way-door surface. Low-risk non-material work may close on machine checks plus supervisor verification. Use staging before production where the target provides it and design changes to be reversible; treat a justified one-way door as high risk. Disposition every finding as fixed, deferred with authority and rationale, or dismissed with evidence.
+
+## Shared/runtime boundary
+
+Shared semantics decide what persists, topology, authority, review invalidation, safe continuation, human need, and closure proof. Codex-specific mechanics decide native tasks and Goals, model and effort routing, concurrency, worktrees, handoff, and recovery implementation. Current Octopad schemas and effective target, repository, permission, privacy, legal, publication, and runtime rules remain the floor.
 
 ## Changing this skill
 
-Edit and release [sudolab-co/octopad-mcp](https://github.com/sudolab-co/octopad-mcp), never an installed copy.
+Edit and release [sudolab-co/octopad-mcp](https://github.com/sudolab-co/octopad-mcp), never an installed copy. Use [CONFORMANCE.md](../../CONFORMANCE.md) to verify that v18 retains the shared core and every v17.2 guarantee.

@@ -1,7 +1,7 @@
 {
   "name": "octoplan-codex",
-  "version": "17.2.0",
-  "description": "Turn natural-language briefs into lean governed Octopad plans, challenge them once, and supervise authorized delivery.",
+  "version": "18.0.0",
+  "description": "Confirm a Brief, review a governed Octopad Plan, and supervise authorized Delivery with explicit interruption levels.",
   "author": {
     "name": "Sudolab"
   },
@@ -12,13 +12,13 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Octoplan for Codex",
-    "shortDescription": "Plan, challenge, and supervise governed delivery.",
-    "longDescription": "Turns a natural request into the smallest adequate Octopad task graph, challenges each plan once, then lets Codex supervise authorized work using Octopad as durable state and native Codex tasks for live execution.",
+    "shortDescription": "Confirm, review, and supervise governed delivery.",
+    "longDescription": "Turns a confirmed Brief into the smallest useful Octopad work graph, binds independent review to the exact Plan, then supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step interruption.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": ["Planning", "Orchestration"],
     "defaultPrompt": [
-      "Use $octoplan to clarify, show the brief and checkpoints, then create and supervise the plan within my authorized scope."
+      "Use $octoplan to confirm my Brief, show the Plan and interruption choice, then supervise authorized Delivery."
     ]
   }
 }

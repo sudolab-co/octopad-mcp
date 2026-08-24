@@ -44,6 +44,14 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 18.0.0 — 2026-08-24
+
+Rebuilds Codex Octoplan around the shared three-stage program. Every user-facing message opens with the canonical Brief, Plan, or Delivery banner. Brief playback is always explicit and confirmed. The reviewed Plan uses one plain-language line per step, discloses protected effects and human gates, and records one choice among Full autonomy, Checkpoints, and Step-by-step. In Full autonomy, that Plan go authorizes every disclosed effect and Delivery runs without Octoplan-created interruptions until completion; only an undisclosed event requires new consequence consent, while team-owned house rules remain invariant.
+
+The control plane now fingerprints exact stream and task topology, review triggers, routes, effects, checkpoints, rules, and source versions. It enforces the shared plan and delivery review floors, trigger-specific independent lenses, version-bound continuation receipts, immediate evidence persistence, exact work-state vocabulary, and integrated closure. Progressive references isolate multi-stream and recovery mechanics until needed. Deterministic fixtures fail closed on drift, stale authority, missing review evidence, duplicate reviewer identity, routing ambiguity, non-idempotent retries, unsafe takeover, skipped interruption obligations, and unsupported closure. `CONFORMANCE.md` maps F1–F13 and every retained v17.2 guarantee to its v18 location.
+
+This is a breaking plan contract. Treat every pre-v18 plan as historical evidence: reconcile any live actor or effect, reread current Octopad and target state, then create a freshly confirmed, reviewed, and authorized v18 Plan without carrying forward PASS, authority, pending actions, supervisor ownership, or Goal state. The Claude and Autopilot distributions are unchanged.
+
 ### 17.2.0 — 2026-08-17
 
 Keeps task specifications outcome-led and runnable. `How` states the required outcome and constraint, and prescribes a technique or precedent only when current evidence justifies it. A login, third-party seat, or user interface the executor cannot access becomes a named checkpoint instead of an impossible `Verify` step. Any task that consumes another task's output now needs the matching dependency edge, and each user-facing text surface has one owner for its final wording.

@@ -1,12 +1,14 @@
-# Codex routing and authority
+# Codex runtime routing and authority
 
 Read this before choosing a model, delegating, creating a Goal, or asking for authority.
 
 ## Authority
 
-Translate the user's mandate into the disclosed plan writes, native tasks, target, effects, and protected checkpoints. A faithful creation brief covered by an explicit plan-and-deliver request needs no ceremonial second approval. A new target, material scope, external effect, or protected action needs new authority. A Goal never widens authority.
+Brief confirmation authorizes planning, including the internal Octopad writes needed to materialize the reviewed graph. It never authorizes delivery. For a plan-and-deliver mandate, the user's interruption-level choice is the Plan go: translate it into the exact graph, target, effect bounds, native tasks, user checkpoints, and house-rule gates recorded in `Octoplan 18 delivery authorization`. A Goal never widens authority.
 
-Read-only planning and review need no delivery authority. They still use production Octopad and the exact bounded context, and they cannot write, claim, complete, launch, or approve.
+In Full autonomy, that go authorizes every disclosed effect and Octoplan adds no mid-delivery approval. A changed target, outcome, material scope, effect, consequence, or authority need is an undisclosed event and needs a refreshed Plan and new consent. Checkpoints and Step-by-step add only the user pauses they name. Effective runtime and target rules can still require a named person's later action or exact evidence; disclose those house-rule gates in the Plan and honor them in every level.
+
+A plan reviewer is read-only: it uses production Octopad and exact bounded context but cannot write, claim, complete, launch, approve, or authorize. A worker receives only the delivery authority its owning task needs. The supervisor validates all advancement and authority.
 
 ## Exact route table
 
@@ -35,8 +37,10 @@ Give native tasks readable titles under 64 characters: `SUP-<stream>-delivery`, 
 
 Parallelize only tasks whose real write surfaces and outputs are independent. Never parallelize migrations, shared generated artifacts, or siblings where one shapes the other's contract.
 
-## Review and protected checkpoints
+## Delivery review and protected effects
 
-Run deterministic checks before judgment. Every task gets targeted verification. Add one fresh source-first reviewer when a mistake is costly or effective rules require it. Add a specialist only for a distinct second material domain that the first review cannot cover.
+Run deterministic checks before judgment. Every task gets targeted verification. Every material executable change gets one fresh source-first review. Add a second independent focused lens for a one-way-door surface. Low-risk non-material work may use machine checks plus supervisor verification. Add further specialists only for distinct material domains or stricter effective rules.
 
-Secrets, access grants, destructive effects, spend, required human review, merge, migration application, deployment, publication, and acceptance remain protected. Keep them on the owning task as named checkpoints, not fake delivery tasks. A checkpoint blocks only descendants that need it; continue independent safe work.
+Inventory secrets, access grants, schema and data changes, destructive effects, spend, required human review, merge, migration application, deployment, publication, outward communication, and acceptance at Plan. State each practical consequence and owner. Any billing to any party is protected even when no house rule says so. Keep effects and gates on the owning task, not as fake delivery tasks.
+
+When an effect is disclosed and authorized, Full autonomy proceeds without a new Octoplan checkpoint if effective rules permit it. When an effective rule routes the action to a named person or requires exact later evidence, the recorded house-rule gate remains. An undisclosed effect pauses only descendants that need it and triggers new consequence consent; every independent safe branch continues.
