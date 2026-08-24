@@ -6,11 +6,11 @@ Read this after authorization or on resume. Octopad holds the durable Brief, Pla
 
 Start or refresh production Octopad. Read all `Octoplan 18` Decisions, the complete current `OCTOPLAN_PLAN_REVIEW` receipt set, open graph, in-progress comments and dispatch receipts, native Goal and tasks, effective target rules, and real artifact state.
 
-Continue only while the Brief, fingerprint, review floor, interruption level, scope, and disclosed effects match. A supervisor change never repeats consent. For withdrawn authority, Plan drift, an undisclosed event, or an ambiguous effect, pause the affected branch and read [recovery.md](recovery.md).
+Continue only while the Brief, fingerprint, review floor, interruption level, scope, and disclosed effects match. A supervisor change never repeats consent. For withdrawn authority, Plan drift, an undisclosed event, an ambiguous effect, or any pre-v18 state, pause the affected branch and read [recovery.md](recovery.md).
 
 The supervisor acts only while the guarded lease names its exact native-task identity and Goal. Reread it before every spawn, external effect, task close, checkpoint clearance, and Goal transition. The supervisor owns one native Goal through integrated proof. If this task has an unrelated unfinished Goal, do not mutate it; use the already disclosed fresh-supervisor route or ask the user. Set a token budget only when the user explicitly requested one.
 
-Every user-facing Delivery contact starts with `**Octoplan · Step 3 of 3 — Delivery**` as its first line. In Full autonomy, persist progress and evidence without contacting the user, then report when delivery ends. The only Octoplan-created mid-delivery contact is an undisclosed event; a house-rule gate is a team-owned wait outside the mode. Checkpoints and Step-by-step add only their selected user waits. Every wait uses the six-field consequence handoff below.
+Every user-facing Delivery contact starts with `**Octoplan · Step 3 of 3 — Delivery**`. Persist Full-autonomy progress and evidence immediately; progress may stream or wait until done but never asks. Only an undisclosed event asks mid-delivery; house-rule gates are team-owned waits outside the mode. Checkpoints and Step-by-step add their selected waits. Every wait uses the six-field consequence handoff below.
 
 ## Phase 4: advance the ready frontier
 
@@ -68,15 +68,15 @@ A persistent CI workflow, generic test harness, service, dependency, or cross-re
 
 ## Phase 5: reconcile change and interruption
 
-Before a protected effect, refresh the exact Plan fingerprint, effect bound, authority, target, and effective rules. Then apply the recorded interruption level:
+Before any external effect that could duplicate or be hard to undo, record its `OCTOPLAN_ACTION <stable-key>` per [recovery.md](recovery.md) first. Before a protected effect, refresh the exact Plan fingerprint, effect bound, authority, target, and effective rules. Then apply the recorded interruption level:
 
-- **Full autonomy:** perform a disclosed effect without contacting the user, persist its receipt immediately, and continue. Octoplan never inserts a mid-delivery checkpoint for that effect.
-- **Checkpoints:** also stop at each user checkpoint named in the reviewed Plan and record its continuation receipt.
+- **Full autonomy:** perform a disclosed effect without asking the user, persist its receipt immediately, and continue. Octoplan never inserts a mid-delivery checkpoint for that effect.
+- **Checkpoints:** also stop at each checkpoint selected in the delivery authorization from the reviewed Plan's marked set and record its continuation receipt.
 - **Step-by-step:** stop after every agreed step and record the user's continuation receipt.
 - **House rule:** in every level, wait for the named owner and exact evidence required by the effective rule.
-- **Undisclosed event:** stop only affected descendants and request new consent for the new practical consequence. Continue every independent safe branch.
+- **Undisclosed event:** stop only affected descendants, request new consent for the new practical consequence, and record it on the `Octoplan 18 delivery authorization` Decision. Continue every independent safe branch.
 
-A changed outcome, proof, boundary, assumption, target, authority need, or protected consequence returns to Brief. A changed stream/task graph or membership, task meaning, route, verifier, deliverable, review trigger, disclosure, user checkpoint, or house-rule gate changes the Plan and gets the applicable fresh focused review before a new go. A wording fix or stable finding correction does not. Record the drift, affected conclusion, and recheck as evidence.
+Consent alone does not refresh the Plan. A material changed outcome, proof, boundary, assumption, target, authority need, or protected consequence returns to Brief; a material changed graph or membership, task meaning, route, verifier, deliverable, review trigger, disclosure, checkpoint, or house-rule gate changes the Plan and gets the applicable fresh focused review before a new go. A wording fix or stable finding correction does not. Record drift, affected conclusion, and recheck as evidence.
 
 For a timeout, incomplete mutation, worker failure, takeover, or evidence gap, read [recovery.md](recovery.md) before acting. Do not infer success, replay work, or stop independent safe branches.
 
@@ -99,4 +99,4 @@ Choose a fresh supervisor before Goal creation whenever the planning pass was he
 
 Complete only when the current integrated outcome is proved; the confirmed Brief and live Plan fingerprint still match the full PASS receipt set; every required review and finding disposition is satisfied; every selected user checkpoint or Step-by-step pause has a valid continuation receipt; every version-bound house-rule gate is satisfied; every disclosed effect has a receipt or is proved unnecessary; no task or dispatch remains active; and no ambiguous effect is unresolved.
 
-Close the outcome task and current Goal only when their own objectives are achieved, then retire the supervisor lease. Publish one `**Octoplan · Step 3 of 3 — Delivery**` six-field recap. Use only the exact states that evidence supports: `built`, `reviewed`, `merged`, `applied`, `verified`, `released`, and `accepted`. Name any follow-up outside scope without presenting it as incomplete delivery.
+Close the achieved outcome task and Goal, then retire the lease. Publish one `**Octoplan · Step 3 of 3 — Delivery**` six-field recap. Use supported shared states (`built`, `reviewed`, `merged`, `applied`, `verified`, `released`, `accepted`) or domain equivalents, stopping at the real finish line. Name recorded residual risks and findings deferred with authority and rationale. Name out-of-scope follow-up without presenting it as incomplete delivery.

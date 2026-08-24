@@ -22,6 +22,6 @@ Persist progress and evidence on each owning task. Use cross-stream comments onl
 
 ## Close precisely
 
-A stream may close when its own definition of success and required gates are proved, even while independent streams continue. Close the shared outcome only when integrated evidence covers every required stream and cross-stream seam. Report each stream with the exact supported state: `built`, `reviewed`, `merged`, `applied`, `verified`, `released`, or `accepted`.
+A stream may close when its definition of success and required gates are proved, even while independent streams continue. Close the shared outcome only when integrated evidence covers every required stream and cross-stream seam. Report each stream with a supported state (`built`, `reviewed`, `merged`, `applied`, `verified`, `released`, `accepted`) or a domain equivalent.
 
 A split, merge, new stream, removed stream, or changed cross-stream dependency is a material Plan change. Stop only affected work, update the graph, run the applicable fresh review floor, and obtain a new Plan go when authority or disclosed consequences change.

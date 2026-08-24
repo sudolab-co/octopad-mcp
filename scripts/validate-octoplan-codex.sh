@@ -82,41 +82,51 @@ fi
 require_text "$main" '**Full autonomy.**'
 require_text "$main" '**Checkpoints.**'
 require_text "$main" '**Step-by-step.**'
-require_text "$main" "The user's go authorizes every effect the Plan disclosed."
-require_text "$main" 'reports when done'
-require_text "$main" 'Octoplan contacts the user mid-delivery only for an undisclosed effect'
+require_text "$main" 'The go authorizes every disclosed effect and Delivery runs uninterrupted.'
+require_text "$main" 'Progress may stream or wait until done and never asks'
+require_text "$main" 'only an undisclosed effect, outcome change, or authority need asks for new consent'
 require_text "$main" 'House rules are not a level.'
 require_text "$main" 'eight or more tasks'
 require_text "$main" 'at least two independent judgments with distinct primary lenses'
 require_text "$main" 'Every material executable change gets at least one fresh independent review'
 require_text "$main" 'a second focused independent lens for a one-way-door surface'
 require_text "$main" 'Use staging before production where the target provides it and design changes to be reversible'
+require_text "$main" 'a domain equivalent where a shared state has no meaning'
 require_text "$main" '`built`'
 require_text "$main" '`accepted`'
 require_text "$main" 'Keep no shadow plan, scheduler, artifact ledger, or delivery report.'
 require_text "$main" 'Shared semantics decide what persists'
+require_text "$main" 'before a duplicable or hard-to-undo external effect'
+require_text "$main" 'after two comparable cycles without a newly accepted artifact'
 
 require_text "$planning" 'explicit playback'
 require_text "$planning" 'Brief confirmation authorizes planning only.'
 require_text "$planning" 'Build the first integrated result'
 require_text "$planning" 'Use one stream for one success definition'
+require_text "$planning" 'including anything else that cannot be undone'
 require_text "$planning" 'Full autonomy · Checkpoints · Step-by-step'
 require_text "$planning" '**User checkpoints in Checkpoints mode**'
+require_text "$planning" 'Checkpoints defaults to marking every disclosed protected effect, human step, and Plan landing.'
+require_text "$planning" 'the user may strike some at go'
+require_text "$planning" 'Full autonomy never asks mid-run except for undisclosed-event consent'
 require_text "$planning" 'define each user checkpoint with exact subject/version or future binding rule'
 require_text "$planning" '**Open questions**'
 require_text "$planning" '**First ready work**'
-require_text "$planning" 'Do not offer or accept a Plan go while an open question can change the fingerprint'
-require_text "$planning" 'that one choice is the Plan go'
+require_text "$planning" 'If an open question could change the fingerprint, authority, effects, checkpoints, or house-rule gates'
+require_text "$planning" 'the choice is the Plan go'
 require_text "$planning" 'Planning-only permission never authorizes delivery.'
 require_text "$planning" '`**Plan ref**`'
 require_text "$planning" 'One reviewer applying two checklists does not satisfy the higher floor.'
-require_text "$planning" '`OCTOPLAN_PLAN_REVIEW` receipt'
+require_text "$planning" 'failure containment'
+require_text "$planning" 'Draft one `OCTOPLAN_PLAN_REVIEW` receipt'
+require_text "$planning" 'Persist the complete set only in step 4 below after the full floor reaches PASS.'
 require_text "$planning" 'Server-generated stream/task IDs, statuses, assignees, timestamps, and the later user choice are excluded.'
 require_text "$planning" 'require one-to-one ref-to-ID mappings'
 require_text "$planning" 'disclosed effects; user checkpoints; house-rule gates'
 require_text "$planning" 'Activation requires the complete applicable lens set at PASS on one fingerprint.'
 require_text "$planning" '`Octoplan 18 plan contract`'
 require_text "$planning" '`Octoplan 18 delivery authorization`'
+require_text "$planning" 'post-strike selected checkpoints'
 require_text "$planning" '`Octoplan 18 supervisor lease`'
 require_text "$planning" 'required outcome and constraint'
 require_text "$planning" 'name a precedent only when current evidence shows it fits this case.'
@@ -133,6 +143,10 @@ require_text "$runtime" 'Ambiguous creation pauses that branch'
 require_text "$runtime" 'predecessor stopped and the authoritative targets prove its effects quiescent'
 require_text "$runtime" 'Full autonomy proceeds without a new Octoplan checkpoint'
 require_text "$runtime" 'Any billing to any party is protected'
+require_text "$runtime" 'acceptance, and anything else that cannot be undone at Plan'
+require_text "$runtime" 'Progress cadence is runtime-specific and never asks.'
+require_text "$runtime" 'new consent recorded on the `Octoplan 18 delivery authorization` Decision'
+require_text "$runtime" 'refresh the Plan only if material'
 
 require_text "$supervision" 'Do not mirror a scheduler, Plan page, delivery report, or artifact registry.'
 require_text "$supervision" 'guarded lease names its exact native-task identity and Goal'
@@ -146,16 +160,24 @@ require_text "$supervision" 'one compact supervisor comment that references exis
 require_text "$supervision" 'require the exact strings and surface'
 require_text "$supervision" 'without changing its reviewed specification'
 require_text "$supervision" 'if its owner started or closed, replan instead.'
-require_text "$supervision" 'perform a disclosed effect without contacting the user'
+require_text "$supervision" 'perform a disclosed effect without asking the user'
 require_text "$supervision" 'Undisclosed event'
 require_text "$supervision" 'negative proof at the real call site'
 require_text "$supervision" 'without interrupting Full autonomy'
 require_text "$supervision" 'every selected user checkpoint or Step-by-step pause has a valid continuation receipt'
+require_text "$supervision" 'record its `OCTOPLAN_ACTION <stable-key>` per [recovery.md](recovery.md) first'
+require_text "$supervision" 'checkpoint selected in the delivery authorization from the reviewed Plan'
+require_text "$supervision" 'or any pre-v18 state'
+require_text "$supervision" 'record it on the `Octoplan 18 delivery authorization` Decision'
+require_text "$supervision" 'Consent alone does not refresh the Plan.'
+require_text "$supervision" 'or domain equivalents, stopping at the real finish line'
+require_text "$supervision" 'Name recorded residual risks and findings deferred with authority and rationale.'
 
 require_text "$multi_stream" 'It adds graph breadth, not a second protocol.'
 require_text "$multi_stream" 'Give every stream an immutable plan-local ref'
 require_text "$multi_stream" 'One fenced supervisor selects the ready frontier across every active stream.'
 require_text "$multi_stream" 'A blocked stream or gate stops only downstream work'
+require_text "$multi_stream" 'or a domain equivalent'
 
 require_text "$recovery" '`OCTOPLAN_ACTION <stable-key>`'
 require_text "$recovery" 'Retry only when authoritative evidence proves it absent'
@@ -173,6 +195,8 @@ require_text "$recovery" 'Never transfer an old PASS'
 
 require_text "$conformance" '## v17.2 guarantee retention'
 require_text "$conformance" 'Autopilot sources are outside this release.'
+require_text "$conformance" '| F13, spend protected by default | `SKILL.md` > F13 billing trigger; `references/planning.md` > Phase 2 disclosed-effects catch-all; `references/codex-runtime.md` > Delivery review and protected effects inventory |'
+require_text "$conformance" '`references/codex-supervision.md` > Phase 5 pre-effect loading trigger; `references/recovery.md` > Reconcile effects before retrying'
 
 for retired in OCTOPLAN_STATE_BEGIN manifest_hash task_generation active_actors pending_actions supervisor_epoch creation_key binding_hash artifact_refs; do
   if grep -Fq "$retired" "$main" "$planning" "$runtime" "$supervision" "$multi_stream" "$recovery"; then
@@ -561,6 +585,55 @@ assert.strictEqual(deliveryInterruption({level: 'checkpoints', planGo: true,
   fingerprintMatches: true, disclosed: true, userCheckpoint: true}), 'WAIT_USER_CHECKPOINT');
 assert.strictEqual(deliveryInterruption({level: 'step-by-step', planGo: true,
   fingerprintMatches: true, disclosed: true, stepComplete: true}), 'WAIT_AFTER_STEP');
+
+function checkpointSelected({protectedEffect = false, humanStep = false, landing = false,
+  plannerMarked = false, struckAtGo = false}) {
+  const flags = [protectedEffect, humanStep, landing, plannerMarked, struckAtGo];
+  if (flags.some(flag => typeof flag !== 'boolean')) return false;
+  return (protectedEffect || humanStep || landing || plannerMarked) && !struckAtGo;
+}
+
+for (const defaultPoint of ['protectedEffect', 'humanStep', 'landing']) {
+  assert.strictEqual(checkpointSelected({[defaultPoint]: true}), true);
+}
+assert.strictEqual(checkpointSelected({plannerMarked: true}), true);
+assert.strictEqual(checkpointSelected({protectedEffect: true, struckAtGo: true}), false);
+assert.strictEqual(checkpointSelected({}), false);
+
+function preEffectAdmission({couldDuplicate = false, hardToUndo = false,
+  actionKeyRecorded = false}) {
+  const flags = [couldDuplicate, hardToUndo, actionKeyRecorded];
+  if (flags.some(flag => typeof flag !== 'boolean')) return 'PAUSE_INVALID_EVIDENCE';
+  return (couldDuplicate || hardToUndo) && !actionKeyRecorded ?
+    'RECORD_OCTOPLAN_ACTION' : 'CONTINUE';
+}
+
+assert.strictEqual(preEffectAdmission({couldDuplicate: true}), 'RECORD_OCTOPLAN_ACTION');
+assert.strictEqual(preEffectAdmission({hardToUndo: true}), 'RECORD_OCTOPLAN_ACTION');
+assert.strictEqual(preEffectAdmission({couldDuplicate: true, actionKeyRecorded: true}), 'CONTINUE');
+
+function undisclosedEventDisposition({newFact = false, consentRecorded = false,
+  material = false}) {
+  const flags = [newFact, consentRecorded, material];
+  if (flags.some(flag => typeof flag !== 'boolean')) return 'PAUSE_INVALID_EVIDENCE';
+  if (!newFact) return 'USE_CURRENT_PLAN';
+  if (!consentRecorded) return 'WAIT_NEW_CONSENT';
+  return material ? 'REFRESH_PLAN' : 'CONTINUE_RECORDED_AUTHORIZATION';
+}
+
+assert.strictEqual(undisclosedEventDisposition({newFact: true}), 'WAIT_NEW_CONSENT');
+assert.strictEqual(undisclosedEventDisposition({newFact: true, consentRecorded: true}),
+  'CONTINUE_RECORDED_AUTHORIZATION');
+assert.strictEqual(undisclosedEventDisposition({newFact: true, consentRecorded: true, material: true}),
+  'REFRESH_PLAN');
+
+function recoveryTrigger(cyclesWithoutAcceptedArtifact) {
+  return Number.isInteger(cyclesWithoutAcceptedArtifact) && cyclesWithoutAcceptedArtifact >= 2;
+}
+
+assert.strictEqual(recoveryTrigger(1), false);
+assert.strictEqual(recoveryTrigger(2), true);
+assert.strictEqual(recoveryTrigger('2'), false);
 
 function deliveryReviewFloor({riskAssessed = false, material, oneWayDoor}) {
   if (riskAssessed !== true || typeof material !== 'boolean' ||

@@ -26,7 +26,7 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 - Read [references/codex-supervision.md](references/codex-supervision.md) before Delivery or resume.
 - Read [references/codex-runtime.md](references/codex-runtime.md) only when choosing or checking a route, delegating, creating a Goal, or interpreting runtime authority.
 - Read [references/multi-stream.md](references/multi-stream.md) only when topology selects more than one work stream.
-- Read [references/recovery.md](references/recovery.md) only for ambiguous effects, failed or missing actors, takeover, material replan, legacy state, or handoff.
+- Read [references/recovery.md](references/recovery.md) before a duplicable or hard-to-undo external effect, after two comparable cycles without a newly accepted artifact, or for ambiguity, actor failure, takeover, replan, legacy state, or handoff.
 
 ## Shared foundation
 
@@ -39,7 +39,7 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 - **F7, ready work moves.** Advance every safe ready branch inside the recorded mandate. A wait or failure blocks only descendants that need it.
 - **F8, invariant safety.** Interruption level changes when the user hears from Octoplan, never the applicable rules, verification, review, persistence, or evidence floor.
 - **F9, recoverable ownership.** Keep one fenced supervisor per delivery frontier. Record dispatch before creation, use idempotency and guarded updates, and reconcile authoritative state before any retry or takeover.
-- **F10, integrated closure.** Close only from current integrated evidence, using the exact states `built`, `reviewed`, `merged`, `applied`, `verified`, `released`, and `accepted`. Silence, timeout, irrelevant green checks, and unrun checks are not PASS.
+- **F10, integrated closure.** Close only from current integrated evidence, using supported shared states (`built`, `reviewed`, `merged`, `applied`, `verified`, `released`, `accepted`) or a domain equivalent where a shared state has no meaning. Silence, timeout, irrelevant green checks, and unrun checks are not PASS.
 - **F11, consequence language.** Every user-facing consent or pause states the practical consequence in words a non-expert can answer. Never ask the user to certify technical correctness.
 - **F12, one program.** Brief, Plan, and Delivery use the fixed banners above across implementations; model-specific phases and agents remain invisible product mechanics.
 - **F13, spend protected.** Any step that bills money to any party is a protected effect and must be disclosed at Plan, even when no house rule mentions it.
@@ -48,8 +48,8 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 
 The reviewed Plan ends with one choice:
 
-- **Full autonomy.** The user's go authorizes every effect the Plan disclosed. Delivery then runs uninterrupted to the end and reports when done. Octoplan contacts the user mid-delivery only for an undisclosed effect, outcome change, or authority need, which requires new consent for that new fact.
-- **Checkpoints.** Apply Full autonomy semantics and also pause at the user checkpoints named in the reviewed Plan.
+- **Full autonomy.** The go authorizes every disclosed effect and Delivery runs uninterrupted. Progress may stream or wait until done and never asks; only an undisclosed effect, outcome change, or authority need asks for new consent.
+- **Checkpoints.** Apply Full autonomy and pause at the checkpoints selected from the Plan's default marked set.
 - **Step-by-step.** Pause after every agreed step.
 
 House rules are not a level. When the effective rules route an action to a named person or require exact later evidence, show that wait and owner in the Plan and honor it. Octoplan adds no such wait for a user whose rules do not require one. Persist progress and evidence immediately in every level.
