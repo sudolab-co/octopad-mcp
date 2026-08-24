@@ -1,8 +1,8 @@
 ---
 name: manage-product-documentation
-description: Organize and maintain product documentation in Octopad while a user explores, builds, changes, ships, or audits a product. Use during ordinary product discussion, accepted feature or system work, implementation and pull-request activity, release sync, documentation cleanup, architecture documentation, user-documentation work, release-note preparation, and Product Facts or marketing drafting. Support both greenfield products with no repository or docs and existing products whose pages, tasks, decisions, repositories, and docs must be adopted before anything new is created.
+description: Keep Octopad product documentation true to the work as it happens. Load it before writing that a change has no documentation, spec, or product impact, because that claim needs a search receipt rather than a judgment call, and it fails most often on bug fixes, refactors, and instrumentation nobody framed as documentation work. Load it when product behavior changes or a system boundary is accepted, before opening or updating a pull request, closing a task, or ending the session. Also use it for product brainstorms and parked ideas, documentation setup, cleanup and audits, architecture, user documentation, release notes and release sync, and Product Facts or marketing drafts. A change confined to agent instructions, internal notes, or build tooling does not need it.
 ---
-Version: 1.2.0
+Version: 1.4.0
 
 # Manage Product Documentation
 
@@ -17,11 +17,12 @@ Keep product knowledge useful without turning product work into a documentation 
 ## Operate with evidence
 
 1. Confirm the connected Octopad organization and relevant workspace before writing. Confirm each repository and branch from current evidence. Follow their local instructions. Before creating a Page, use the workspace's available folder and page-preparation guidance and preserve its established organization.
-2. Search before creating. Read likely matches, not only titles. Reuse and link existing pages, streams, tasks, decisions, repository docs, and PRs. Supersede or redirect duplicates non-destructively after preserving unique facts and links; never automatically delete content or overwrite history.
-3. Treat unknown facts as unknown. Ask only when an unresolved system boundary, product intent, or authority conflict would materially change the result. Otherwise use a concise `Unknown`, `Unverified`, or documentation-debt marker and keep working.
-4. Never fabricate architecture, behavior, ownership, dates, metrics, source revisions, release state, or customer evidence. Derive technical facts from current code and repository configuration when available.
-5. Keep provenance beside material claims: evidence source, observed revision or release, verification state, and last verified time. Do not present an old observation as current.
-6. Minimize persisted evidence. Never copy secrets, credentials, private local paths, personal or customer identifiers, or unnecessary source bodies into Octopad. Prefer a safe repository link, public revision, or redacted summary that proves the claim without exposing unrelated data.
+2. Search before creating, and before declaring absence. Read likely matches, not only titles. Reuse and link existing pages, streams, tasks, decisions, repository docs, and PRs. Supersede or redirect duplicates non-destructively after preserving unique facts and links; never automatically delete content or overwrite history.
+3. Prove a negative before writing one. `No documentation impact` is a claim about the whole documentation set, and it is the claim most often wrong, because the work that produces it rarely feels like documentation work. Harvest the search terms from the change itself first: read the changed lines and each touched file's header comment for the specs, pages, and sections they already name, since code that cites a document is telling you which document it belongs to. Search with those names plus the product terms of the change, then open what returns instead of judging it by title. Record the receipt beside the claim, on one line: the terms searched, the pages returned or `no candidate`, and either the document the change cites or `the change cites no document`. A reviewer can check that last part against the diff in seconds, which is what makes the receipt worth writing honestly. Behavior that changed while no page owns it is a gap, not an absence: record it as one-line documentation debt rather than closing the question. A change that touches nothing documentation covers files nothing.
+4. Treat unknown facts as unknown. Ask only when an unresolved system boundary, product intent, or authority conflict would materially change the result. Otherwise use a concise `Unknown`, `Unverified`, or documentation-debt marker and keep working.
+5. Never fabricate architecture, behavior, ownership, dates, metrics, source revisions, release state, or customer evidence. Derive technical facts from current code and repository configuration when available.
+6. Keep provenance beside material claims: evidence source, observed revision or release, verification state, and last verified time. Do not present an old observation as current.
+7. Minimize persisted evidence. Never copy secrets, credentials, private local paths, personal or customer identifiers, or unnecessary source bodies into Octopad. Prefer a safe repository link, public revision, or redacted summary that proves the claim without exposing unrelated data.
 
 ## Administer the documentation system
 
