@@ -69,7 +69,7 @@ A persistent CI workflow, generic test harness, service, dependency, or cross-re
 
 ## Phase 5: reconcile change and interruption
 
-Before an external non-idempotent effect that could duplicate or be hard to undo, record its `OCTOPLAN_ACTION <stable-key>` per [recovery.md](recovery.md). Refresh its Plan bound, authority, target, and effective rules, then apply the interruption contract in [SKILL.md](../SKILL.md). At a selected checkpoint, Step-by-step pause, or house-rule gate, record the subject, owner, and user's continuation.
+Before an external non-idempotent effect that could duplicate or be hard to undo, record its `OCTOPLAN_ACTION <stable-key>` per [recovery.md](recovery.md). Refresh its Plan bound, authority, target, and effective rules, then apply the interruption contract in [SKILL.md](../SKILL.md); record new undisclosed-event consent on the `Octoplan 18 delivery authorization` Decision. At a selected checkpoint, Step-by-step pause, or house-rule gate, record the subject, owner, and user's continuation.
 
 Consent alone does not refresh the Plan. A material changed outcome, proof, boundary, assumption, target, authority need, or protected consequence returns to Brief; a material changed graph or membership, task meaning, route, verifier, deliverable, review trigger, disclosure, checkpoint, or house-rule gate changes the Plan and gets the applicable fresh focused review before a new go. A wording fix or stable finding correction does not. Record drift, affected conclusion, and recheck as evidence.
 

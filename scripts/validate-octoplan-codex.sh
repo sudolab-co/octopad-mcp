@@ -180,6 +180,7 @@ function deliveryReviewFloor({assessed = false, material, oneWayDoor}) {
 assert.strictEqual(deliveryReviewFloor({}), 2);
 assert.strictEqual(deliveryReviewFloor({assessed: true, material: false, oneWayDoor: false}), 0);
 assert.strictEqual(deliveryReviewFloor({assessed: true, material: true, oneWayDoor: false}), 1);
+assert.strictEqual(deliveryReviewFloor({assessed: true, material: false, oneWayDoor: true}), 2);
 assert.strictEqual(deliveryReviewFloor({assessed: true, material: true, oneWayDoor: true}), 2);
 
 const closureVocabulary = new Set(['built', 'reviewed', 'merged', 'applied', 'verified', 'released', 'accepted']);

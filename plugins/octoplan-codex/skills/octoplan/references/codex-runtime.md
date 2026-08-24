@@ -21,7 +21,7 @@ Choose by detection difficulty and reversibility. Save the exact model, effort, 
 
 The only automatic routes are Luna `max` and Sol `high|xhigh|max`. Other declarations pause without substitution. Role admission is stricter: planner = Sol `xhigh|max`; plan reviewer, supervisor, and delivery reviewer = Sol `high|xhigh|max`; worker = the table route.
 
-Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and note once per run that the route is declared, not provable here. Missing route metadata never makes a review fail or become `INFEASIBLE`.
+Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and note once per run that the route is declared, not provable here, recording the note on the first affected receipt or owning task. Missing route metadata never makes a review fail or become `INFEASIBLE`.
 
 ## Native tasks and delegation
 

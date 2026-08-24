@@ -13,7 +13,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | F5, falsifiable Plan | `SKILL.md` > F5; `references/planning.md` > Phases 2 and 3 |
 | F6, review bound to exact state | `SKILL.md` > F6 task-and-revision rule; `references/planning.md` > Phase 3 |
 | F7, every safe ready branch advances | `SKILL.md` > F7; `references/codex-supervision.md` > Phase 4 |
-| F8, interruption never lowers safety | `SKILL.md` > Interruption levels; `references/planning.md` > Phase 2 Checkpoints default and Full autonomy cadence; `references/codex-supervision.md` > Delivery contact policy and Phase 5 interruption branches |
+| F8, interruption never lowers safety | `SKILL.md` > Interruption levels; `SKILL.md` > Interruption levels; `references/codex-supervision.md` > Phase 5 |
 | F9, recoverable ownership | `SKILL.md` > F9; `references/recovery.md` > actor reconciliation and supervisor change |
 | F10, closure from integrated evidence | `SKILL.md` > F10 domain-equivalence rule; `references/codex-supervision.md` > Phase 6 closure predicate and recap trigger |
 | F11, plain consequence language | `SKILL.md` > F11; fixed Brief, Plan, and Delivery shapes in the phase references |
@@ -41,7 +41,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | Unavailable login, seat, or drivable UI becomes a named gate, not a false Verify step | `references/planning.md` > executable task contract |
 | Consumed outputs get dependency edges; each user-facing text surface has one final owner | `references/planning.md` > executable task contract; `references/codex-supervision.md` > Phase 4 |
 | Repository, content, research, and operations keep distinct proof lenses | `references/planning.md` > proof lenses; `references/codex-supervision.md` > Proof and review |
-| Fresh plan challenge, stable recheck, material-replan reset, and complete finding dispositions | `references/planning.md` > Phase 3 floor trigger, finding-disposition rule, and targeted-recheck rule. The former one-review rule remains for low risk and rises to two independent lenses at the shared high-risk floor. |
+| Fresh plan challenge, stable recheck, material-replan reset, and complete finding dispositions | `SKILL.md` > Review floors; `references/planning.md` > Phase 3 finding-disposition and targeted-recheck rules. The former one-review rule remains for low risk and rises to two independent lenses at the shared high-risk floor. |
 | Review PASS binds the exact persisted task set and revision timestamps | `SKILL.md` > F6; `references/planning.md` > Phase 3 receipt and activation checks |
 | Plan contract, delivery authorization, and current-supervisor Decision remain distinct | `references/planning.md` > Persist and hand off |
 | Exact Luna/Sol route table, role floors, capability-conditional observed-route proof, declared-route degradation, and no substitution on a known mismatch | `references/codex-runtime.md` > Exact route table |
