@@ -85,7 +85,7 @@ autopilot_skill_version=$(sed -n 's/^Version: //p' "$autopilot_skill")
 printf '%s\n' "$autopilot_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Autopilot skill version is not semantic versioning'
 autopilot_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$autopilot_manifest")
 [ "$autopilot_manifest_version" = "$autopilot_skill_version" ] || fail 'Autopilot skill and manifest versions differ'
-autopilot_readme_row=$(printf '| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | %s | Plans the work, agrees a delivery contract, then supervises delivery after an explicit go. |' "$autopilot_skill_version")
+autopilot_readme_row=$(printf '| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | %s | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |' "$autopilot_skill_version")
 [ "$(grep -Fxc "$autopilot_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Autopilot version or behavior is stale'
 autopilot_latest_changelog=$(awk '/^## octoplan-autopilot$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$autopilot_latest_changelog" = "$autopilot_skill_version" ] || fail 'latest Autopilot changelog version differs from the skill'
