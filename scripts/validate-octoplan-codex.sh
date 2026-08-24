@@ -41,14 +41,14 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '18.0.0' ] || fail 'Codex SKILL.md is not 18.0.0'
+[ "$skill_version" = '18.0.1' ] || fail 'Codex SKILL.md is not 18.0.1'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$skill_version")
 [ "$(grep -Fxc "$readme_row" "$root/README.md")" -eq 1 ] || fail 'README Codex version or behavior is stale'
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
-require_contract "$conformance" '# Octoplan Codex 18.0.0 conformance'
+require_contract "$conformance" '# Octoplan Codex 18.0.1 conformance'
 require_contract "$conformance" 'Autopilot sources are outside this release.'
 
 skill_lines=$(wc -l < "$main" | tr -d ' ')
@@ -141,7 +141,7 @@ for state in built reviewed merged applied verified released accepted; do
 done
 require_contract "$main" 'a domain equivalent where a shared state has no meaning'
 
-require_contract "$agent_manifest" 'allow_implicit_invocation: false'
+require_contract "$agent_manifest" 'allow_implicit_invocation: true'
 plugin_prompt=$(node -p 'require(process.argv[1]).interface.defaultPrompt[0]' "$manifest")
 agent_prompt=$(sed -n 's/^  default_prompt: "\(.*\)"$/\1/p' "$agent_manifest")
 plugin_prompt_length=$(printf '%s' "$plugin_prompt" | awk '{ print length }')
@@ -189,4 +189,4 @@ assert.strictEqual(closureVocabulary.has('done'), false);
 assert.strictEqual(closureVocabulary.has('green'), false);
 NODE
 
-printf 'PASS: Octoplan Codex 18.0.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
+printf 'PASS: Octoplan Codex 18.0.1 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"

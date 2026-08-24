@@ -56,6 +56,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 18.0.1 — 2026-08-24
+
+Makes the skill visible to Codex again. The agent manifest set `allow_implicit_invocation: false` to express that Octoplan runs only on an explicit request. On this Codex build that flag removes the skill from skill discovery altogether, so a fresh session could not see or load it even when the user typed `$octoplan` — the release closeout's fresh-context witness caught it, and a direct check confirmed the skill absent from a new session's list while its marketplace siblings appeared.
+
+The flag is now `true`, matching those siblings. Explicit-only invocation is unchanged and still binding: it lives in the skill's own description ("Use only when a Codex user explicitly invokes `$octoplan`…"), which is what the model reads when deciding whether to trigger. No workflow, contract, or guarantee changed; the conformance record now cites the description as the binding site rather than the manifest flag.
+
 ### 18.0.0 — 2026-08-24
 
 Rebuilds Codex Octoplan around the shared three-stage program. Every user-facing message opens with the canonical Brief, Plan, or Delivery banner. Brief playback is always explicit and confirmed. The reviewed Plan uses one plain-language line per step and records one choice among Full autonomy, Checkpoints, and Step-by-step. It discloses every protected effect, including anything that cannot be undone, and every human gate. Checkpoints defaults to marking every disclosed protected effect, human step, and Plan landing; the planner may add points and the user may strike some at go. In Full autonomy, the Plan go authorizes every disclosed effect and Delivery runs uninterrupted. Progress may stream or wait until done but never asks; only an undisclosed event requires new consequence consent. That consent is recorded on the delivery authorization, and the Plan refreshes only for a material change. Team-owned house rules remain invariant.
