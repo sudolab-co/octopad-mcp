@@ -56,6 +56,16 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 18.0.0 — 2026-08-24
+
+Rebuilds Codex Octoplan around the shared three-stage program. Every user-facing message opens with the canonical Brief, Plan, or Delivery banner. Brief playback is always explicit and confirmed. The reviewed Plan uses one plain-language line per step and records one choice among Full autonomy, Checkpoints, and Step-by-step. It discloses every protected effect, including anything that cannot be undone, and every human gate. Checkpoints defaults to marking every disclosed protected effect, human step, and Plan landing; the planner may add points and the user may strike some at go. In Full autonomy, the Plan go authorizes every disclosed effect and Delivery runs uninterrupted. Progress may stream or wait until done but never asks; only an undisclosed event requires new consequence consent. That consent is recorded on the delivery authorization, and the Plan refreshes only for a material change. Team-owned house rules remain invariant.
+
+Plan-review receipts bind the exact task IDs and revision timestamps reviewed; activation confirms that none changed. One supervisor at a time is recorded as a stream Decision and updated with Octopad's compare-and-set guard. Before retry or replacement, the supervisor checks the authoritative target, and a successor confirms its predecessor stopped before acting. Checkpoints and house-rule gates retain only their subject, owner, and the user's recorded continuation. `OCTOPLAN_ACTION` remains for external non-idempotent effects; route degradation is noted once per run.
+
+Interruption behavior, review floors, protected effects, and undisclosed-event handling each have one binding statement in the main skill, with runtime references pointing back to it. The validator now checks the public contract, review-floor arithmetic, release synchronization, file set, and word and line caps without reimplementing the runtime state machine. Evidence-based closure, the shared work-state vocabulary, and six-field handoffs remain unchanged. `CONFORMANCE.md` maps each retained guarantee to its current trigger point.
+
+This is a breaking plan contract. Treat every pre-v18 plan as historical evidence: reconcile any live actor or effect, reread current Octopad and target state, then create a freshly confirmed, reviewed, and authorized v18 Plan without carrying forward PASS, authority, pending actions, supervisor ownership, or Goal state. The Claude and Autopilot distributions are unchanged.
+
 ### 17.2.0 — 2026-08-17
 
 Keeps task specifications outcome-led and runnable. `How` states the required outcome and constraint, and prescribes a technique or precedent only when current evidence justifies it. A login, third-party seat, or user interface the executor cannot access becomes a named checkpoint instead of an impossible `Verify` step. Any task that consumes another task's output now needs the matching dependency edge, and each user-facing text surface has one owner for its final wording.
