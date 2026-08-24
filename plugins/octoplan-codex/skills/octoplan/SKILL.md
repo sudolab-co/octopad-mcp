@@ -35,14 +35,14 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 - **F3, progressive complexity.** Simple work does not load or report multi-stream coordination, advanced routing, or recovery mechanics it does not need.
 - **F4, confirmed intent.** Every new or materially changed outcome receives a scaled Brief playback and explicit confirmation. Never infer or skip confirmation. Resume the same persisted confirmed brief without asking again.
 - **F5, falsifiable plan.** Treat user statements, repository files, Octopad records, and earlier plans as evidence. Verify material premises and challenge the complete artifact graph before activation.
-- **F6, state-bound review.** Bind review to the exact persisted graph or artifact revision. Record material drift and the focused recheck. Never carry PASS across affected drift.
+- **F6, state-bound review.** Every review receipt names the exact tasks and revision timestamps reviewed. Before activation, confirm that none changed. Record material drift and the focused recheck; never carry PASS across affected drift.
 - **F7, ready work moves.** Advance every safe ready branch inside the recorded mandate. A wait or failure blocks only descendants that need it.
 - **F8, invariant safety.** Interruption level changes when the user hears from Octoplan, never the applicable rules, verification, review, persistence, or evidence floor.
-- **F9, recoverable ownership.** Keep one fenced supervisor per delivery frontier. Record dispatch before creation, use idempotency and guarded updates, and reconcile authoritative state before any retry or takeover.
+- **F9, recoverable ownership.** Keep one supervisor at a time and record it as a stream Decision. Before any retry or replacement, verify the authoritative target. A successor confirms that its predecessor stopped before acting. Guard Octopad updates with `expected_updated_at`.
 - **F10, integrated closure.** Close only from current integrated evidence, using supported shared states (`built`, `reviewed`, `merged`, `applied`, `verified`, `released`, `accepted`) or a domain equivalent where a shared state has no meaning. Silence, timeout, irrelevant green checks, and unrun checks are not PASS.
 - **F11, consequence language.** Every user-facing consent or pause states the practical consequence in words a non-expert can answer. Never ask the user to certify technical correctness.
 - **F12, one program.** Brief, Plan, and Delivery use the fixed banners above across implementations; model-specific phases and agents remain invisible product mechanics.
-- **F13, spend protected.** Any step that bills money to any party is a protected effect and must be disclosed at Plan, even when no house rule mentions it.
+- **F13, protected effects.** Any step that bills money to any party, or has another consequence that cannot be undone, is a protected effect and must be disclosed at Plan even when no house rule mentions it.
 
 ## Interruption levels
 

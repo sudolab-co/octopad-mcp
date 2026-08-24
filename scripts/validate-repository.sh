@@ -255,7 +255,7 @@ grep -q '^### 1\.2\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-doc
 grep -q '"version": "18\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 18.0.0'
 grep -q '^Version: 18\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 18.0.0'
 grep -Fq 'Missing route metadata never makes a review fail or become `INFEASIBLE`.' "$root/plugins/octoplan-codex/skills/octoplan/references/codex-runtime.md" || fail 'Codex route capability degradation is missing'
-grep -Fq 'route declared, not provable in this runtime — capability absent' "$root/plugins/octoplan-codex/skills/octoplan/references/planning.md" || fail 'Codex review receipt degradation note is missing'
+grep -Fq 'note once per run that the route is declared, not provable here' "$root/plugins/octoplan-codex/skills/octoplan/references/codex-runtime.md" || fail 'Codex route degradation note is missing'
 grep -Fq 'known mismatch' "$root/plugins/octoplan-codex/CONFORMANCE.md" || fail 'Codex conformance does not preserve no-substitution on known mismatch'
 grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
 grep -q '^### 10\.0\.0 — 2026-08-08$' "$root/CHANGELOG.md" || fail 'Codex 10.0.0 entry is missing'

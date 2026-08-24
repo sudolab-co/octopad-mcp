@@ -4,9 +4,7 @@ Read this before choosing a model, delegating, creating a Goal, or asking for au
 
 ## Authority
 
-Brief confirmation authorizes planning, including the internal Octopad writes needed to materialize the reviewed graph. It never authorizes delivery. For a plan-and-deliver mandate, the user's interruption-level choice is the Plan go: translate it into the exact graph, target, effect bounds, native tasks, user checkpoints, and house-rule gates recorded in `Octoplan 18 delivery authorization`. A Goal never widens authority.
-
-In Full autonomy, the go authorizes disclosed effects and adds no approval. Progress cadence is runtime-specific and never asks. An undisclosed target, outcome, scope, effect, consequence, or authority need requires new consent recorded on the `Octoplan 18 delivery authorization` Decision; refresh the Plan only if material. Checkpoints and Step-by-step add only their user pauses. Effective runtime and target rules may still require a named person's action or exact evidence; disclose those house-rule gates and honor them in every level.
+Apply the single authority and interruption contract in [SKILL.md](../SKILL.md). Persist the user's Plan choice and bounds in `Octoplan 18 delivery authorization`; a Goal never widens them.
 
 A plan reviewer is read-only: it uses production Octopad and exact bounded context but cannot write, claim, complete, launch, approve, or authorize. A worker receives only the delivery authority its owning task needs. The supervisor validates all advancement and authority.
 
@@ -23,24 +21,18 @@ Choose by detection difficulty and reversibility. Save the exact model, effort, 
 
 The only automatic routes are Luna `max` and Sol `high|xhigh|max`. Other declarations pause without substitution. Role admission is stricter: planner = Sol `xhigh|max`; plan reviewer, supervisor, and delivery reviewer = Sol `high|xhigh|max`; worker = the table route.
 
-Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and persist `route declared, not provable in this runtime — capability absent` in the first affected review receipt. State it once per run; later receipts reference it. Missing route metadata never makes a review fail or become `INFEASIBLE`.
+Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and note once per run that the route is declared, not provable here. Missing route metadata never makes a review fail or become `INFEASIBLE`.
 
 ## Native tasks and delegation
 
 The current user task is the default planning and supervision target. Use a fresh supervisor after a heavy planning pass, when another native Goal is already active, or when repository/worktree isolation requires it. Create the Goal only after the supervisor is chosen and delivery is authorized.
 
-Use a spawned worker only when isolation, specialization, independent parallelism, or context reduction is worth the handoff. Keep a small sequential task inline. Before create, write `OCTOPLAN_DISPATCH <stable-key>` on the owning task with role, Octopad task ID, intended native target/project/worktree, exact route, and authority source. Include the key in the prompt. Create once, then reconcile the returned native task through native list/read and record its exact task identity, target/project/worktree association, Octopad binding, and observed route before work. Ambiguous creation pauses that branch; never create again merely because one response field is missing.
+Use a spawned worker only when isolation, specialization, independent parallelism, or context reduction is worth the handoff. Keep a small sequential task inline. Treat a creation as successful only after its call returns or the authoritative target confirms it. Before any retry or replacement, inspect that target; never recreate work merely because one response field is missing.
 
-Every worker starts production Octopad, reads the exact task and stream Decisions, reads effective target rules, and works only that task. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates other actors. Record a terminal dispatch receipt when the worker stops and its effects are reconciled. Create a replacement only after native evidence proves the predecessor stopped and the authoritative targets prove its effects quiescent.
-
-Give native tasks readable titles under 64 characters: `SUP-<stream>-delivery`, `EX-<stream>-<task>`, or `REV-<stream>-<subject>`. Shorten the stream first; omit `octoplanned`; keep opaque IDs in prompts and tool records.
+Every worker starts production Octopad, reads the exact task and stream Decisions, reads effective target rules, and works only that task. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates other actors. A replacement confirms its predecessor stopped before acting.
 
 Parallelize only tasks whose real write surfaces and outputs are independent. Never parallelize migrations, shared generated artifacts, or siblings where one shapes the other's contract.
 
 ## Delivery review and protected effects
 
-Run deterministic checks before judgment. Every task gets targeted verification. Every material executable change gets one fresh source-first review. Add a second independent focused lens for a one-way-door surface. Low-risk non-material work may use machine checks plus supervisor verification. Add further specialists only for distinct material domains or stricter effective rules.
-
-Inventory secrets, access grants, schema and data changes, destructive effects, spend, required human review, merge, migration application, deployment, publication, outward communication, acceptance, and anything else that cannot be undone at Plan. State each practical consequence and owner. Any billing to any party is protected even when no house rule says so. Keep effects and gates on the owning task, not as fake delivery tasks.
-
-When an effect is disclosed and authorized, Full autonomy proceeds without a new Octoplan checkpoint if effective rules permit it. When an effective rule routes the action to a named person or requires exact later evidence, the recorded house-rule gate remains. An undisclosed effect pauses only descendants that need it and triggers new consequence consent; every independent safe branch continues.
+Apply the review floor, protected-effect definition, and interruption behavior from [SKILL.md](../SKILL.md). Keep effects and gates on the owning task, not as fake delivery tasks; effective rules may add stricter waits or reviewers.
