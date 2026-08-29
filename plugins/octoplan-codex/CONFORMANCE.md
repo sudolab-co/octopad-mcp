@@ -1,4 +1,4 @@
-# Octoplan Codex 18.0.1 conformance
+# Octoplan Codex 18.1.0 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 
@@ -13,7 +13,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | F5, falsifiable Plan | `SKILL.md` > F5; `references/planning.md` > Phases 2 and 3 |
 | F6, review bound to exact state | `SKILL.md` > F6 task-and-revision rule; `references/planning.md` > Phase 3 |
 | F7, every safe ready branch advances | `SKILL.md` > F7; `references/codex-supervision.md` > Phase 4 |
-| F8, interruption never lowers safety | `SKILL.md` > Interruption levels; `SKILL.md` > Interruption levels; `references/codex-supervision.md` > Phase 5 |
+| F8, interruption never lowers safety | `SKILL.md` > Interruption levels; `references/codex-supervision.md` > Phase 5 |
 | F9, recoverable ownership | `SKILL.md` > F9; `references/recovery.md` > actor reconciliation and supervisor change |
 | F10, closure from integrated evidence | `SKILL.md` > F10 domain-equivalence rule; `references/codex-supervision.md` > Phase 6 closure predicate and recap trigger |
 | F11, plain consequence language | `SKILL.md` > F11; fixed Brief, Plan, and Delivery shapes in the phase references |
@@ -24,6 +24,34 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | Undisclosed-event consent | `SKILL.md` > Interruption levels; `references/planning.md` > persisted delivery authorization |
 | Shared work-state vocabulary | `SKILL.md` > F10 domain-equivalence rule; `references/multi-stream.md` > Close precisely; `references/codex-supervision.md` > Phase 6 recap trigger |
 | Shared/runtime boundary | `SKILL.md` > Shared/runtime boundary; runtime mechanics in `references/codex-runtime.md` and `references/recovery.md` |
+
+## v18.1 corrective guarantees
+
+| Guarantee | Canonical v18.1 location |
+|---|---|
+| A1, stakes and proportionality | `references/planning.md` > Phase 2 stakes Decision; `SKILL.md` > Review floors |
+| A2, review convergence budget | `references/planning.md` > Phase 3 verdict and third-round rule |
+| A3, kill-question stop | `references/codex-supervision.md` > Phase 4 stop rule |
+| A4, shared-infrastructure distress | `references/recovery.md` > Stop for shared-infrastructure distress |
+| A5, user-mandate sweeps | `references/recovery.md` > Replan without stale state |
+| A6, rig parity and rehearsal | `references/planning.md` > proof lenses |
+| A7, upstream premise verdict | `references/planning.md` > proof lenses and Phase 3 |
+| A8, position and outcome reporting | `references/codex-supervision.md` > Enter or resume |
+| A9, monotonic authority | `SKILL.md` > Full autonomy; activation and supervision point back to it |
+| A10, escalation ownership and stalls | `references/codex-supervision.md` > Consequence handoff |
+| A11, countable handoff and worthless assumption | `references/codex-supervision.md` > Consequence handoff |
+| A12, interpretation playback | `SKILL.md` > F4; `references/planning.md` > Phase 1 interpretation Decision |
+| A13 and P1-7, access map and remote preflight | `references/planning.md` > Phase 2 |
+| A14, verified written records | `SKILL.md` > F1; `references/planning.md` > Persist and hand off |
+| P0-1, immutable review and authorization receipts | `SKILL.md` > F6; `references/planning.md` > Phase 3 and activation |
+| P0-2, pre-effect interlock | `references/codex-supervision.md` > Phase 5 |
+| P0-3, new task after material-premise rerun | `references/recovery.md` > Replan without stale state |
+| P0-4, durable closure interlock | `references/codex-supervision.md` > Phase 6 |
+| P1-5, outcome frontier without a file cap | `references/codex-supervision.md` > Phase 4 |
+| P1-6, handover acceptance | `references/planning.md` > handoff; `references/recovery.md` > Hand off durably |
+| P1-8, real-target proof class | `references/planning.md` > proof lenses; `references/codex-supervision.md` > Proof and review |
+| P1-9, tracker non-authority | `references/planning.md` > Persist and hand off |
+| P1-10, native continuity guidance | `references/codex-runtime.md` > Native tasks; `references/codex-supervision.md` > Phase 4. Atomic Goal, session, thread-routing, and ownership enforcement remain runtime work. |
 
 ## v17.2 guarantee retention
 
@@ -68,7 +96,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `18.0.0`.
+- [x] Skill `Version:` and plugin manifest use `18.1.0`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.

@@ -56,6 +56,16 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 18.1.0 — 2026-08-29
+
+Strengthens governed Delivery after the recent Octoplan pilots without invalidating existing v18 Plans. Planning now records the decision served, blast radius, reversibility, countable success, and a kill question. Measurement, comparison, visual-proof, and research work must prove its upstream premise and real proof surface before dispatch. Synthetic rigs use an outward-in parity manifest tied to raw evidence, rehearse cheaply before expensive work, and start a new task when a material premise changes after dispatch. Internal reversible work with deterministic proof may reduce a two-review floor to one, while stricter repository, security, privacy, migration, and production rules still win.
+
+Full autonomy is now explicitly monotonic. Internal replanning, re-review, dependency repair, or gate movement does not consume the user's go. New consent is limited to a changed outcome or authority, a new protected effect, a user-owned consequence, or a changed gate. Review and authorization receipts are append-only, every protected effect rechecks the exact current task, authorization, contract, target, and artifact version, and user-mandate changes sweep both open task text and anything a retired Decision left active. A kill-question answer stops its run generation immediately; it cannot be deferred, renamed, subsetted, or averaged away. Shared-infrastructure distress stops its branch before ordinary retry.
+
+Reports now show position, countable outcome movement, and the decisive metric. Two task closes with no outcome movement trigger replanning. Hand-offs carry countable results, the assumption that would make them worthless, standing authority, pending effects, active actors, and person-waits. Trackers remain non-authoritative. Clean closure requires task state, Goal, supervisor record, session closure, and final hand-off to agree, and any failed closure call is disclosed. Every written record uses current-session sources, re-derived numbers, revision and read-time evidence, and private-data minimization.
+
+Codex guidance now routes a user's continuation to the recorded supervisor, prepares a hand-off when reported context use reaches 75%, rejects automatic polls as new Goal turns, and forbids silent turn-end stops while safe authorized work remains. Atomic enforcement in native Goal and session APIs, thread routing, and supervisor ownership remains deferred runtime work; this skill does not claim that text alone enforces those mechanics. Existing v18 Plans need no migration. The Claude and Autopilot distributions are unchanged.
+
 ### 18.0.1 — 2026-08-24
 
 Makes the skill visible to Codex again. The agent manifest set `allow_implicit_invocation: false` to express that Octoplan runs only on an explicit request. On this Codex build that flag removes the skill from skill discovery altogether, so a fresh session could not see or load it even when the user typed `$octoplan` — the release closeout's fresh-context witness caught it, and a direct check confirmed the skill absent from a new session's list while its marketplace siblings appeared.
