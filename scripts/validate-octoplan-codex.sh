@@ -41,14 +41,14 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '18.0.1' ] || fail 'Codex SKILL.md is not 18.0.1'
+[ "$skill_version" = '18.1.0' ] || fail 'Codex SKILL.md is not 18.1.0'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$skill_version")
 [ "$(grep -Fxc "$readme_row" "$root/README.md")" -eq 1 ] || fail 'README Codex version or behavior is stale'
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
-require_contract "$conformance" '# Octoplan Codex 18.0.1 conformance'
+require_contract "$conformance" '# Octoplan Codex 18.1.0 conformance'
 require_contract "$conformance" 'Autopilot sources are outside this release.'
 
 skill_lines=$(wc -l < "$main" | tr -d ' ')
@@ -91,8 +91,8 @@ require_contract "$main" '**Full autonomy.**'
 require_contract "$main" '**Checkpoints.**'
 require_contract "$main" '**Step-by-step.**'
 require_contract "$planning" 'Full autonomy · Checkpoints · Step-by-step'
-require_contract "$main" 'The go authorizes every disclosed effect and Delivery runs uninterrupted.'
-require_contract "$main" 'only an undisclosed effect, outcome change, or authority need asks for new consent'
+require_contract "$main" 'Authority is monotonic:'
+require_contract "$main" 'The initial go must postdate and name the Plan handoff it answers.'
 require_contract "$main" 'House rules are not a level.'
 require_contract "$planning" 'Octoplan 18 delivery authorization'
 require_contract "$planning" 'post-strike selected checkpoints'
@@ -120,6 +120,39 @@ require_contract "$main" 'one supervisor at a time'
 require_contract "$main" 'record it as a stream Decision'
 require_contract "$main" 'A successor confirms that its predecessor stopped before acting.'
 require_contract "$main" 'expected_updated_at'
+require_contract "$planning" 'Octoplan 18 stakes'
+require_contract "$planning" 'Before round three on one artifact'
+require_contract "$supervision" 'An answer stops that run generation immediately'
+require_contract "$recovery" 'Stop for shared-infrastructure distress'
+require_contract "$recovery" 'sweep every open task specification'
+require_contract "$planning" 'parity manifest from the real system'
+require_contract "$planning" 'raw JSONL, receipts, fixtures, and exact verifier revisions'
+require_contract "$planning" '`INPUT UNFIT`'
+require_contract "$supervision" 'Position — completed/active/total executable'
+require_contract "$supervision" 'Three task closes or four hours'
+require_contract "$supervision" 'one assumption that would make it worthless'
+require_contract "$planning" 'accepted reading, rejected reading, and countable success'
+require_contract "$planning" "Map the full path's secrets without values"
+require_contract "$planning" 'distinguish authority from credential entry'
+require_contract "$main" 'Every record uses quotes read this session, numbers re-derived when written'
+require_contract "$main" 'secrets or unnecessary private text are never copied'
+require_contract "$planning" 'A superseding review or authorization links, never overwrites, its predecessor.'
+require_contract "$planning" 'authority delta including none, exact handoff reference'
+require_contract "$supervision" 'Before any protected effect'
+require_contract "$recovery" 'A rerun after a material premise change is a new task'
+require_contract "$supervision" 'session closure, and final handoff must agree'
+require_contract "$supervision" 'assumption that makes it worthless'
+require_contract "$supervision" 'Two consecutive closes that advance no unit trigger replan'
+require_contract "$supervision" 'every selected checkpoint, Step-by-step pause, and house-rule gate'
+require_contract "$recovery" 'Before dispatch, the successor re-proves'
+require_contract "$planning" 'Preflight connectors, GitHub, CI, messaging, and deployment'
+require_contract "$planning" 'Run a cheap rehearsal'
+require_contract "$planning" 'material post-dispatch rig repair'
+require_contract "$supervision" "task's named proof surface"
+require_contract "$planning" 'A tracker is navigation, never evidence or authority'
+require_contract "$runtime" 'context use at 75%'
+require_contract "$runtime" "Route a user's “continue” to that recorded owner"
+require_contract "$main" 'on shared-infrastructure distress'
 
 for retired in OCTOPLAN_DISPATCH 'supervisor lease' 'lease generation' \
   'quiescence receipt' 'canonical fingerprint' '**Plan ref**' 'one-to-one ref-to-ID' \
@@ -189,4 +222,4 @@ assert.strictEqual(closureVocabulary.has('done'), false);
 assert.strictEqual(closureVocabulary.has('green'), false);
 NODE
 
-printf 'PASS: Octoplan Codex 18.0.1 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
+printf 'PASS: Octoplan Codex 18.1.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"

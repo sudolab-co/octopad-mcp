@@ -25,11 +25,11 @@ Record declared routes. When native evidence exposes model and effort, require a
 
 ## Native tasks and delegation
 
-The current user task is the default planning and supervision target. Use a fresh supervisor after a heavy planning pass, when another native Goal is already active, or when repository/worktree isolation requires it. Create the Goal only after the supervisor is chosen and delivery is authorized.
+The current user task is the default planning and supervision target. Use a fresh supervisor after a heavy planning pass, when another Goal is active, or when isolation requires it. If runtime reports context use at 75%, prepare a safe-boundary handoff before verification capacity is lost. Create the Goal only after the supervisor is chosen and delivery is authorized.
 
 Use a spawned worker only when isolation, specialization, independent parallelism, or context reduction is worth the handoff. Keep a small sequential task inline. Treat a creation as successful only after its call returns or the authoritative target confirms it. Before any retry or replacement, inspect that target; never recreate work merely because one response field is missing.
 
-Every worker starts production Octopad, reads the exact task and stream Decisions, reads effective target rules, and works only that task. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates other actors. A replacement confirms its predecessor stopped before acting.
+Every worker starts production Octopad, reads the exact task, Decisions, and effective rules, and works only that task. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates actors. Route a user's “continue” to that recorded owner; another thread or reviewer never acquires ownership from the message. A replacement confirms its predecessor stopped before acting.
 
 Parallelize only tasks whose real write surfaces and outputs are independent. Never parallelize migrations, shared generated artifacts, or siblings where one shapes the other's contract.
 

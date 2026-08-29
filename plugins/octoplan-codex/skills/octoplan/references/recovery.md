@@ -10,6 +10,10 @@ After a timeout or incomplete response, assume neither success nor failure. Insp
 
 Use native idempotency and `expected_updated_at` on guarded Octopad updates. A conflict causes reread and reconciliation, never overwrite.
 
+## Stop for shared-infrastructure distress
+
+Shared-infrastructure timeouts, saturation, quota failure, or state contamination stop the affected branch before ordinary retries. Record the system, event count, duration, and data magnitude; resume only from a reviewed clean state. This rule overrides the recovery budget and Goal continuation.
+
 ## Reconcile actors before replacement
 
 Treat an actor as created only after its call returns or the authoritative native target confirms it. Before any retry or replacement, inspect that target. A successor must confirm that its predecessor stopped before acting; if that cannot be proved, pause only the affected branch. Never finish covertly under another identity.
@@ -22,7 +26,7 @@ Treat an actor as created only after its call returns or the authoritative nativ
 - **Plan change:** stop affected work, update the Brief or Plan, and apply its fresh review and consent rules.
 - **House rule or undisclosed event:** follow the contract in [SKILL.md](../SKILL.md).
 
-Share one two-route verification-recovery budget across supervisor, workers, and reviewers. After two failed routes, preserve the strongest evidence and report the gap; attempt no third route and build no generic infrastructure for one-off proof. After two comparable cycles without a newly accepted artifact, review, or integrated proof, diagnose the Plan, context, task size, route, tool, and verifier before launching more work. Activity, drafts, tokens, and irrelevant checks are not progress.
+Share one two-route verification-recovery budget across all actors. After two failed routes, preserve the strongest evidence and report the gap; build no generic infrastructure for one-off proof. After two comparable cycles without accepted artifact, review, or integrated proof, diagnose before launching more work. Activity, drafts, tokens, and irrelevant checks are not progress.
 
 ## Change supervisor safely
 
@@ -30,10 +34,10 @@ Keep one supervisor at a time, named in a stream Decision. Before handoff, persi
 
 ## Replan without stale state
 
-A wording fix or stable finding correction stays on the current Plan. A changed outcome, proof, boundary, assumption, task set or meaning, target, authority, route, verifier, deliverable, review trigger, disclosed effect, user checkpoint, or house-rule gate triggers the Brief or Plan path in supervision. Stop and reconcile an old worker before a replacement writes. Adopt a useful artifact only when the revised task names it and its evidence.
+A wording fix or stable correction stays on the Plan. Classify material change with [planning.md](planning.md); it does not revoke consent unless [SKILL.md](../SKILL.md) says authority changed. For a user-mandate change, sweep every open task specification and every artifact or actor a retired Decision left active, including Goals, supervisor ownership, threads, pending actions, PRs, migrations, and effects; a superseded comment is not a sweep. A rerun after a material premise change is a new task whose results name it; the old task and receipts remain immutable, and a fresh Goal follows only after the new task and authority are bound.
 
 Do not execute a pre-v18 plan contract or private Octoplan control object. Treat it only as historical evidence: stop or reconcile actors and effects that may still be live; reread the current mandate, target rules, and Octopad graph; then create a freshly confirmed, reviewed, and authorized v18 Plan. Never transfer old PASS, authority, pending actions, supervisor ownership, or Goal state.
 
 ## Hand off durably
 
-At an unrecovered incident or session handoff, persist exact in-flight facts on their owning tasks and use the six-field Delivery handoff. A successor resumes from Octopad, the delivery target, native task state, and the current supervisor Decision. Chat history is never the only copy of authority, progress, or an ambiguous effect.
+At an unrecovered incident or handoff, persist in-flight facts on owning tasks and use the six-field Delivery handoff. Before dispatch, the successor re-proves the decision served, premise, kill question, standing authority, pending effects, one supervisor, active actors, and person-waits; no new go is needed without an authority delta. Chat is never the only copy of authority, progress, or an ambiguous effect.
