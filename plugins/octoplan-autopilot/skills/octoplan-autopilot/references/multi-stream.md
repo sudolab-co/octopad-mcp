@@ -18,6 +18,6 @@ The scoping brief (`references/planning.md`, step 2) is written ONCE for the who
 ## Effort self-check (feeds the per-plan self-check in `references/planning.md`)
 
 - Blueprint page exists, is light, is linked, and its archiving is a closing subtask of the effort's final validation task.
-- At the delivery go, every stream carries the contract Decisions, its own go Decision with its own supervisor route, and the ` (octoplanned)` suffix.
+- At the delivery go, every stream carries the contract Decisions — the stakes Decision with the effort's kill question included, plus any kill question the stream's own output adds — its own go Decision with its own supervisor route, and the ` (octoplanned)` suffix.
 - Cross-stream dependencies are wired as edges; shared landings are ordered in the graph.
 - No stream supervisor's territory crosses a seam.
