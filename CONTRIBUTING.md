@@ -6,14 +6,27 @@ This public repository contains direct MCP setup guides and optional skill distr
 
 - **Connection docs:** `README.md`, `INSTALL.md` and `docs/clients/`.
 - **Claude Octoplan:** `.claude-plugin/` and `plugins/octoplan-claude/`.
-- **Claude Octoplan Autopilot:** `.claude-plugin/` and `plugins/octoplan-autopilot/`.
 - **Codex Octoplan:** `.agents/` and `plugins/octoplan-codex/`.
 - **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
 - **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation-codex/`.
 - **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
-Each Octoplan plugin is a separate public contract. The two product-documentation plugins distribute one shared contract. Do not change several unrelated contracts unless the pull request clearly covers them.
+The two Octoplan plugins distribute one shared contract to two runtimes, as do the two product-documentation plugins. Do not change several unrelated contracts unless the pull request clearly covers them.
+
+## One skill, one name
+
+A distribution's folder name, its plugin `name`, and its release tag prefix are the same string. A skill that ships to more than one AI runtime carries that runtime in the name; a skill that ships to one runtime does not. Release titles read `<Display Name> <version>`, nothing else.
+
+| Folder | Plugin name | Tag prefix | Release title |
+|---|---|---|---|
+| `plugins/octoplan-claude/` | `octoplan-claude` | `octoplan-claude-v` | `Octoplan for Claude Code X.Y.Z` |
+| `plugins/octoplan-codex/` | `octoplan-codex` | `octoplan-codex-v` | `Octoplan for Codex X.Y.Z` |
+| `plugins/manage-product-documentation-claude/` | `manage-product-documentation` | `manage-product-documentation-claude-v` | `Manage Product Documentation X.Y.Z (Claude Code)` |
+| `plugins/manage-product-documentation-codex/` | `manage-product-documentation` | `manage-product-documentation-codex-v` | `Manage Product Documentation X.Y.Z (Codex)` |
+| `plugins/meeting-to-octopad/` | `meeting-to-octopad` | `meeting-to-octopad-v` | `Meeting to Octopad X.Y.Z` |
+
+The product-documentation plugin name carries no runtime suffix because each marketplace manifest already selects one runtime and the two entries never appear in the same list. Its folder and tag still carry the suffix, because both live in one repository where the names must not collide. `scripts/validate-repository.sh` enforces the folder-to-plugin-name half of this rule; tags and release titles are the publisher's to get right.
 
 ## Skill contract changes ship with a version bump
 
@@ -25,21 +38,25 @@ For an independently versioned distribution such as Octoplan, three surfaces mov
 
 An identity migration that changes no skill behavior keeps the existing skill versions. Document it in the connection guides. Do not invent a skill release.
 
-Repository maintainers publish tags and releases after review. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. Product-documentation releases use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z`. Codex Octoplan releases use `octoplan-codex-vX.Y.Z`. Claude Octoplan Autopilot releases use `octoplan-autopilot-vX.Y.Z`. Meeting to Octopad releases use `meeting-to-octopad-vX.Y.Z`.
+Repository maintainers publish tags and releases after review, using the prefixes in the table above. Tags published before a distribution's version reset keep their original prefix and number: they are the record of what those release pages already serve, and renaming them would break the link between a release and what it shipped. Retired prefixes, kept for history only: `octoplan-vX.Y.Z` and `octoplan-autopilot-vX.Y.Z`.
 
 ## Which number moves
 
-Use semantic versioning against each distribution's public contract:
+Every version reads `P.I.F`:
 
-- **Major** (`2.0.0`): an incompatible contract change. Use it when an existing saved plan needs migration or replanning.
-- **Minor** (`1.1.0`): backward-compatible functionality or guidance. Existing saved plans and prompts remain valid.
-- **Patch** (`1.0.1`): a backward-compatible bug fix or clarification that adds no new capability.
+- **`P`, the shared protocol.** The contract that both runtimes follow. A change here moves the number on every distribution of that skill at once, Claude and Codex together, and resets `I` and `F` to zero. Use it when an existing saved plan needs migration or replanning.
+- **`I`, one runtime's own capability.** A change only one runtime sees. It moves that distribution alone and resets `F` to zero. Existing saved plans and prompts stay valid.
+- **`F`, a local fix.** A backward-compatible correction or clarification with no behavior change.
 
-When in doubt, ask whether existing valid inputs need editing or migration. If yes, the change is major. A different internal path is not major when the public contract stays compatible.
+When in doubt, ask whether the other runtime's users are affected. If yes, it is `P`. If existing valid inputs need editing or migration, it is `P`. A different internal path is neither when the public contract stays compatible.
+
+Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract, so the first digit now means the same thing on both sides. Changelog entries from before that reset keep their original numbers under each distribution's pre-reset heading.
+
+Do not confuse the release version with a plan-contract generation. Codex Octoplan stamps saved plans with a contract generation (`Octoplan 18 plan contract`) that says which plans a supervisor may still execute. That identifier is runtime state and is not renumbered by a release. Changing it is a `P` bump with a migration, never a side effect of versioning.
 
 ## Keep the distributions separate
 
-A Claude-only Octoplan change may edit Claude files, its changelog entry and shared docs about that change. A Codex-only Octoplan change follows the same rule.
+A Claude-only Octoplan change may edit Claude files, its changelog entry and shared docs about that change. A Codex-only Octoplan change follows the same rule. A change to the contract both share moves both.
 
 Do not copy behavior between distributions without checking each contract. Describe both runtimes accurately in shared docs. Test both paths when an edit touches both.
 

@@ -18,7 +18,7 @@ The user pastes a task's block into a fresh session, which briefs itself entirel
 Supervision changes hands with a block of its own, whether the planner hands it over at the delivery go, a running supervisor hands over the rest of the stream, or a dead session has to be replaced (the one exception is a running supervisor delegating to a subagent it spawns — no block, no paste; see Delegating the run in `references/supervision.md` — the block remains the path whenever a human launches the successor):
 
 ```
-Octoplan Autopilot <work stream>
+Octoplan <work stream>
 Octopad · Organisation: <organisation> · Workspace: <workspace>
 ```
 

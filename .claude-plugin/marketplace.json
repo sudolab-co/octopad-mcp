@@ -18,23 +18,13 @@
     },
     {
       "name": "octoplan-claude",
-      "description": "Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical work alike. Requires a connected Octopad MCP server.",
+      "description": "Turns an Octopad work stream into an execution-ready plan of detailed, ordered, self-contained tasks, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Works for engineering and non-technical work alike. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.",
       "author": {
         "name": "Sudolab"
       },
       "category": "productivity",
       "homepage": "https://octopad.app",
       "source": "./plugins/octoplan-claude"
-    },
-    {
-      "name": "octoplan-autopilot",
-      "description": "Turns an Octopad work stream into an execution-ready plan of detailed, ordered, self-contained tasks, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Works for engineering and non-technical work alike. Requires a connected Octopad MCP server.",
-      "author": {
-        "name": "Sudolab"
-      },
-      "category": "productivity",
-      "homepage": "https://octopad.app",
-      "source": "./plugins/octoplan-autopilot"
     },
     {
       "name": "meeting-to-octopad",

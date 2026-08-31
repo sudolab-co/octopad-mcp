@@ -35,6 +35,18 @@ For regular ChatGPT conversations, install the official Octopad app. This is the
 
 Skills are separate from the MCP connection. Install one only when the user explicitly asks for it.
 
+### Keep skills up to date
+
+**Claude Code.** A third-party marketplace does not refresh itself by default. After installing any skill from `octopad-mcp`, offer to turn automatic updates on and walk the user through it, because a skill that never refreshes silently stays on an old contract:
+
+1. Run `/plugin`.
+2. Select **Marketplaces**.
+3. Select `octopad-mcp` and enable automatic updates.
+
+Do not claim this is done until the user confirms the setting. To refresh once, by hand, run `/plugin marketplace update octopad-mcp`, `/plugin update <plugin>@octopad-mcp`, then `/reload-plugins`.
+
+**Codex.** There is no automatic update. Refresh with `codex plugin marketplace upgrade octopad-mcp`, which refreshes the marketplace and reinstalls its configured plugins. Start a new task afterwards. Tell the user this is manual rather than implying it is automatic.
+
 ### Manage product documentation
 
 This skill helps an AI assistant organize and maintain product documentation in Octopad during normal product work. It can activate while the assistant is running, but it is not a background service.
@@ -54,42 +66,21 @@ codex plugin marketplace add sudolab-co/octopad-mcp --ref main
 codex plugin add manage-product-documentation@octopad-mcp
 ```
 
-For Claude Code, refresh with `/plugin marketplace update octopad-mcp`, `/plugin update manage-product-documentation@octopad-mcp`, then `/reload-plugins`. For Codex, run `codex plugin marketplace upgrade octopad-mcp`. Start a new session or task after refreshing.
+Then follow **Keep skills up to date** above.
 
 ### Octoplan for Claude Code
 
+Octoplan plans a work stream into detailed, ordered, self-contained tasks, shows the finished plan with every protected effect named in plain words, asks one delivery-mode question, and supervises the delivery of that plan once the user gives an explicit go. It never delivers without that go.
+
 ```text
 /plugin marketplace add sudolab-co/octopad-mcp
 /plugin install octoplan-claude@octopad-mcp
 /reload-plugins
 ```
 
-Third-party Claude marketplaces do not update automatically by default. To enable updates, open `/plugin`, select **Marketplaces**, then select `octopad-mcp`.
+Then follow **Keep skills up to date** above.
 
-To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-claude@octopad-mcp`, then `/reload-plugins`.
-
-### Octoplan Autopilot for Claude Code
-
-This is an experimental variant published for a live trial. It plans a work stream like Octoplan, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go.
-
-Install it **in place of** `octoplan-claude`, not alongside it: both skills trigger on the same request, a plain "Octoplan" followed by a work-stream name, so with both installed the assistant has no reliable way to tell which one you meant. Remove the planning-only one first:
-
-```text
-/plugin uninstall octoplan-claude@octopad-mcp
-/plugin marketplace add sudolab-co/octopad-mcp
-/plugin install octoplan-autopilot@octopad-mcp
-/reload-plugins
-```
-
-To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update octoplan-autopilot@octopad-mcp`, then `/reload-plugins`.
-
-To go back to planning-only Octoplan, uninstall this one and reinstall the other:
-
-```text
-/plugin uninstall octoplan-autopilot@octopad-mcp
-/plugin install octoplan-claude@octopad-mcp
-/reload-plugins
-```
+Codex has its own Octoplan distribution. Do not install the Claude one in Codex or the reverse.
 
 ### Meeting to Octopad for Claude Code
 
@@ -101,7 +92,7 @@ This skill turns a meeting transcript into Octopad changes: it extracts decision
 /reload-plugins
 ```
 
-To refresh the skill manually, run `/plugin marketplace update octopad-mcp`, `/plugin update meeting-to-octopad@octopad-mcp`, then `/reload-plugins`.
+Then follow **Keep skills up to date** above.
 
 ### Octoplan for Codex
 
@@ -110,19 +101,21 @@ codex plugin marketplace add sudolab-co/octopad-mcp --ref main
 codex plugin add octoplan-codex@octopad-mcp
 ```
 
-Refresh later releases with:
-
-```bash
-codex plugin marketplace upgrade octopad-mcp
-```
-
-This command refreshes the marketplace and reinstalls its configured plugins. Start a new Codex task after installing or refreshing the skill.
+Then follow **Keep skills up to date** above.
 
 ### Migrate an existing Octoplan install
 
-The repository and marketplace rename is intentionally breaking. Remove the old identity before adding the new one.
+Octoplan for Claude Code now ships as one distribution, `octoplan-claude`, at version `1.0.0`. Two earlier Claude identities are retired: the planning-only skill that carried the `octoplan-claude` name, and the experimental `octoplan-autopilot`. Remove whichever is installed before adding the current one.
 
-Claude Code:
+Claude Code, from `octoplan-autopilot`:
+
+```text
+/plugin uninstall octoplan-autopilot@octopad-mcp
+/plugin install octoplan-claude@octopad-mcp
+/reload-plugins
+```
+
+Claude Code, from the retired `octopad-skills` marketplace:
 
 ```text
 /plugin uninstall octoplan@octopad-skills
@@ -132,7 +125,7 @@ Claude Code:
 /reload-plugins
 ```
 
-Codex:
+Codex, from the retired `octopad-skills` marketplace:
 
 ```bash
 codex plugin remove octoplan-codex@octopad-skills
@@ -141,4 +134,11 @@ codex plugin marketplace add sudolab-co/octopad-mcp --ref main
 codex plugin add octoplan-codex@octopad-mcp
 ```
 
-Start a new task after either migration.
+Codex Octoplan also restarted its version numbering at `1.0.0`. A Codex install still holding an `18.x` version may not offer `1.0.0` as an upgrade. When `codex plugin marketplace upgrade octopad-mcp` leaves the old version in place, remove and re-add the plugin:
+
+```bash
+codex plugin remove octoplan-codex@octopad-mcp
+codex plugin add octoplan-codex@octopad-mcp
+```
+
+Start a new conversation or task after any migration.

@@ -1,7 +1,7 @@
 {
   "name": "octoplan-claude",
-  "description": "Work-stream planning protocol for Octopad. A planning session turns a work stream into detailed, ordered, self-contained tasks; fresh sessions then execute them one at a time, chained by a minimal continuation prompt.",
-  "version": "1.5.0",
+  "description": "Work-stream planning and supervised delivery for Octopad, for Claude Code. One session plans a work stream into detailed, ordered, self-contained tasks, shows the finished plan with every protected effect disclosed in plain words, asks one delivery-mode question — Full autonomy, Checkpoints, or Step-by-step — and on that answer supervises the delivery of the plan. Codex runs its own Octoplan distribution.",
+  "version": "1.0.0",
   "author": {
     "name": "Sudolab"
   },

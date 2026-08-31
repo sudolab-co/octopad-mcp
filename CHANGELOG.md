@@ -2,7 +2,9 @@
 
 All notable changes to the skills in this repository.
 
-Each Octoplan distribution is versioned independently in its own `Version:` line and plugin manifest. The Claude Code and Codex product-documentation distributions share one synchronized version. Standard semantic versioning applies to each public contract: major changes are incompatible and may require migration or replanning, minor changes add backward-compatible functionality, and patches are backward-compatible fixes or clarifications.
+Every version reads `P.I.F`. `P` is the contract shared across runtimes: a change there moves every distribution of that skill at once and may require migration or replanning. `I` is one runtime's own capability, moving that distribution alone. `F` is a backward-compatible fix or clarification with no behavior change. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
+
+Octoplan restarted at `1.0.0` on both runtimes on 2026-08-31, when they adopted one shared contract and the first digit began to mean the same thing on both sides. Entries published before that reset keep their original numbers under each distribution's **Before the 1.0.0 reset** heading, because those numbers are what the published release pages record. A Codex plan-contract generation such as `Octoplan 18 plan contract` is runtime state, not a release version, and the reset did not change it.
 
 This file records versioned contract changes. GitHub tags and releases are the publication record. Some intermediate Codex versions were superseded before they received a separate GitHub release.
 
@@ -56,7 +58,21 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
-### 18.1.1 — 2026-08-31
+### 1.0.0 — 2026-08-31
+
+Renumbers the Codex distribution from `18.1.1` to `1.0.0`. Nothing about the skill's behavior changes: the Brief, Plan, and Delivery banners, the interruption modes, the review floors, the protected-effect disclosures, and the recovery rules are byte-identical to `18.1.1`. Only the version strings move, in the skill's `Version:` line, the plugin manifest, the conformance record, and the validator.
+
+The reset exists because Claude and Codex Octoplan now implement one shared contract while their numbers had drifted eighteen major versions apart, which made the first digit meaningless as a signal about the contract. From this release the first digit is the shared protocol and moves on both distributions together, the second is one runtime's own capability, and the third is a fix.
+
+Two things this release does NOT do. It does not change the plan-contract generation: saved plans still carry `Octoplan 18 plan contract`, that identifier is runtime state rather than a release version, and every live v18 plan stays valid and executable. And it does not renumber anything already published: releases `1.3.1` through `18.1.1` keep their tags, their pages, and their numbers, listed below under **Before the 1.0.0 reset**.
+
+Installs holding an `18.x` version may not be offered `1.0.0` as an upgrade, because the number is lower. When `codex plugin marketplace upgrade octopad-mcp` leaves the old version in place, remove and re-add the plugin; `INSTALL.md` carries the commands.
+
+### Before the 1.0.0 reset
+
+These releases were published as `octoplan-codex-v1.3.1` through `octoplan-codex-v18.1.1`. Their tags and release pages are unchanged.
+
+#### 18.1.1 — 2026-08-31
 
 Fixes the unattended-delivery stop without weakening the Plan display. When a user chooses an interruption mode after confirming the Brief and then explicitly says they will be unavailable, Codex now shows the reviewed Plan and starts under that standing intent instead of asking for the same choice again. Absence grants no authority. Before review, every disclosed effect is atomic, bounded, and classified against the user's quoted words as covered or waiting. The Plan contract records that map before review; PASS receipts bind its exact Decision revision; activation rechecks the binding and copies only the unchanged reviewed map. Pre-Brief or inferred choices, silence, generic assent, ambiguous effects, and changed outcomes still wait.
 
@@ -64,7 +80,7 @@ Remote preflight failures now block only their consumers. One human-owned access
 
 Planning now counts as overhead paid by the outcome. The stakes record sets numeric ceilings for top-level tasks and total Plan-review rounds, each round covers the required review floor, and a user's simplicity or efficiency request tightens both ceilings. The planner reduces or replans work, or asks before exceeding a ceiling; two rounds require a user decision to exceed. Existing v18 Plans need no migration. The Claude and Autopilot distributions are unchanged.
 
-### 18.1.0 — 2026-08-29
+#### 18.1.0 — 2026-08-29
 
 Strengthens governed Delivery after the recent Octoplan pilots without invalidating existing v18 Plans. Planning now records the decision served, blast radius, reversibility, countable success, and a kill question. Measurement, comparison, visual-proof, and research work must prove its upstream premise and real proof surface before dispatch. Synthetic rigs use an outward-in parity manifest tied to raw evidence, rehearse cheaply before expensive work, and start a new task when a material premise changes after dispatch. Internal reversible work with deterministic proof may reduce a two-review floor to one, while stricter repository, security, privacy, migration, and production rules still win.
 
@@ -74,13 +90,13 @@ Reports now show position, countable outcome movement, and the decisive metric. 
 
 Codex guidance now routes a user's continuation to the recorded supervisor, prepares a hand-off when reported context use reaches 75%, rejects automatic polls as new Goal turns, and forbids silent turn-end stops while safe authorized work remains. Atomic enforcement in native Goal and session APIs, thread routing, and supervisor ownership remains deferred runtime work; this skill does not claim that text alone enforces those mechanics. Existing v18 Plans need no migration. The Claude and Autopilot distributions are unchanged.
 
-### 18.0.1 — 2026-08-24
+#### 18.0.1 — 2026-08-24
 
 Makes the skill visible to Codex again. The agent manifest set `allow_implicit_invocation: false` to express that Octoplan runs only on an explicit request. On this Codex build that flag removes the skill from skill discovery altogether, so a fresh session could not see or load it even when the user typed `$octoplan` — the release closeout's fresh-context witness caught it, and a direct check confirmed the skill absent from a new session's list while its marketplace siblings appeared.
 
 The flag is now `true`, matching those siblings. Explicit-only invocation is unchanged and still binding: it lives in the skill's own description ("Use only when a Codex user explicitly invokes `$octoplan`…"), which is what the model reads when deciding whether to trigger. No workflow, contract, or guarantee changed; the conformance record now cites the description as the binding site rather than the manifest flag.
 
-### 18.0.0 — 2026-08-24
+#### 18.0.0 — 2026-08-24
 
 Rebuilds Codex Octoplan around the shared three-stage program. Every user-facing message opens with the canonical Brief, Plan, or Delivery banner. Brief playback is always explicit and confirmed. The reviewed Plan uses one plain-language line per step and records one choice among Full autonomy, Checkpoints, and Step-by-step. It discloses every protected effect, including anything that cannot be undone, and every human gate. Checkpoints defaults to marking every disclosed protected effect, human step, and Plan landing; the planner may add points and the user may strike some at go. In Full autonomy, the Plan go authorizes every disclosed effect and Delivery runs uninterrupted. Progress may stream or wait until done but never asks; only an undisclosed event requires new consequence consent. That consent is recorded on the delivery authorization, and the Plan refreshes only for a material change. Team-owned house rules remain invariant.
 
@@ -90,19 +106,19 @@ Interruption behavior, review floors, protected effects, and undisclosed-event h
 
 This is a breaking plan contract. Treat every pre-v18 plan as historical evidence: reconcile any live actor or effect, reread current Octopad and target state, then create a freshly confirmed, reviewed, and authorized v18 Plan without carrying forward PASS, authority, pending actions, supervisor ownership, or Goal state. The Claude and Autopilot distributions are unchanged.
 
-### 17.2.0 — 2026-08-17
+#### 17.2.0 — 2026-08-17
 
 Keeps task specifications outcome-led and runnable. `How` states the required outcome and constraint, and prescribes a technique or precedent only when current evidence justifies it. A login, third-party seat, or user interface the executor cannot access becomes a named checkpoint instead of an impossible `Verify` step. Any task that consumes another task's output now needs the matching dependency edge, and each user-facing text surface has one owner for its final wording.
 
 Supervision reports an actor or effect only after a returned result or authoritative reconciliation, and leaves one compact close comment that reuses existing receipts. Workers surface any user-facing wording they had to invent; the supervisor records it once on the unstarted owner task without changing the reviewed specification, or replans if that task already started. Deterministic fixtures cover unsupported technique and precedent, unavailable access, missing dependency edges, duplicate wording ownership, mid-run wording, unresolved calls, and reconciled results. Existing v17 plans need no migration. The Claude and Autopilot distributions are unchanged.
 
-### 17.1.0 — 2026-08-14
+#### 17.1.0 — 2026-08-14
 
 Keeps verification proportional to the reviewed work. A delivery reviewer may expose risk but cannot enlarge `Done when`; findings block only when grounded in an effective rule, a reviewed `Verify` or `Done when` requirement, an uncleared reviewed checkpoint, or a concrete correctness failure. Persistent CI, generic test harnesses, services, dependencies, and cross-repository artifacts absent from the reviewed plan are rejected as scope expansion, or trigger replanning when a real rule or accepted outcome requires them.
 
 The two-route verification-recovery budget is now shared across the supervisor, workers, and reviewers. After two failed routes, the run preserves its strongest evidence and hands off the gap instead of attempting a third route or building generic infrastructure for one-off proof. Deterministic fixtures cover an unplanned pgTAP suggestion, generic-CI expansion, required replanning, and a cross-actor recovery budget. Existing v17 plans need no migration. The Claude and Autopilot distributions are unchanged.
 
-### 17.0.0 — 2026-08-14
+#### 17.0.0 — 2026-08-14
 
 Codex Octoplan now follows a lean Octopad-native contract informed by Octoplan Autopilot 0.2. The current task builds the smallest useful graph, runs one fresh plan challenge, and either supervises authorized delivery itself or hands it to a fresh task before Goal creation when planning consumed substantial context. Delivery authorization carries across that handoff, while protected actions remain separately gated. Octopad tasks, dependencies, Decisions, Questions, and comments hold durable project truth; a native Goal is only the active supervisor's continuity handle.
 
@@ -110,7 +126,7 @@ The lighter contract retains Codex's exact Luna/Sol route admission, branch-loca
 
 This breaking release removes the v6 private JSON control plane, recovery-state guide, historical v3-v5 contract stubs, and eight role packs. Plans created under private Octoplan v3-v6 state are historical evidence only: reconcile any live actor or effect, reread the current mandate and real graph, then create one fresh reviewed v17 plan without carrying forward PASS, authority, pending actions, supervisor ownership, or Goal state. The Claude and Autopilot distributions are unchanged.
 
-### 16.0.0 — 2026-08-13
+#### 16.0.0 — 2026-08-13
 
 Octoplan now calibrates plan shape (`simple`, `structured`, or `adaptive`) independently from consequence (`reversible`, `material`, or `protected`). Shape controls graph depth, delegation, WIP, and recovery; the plan's maximum consequence controls brief and adversarial plan-review depth, while each task's own consequence controls its delivery review and protected gates. Every revision receives exactly one fresh adversarial plan-review session, with stable corrections rechecked by that same session rather than multiplying reviewers.
 
@@ -122,7 +138,7 @@ Artifacts use one strict generic core plus a `repository`, `content`, `research`
 
 This is a clean breaking contract: only `octoplan-plan-v6` runs. Earlier control schemas are rejected and are neither migrated nor translated; a new v6 plan starts from the live mandate. An explicit, precise plan-and-deliver request can cover a faithful creation brief without a redundant confirmation, but planning-only permission never authorizes delivery and protected actions remain separately gated. The Claude distribution is unchanged.
 
-### 15.0.0 — 2026-08-12
+#### 15.0.0 — 2026-08-12
 
 Every material replan now expires prior planner leases and requires a unique fresh planner session bound to the candidate, plan and intent revisions, and a bounded source snapshot. An interrupted planner may expire with no output; no stale candidate can be invented or adopted. Two material replans, a repeated graph, or two comparable cycles without accepted progress opens a blocking efficiency incident and requires diagnosis before stable correction may resume.
 
@@ -132,7 +148,7 @@ Every branch, PR, document, and other delivery artifact now has a durable lifecy
 
 This breaking release introduces `octoplan-plan-v5`. Active v4 or older plans are fenced and replanned; an unfinished legacy Goal keeps v5 paused until a genuine terminal state or explicit human lifecycle decision, without false completion, false blocking, or a competing Goal. The v14 route floor, compact title convention, fresh-writer rule, and mandatory reversible archive lifecycle remain enforced. The Claude distribution is unchanged.
 
-### 14.0.0 — 2026-08-12
+#### 14.0.0 — 2026-08-12
 
 Octoplan now binds every writer to a semantic task generation and an autonomous manifest. A split, merge, changed task meaning, graph, output, route, authority, acceptance, or rewrite contract fences the predecessor and requires a fresh writer plus a fresh full independent review; a healthy actor may still handle a stable same-generation correction with a targeted recheck. Successor activation requires stop acknowledgement, post-fence quiescence, transfer and creation receipts, binding readback, manifest acknowledgement, and a fresh full-stack admission covering main, stacked bases and heads, ancestry, effective diffs, migrations, checks, verifier coverage, and TTL.
 
@@ -142,7 +158,7 @@ Completed executors must be archived reversibly after accepted evidence and supe
 
 This breaking release introduces `octoplan-plan-v4`, typed review and telemetry records, explicit parallel frontiers, bounded state compaction, and immutable historical receipts. Active v3 or older plans must be fenced and replanned from the current mandate rather than migrating authority, PASS verdicts, actors, or action receipts. The Claude distribution is unchanged.
 
-### 13.1.0 — 2026-08-11
+#### 13.1.0 — 2026-08-11
 
 Interactive clarification and planning now stay in the current user task, while delegated role packs remain reserved for bounded child work. The creation brief is proportional in presentation but complete in authority, effects, routes, lifecycle, review cadence, and human checkpoints. User-facing handoffs are localized, and Octopad task statuses now map cleanly to `todo`, `in_progress`, `blocked`, and `done`; `waiting-human` and `paused` remain coordination states rather than invalid task statuses.
 
@@ -150,7 +166,7 @@ Long-running recovery now revives the unique saved supervisor before considering
 
 Codex packaging removes the policy override that suppressed Octoplan from fresh sessions and uses one explicit `$octoplan` prompt capped at 128 characters across both manifests. Repository validators now fail closed on the recovery ordering, stale quiescence, invalid statuses, incomplete briefs, version drift, prompt drift, and the known suppression policy. The Claude distribution is unchanged.
 
-### 13.0.0 — 2026-08-11
+#### 13.0.0 — 2026-08-11
 
 Octoplan now turns the conversation into one user-readable creation brief before the first Octopad write. The brief exposes the expected result, scope, evidence, governing organization rules, planned Octopad effects, native Codex actors, and every proposed human checkpoint. Validation uses one holistic cadence: either progressive review at the meaningful checkpoints selected from the work, or final review after all safe work is ready. The confirmed tracker, tasks, graph, Decisions, and Questions embody that brief without creating a duplicate bookkeeping Page.
 
@@ -160,13 +176,13 @@ Delivery planning now produces coherent units that are independently acceptable,
 
 This breaking release introduces `octoplan-plan-v3`. Active v1, v2, 12.x, or unknown plans must be fenced and replanned from the current user mandate without inheriting execution authority, PASS verdicts, action receipts, native actors, or Goal ownership. The Claude distribution is unchanged.
 
-### 12.1.0 — 2026-08-11
+#### 12.1.0 — 2026-08-11
 
 Octoplan supervisors now own ordinary in-envelope execution failures through one bounded, receipted recovery loop before escalation. Connector, registry, worktree, branch, dependency, CI, and recoverable tool incidents are classified before action and may receive at most two distinct safe, reversible remedies. Existing no-mutation actors are reconciled and reused instead of duplicated, while rewording or waking an incident cannot reset its budget. Actual repository or project mismatches, unknown remotes, secrets or access issues, destructive recovery, protected actions, and material scope, target, or risk changes still stop.
 
 Native project identity now follows an ordered evidence hierarchy. Direct native association or the saved registry remains preferred; when metadata is incomplete after a targeted create, a unique actor may be reconciled from its persisted target and receipt, returned task and creation key, role packet, saved project-to-repository mapping, worktree and Git identity, normalized remote, branch and HEAD audit, and no-mutation state. This does not repair the native registry, and no path, prompt, title, or name is sufficient alone. Valid initial authority also remains valid across technical current-head verification and in-envelope repair; new authority is required only for changed scope, target, risk, or a new protected action.
 
-### 12.0.0 — 2026-08-10
+#### 12.0.0 — 2026-08-10
 
 Octoplan now plans from the earliest integrated, demonstrable outcome instead of treating completed components or branches as delivery. The planner records the critical path, bounded `eligible_safe_ready` frontiers, WIP and review budgets, and partial batches with backfill, so independent items such as editorial deliverables can advance concurrently while keeping individual artifacts, receipts, and verdicts. Multi-component work closes only with current integrated-outcome evidence and resolved protected gates.
 
@@ -176,7 +192,7 @@ Human PR review and merge remain distinct protected occurrences but are embedded
 
 This breaking release introduces `octoplan-plan-v2`, including honest draft and awaiting-approval states, dedicated-supervisor ownership, native-action grants, actor lifecycle, embedded gates, budgets, and global outcome evidence. Plans saved under v1, 10.x, or unknown contracts must be replanned from the confirmed mandate without inheriting PASS, authority, creation intents, or launch state. The Claude distribution is unchanged.
 
-### 11.0.0 — 2026-08-09
+#### 11.0.0 — 2026-08-09
 
 Octoplan now turns a brainstorm into a detailed, reviewed Octopad task graph, asks material questions in one batch, and separates plan approval, bounded execution authority, finite actor-creation grants, and protected human gates. Tasks use the live Octopad stream, task, dependency, and page-link shapes and carry **Why**, **What**, top-level **Done when**, impact, routes, and proportionate review. One supervisor drives Octopad's native graph, repairs inside the approved envelope, and asks the user only for a real material choice, missing authority, unreconcilable identity, a write still missing after targeted recovery, a conflicting revision, or a protected gate.
 
@@ -184,13 +200,13 @@ The new `octoplan-plan-v1` keeps only plan identity and approved revision, essen
 
 This release removes the 10.x fingerprint, canonical readback, saved-state equality, and exhaustive Decision, Question, and task replay contracts. Existing 10.x or unknown plans must be materially replanned from the confirmed mandate without inheriting PASS, digest, consent, or creation intents. The distribution remains organization-agnostic and Codex-only; the Claude distribution is unchanged.
 
-### 10.2.1 — 2026-08-09
+#### 10.2.1 — 2026-08-09
 
 Octoplan now treats asynchronous Codex setup as pending until native project identity is ready, persists a deterministic bootstrap intent before its only create call, and binds handoff repair to the returned destination task. A single plan-scoped authority grant covers the exact finite actor set, while compatible tasks are compressed and only equivalent transitive dependencies are removed.
 
 Octopad writes now use the connector's actual stream, goal, and page-link shapes. Batch recovery reconciles each item from its exact direct readback before retrying only missing operations, and accepts the model-facing JSON mirror when a host hides `structuredContent`. Existing 10.2.0 plans remain valid without migration; their exact creation authority can materialize the new runtime grant without rewriting the saved plan. The Claude distribution is unchanged.
 
-### 10.2.0 — 2026-08-09
+#### 10.2.0 — 2026-08-09
 
 Octoplan can now start from a plain idea without an existing stream or saved plan. It returns one complete brief, batches every material question, treats the user's answers and Delivery mode choice as confirmation of unchanged fields, and avoids a second confirmation loop. A two-stage execution runway checks the native project, required task-creation and relocation authority, session creation and reconciliation, Octopad access, write shapes, sources, prerequisites, and verifiers before the first durable planning write. Missing capability or authority therefore produces one precise pre-write blocker instead of failing after the plan is built.
 
@@ -198,13 +214,13 @@ New plans are assembled through one non-authoritative, journaled candidate that 
 
 Execution now keeps native task-creation and relocation authority as separate source-bound grants, serializes reviewed work when no atomic group transition exists, commits human-wait state and its outbox event together before publication, and replaces an unreachable supervisor only with source-stamped proof plus a successful fence and epoch rotation. Deterministic fixtures cover the complete idea-to-launch journey, question confirmation, candidate crash and seal boundaries, stale consent, failed guards, post-consent drift, outbox retry, serial fallback evidence, supervisor recovery, and zero native creation on every rejected path. Existing 10.1.0 plans remain valid without migration. The Claude distribution is unchanged.
 
-### 10.1.0 — 2026-08-09
+#### 10.1.0 — 2026-08-09
 
 Octoplan now proves the execution runway before any Octopad planning write. It verifies native project identity, session creation and reconciliation capabilities, the Octopad entrypoint, required adapters, source access, and the first-frontier verifier. If the current task has no project identity or the wrong one, it relocates the untouched brief once into the exact saved project after the required authority, then restarts preflight there. Ambiguous targets or unavailable capabilities stop before durable planning.
 
 Material questions stay off-record until the runway passes, and unsupported history is no longer rewritten record by record before the replacement graph is feasible. Deterministic fixtures cover same-project readiness, null-project relocation, brief and relocation authority, ambiguous targets, and missing native capabilities. Existing 10.0.0 plans remain valid. The Claude distribution is unchanged.
 
-### 10.0.0 — 2026-08-08
+#### 10.0.0 — 2026-08-08
 
 This breaking Codex release formalizes short native-session display titles for supervisors, executors, reviewers, planners, and specialist reviewers. Titles are derived deterministically from saved human-readable names, capped at 64 characters, and never expose UUIDs, hashes, creation tokens, or thread IDs; the display title remains separate from native creation identity. Existing saved plans whose names cannot produce an unambiguous title require replanning.
 
@@ -212,19 +228,19 @@ The supervisor now publishes a six-field handoff before every human gate or deci
 
 Automatic routing now normalizes capacity and enforces the Luna max floor (`gpt-5.6-luna` at maximum effort). Terra and Sol remain available only with their existing justification, and least-costly incident routing is restricted to compliant routes; saved routes below the floor require replanning. Native session reconciliation now verifies the actual native project identity from native metadata or the registry before activation; a projectless, null-project, or cross-project observation pauses with the explicit handoff. The Claude distribution is unchanged.
 
-### 9.0.0 — 2026-08-05
+#### 9.0.0 — 2026-08-05
 
 This breaking release gives each actor a small role-specific pack and binds every native creation to an immutable packet naming the organization, workspace, work stream, task, route, target, model, effort, and required capability profile. Every native child enters that Octopad context first, while Octopad remains responsible for its own context and status lifecycle. The planner, supervisor, executor, reviewer, recovery, and follow-up responsibilities are explicit.
 
 The supervisor owns incidents end to end: it can delegate bounded reasoning to a fresh actor with an appropriate model and effort, restore a missing capability or use a safe workaround, and asks the user only after proving that no compliant path remains. Analytical delegates cannot impersonate native launchers. Incident planners use the affected task's saved recovery route or default recovery route, and any capacity change creates a reviewed delta. Planning rejects plans decomposed into tool calls or access probes instead of independently deliverable results. Existing 8.0.0 plans require replanning under this creation contract; the Claude distribution is unchanged.
 
-### 8.0.0 — 2026-08-04
+#### 8.0.0 — 2026-08-04
 
 Every native Octoplan session now stays in the same Codex project as the planning session. The project ID is fixed across supervisors, executors, lead and specialist reviewers, recovery sessions, and follow-ups; `local` and `worktree` environments may still differ inside that project. Projectless plans keep the exact planning directory. A cross-project or project/projectless substitution stops before session creation.
 
 This breaking release requires earlier saved plans to be replanned before execution. Deterministic fixtures now validate the complete execution environment and every native session role for both project and projectless targets. The Claude distribution is unchanged.
 
-### 7.0.0 — 2026-08-04
+#### 7.0.0 — 2026-08-04
 
 This breaking Codex release supports one v5/v2 contract path; earlier saved contracts require replanning and receive no historical support. Users choose a plain-language Delivery mode: **Review before delivery** waits for confirmation, while **Autonomous delivery** can accept an unambiguous end-to-end delegation in the first message, publish a non-blocking scoping checkpoint, independently validate that authority, and continue without asking the user to judge the plan. Neither mode grants protected actions.
 
@@ -232,13 +248,13 @@ The standalone v2 fingerprint binds exact target parsing, extraction/defaults, U
 
 Material incidents use a fresh planner without execution authority, a concrete independent delta review, a whole-run fence/quiescence barrier, explicit adoption or rejection, repeated grounding, read-back, fingerprint, and conformance checks, and a new run without transferring PASS or consent. Natural-language activation fixtures distinguish bounded delegation from urgency, vague trust, or a bare “do it”. Portability, single-source references, generic tool-schema separation, deterministic fixtures, and CI-safe public-hygiene validators are tightened; no historical support is retained.
 
-### 6.1.0 — 2026-08-04
+#### 6.1.0 — 2026-08-04
 
 Codex users may now explicitly authorize automatic execution after confirming the scoping brief. Once plan review and saved-state equality pass, Octoplan can bind that prior authority to the exact final plan hash in a guarded coordination-ledger comment and launch without a second wake-up. A bare brief confirmation, broad autonomy, prior chat, or planning permission is never enough.
 
 Advance authority is invalidated by any unresolved Question or material change in result, scope, cost, risk, success, architecture, route bounds, validation mode, or protected actions. Consent evidence and launch-binding records remain runtime state outside the plan fingerprint. Existing 6.0 plans with `octoplan-supervision-v4` and normal later final-hash consent remain valid; protected actions, human gates, the Claude distribution, and the Octopad MCP are unchanged.
 
-### 6.0.0 — 2026-08-03
+#### 6.0.0 — 2026-08-03
 
 Codex plans now use one byte-deterministic `octoplan-fingerprint-v1` input bound to `octoplan-supervision-v4`. The structured fingerprint covers the supervision policy, binding execution targets, review record, participating streams, governing Decisions, and every agent and human task, with exact field extraction, ordering, UTF-8 JSON escaping, and exclusions for runtime state. Final-hash locations are normalized to `PENDING`, the ledger manifest has explicit exclusion sentinels, and any hidden copy of the persisted digest stops verification instead of creating a self-referential hash.
 
@@ -246,11 +262,11 @@ Native Codex sessions now use readable titles for dedicated supervisors, executo
 
 Every `create_thread` response shape now converges through `list_threads` and `read_thread` before a creation record becomes ready. Client IDs are never passed to thread tools, every real candidate is checked for the exact internal identity, and ambiguous or lost results pause without retrying creation. This release is breaking: plans using `octoplan-supervision-v3` or older must be replanned before execution. The Claude distribution and Octopad MCP are unchanged.
 
-### 5.1.0 — 2026-08-03
+#### 5.1.0 — 2026-08-03
 
 User-facing Octoplan replies now keep opaque identifiers out of visible prose: raw UUIDs, session metadata, SHA-256 values, and Git commit hashes are retained only in internal records, agent-to-agent prompts, exact commands, or required Markdown link destinations. Codex session references use a readable label linked with the native `codex://threads/<thread-id>` deep link. PR, migration, task, and `#N` numbering remains unchanged.
 
-### 5.0.0 — 2026-08-03
+#### 5.0.0 — 2026-08-03
 
 Codex plans now choose gradual or final human validation. The planner reviews a complete symbolic draft before writing only the final graph to Octopad, verifies deterministic saved-state equivalence, binds the result to `octoplan-supervision-v3`, and still asks for explicit execution consent on the final hash. Delivery tasks end at review-ready agent artifacts; human review, merge, migration application, deployment, publication, and acceptance are separate tasks with explicit completion evidence and optional event-wake predicates.
 
@@ -260,17 +276,17 @@ GitHub event wakes deduplicate immutable deliveries, verify the exact PR head an
 
 This is breaking: older plans do not contain the v3 validation, repair, follow-up, wake, or review contract and must be replanned before execution under 5.0.0. Explicit-only invocation, final execution consent, native target fencing, exact saved routes, and protected human-action gates remain in force.
 
-### 4.0.0 — 2026-08-02
+#### 4.0.0 — 2026-08-02
 
 Codex plans now bind every supervisor, executor, reviewer, and recovery session to a saved native project and environment. The manifest separates inline and dedicated supervisor targets, the default executor target, and task-role overrides; projectless execution must be explicit and justified. Project ID and environment are fingerprinted into review and execution consent, while host, path, and Git metadata remain non-blocking audit evidence.
 
 Launch, activation, resume, takeover, fallback, and artifact provenance now stop on a target mismatch instead of inferring from the caller's directory or task context. This is breaking: pre-4.0 plans do not contain the environment-bound `octoplan-supervision-v2` contract and must be replanned. The explicit-only invocation behavior introduced in 3.0.1 is preserved, and the Octopad MCP and Claude distribution are unchanged.
 
-### 3.0.1 — 2026-08-02
+#### 3.0.1 — 2026-08-02
 
 Codex no longer loads Octoplan implicitly. It now requires an explicit `$octoplan` invocation, and the trigger description excludes general Octopad actions, organization connection, onboarding, and unapproved task execution. This prevents unrelated onboarding prompts from entering Octoplan.
 
-### 3.0.0 — 2026-08-02
+#### 3.0.0 — 2026-08-02
 
 Approved execution now runs through one fenced supervisor. Small linear streams stay in the planning or recovery session; four or more delivery tasks, parallel work, multi-stream coordination, or interruption gates justify a dedicated parent at a saved route. Supervisor epochs make takeover restartable, and one saved replacement bound prevents parent churn.
 
@@ -278,13 +294,13 @@ One compact Octopad Plan manifest and tracker pointers replace copied contracts.
 
 This is breaking: pre-3.0 plans are unsupported and must be replanned. The Octopad MCP and Claude distribution are unchanged.
 
-### 2.0.1 — 2026-08-01
+#### 2.0.1 — 2026-08-01
 
 Mixed tasks now route execution and review independently when objectively specified implementation has qualitative acceptance. Choices the executor must originate determine the execution route; qualitative judgment assigned only to review no longer inflates it. The full routing rubric still applies, and unresolved material judgment continues through Terra or Sol.
 
 The planner's saved-state check records that distinction in each applicable execution rationale, and the routing validator now guards it alongside the synchronized 2.0.1 version.
 
-### 2.0.0 — 2026-07-31
+#### 2.0.0 — 2026-07-31
 
 Every executable task now receives a fresh independent adversarial review. The lead reviewer owns corrections, durable completion, and relay; one simultaneous specialist is allowed only for a distinct material failure domain. Every PASS is bound to the same immutable artifact revision, and reviewer rerouting starts a fresh guarded attempt with an authorized correction executor and full review set.
 
@@ -292,13 +308,13 @@ Execution and review routing now minimize expected cost per accepted task. Luna 
 
 This is breaking: saved plans that skip review or use the previous routing contract must be replanned before execution.
 
-### 1.6.1 — 2026-07-31
+#### 1.6.1 — 2026-07-31
 
 Octoplan now distinguishes execution guidance from retrievable source context. Tasks save the outcome, decisions, boundaries, verified approach, exact pointers, risks, and verification that direct a fresh executor, while live pages, documents, and code remain in their systems of record. Engineering tasks identify the applicable files, symbols, patterns, integration points, invariants, regressions, and tests without copying implementation context.
 
 Executor and reviewer prompts now explicitly start the Octopad workspace session, call `build_context` for the task, and open the saved source pointers before acting. This is a wording clarification only: existing task schemas, saved plans, routing, approvals, relay behavior, and terminal contracts remain valid.
 
-### 1.6.0 — 2026-07-31
+#### 1.6.0 — 2026-07-31
 
 Octoplan now routes after decomposition by verification strength, consequence, and subjectivity. Luna `high` handles mechanical work, Luna `xhigh` is the default for well-specified autonomous execution, and Luna `max` handles difficult but strongly verifiable tasks. Terra `high` and `xhigh` cover everyday business communication and well-bounded product or decision documents. Sol `high` and `xhigh` remain for open-ended strategy, weak verification, polished or high-consequence public work, sensitive systems, and confirmed lower-tier capacity failures; planning remains Sol `xhigh`, with `max` reserved for justified extra scope, risk, or ambiguity.
 
@@ -308,7 +324,7 @@ Review routing now uses Luna `max` for deterministic completeness and verifiabil
 
 Existing saved plans remain valid. No task field, title convention, continuation prompt, or terminal contract changes.
 
-### 1.5.0 — 2026-07-31
+#### 1.5.0 — 2026-07-31
 
 After explicit execution approval, Codex now passes continuation directly between task sessions. The planning session launches only the first ready task or parallel group. A review-skipped executor completes and relays its task; a review-required executor creates one fresh routed reviewer, which owns corrections, completion, and the next launch after PASS.
 
@@ -316,7 +332,7 @@ An Octopad ledger binds every session to the approved run, plan fingerprint, gua
 
 Existing plans need no migration: their current `Next` values and dependency edges carry the relay, with no new required task field. Relay mechanics live in a separate reference loaded only after approval, keeping planning-time routing and consent guidance lightweight. Repository version guidance now follows standard compatibility-based semantic versioning, making this backward-compatible capability a minor release.
 
-### 1.4.0 — 2026-07-30
+#### 1.4.0 — 2026-07-30
 
 Every full planning pass now returns a short scoping brief before writing anything to Octopad: the planner's understanding, explicit in/out of scope, definition of success, assumptions with their basis, and open questions. The brief is the whole reply, and the planner waits for a later user confirmation before saving Decisions, Questions, tasks, tracker logic, or Blueprint pages.
 
@@ -326,11 +342,11 @@ Reduced event-driven rebalancing remains available without a new brief only for 
 
 The Codex execution-consent boundary, saved model and effort routing, independent executor sessions, and protected-action gates are unchanged. Existing saved plans remain valid.
 
-### 1.3.2 — 2026-07-29
+#### 1.3.2 — 2026-07-29
 
 Full planning and targeted replanning accept `gpt-5.6-sol` at `xhigh` or `max`; `max` remains for verified extra scope, risk, or ambiguity.
 
-### 1.3.1 — 2026-07-28
+#### 1.3.1 — 2026-07-28
 
 First public Codex release, intentionally aligned with the current Claude `1.3.1` version.
 
@@ -340,9 +356,27 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - Includes Codex-specific GPT-5.6 execution and review routing, durable recovery rules, Blueprint support, and event-driven replanning.
 - No Kickstart skill or Branch command.
 
-## octoplan-autopilot
+## octoplan-claude
 
-### 1.1.1 — 2026-08-31
+### 1.0.0 — 2026-08-31
+
+Consolidates Claude Octoplan into one distribution and restarts its numbering. Until now Claude Code had two Octoplan skills competing for the same request: a planning-only `octoplan-claude` at `1.5.0`, and `octoplan-autopilot` at `1.1.1`, which planned and then supervised delivery. Both triggered on a plain "Octoplan" followed by a work-stream name, so the install guide had to tell users to run one *instead of* the other, and an assistant with both installed had no reliable way to tell which was meant.
+
+The planning-only skill is retired. `octoplan-autopilot` becomes `octoplan-claude`, the single Claude Code distribution, invoked by saying **Octoplan** rather than "Octoplan Autopilot". Its skill name is now `octoplan`, matching the Codex distribution, so one word reaches Octoplan in either runtime.
+
+No rule changed. Against the `1.1.1` baseline the only edits are identity strings: the skill's `name` and `description`, its title line and opening sentence, and three places that quoted the old trigger phrase. `planning.md`, `routing.md`, and `multi-stream.md` are byte-identical. Planning stays implementation-free until an explicit delivery go, and every protected effect is still disclosed before that go is asked for.
+
+One migration detail worth knowing. Continuation and supervisor hand-off blocks written by earlier runs and stored in Octopad open with the line `Octoplan Autopilot <work stream>`. New blocks open with `Octoplan <work stream>`. A pasted old block still names a work stream after the word Octoplan, so it continues to reach this skill; no stored plan needs editing.
+
+Releases published under both earlier identities keep their tags, their pages, and their numbers, listed below under **Before the 1.0.0 reset**. Users on `octoplan-autopilot` uninstall it and install `octoplan-claude`; `INSTALL.md` carries the commands.
+
+### Before the 1.0.0 reset
+
+Claude Octoplan shipped under two earlier identities. Both are retired at this reset, and their tags and release pages are unchanged.
+
+**As `octoplan-autopilot`, the planning-and-delivery skill this distribution continues.** Published as `octoplan-autopilot-v0.6.0` through `octoplan-autopilot-v1.1.1`.
+
+#### 1.1.1 — 2026-08-31
 
 Fixes the go rule shipped in 1.1.0, which stalled a real run on its first use. A user confirmed a brief, said "full autonomy", said he was going to sleep, and the plan finished half an hour later; the rule demanded a go naming that exact plan, so the run asked a question nobody could answer and delivered nothing overnight. The intent behind the rule survives untouched: nothing may be caused before the plan has been shown, which is what a supervisor broke when it dispatched workers before showing its list. The demand for a second confirmation was the defect.
 
@@ -352,7 +386,7 @@ Two failures from the same run land with it. An unreachable remote surface found
 
 The Codex sibling carried the same defect and is fixed in `octoplan-codex` 18.1.1, released alongside this version.
 
-### 1.1.0 — 2026-08-28
+#### 1.1.0 — 2026-08-28
 
 Folds in the twenty-one defects five supervisor sessions recorded after a nineteen-hour autonomous run produced zero valid results and a saturated staging database. Their post-mortem found four shapes: the skill only ever added rigour, every check pointed inward at the work, a premise was checked at most once, and a written plan was treated as settled. Each gets a mechanism.
 
@@ -370,7 +404,7 @@ A joint consolidation with the Codex distribution's audit of its own five runs a
 
 Existing saved plans stay valid: a stream planned under 1.0.0 resumes normally, and the one addition is a single short exchange at resume that records its stakes Decision and countable definition of success before the first dispatch.
 
-### 1.0.0 — 2026-08-24
+#### 1.0.0 — 2026-08-24
 
 Adopts the shared Octoplan core agreed across the Claude and Codex implementations, and moves the user's consent to the one place they can give it: the plan.
 
@@ -384,14 +418,13 @@ Migration, which makes this a major release: streams planned under 0.x record tw
 
 A final simplicity pass (independent over-engineering review) trimmed roughly a thousand words without touching a guarantee: the three mistakes tables (every row restated a rule already binding at its own site), duplicate statements of the out-of-mandate consent rule (three binding sites remain: the mode definition, the worker template, and Replanning), and rationale tails. The delivery report page is now conditional — created for checkpoints, step-by-step, or streams above 5 executable tasks; a small full-autonomy run closes on the task graph and the recap alone. A final cross-review by the sibling implementation added: the go records the reviewed graph (stable task IDs and last-edit timestamps), delivery re-reviews anything edited past it and then repairs the snapshot; one recorded supervisor at a time — takeover only on positive evidence the predecessor stopped, and a displaced supervisor halts at its next guard check; staging-first and reversible-by-design as non-negotiable floors; reviewer routing that can never invent a human wait the team's rules don't impose; and the user may strike or add pause points when giving the go. Worker and reviewer rules and recovery are otherwise unchanged.
 
-
-### 0.10.0 — 2026-08-22
+#### 0.10.0 — 2026-08-22
 
 Restructures the skill so each session loads only what its job needs. `SKILL.md` shrinks to the always-needed core — the resume check, the non-negotiables, the task template, the per-task self-check, the replanning rules, and a load index that names which reference file to load at which moment. Four new reference files carry the rest: `references/planning.md` holds the eleven planning steps, the stream-type lenses, the multi-stream cut test, the per-plan self-check, and the planning-mistakes table; `references/routing.md` holds the Exec rubric, the effort vocabulary, lane dispatch, and the review-lens rules; `references/continuation.md` holds the two block formats and the six Next-line patterns, verbatim from 0.9.0; `references/multi-stream.md` holds the Blueprint protocol. `references/supervision.md` is unchanged apart from six load-instruction edits.
 
 Behavior is unchanged with two exceptions. The Opus 4.6 compatibility lane is removed: the rubric now covers only the current model set, and a team on different models maps to the nearest equivalents. And sessions that plan, rebalance, or supervise a stream belonging to a multi-stream effort are now explicitly told to load the multi-stream reference, closing a gap the restructure would otherwise have opened. Saved plans, task descriptions, Next lines, and recorded delivery contracts from 0.9.0 remain valid with no migration; the Next-line patterns, block formats, rubric table, and effort table are byte-identical to 0.9.0.
 
-### 0.9.0 — 2026-08-21
+#### 0.9.0 — 2026-08-21
 
 Scales Octoplan from one work stream to a whole effort, and lets a supervisor renew itself without user intervention. Every new mechanism is gated on what the session's environment actually provides and degrades to the existing single-session behavior where it doesn't.
 
@@ -401,7 +434,7 @@ Delivery: a multi-stream effort gets one supervisor per stream. The go Decision,
 
 Renewal: a supervisor low on context may spawn one fresh sub-supervisor (never a fork — a fork inherits the spent budget) at the recorded supervisor route, whose prompt opens with the supervisor handoff block so it briefs itself from Octopad like any successor. The original session becomes a pure relay: it announces the delegation, forwards reports and escalations verbatim, and carries the user's decisions back. One level only — a sub-supervisor never delegates; the relay retires it before handing off itself, so two supervisors never run one stream. Where the environment cannot message a running subagent, delegation is unavailable and the pasted handoff block remains the path.
 
-### 0.8.0 — 2026-08-19
+#### 0.8.0 — 2026-08-19
 
 Fixes the failure that let a whole stream idle overnight: a supervisor held three ready tasks because their dependencies' code sat on open, unmerged branches, even though the stream's own delivery contract said to stack dependent work on those branches. The rule existed as prose; nothing forced the supervisor to obey it at the moment it picked work.
 
@@ -409,7 +442,7 @@ What now happens differently. When Octopad reports a task ready, the supervisor 
 
 No gate weakens: humans still merge, migrations are still applied by their named person, and one-way doors still stop.
 
-### 0.7.0 — 2026-08-18
+#### 0.7.0 — 2026-08-18
 
 Applies the lessons of the first two supervised runs, which delivered real merged work but let two defects reach the main branch, spent most of one session's budget on review rounds, and reported themselves so poorly the operator could not follow. Every change below traces to a recorded failure, and the release itself passed a two-agent adversarial review.
 
@@ -419,7 +452,7 @@ Supervised delivery gains a delivery report: one page on the stream, created at 
 
 Model-and-depth routing becomes enforceable: where the environment defines one agent per rubric lane (a named set of five), the supervisor dispatches workers and reviewers by lane and both model and depth are pinned; where lanes are absent the depth is declared, once per run, as a request nothing verifies. Existing saved plans remain valid; new guidance applies to plans and dispatches made from this version on.
 
-### 0.6.0 — 2026-08-17
+#### 0.6.0 — 2026-08-17
 
 Standardizes the hand-off so the user always approves a plan they can see, and always knows how to launch what comes next. A live run ended its planning pass by asking for the delivery go without showing the plan's steps, and handed over the next-session prompt with no model or reasoning-effort recommendation — the user rightly called the go meaningless.
 
@@ -433,11 +466,11 @@ A new non-negotiable covers everything the user reads: the scoping brief, the de
 
 The delivery contract message also gets a fixed shape: four headings in fixed words (What needs your OK · Who checks the work · Does dependent work wait? · How much I decide alone), whatever the target's own rules already settle stated once as settled under the heading it belongs to rather than dressed up as a question, and an ending on the questions the user can genuinely answer, each with two named options, a recommendation with its reason, and how hard it is to undo — no blanket "confirm the rest". The hand-off delta reuses the same four headings, and the supervisor's escalation report points at the plain-words rule. Existing saved plans stay valid; no migration.
 
-### 0.4.0 — 2026-08-14
+#### 0.4.0 — 2026-08-14
 
 Closes the delivery-side half of a planning rule 0.3.0 added. The plan already forbids an early task from writing wording that a later task is scoped to write or rewrite. But the first live run showed workers inventing such wording mid-run — button labels and messages that did not exist when the plan was written, which no planning rule can reach. Two additions to the supervision reference cover that path. The worker launch template now tells every worker to list any wording a user will read that it had to write. The supervisor treats each such string as a miss in the plan: it copies the string into the owning task's How before that task launches and re-runs the self-check on it, and if the owning task has already started or closed, it stops and runs the Replanning rules instead, because a copy pass cannot settle text it never saw. Existing saved plans stay valid; no migration.
 
-### 0.3.0 — 2026-08-14
+#### 0.3.0 — 2026-08-14
 
 The first live run of Autopilot delivered a whole work stream end to end. It also showed where the skill lets a session look more finished, more checked and more honest than it was. This release folds those findings back in. Most of it rewrites rules that were already there but too soft to bite; the rest closes gaps the run exposed.
 
@@ -457,7 +490,7 @@ Deliberately not in this release: enforcing reasoning depth through shipped agen
 
 Upgrading needs no migration. A stream planned under 0.2.0 keeps working; its tasks simply carry the older Done when shape and no landing task until it is replanned.
 
-### 0.2.0 — 2026-08-14
+#### 0.2.0 — 2026-08-14
 
 Supervision can now change hands. 0.1.0 assumed the session that planned a stream would also supervise its delivery, which holds for a light planning pass and breaks after a heavy one. Supervising is cheap per task, but its verification gate is not: reading each change and each reviewer's findings, task after task, is what spends the budget. A planner that arrives at the delivery go already depleted runs out mid-stream, and by then summarising has dulled the judgement it was kept for.
 
@@ -467,7 +500,7 @@ A **supervisor handoff block** joins the continuation prompts: the stream name p
 
 No change to the planning core, the delivery contract, the verification gate, or the task format. Upgrading needs no migration, and a stream planned under 0.1.0 resumes unchanged.
 
-### 0.1.0 — 2026-08-13
+#### 0.1.0 — 2026-08-13
 
 First release of a separate Claude Code distribution that plans a work stream and then delivers it. It keeps the Octoplan planning core unchanged and adds two things around it. `octoplan-claude` is untouched and stays the planning-only distribution.
 
@@ -477,9 +510,9 @@ A new **supervision** reference defines delivery. On the user's explicit go, the
 
 This is an experimental variant published for a live trial. Install it in place of `octoplan-claude` for the duration of the test, not alongside it: both skills trigger on the same request, so only one can be installed at a time. `octoplan-codex` is unaffected.
 
-## octoplan-claude
+**As the planning-only `octoplan-claude`, retired at this reset.** Published as `octoplan-v1.0.0` through `octoplan-v1.4.0`, then `octoplan-claude-v1.5.0`.
 
-### 1.5.0 — 2026-08-13
+#### 1.5.0 — 2026-08-13
 
 - Exec recommendations now name the current Claude routes instead of generic tiers: Sonnet 5 `xhigh` only for bounded, reversible, concretely verifiable work; Opus 5 `high` for standard substantive delivery and `xhigh` for hard or consequential work; Fable 5 `xhigh` for genuinely open or long-horizon problems only after its mandatory 30-day retention is accepted, with Opus 5 as the fallback.
 - The skill now covers every exposed depth label without pretending they form one ladder: `low`, `medium`, `high`, `xhigh`, and `max` are native efforts. Claude Code's `/effort ultracode` session setting adds automatic workflow orchestration to `xhigh`, while the one-prompt `ultracode` keyword leaves the current effort unchanged. `max` stays rare because more reasoning can overthink rather than reliably improve a result.
@@ -488,7 +521,7 @@ This is an experimental variant published for a live trial. Install it in place 
 - This is backward-compatible guidance. Existing task descriptions and saved plans remain valid; a future Octoplan pass can refresh their Exec lines.
 - Repository validation now requires a valid increasing semantic version and exact agreement across the skill, manifest, README, and one changelog heading. It also checks the Sonnet floor, native effort set, Fable retention gate, Opus 4.6 `xhigh` prohibition, and Ultra distinction as routing invariants.
 
-### 1.4.0 — 2026-07-30
+#### 1.4.0 — 2026-07-30
 
 - New step 2, **Scoping brief — reflect back, then wait**: before locking any decision, drafting any design page, or writing any task, the planner hands the user one short brief merging what the user said with what the sources hold — understanding restated in its own words, in/out of scope, definition of success, an explicit Assumptions list (every point settled by inference rather than a source or the user's words), and open questions — then stops. The old flow only forced a question when a spec slot could not be filled at all; a plausible-but-wrong inference could fill the slot and ship silently. The Assumptions list makes those inferences visible so the user can veto them before planning starts.
 
@@ -500,17 +533,17 @@ This is an experimental variant published for a live trial. Install it in place 
 
   Not breaking: nothing in existing task descriptions changes shape; plans written under 1.3 keep working unchanged.
 
-### 1.3.1 — 2026-07-28
+#### 1.3.1 — 2026-07-28
 
 - New "Changing this skill" note: edit the source repository and release, never an installed copy — auto-update silently overwrites it. This guard used to live in a project instruction file; it belongs here, where it travels with the skill.
 
-### 1.3.0 — 2026-07-28
+#### 1.3.0 — 2026-07-28
 
 - Scheduled checkpoints are gone. The "Octoplan checkpoint <stream>" trigger and its every-3–4-tasks revision rhythm never came from a real decision, and a plan has no reason to change on a schedule. What replaces them is event-driven: the new **Replanning** section. When a session executing a task discovers something that adds a task, drops one, or changes the order, that session invokes this skill and rebalances the whole plan — specs re-validated, `#N` prefixes renumbered, dependencies and Next lines rewired, tracker logic updated, self-check re-run on anything added or rewritten. If the discovery invalidates the stream's definition of success, the session stops and asks for a fresh Octoplan pass instead.
 
   Not breaking: nothing in existing task descriptions references checkpoints, so plans written under 1.2 keep working unchanged.
 
-### 1.2.0 — 2026-07-28
+#### 1.2.0 — 2026-07-28
 
 - The continuation prompt is now two lines instead of one:
 
@@ -525,12 +558,12 @@ Octopad · Organisation: <organisation> · Workspace: <workspace>
 
 - Dropped the remaining framing about execution being a separate mode. There is no mode. What a later session needs is written into the task description, and that is all the skill says about it.
 
-### 1.1.0 — 2026-07-28
+#### 1.1.0 — 2026-07-28
 
 - The planner now writes the plan's reasoning into the stream tracker: why the tasks run in this order, which branches are parallel, where the human gates sit, what ends the stream. Logic only, no statuses and no copied task content, so it doesn't go stale. This is what the Blueprint page already did for multi-stream efforts, applied to a single stream.
 - Dropped the "two-tier workflow" framing. There is no execution mode: this skill runs at planning time, and everything an executor needs is written into the task descriptions themselves.
 
-### 1.0.0 — 2026-07-28
+#### 1.0.0 — 2026-07-28
 
 First public release.
 
