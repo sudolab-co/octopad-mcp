@@ -6,7 +6,7 @@ Phases 1 to 3 confirm intent, review the smallest adequate Plan, and activate au
 
 Read production Octopad, target state, and effective instructions; retrieve only material gaps.
 
-If an `Octoplan 18 plan contract` still matches the confirmed Brief, reviewed task revisions, and authority, follow [codex-supervision.md](codex-supervision.md) without asking again. Without delivery authorization, refresh the Plan and ask its interruption-level go. Changed outcome, proof, boundary, assumption, target, authority, protected effect, or user-owned consequence returns to Brief; changed graph, task meaning, route, verifier, deliverable, review trigger, disclosure wording or placement, checkpoint, or house-rule gate returns to Plan. Pre-v18 state uses [recovery.md](recovery.md).
+If an `Octoplan 18 plan contract` still matches the confirmed Brief, reviewed task revisions, and authority, follow [codex-supervision.md](codex-supervision.md) without asking again. Without delivery authorization, refresh and show the Plan; activate a qualifying standing intent under the rule below or ask once. Changed outcome, proof, boundary, assumption, target, authority, protected effect, or user-owned consequence returns to Brief; changed graph, task meaning, route, verifier, deliverable, review trigger, disclosure wording or placement, checkpoint, or house-rule gate returns to Plan. Pre-v18 state uses [recovery.md](recovery.md).
 
 ## Phase 1: confirm the Brief
 
@@ -42,9 +42,11 @@ After confirmation, persist one guarded `Octoplan 18 brief` Decision with those 
 
 ## Phase 2: compose the Plan
 
-Build the first integrated result. Persist one `Octoplan 18 stakes` Decision naming the decision served, blast radius, reversibility, countable success, and kill question. Verify premises; use one stream per success definition and one top-level task per deliverable. Split only for owner, verifier, gate, dependency, or useful parallelism; load [multi-stream.md](multi-stream.md) only when needed.
+Planning is overhead paid by the outcome. Persist one `Octoplan 18 stakes` Decision naming the decision served, blast radius, reversibility, countable success, kill question, and numeric ceilings for top-level tasks and total Plan-review rounds. A round covers the review floor; allow at most two without a user decision. Quote user requests for simplicity or efficiency; tighten both ceilings. Verify premises; use one stream per success definition and one top-level task per deliverable. Split only for owner, verifier, gate, dependency, or useful parallelism. Never exceed a ceiling silently: reduce, replan, or ask. Load [multi-stream.md](multi-stream.md) only when needed.
 
-Map the full path's secrets without values, credentials, remote surfaces, permissions, effects, and human inputs. Preflight connectors, GitHub, CI, messaging, and deployment without effects; record only readiness and the human action shape, front-load asks, and distinguish authority from credential entry. Never bypass a failed dedicated connector or use local versus remote as an authority boundary. The Plan uses the fixed banner, one line per step, and names each effect and rule-required wait with owner.
+Map the full path's secrets without values, credentials, remote surfaces, permissions, effects, and human inputs. Preflight connectors, GitHub, CI, messaging, and deployment without effects; record readiness and human action; distinguish authority from credential entry. Never bypass a failed connector on its service. Give each unavailable remote surface one human-only access task; only its consumers depend on it. Independent work continues from authoritative sources. An unavailable code host blocks remote refresh, push, PRs, hosted CI or proof, not local-checkout reads, edits, or tests. Local versus remote never changes authority. The Plan uses the fixed banner, one line per step, and names each effect and rule-required wait with owner.
+
+Before review, each entry is one independently executable effect with a bounded target. For qualified standing intent, quote words and source, classify every entry `covered` or `checkpoint` under [SKILL.md](../SKILL.md), and put the map in the Plan contract and display. Compound entries, generic assent, and ambiguity wait.
 
 Checkpoints default to marking every disclosed protected effect, human step, and Plan landing. The planner may add points; the user may strike some at go.
 
@@ -55,7 +57,7 @@ Checkpoints default to marking every disclosed protected effect, human step, and
 2. <step and observable result>
 
 **Disclosed effects**
-- <plain consequence, bounded target, and when it occurs>
+- <`covered` or `checkpoint` for standing intent> <one independently executable consequence, bounded target, and when it occurs>
 
 **Human gates required by house rules**
 - <subject and owner, or none>
@@ -72,11 +74,12 @@ Checkpoints default to marking every disclosed protected effect, human step, and
 **First ready work**
 - <the first safe step and any independent branch that can start with it>
 
-**Choose the interruption level and authorize this disclosed Plan:**
+**Interruption level and authorization**
 Full autonomy · Checkpoints · Step-by-step
+<if the user is present, ask one choice; for a qualified standing intent, name its mode and source and state that Delivery starts after this Plan>
 ```
 
-Offer this choice in conversation. A question that could change reviewed work, authority, effects, checkpoints, or gates makes the Plan `Not authorized for delivery` until resolved and reviewed. Disclose effective-rule waits as house-rule gates, not modes.
+Offer this choice as one question when the user is present. A question that could change reviewed work, authority, effects, checkpoints, or gates makes the Plan `Not authorized for delivery` until resolved and reviewed. Disclose effective-rule waits as house-rule gates, not modes.
 
 Planning-only permission never authorizes Delivery: label it `Not authorized for delivery`, create no Goal, and stop after persisting the reviewed graph. A later Delivery request refreshes sources, rules, review binding, and the Plan before its one choice.
 
@@ -109,9 +112,9 @@ Use the live schema. Top-level tasks require literal **Why**, **What**, **Done w
 
 Write `How` as outcome and constraint. Prescribe a technique or precedent only when verified evidence makes it fit.
 
-Plan only runnable `Verify` steps. Unavailable login, seat, or UI is a named access or human checkpoint, not verification.
+Plan only runnable `Verify` steps. Use the preflight access task when a remote surface is unavailable; a seat or UI only a person can exercise is a named human checkpoint, never verification.
 
-Do not create tasks for reads, logins, tool calls, status, approvals, reviews, merges, or publications unless a person owns a distinct artifact. Use subtasks for three or more internal steps. Consumed outputs need dependency edges. Give each user-facing text surface one final-wording owner.
+Do not create tasks for reads, logins, tool calls, status, approvals, reviews, merges, or publications unless a person owns a distinct artifact. The only access exception is the single human-only task defined by preflight. Use subtasks for three or more internal steps. Consumed outputs need dependency edges. Give each user-facing text surface one final-wording owner.
 
 Match proof to the deliverable and its real target. Source or test inspection cannot satisfy rendered-UI or live-API acceptance, and an aggregate cannot satisfy a no-regression decision:
 
@@ -126,13 +129,13 @@ These are proof lenses, not another lifecycle system. For measurement, compariso
 
 Apply [SKILL.md](../SKILL.md). Materialize steps 1–3 before review so judgments bind exact task revisions. Two checklists from one reviewer are one judgment.
 
-Give reviewers the Brief, full task graph, Decisions, Questions, sources, effects, interruption semantics, and rules. Each starts production Octopad, reads bounded context, and stays read-only.
+Give reviewers the Brief, task graph, Decisions, Questions, sources, effects, interruption semantics, and rules. For standing intent, include its exact quote and source plus the proposed atomic `covered` or `checkpoint` map. Each starts production Octopad, reads bounded context, and stays read-only.
 
 Across the required lenses, attack mandate fidelity, upstream premise, missing work, simpler decomposition, dependencies, failure containment, consumers, proof, assumptions, route fit, effects, authority, and gates. Assign integration and conflict for broad parallel work, and distinct privacy, security, data loss, reversibility, permissions, spend, or public-effect lenses when triggered. One identity never impersonates two judgments.
 
-Accept only `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION`, with stable keyed findings, checks, evidence, and dispositions. Return stable fixes to the same reviewer. Before round three on one artifact, record: stated limit, replan, or user decision. Counts persist across identities; reviewers judge convergence. Material change gets the fresh applicable floor.
+Accept only `PASS`, `REVISE`, `INFEASIBLE`, or `HUMAN_DECISION`, with stable keyed findings, checks, evidence, and dispositions. Return stable fixes to the same reviewer. Do not exceed the stakes round ceiling: shrink or replan the graph, or get a user decision. Counts persist across identities; reviewers judge convergence. Material change gets the fresh applicable floor.
 
-Draft one append-only `OCTOPLAN_PLAN_REVIEW` receipt per judgment with exact task IDs and `updated_at` revisions reviewed, identities, lens, route, rules, verdict, round, findings, dispositions, checks, and evidence. A superseding review or authorization links, never overwrites, its predecessor. Apply [codex-runtime.md](codex-runtime.md).
+Draft one append-only `OCTOPLAN_PLAN_REVIEW` receipt per judgment with exact task IDs and `updated_at` revisions reviewed, Plan-contract Decision ID and `updated_at` reviewed, identities, lens, route, rules, verdict, round, findings, dispositions, checks, and evidence. A superseding review or authorization links, never overwrites, its predecessor. Apply [codex-runtime.md](codex-runtime.md).
 
 Activation needs every applicable lens at PASS. Immediately confirm that every reviewed task still has the timestamp in current receipts; drift, a stale lens, or identity reuse at the two-review floor is unreviewed.
 
@@ -143,16 +146,16 @@ Reread current Octopad schemas, target versions, and effective rules. After the 
 1. create or adopt each work stream;
 2. create the proposed tasks and dependency edges in the fewest coherent batch calls;
 3. record material choices and open questions as Decisions and Questions;
-4. run the applicable review floor against that exact task set, then persist every review receipt and finding disposition once the floor reaches PASS;
-5. record one `Octoplan 18 plan contract` Decision containing the Brief and stakes references, outcome and proof, task set and revisions, review triggers and receipts, access map, effects, checkpoints, gates, safe branches, supervisor route, and activation status;
+4. record one `Octoplan 18 plan contract` Decision with Brief and stakes references, outcome and proof, task set and revisions, review triggers, access map, atomic effects, standing-intent source and coverage map if any, checkpoints, gates, safe branches, supervisor route, and `Not authorized for delivery` status;
+5. run the review floor against that task set and Plan-contract revision; on PASS, persist every receipt and finding disposition;
 6. define each user checkpoint and house-rule gate by subject and owner; persist the user's recorded continuation when it clears;
 7. let Octopad project tracker progress; never mirror state into a Plan page, private control object, scheduler, or artifact ledger.
 
 Apply F1 record integrity to every Decision, comment, receipt, Goal handoff, and report. A tracker is navigation, never evidence or authority: reconcile or disclose drift, and never let it override tasks, Decisions, receipts, Goals, or target state. After incomplete output, inspect only uncertain items and retry only what the authoritative target proves absent. Never replay a batch; guard updates with `expected_updated_at`.
 
-Mark the stream ` (octoplanned)` only when graph, Decisions, Questions, and receipts exist. Confirm task revisions before showing the Plan, whose fields show open questions, gates, and first ready work.
+Mark the stream ` (octoplanned)` only when graph, Decisions, Questions, and receipts exist. Confirm task and Plan-contract revisions against PASS receipts before showing the Plan, whose fields show open questions, gates, and first ready work.
 
-For authorized plan-and-deliver work, show the fixed Plan and wait for its interruption-level choice. Record an append-only `Octoplan 18 delivery authorization` Decision with reviewed task revisions, choice, authority delta including none, exact handoff reference, go source that postdates and names it, effect bounds, post-strike selected checkpoints, and house-rule gates. Drift refreshes the Brief or Plan and focused review; it requires a new go only under [SKILL.md](../SKILL.md).
+For plan-and-deliver work, show the fixed Plan before Delivery. If the user is present, wait for one choice. If they chose a mode after confirming the Brief and then declared unavailability, show the Plan and activate without another reply; absence authorizes nothing. Copy only the unchanged reviewed per-effect map into an append-only `Octoplan 18 delivery authorization` Decision after its Plan-contract ID and `updated_at` match PASS receipts; any map or revision change needs focused review. Record reviewed task revisions, choice, authority delta including none, exact handoff reference, go source and time, standing-intent quote/source when used, activating Plan message, effect bounds, post-strike selected checkpoints, and house-rule gates. Drift refreshes the Brief or Plan and focused review; it requires a new go only under [SKILL.md](../SKILL.md).
 
 Plan-only work stops without a Goal. For authorized Delivery, choose one supervisor and record it with its Goal in a guarded stream Decision. Continue here only with enough context to verify the run; otherwise use this handoff:
 

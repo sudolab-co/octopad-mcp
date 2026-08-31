@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an outcome into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, resume, or supervise a governed work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 18.1.0
+Version: 18.1.1
 
 # Octoplan for Codex
 
@@ -46,9 +46,9 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 
 ## Interruption levels
 
-The reviewed Plan ends with one choice:
+Show reviewed Plan before Delivery; ask once if user is present. A mode chosen after Brief confirmation may activate after display without another reply only if user then declared unavailability. Absence adds no authority: standing intent covers only atomic effects its quote names or necessarily entails for the same outcome and target with no extra material consequence; checkpoint uncovered or ambiguous effects. Pre-Brief or inferred choice, silence, or generic assent such as “do it” qualifies for nothing.
 
-- **Full autonomy.** The go authorizes every disclosed effect and Delivery runs uninterrupted. Authority is monotonic: once granted, a go persists through internal corrections; replanning and re-review do not revoke it. A new go is required only when the outcome, authority, a protected effect, a user-owned consequence, or the substance of a user gate changes. Dependency order or gate placement alone is not such a change. The initial go must postdate and name the Plan handoff it answers.
+- **Full autonomy.** Go authorizes covered effects; Delivery runs between checkpoints. Authority is monotonic: corrections, replanning, and re-review do not revoke it. Require a new go only if outcome, authority, protected effect, user consequence, or gate substance changes; dependency order or placement do not.
 - **Checkpoints.** Apply Full autonomy and pause at the checkpoints selected from the Plan's default marked set.
 - **Step-by-step.** Pause after every agreed step.
 

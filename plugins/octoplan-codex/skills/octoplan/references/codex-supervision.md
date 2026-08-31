@@ -52,7 +52,7 @@ For an errored or unverifiable worker, stop that branch and use [recovery.md](re
 
 ## Proof and review
 
-Verify the exact artifact version on the task's named proof surface. Repository work refreshes base, head, diff, and checks before mutation, push, review, and handoff. Content, research, and operations use their planning proof lenses; source or test checks never substitute for rendered UI, live API, raw trace, exact database, or source-corpus proof.
+Verify the exact artifact version on the task's named proof surface. Repository work checks the current local base, head, diff, and available tests before mutation or review. Refresh remote refs and hosted checks only before a remote effect, hosted proof, or handoff claiming remote state; unavailable remote proof blocks only those consumers. Content, research, and operations use their planning proof lenses; source or test checks never substitute for rendered UI, live API, raw trace, exact database, or source-corpus proof.
 
 Green CI proves only what it ran. An unavailable verifier blocks. Independent review uses one fresh source-first task; reuse it only for stable fixes. Material lens drift gets fresh review.
 

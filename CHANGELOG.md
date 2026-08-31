@@ -56,6 +56,14 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 18.1.1 — 2026-08-31
+
+Fixes the unattended-delivery stop without weakening the Plan display. When a user chooses an interruption mode after confirming the Brief and then explicitly says they will be unavailable, Codex now shows the reviewed Plan and starts under that standing intent instead of asking for the same choice again. Absence grants no authority. Before review, every disclosed effect is atomic, bounded, and classified against the user's quoted words as covered or waiting. The Plan contract records that map before review; PASS receipts bind its exact Decision revision; activation rechecks the binding and copies only the unchanged reviewed map. Pre-Brief or inferred choices, silence, generic assent, ambiguous effects, and changed outcomes still wait.
+
+Remote preflight failures now block only their consumers. One human-owned access task represents each unavailable surface. A code-host failure stops remote refresh, pushes, pull requests, hosted checks, and remote proof, while an authoritative local checkout can still be read, edited, tested, and reviewed. A failed dedicated connector is never bypassed for work on its service.
+
+Planning now counts as overhead paid by the outcome. The stakes record sets numeric ceilings for top-level tasks and total Plan-review rounds, each round covers the required review floor, and a user's simplicity or efficiency request tightens both ceilings. The planner reduces or replans work, or asks before exceeding a ceiling; two rounds require a user decision to exceed. Existing v18 Plans need no migration. The Claude and Autopilot distributions are unchanged.
+
 ### 18.1.0 — 2026-08-29
 
 Strengthens governed Delivery after the recent Octoplan pilots without invalidating existing v18 Plans. Planning now records the decision served, blast radius, reversibility, countable success, and a kill question. Measurement, comparison, visual-proof, and research work must prove its upstream premise and real proof surface before dispatch. Synthetic rigs use an outward-in parity manifest tied to raw evidence, rehearse cheaply before expensive work, and start a new task when a material premise changes after dispatch. Internal reversible work with deterministic proof may reduce a two-review floor to one, while stricter repository, security, privacy, migration, and production rules still win.

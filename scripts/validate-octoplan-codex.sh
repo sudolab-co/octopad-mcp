@@ -41,14 +41,14 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '18.1.0' ] || fail 'Codex SKILL.md is not 18.1.0'
+[ "$skill_version" = '18.1.1' ] || fail 'Codex SKILL.md is not 18.1.1'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$skill_version")
 [ "$(grep -Fxc "$readme_row" "$root/README.md")" -eq 1 ] || fail 'README Codex version or behavior is stale'
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
-require_contract "$conformance" '# Octoplan Codex 18.1.0 conformance'
+require_contract "$conformance" '# Octoplan Codex 18.1.1 conformance'
 require_contract "$conformance" 'Autopilot sources are outside this release.'
 
 skill_lines=$(wc -l < "$main" | tr -d ' ')
@@ -92,10 +92,21 @@ require_contract "$main" '**Checkpoints.**'
 require_contract "$main" '**Step-by-step.**'
 require_contract "$planning" 'Full autonomy · Checkpoints · Step-by-step'
 require_contract "$main" 'Authority is monotonic:'
-require_contract "$main" 'The initial go must postdate and name the Plan handoff it answers.'
+require_contract "$main" 'Pre-Brief or inferred choice, silence, or generic assent such as “do it” qualifies for nothing.'
+require_contract "$main" 'Absence adds no authority:'
+require_contract "$main" 'checkpoint uncovered or ambiguous effects'
 require_contract "$main" 'House rules are not a level.'
 require_contract "$planning" 'Octoplan 18 delivery authorization'
 require_contract "$planning" 'post-strike selected checkpoints'
+require_contract "$planning" 'one independently executable effect with a bounded target'
+require_contract "$planning" 'include its exact quote and source plus the proposed atomic `covered` or `checkpoint` map'
+require_contract "$planning" 'Copy only the unchanged reviewed per-effect map'
+require_contract "$planning" 'Plan-contract Decision ID and `updated_at` reviewed'
+require_contract "$planning" 'Plan-contract ID and `updated_at` match PASS receipts'
+require_contract "$planning" 'any map or revision change needs focused review'
+if grep -Fq 'The initial go must postdate and name the Plan handoff it answers.' $active_files; then
+  fail 'retired post-handoff-only go rule remains'
+fi
 
 for foundation in F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 F13; do
   require_contract "$main" "**$foundation,"
@@ -121,7 +132,11 @@ require_contract "$main" 'record it as a stream Decision'
 require_contract "$main" 'A successor confirms that its predecessor stopped before acting.'
 require_contract "$main" 'expected_updated_at'
 require_contract "$planning" 'Octoplan 18 stakes'
-require_contract "$planning" 'Before round three on one artifact'
+require_contract "$planning" 'Planning is overhead paid by the outcome.'
+require_contract "$planning" 'numeric ceilings for top-level tasks and total Plan-review rounds'
+require_contract "$planning" 'Quote user requests for simplicity or efficiency'
+require_contract "$planning" 'allow at most two without a user decision'
+require_contract "$planning" 'Do not exceed the stakes round ceiling'
 require_contract "$supervision" 'An answer stops that run generation immediately'
 require_contract "$recovery" 'Stop for shared-infrastructure distress'
 require_contract "$recovery" 'sweep every open task specification'
@@ -146,6 +161,11 @@ require_contract "$supervision" 'Two consecutive closes that advance no unit tri
 require_contract "$supervision" 'every selected checkpoint, Step-by-step pause, and house-rule gate'
 require_contract "$recovery" 'Before dispatch, the successor re-proves'
 require_contract "$planning" 'Preflight connectors, GitHub, CI, messaging, and deployment'
+require_contract "$planning" 'one human-only access task'
+require_contract "$planning" 'only its consumers depend on it'
+require_contract "$planning" 'not local-checkout reads, edits, or tests'
+require_contract "$planning" 'activate a qualifying standing intent under the rule below or ask once'
+require_contract "$supervision" 'unavailable remote proof blocks only those consumers'
 require_contract "$planning" 'Run a cheap rehearsal'
 require_contract "$planning" 'material post-dispatch rig repair'
 require_contract "$supervision" "task's named proof surface"
@@ -222,4 +242,4 @@ assert.strictEqual(closureVocabulary.has('done'), false);
 assert.strictEqual(closureVocabulary.has('green'), false);
 NODE
 
-printf 'PASS: Octoplan Codex 18.1.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
+printf 'PASS: Octoplan Codex 18.1.1 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
