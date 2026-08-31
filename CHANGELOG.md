@@ -334,6 +334,16 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-autopilot
 
+### 1.1.1 — 2026-08-31
+
+Fixes the go rule shipped in 1.1.0, which stalled a real run on its first use. A user confirmed a brief, said "full autonomy", said he was going to sleep, and the plan finished half an hour later; the rule demanded a go naming that exact plan, so the run asked a question nobody could answer and delivered nothing overnight. The intent behind the rule survives untouched: nothing may be caused before the plan has been shown, which is what a supervisor broke when it dispatched workers before showing its list. The demand for a second confirmation was the defect.
+
+Showing the plan is now stated as the protection, and asking again as a separable thing. With the user present, show the plan and ask. Where the user named a mode after confirming the brief, then said they would be away, and that message is their last word, showing is enough: the standing intent becomes the go against the plan just shown, naming both, and delivery starts. Three limits keep that path honest. The authority comes from the intent and never from the absence, so an intent given before the brief was confirmed qualifies for nothing and neither does one inferred from silence rather than said. The go covers only what the user's own words named in substance: the plan's disclosed effects are walked against those words one by one, the effects they described run unattended, and every effect they never mentioned becomes a marked point that waits — naming a mode is not describing an effect, since "full autonomy" chooses how often they are interrupted, never what may be caused. And because a later supervisor reads the mode field rather than this rule, a standing-intent go is recorded with checkpoints as its mode whatever word the intent used, so the restriction travels where it will actually be honoured.
+
+Two failures from the same run land with it. An unreachable remote surface found at preflight is wired as a human-only task blocking only the steps that need that surface, with each dependent task's Done when stepped back to the state it can actually reach: an unreachable code host stops pushing and opening changes and stops nothing a local checkout already holds, where the run under review treated one closed door as a locked building. And planning is named as overhead the outcome pays for — when the pass costs more than the first useful piece of delivery it enables, the plan gets cut, never the delivery — with a user's request for simplicity recorded alongside the stakes as a bound on how many tasks the stream carries, after fifty minutes of planning produced eleven steps and two review passes on a request that asked twice for simplicity.
+
+The Codex sibling carried the same defect and is fixed in `octoplan-codex` 18.1.1, released alongside this version.
+
 ### 1.1.0 — 2026-08-28
 
 Folds in the twenty-one defects five supervisor sessions recorded after a nineteen-hour autonomous run produced zero valid results and a saturated staging database. Their post-mortem found four shapes: the skill only ever added rigour, every check pointed inward at the work, a premise was checked at most once, and a written plan was treated as settled. Each gets a mechanism.
