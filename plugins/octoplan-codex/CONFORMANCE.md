@@ -1,4 +1,4 @@
-# Octoplan Codex 18.1.0 conformance
+# Octoplan Codex 18.1.1 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 
@@ -29,19 +29,19 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 | Guarantee | Canonical v18.1 location |
 |---|---|
-| A1, stakes and proportionality | `references/planning.md` > Phase 2 stakes Decision; `SKILL.md` > Review floors |
-| A2, review convergence budget | `references/planning.md` > Phase 3 verdict and third-round rule |
+| A1, stakes and proportionality | `references/planning.md` > Phase 2 planning-overhead budget; `SKILL.md` > Review floors |
+| A2, review convergence budget | `references/planning.md` > stakes round ceiling and Phase 3 enforcement |
 | A3, kill-question stop | `references/codex-supervision.md` > Phase 4 stop rule |
 | A4, shared-infrastructure distress | `references/recovery.md` > Stop for shared-infrastructure distress |
 | A5, user-mandate sweeps | `references/recovery.md` > Replan without stale state |
 | A6, rig parity and rehearsal | `references/planning.md` > proof lenses |
 | A7, upstream premise verdict | `references/planning.md` > proof lenses and Phase 3 |
 | A8, position and outcome reporting | `references/codex-supervision.md` > Enter or resume |
-| A9, monotonic authority | `SKILL.md` > Full autonomy; activation and supervision point back to it |
+| A9, monotonic authority | `SKILL.md` > interruption levels and qualified standing intent; `references/planning.md` > per-effect authorization mapping |
 | A10, escalation ownership and stalls | `references/codex-supervision.md` > Consequence handoff |
 | A11, countable handoff and worthless assumption | `references/codex-supervision.md` > Consequence handoff |
 | A12, interpretation playback | `SKILL.md` > F4; `references/planning.md` > Phase 1 interpretation Decision |
-| A13 and P1-7, access map and remote preflight | `references/planning.md` > Phase 2 |
+| A13 and P1-7, access map and remote preflight | `references/planning.md` > human-only access task; `references/codex-supervision.md` > dependency-scoped remote proof |
 | A14, verified written records | `SKILL.md` > F1; `references/planning.md` > Persist and hand off |
 | P0-1, immutable review and authorization receipts | `SKILL.md` > F6; `references/planning.md` > Phase 3 and activation |
 | P0-2, pre-effect interlock | `references/codex-supervision.md` > Phase 5 |
@@ -96,7 +96,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `18.1.0`.
+- [x] Skill `Version:` and plugin manifest use `18.1.1`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.
