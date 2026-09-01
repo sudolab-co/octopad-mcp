@@ -1,6 +1,8 @@
-# Octoplan Codex 18.1.1 conformance
+# Octoplan Codex 1.0.0 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
+
+**Two numbers, two meanings.** The release version (`1.0.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The version reset renumbered the distribution only; it did not create a new plan contract, and live v18 plans stay valid.
 
 ## Shared core
 
@@ -96,7 +98,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `18.1.1`.
+- [x] Skill `Version:` and plugin manifest use `1.0.0`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.

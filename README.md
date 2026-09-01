@@ -62,9 +62,8 @@ These plugins are optional and separate from the MCP connection:
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
 | [`manage-product-documentation`](plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.4.0 shared | Organizes and maintains product documentation as product work evolves. |
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.5.0 | Plans the work. It never carries out the plan. |
-| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | 1.1.1 | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 18.1.1 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.0.1 | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 1.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
 Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.
@@ -93,16 +92,17 @@ docs/clients/                                Client-specific direct MCP guides
 .agents/plugins/marketplace.json             Codex marketplace manifest
 plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
 plugins/manage-product-documentation-codex/  Codex product-documentation distribution
-plugins/octoplan-claude/                     Optional Claude distribution
-plugins/octoplan-autopilot/                  Optional Claude planning-and-delivery distribution
-plugins/octoplan-codex/                      Optional Codex distribution
+plugins/octoplan-claude/                     Claude Code Octoplan distribution
+plugins/octoplan-codex/                      Codex Octoplan distribution
 plugins/meeting-to-octopad/                  Optional Claude meeting-transcript distribution
 scripts/validate-repository.sh               Repository contract validation
 ```
 
 ## Releases
 
-Each Octoplan distribution has its own version. The Claude Code and Codex product-documentation distributions share one synchronized version and use `manage-product-documentation-claude-vX.Y.Z` and `manage-product-documentation-codex-vX.Y.Z` tags. Existing Claude Octoplan releases use `octoplan-vX.Y.Z`; future ones use `octoplan-claude-vX.Y.Z`. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+One skill, one name. A distribution's folder, its plugin name, and its release tag prefix are the same string, and a skill that ships to more than one AI runtime carries that runtime in the name. Release titles read `<Display Name> <version>`.
+
+Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract. Releases published before that reset keep their original numbers and tags, because those are what the published release pages record; `CHANGELOG.md` lists them under each distribution's pre-reset heading. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

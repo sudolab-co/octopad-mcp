@@ -1,14 +1,40 @@
 ---
 name: octoplan
-description: Use when the user says "Octoplan" followed by a work-stream name, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning only — an Octoplan session never implements. Requires a connected Octopad MCP server.
+description: Use when the user says "Octoplan" followed by a work-stream name, when the user asks for a work stream to be planned and then delivered under supervision or autonomously, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning is implementation-free until the user's explicit delivery go; after that go the stream is supervised, by that same session or by a fresh supervisor session it hands to. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.
 ---
-Version: 1.5.0
+Version: 1.0.1
 
-# Octoplan — work-stream planning protocol for Octopad
+# Octoplan for Claude Code — work-stream planning and supervised delivery for Octopad
 
-Octoplan turns an Octopad work stream into a plan of detailed, ordered, self-contained tasks that fresh AI sessions then execute one at a time. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: an executor session briefs itself from Octopad and needs nothing else.
+Octoplan turns a confirmed outcome into the smallest useful Octopad work graph — a plan of detailed, ordered, self-contained tasks — and then, once the user says go, advances every safe ready branch until the outcome is proven or a real human decision is required, either from the planning session or from a fresh supervisor session it hands to. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: any session working the stream briefs itself from Octopad and needs nothing else.
 
-**Everything a later session needs lives in the task itself.** The session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns below. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it. The planner plans, never implements.
+## One program, three moments
+
+Whatever the stream, the user experiences every run as the same three-stage program: **Brief → Plan → Delivery**. Every message written for the user opens with the matching stage banner as its first line, exactly one of:
+
+- `**Octoplan · Step 1 of 3 — Brief**`
+- `**Octoplan · Step 2 of 3 — Plan**`
+- `**Octoplan · Step 3 of 3 — Delivery**`
+
+These banners are a contract shared across Octoplan implementations — same words, same order, every run — so the user learns one program. The internal steps below are the planner's machinery and never leak into user messages: the step-1 interview and the scoping brief speak under the Brief banner; step 4's decisions and the hand-off — the finished plan, its consequences, the one delivery question, the go — under the Plan banner; every delivery report, escalation, and mid-delivery consent under the Delivery banner.
+
+**Everything a later session needs lives in the task itself.** A session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns in `references/continuation.md`. That holds for the supervised path too: it is what lets a fresh session take the stream over if this one dies. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it.
+
+## Load the right reference at the right moment
+
+This file is the core every session reads. The rest loads by what you are doing, not who you are:
+
+- **Running a planning pass** (the resume check below says so) — load `references/planning.md` now; it holds the eleven steps.
+- **Writing or rewiring any Exec or Review line** — the planner speccing tasks, a rebalance adding or rewriting one — load `references/routing.md` first.
+- **Writing, rewiring, or emitting any Next line or continuation block** — speccing, the hand-off, a rebalance, a supervisor handing over — load `references/continuation.md` first.
+- **Delivering** — after the delivery go, or resuming a stream whose recorded go stands — load `references/supervision.md`. Never during planning.
+- **Touching a multi-stream effort in any way** — planning it (the cut test in `references/planning.md` fires), rebalancing a stream that belongs to one, or supervising one — load `references/multi-stream.md` too.
+
+## Resuming a stream — check this first
+
+Before planning anything, look at the stream you were invoked on. If ALL THREE hold — its name already ends with ` (octoplanned)`, it carries the delivery contract's Decisions, and one of them is a Decision whose own subject is the delivery go, which the user has not withdrawn — then this is a resume, not a new plan. A go mentioned in passing inside another Decision does not satisfy this. Do not re-plan, do not re-run the brief, do not re-ask the delivery mode, and do not re-ask for the delivery go: the recorded go is the user's permission, already given. One thing a resume MAY re-ask: a stream planned under an earlier version of this skill can lack a stakes Decision and carry a definition of success with no number — derive both from the tracker and the go record, put them to the user in one short exchange, and record the stakes Decision (kill question included) and the countable definition before the first dispatch; nothing else already settled is reopened. And check the go itself: a go Decision that names the hand-off message it answered and postdates it resumes on its face; one naming none is legacy — resume on its face and write the gap on the stream; one that predates the hand-off it names, or was recorded against a plan that was never shown, is not a go at all — re-authorize per the path in the next sentence before the first dispatch. A go resting on a standing intent the user gave before an away period resumes like any other, provided its Decision names the words that gave it, the message that showed the plan, and which disclosed effects those words covered (planning step 11); a Decision missing that effect list is not a standing-intent go, and every protected effect waits for a person until the user confirms. A stream whose contract Decisions predate delivery modes (they record two autonomy dials instead) is re-authorized, not resumed on its old go: show the CURRENT plan in the hand-off's form (the full step 11.1 list, bold consequence lines included, plus the outcome-and-kill-question lines), run the review the plan has not had under this contract, and ask the one mode question; the answer becomes a fresh go Decision with its disclosed list and reviewed graph. Old authority is never silently widened. And two things break any resume — the user explicitly asking for a re-plan, or a brief that no longer matches reality: either withdraws the go for this purpose and routes the invocation to the planning pass instead, carrying forward the recorded Decisions that still hold. Load `references/supervision.md`, re-read the contract Decisions, the open tasks and each one's comments, rebuild the delivery report's state lines from them where a report exists or applies (see that file), and rejoin the delivery loop where it stopped.
+
+Anything less than all three is a planning pass: load `references/planning.md` and run its steps, in order. Their shape, so you know what you are loading: 1 review or discover · 2 scoping brief, then wait · 3 delivery groundwork, recorded not asked · 4 lock decisions · 5 plan hygiene + execution order · 6 ground in reality + runnability · 7 spec into tasks · 8 self-check · 9 adversarial review · 10 tracker logic · 11 hand-off, the delivery-mode question and the go. Never run the pass from this summary. A stream that was planned but never given a delivery go simply reaches the hand-off again and waits there.
 
 ## What Octoplan needs
 
@@ -22,157 +48,100 @@ Octoplan turns an Octopad work stream into a plan of detailed, ordered, self-con
 
 ## Non-negotiables
 
-- **Planning only.** No code, no content deliverables, no "quick fix while we're here". The session's outputs are tasks, Decisions, Questions, design pages, and plan-hygiene edits to existing items — nothing else.
-- **Verified facts only.** Every file path, symbol, command, source claim, or task status cited in a spec must come from THIS session's tool output (reads, searches, Octopad calls), never from memory or plausibility. Can't verify it right now → ask the user or log a Question; never fill a spec slot with a guess.
-- **Every gate runs on every full planning pass.** A small stream is not a reason to skip the scoping brief (step 2), the self-check (step 7), or the adversarial review (step 8). A mid-execution rebalance runs only the reduced set named in Replanning.
+- **Implementation-free until the delivery go.** While planning, the session's outputs are tasks, Decisions, Questions, design pages, and plan-hygiene edits to existing items — no code, no content deliverables, no "quick fix while we're here". That holds until the user gives an explicit delivery go on the finished plan. After that go this session stops planning: it either supervises delivery by the rules in `references/supervision.md`, or hands supervision to a fresh session (planning step 11). Neither of them writes a deliverable itself.
+- **Verified facts only.** Every file path, symbol, command, source claim, or task status cited in a spec must come from THIS session's tool output (reads, searches, Octopad calls), never from memory or plausibility. Can't verify it right now → ask the user or log a Question; never fill a spec slot with a guess. This binds every record and report a session writes — specs, Decisions, task comments, reports, and any retrospective account of a run: a quotation is copied from a source read this session, never recalled; a number is re-derived at the moment of writing, never recalled; and a number later work will move takes a pointer to the file that owns it instead of a copy. A record written from memory reads exactly as authoritative as a verified one, which is what makes it worse. And an auto-generated view — a tracker, a progress report — is never a source or an authorization: it points, and the tasks, Decisions, and target state prove.
+- **Plain words in everything the user reads.** The scoping brief, the delivery terms, every decision put to them, the hand-off message, and every report from delivery: name what will happen and who does it, in words a reader who does not code can answer without asking what one means, and precise enough that a reader who does finds nothing vague. This skill's vocabulary belongs to the planner, so keep contract, gate, routing, stacking, floor and one-way door out of those messages, along with any synonym doing the same job, and say the thing itself: "your team's own rules already require this", "this cannot be undone". Every consent you ask states its consequence in words a non-expert can answer — "this deletes existing data", "this spends money" — and never asks the user to certify technical correctness: judging the work is the system's job, owning the consequence is theirs. Never the empty passive — "it goes for review", with nobody in it, is the failure; name the person, the role where a rule forbids the name, or the automatic check that clears it with no person involved. This rule covers what you write to the USER, in the chat. What you write for another session keeps the planner's precise wording, untouched: the Octopad records, every task description and Next line, the continuation blocks, and the worker launch template.
+- **Staging first, reversible by design.** Where the target offers a staging surface, changes land there before production; prefer reversible designs, and a justified irreversible change is high-risk work (2+ review lenses, `references/routing.md`). This binds planning, every rebalance, and delivery alike.
+- **Rigour is sized to the decision, in both directions.** Planning records the stream's stakes (step 3): the decision this stream feeds, its blast radius, and whether a wrong outcome can be undone. Every verification rule in this skill is then read against that record — where the outcome is reversible and internal, the review floor is one lens and Verify carries only the load-bearing facts; where it is irreversible or outward-facing, the full floors in `references/routing.md` apply. Verification that outgrows the decision it protects is a defect, the same as verification that falls short: every review round, re-check, and gate spends the user's time and money against the same stakes the work does.
+- **Every stream carries its kill question, and it never stays answered.** One falsifiable sentence, recorded at planning with the stakes: what would make this stream's entire output worthless, and what observation would show it. It is confirmed at the hand-off, re-answered by every session that resumes or takes over the stream, and re-asked on a fixed cadence during delivery (`references/supervision.md`) — an answer from a previous leg, however well proven there, is not an answer on this one.
+- **The brief and the review run on every full planning pass.** A small stream scales the scoping brief down (step 2) — it never skips it — and the adversarial review keeps its floor (step 9). The self-check (step 8) always runs. The user is interrupted at most twice on the happy path — the brief confirmation (reduced to the Readings playback when an unchanged confirmed brief stands) and the plan go — plus any step-4 decision only they can own. A mid-execution rebalance runs only the reduced set named in Replanning.
 
 ## When NOT to use
 
-A single small task: just write a good task description.
+A single small task: just write a good task description — unless the user explicitly invoked Octoplan, which always runs the three moments; a one-task plan is a fine plan.
 
 ## Keep the plan simple
 
-Spec the simplest plan that fully delivers the definition of success — least new process, fewest moving parts. Reuse the stream's existing conventions before inventing new ones, and when two structures both work, pick the one an executor can follow with less ceremony. No speculative scaffolding: no extra tiers, bespoke status markers, or synchronization steps the stream doesn't actually need yet. Apply this bar to the plan itself, not only to what it produces — an over-engineered process costs as much as over-engineered code.
+Spec the simplest plan that fully delivers the definition of success — least new process, fewest moving parts, no speculative scaffolding (extra tiers, bespoke status markers, synchronization steps the stream doesn't need yet). Reuse the stream's existing conventions before inventing new ones, and apply this bar to the plan itself, not only to what it produces. **Planning is overhead the outcome pays for**: when the pass is costing more than the first useful piece of delivery it enables, cut the plan, never the delivery. And a user who asks for simplicity is setting the plan's size, not describing a mood — record it with the stakes, and let it decide how many tasks this stream carries.
 
 Simplicity means cutting invented process, never correct decomposition. Decompose to one real job per task, and size each task to **one focused executor session**: a single coherent job that leaves the work verifiable on its own and touches only what the change genuinely requires. If a job won't fit one session or would leave a broken intermediate state, split it at a natural seam (schema → backend → frontend, as separate ordered tasks), never mid-change — but do NOT split an atomic change (a rename and its call sites) just to lower a file count. Concrete too-big signals — any one means split: the How describes more than one coherent job; Verify lists more than ~5 independent checks (the final validation task is the exception — it stays ONE task with one subtask per check); the change would sprawl wide without being one atomic edit. Two different splitting tools: separate ordered tasks split work BETWEEN sessions; **Octopad subtasks** structure work WITHIN one session. Whenever a task has 3+ distinct internal steps a memory-less executor could lose track of, create one subtask per step so the executor works a visible checklist instead of a wall of prose. Don't over-split either: a task below a meaningful verifiable state is noise, and so is a subtask below one concrete step.
 
-## Stream-type lenses (steps 1, 2 & 6)
-
-One Octoplan for every domain — but the interview questions, the brief's assumption hunt, and the How/Verify slots take the stream's own best practices. A lens is a checklist of questions, not extra process: if a lens question has an obvious answer in the stream's source of truth, verify it there instead of asking the user.
-
-- **Engineering.** Settle before planning: what merged-and-deployed behavior defines success; how it will be proven (which test suite, what new test); whether the data model changes (a migration is always a recorded Decision, and never runs in parallel with anything); what permission, security, or auth surface it touches (always recommend a review); how it rolls back if it breaks.
-- **Content / marketing.** Ground in the governing canon (positioning, voice, channel history); settle the measurable outcome, the distribution channel, and who approves before publish. Publishing is outward-facing — the approval gate is a wired task in the plan, never an afterthought.
-- **Ops / finance / legal.** Settle the source documents, the hard deadlines (dates written as absolutes, never "next month"), and the audit trail — every figure traceable to a named document.
-
-## Steps, in order
-
-1. **Review or discover.** Read everything that exists: the stream's tracker, every task, linked design pages, prior Decisions. A loose plan exists → review and improve it. The stream is thin or empty → interview the user first (purpose, scope, constraints, who it serves — one theme at a time), letting the stream-type lens shape the questions; the answers feed the scoping brief (step 2), and the design page and proposed task breakdown come only after the brief is confirmed. Also settle two practical facts you'll need later: which AI models and reasoning-depth settings the team's environment offers (for Exec recommendations), and who on the team owns each human gate.
-2. **Scoping brief — reflect back, then wait.** Before locking any decision, drafting any design page, or writing any task, merge what the user said with what the sources hold and hand it back as ONE short brief (aim for half a page) in the chat — a stream that already looks fully specced is where an unchecked misreading survives longest. The brief is the ENTIRE message: no decision proposals, no draft breakdown riding along — end the turn on it. Five parts, each present every time, with the stream-type lens shaping what belongs in each:
-   - **Understanding** — the stream's purpose and deliverable, restated in the planner's own words.
-   - **In / out of scope** — both lists explicit. An empty "out" list is a red flag: name at least the nearest adjacent thing the stream does NOT deliver.
-   - **Success** — the definition of success the planner intends to plan against.
-   - **Assumptions** — every point the planner settled by inference instead of a source or the user's words, one line each, with where the inference came from. An empty list must show its work: name where each usual hiding place (scope edges, audience, ordering, quality bar) was settled — a source read this session, or the user's words.
-   - **Open questions** — what the planner cannot settle alone.
-   Then STOP. Confirmation is a reply the user sends AFTER seeing the brief — no launch prompt, prior chat, or tracker note counts, however complete it looks. The reply confirms the brief as corrected: a correction replaces the assumption, and anything the reply leaves unanswered never defaults to the planner's assumption — re-ask once, then whatever stays open becomes a logged Question with its affected tasks as flesh-out placeholders. Do not start step 3 until that reply has arrived. The brief itself is a chat message, not an Octopad artifact — its confirmed content flows into Decisions, Questions, and the tracker, which are the durable records. A multi-stream effort writes ONE effort-level brief (see Multi-stream efforts).
-3. **Lock decisions.** Surface every open call and present each in this shape before locking: **Deciding** (what and why it matters, in real-world terms) → **Options** (each with what you gain and what you give up) → **Recommendation** (your pick and why) → **Reversibility** (how hard to undo). Confirm ONE decision at a time — a "go ahead" locks only the item just confirmed, never neighboring proposals. A call the user already settled in the brief reply is recorded as a Decision directly, not re-presented. Record each as a Decision on the stream.
-4. **Plan hygiene + execution order.** Close done-but-open tasks; align the stream's definition of success with real scope; log open Questions. Then wire the order so "what's next" is never ambiguous:
-   - **Dependencies are the machine-readable order.** Wire a dependency edge (with its one-line rationale) for every real "B needs A" relation — edges work across work streams in the same workspace. Octopad's next-task resolution skips tasks whose dependencies aren't done.
-   - **Title prefix is the human-readable order.** Name every executable task `#N - <title>`, N being its rank among the stream's executable tasks. The rank shows in every task list and in the continuation prompt.
-   - **A Next line closes every executable task's description** — the hand-off instruction the finishing session follows. Write it using the exact patterns in the Continuation section; it is the only way the chain moves.
-   - Add the **final validation task** — whatever proves the stream's definition of success (an end-to-end test for a build stream, a publish-readiness review for a content stream), wired after the delivery tasks, with one subtask per check. Producing a manual checklist for the user is part of its Done when.
-   - **Human-only tasks** (approvals, access grants) get no `#N` prefix, no Exec/Review lines, and no Next line — dependencies gate them, and the preceding executable task's Next line carries the resume instruction (see Continuation). They still need Why, What, Done when, and the impact parameters like any task, and are assigned to the team member who owns the action.
-5. **Ground in reality + runnability.** Engineering streams: map the repository's real conventions with read-only exploration; anything written into a spec must be confirmed by a direct read. Business/content streams: ground in the governing documents instead — read them IN FULL plus the live external surfaces; never spec from memory. If the planner itself lacks access to a governing surface, log a Question and mark the affected tasks as flesh-out placeholders rather than speccing blind. All streams: confirm every Verify step is executable with access that exists today — missing access (a database, analytics, posting rights) becomes its own task wired before its dependents. A check that can only mature later (a metric measured weeks after delivery) is not a runnability failure: name the event or date it waits on in a `**Preconditions:**` line. Any spec that assumes prior work is LIVE (deployed / published), not merely written, also gets a `**Preconditions:**` line naming what must be live first.
-6. **Spec into tasks — fill the template.** Write every executable task with the template below, every required slot filled before saving. Implementation-grade detail goes INTO the description — exact paths or source documents, patterns to copy, edge cases, and the exact verify steps (precise commands or concrete checks, not "run the tests" — the executor has no memory of any chat and can't infer them). The How must call for the simplest implementation that fully solves the job — reuse existing functions, templates, and patterns before adding new ones; simple, complete, and matching the surrounding conventions beats clever. A task that can't be fully specced yet (it depends on another task's output) is a **placeholder**: it keeps its `#N - ` title AND the required Why / What / Done when headers and impact parameters (or the create is rejected), but each body slot holds one line only, with this note as the What: "⚠️ Octoplan flesh-out required: run an Octoplan pass before building, because <what is missing>" — an executor reading it flags the user instead of building on a placeholder.
-7. **Self-check gate.** After all tasks are written, re-open every one FROM OCTOPAD (re-read what was actually saved, not what you remember writing) and walk it against the self-check list below. Fix failures on the spot, then re-check the fixed task.
-8. **Adversarial review — never skip.** 2+ fresh-eyes agents attack the plan against the real source of truth — the repository for engineering, the governing documents and live surfaces for content — worst problems first. Give each reviewer the verbatim saved task text (fetched from Octopad, never your summary) plus access to that source, and have it verify claims with its own reads. Assign each agent one lens: (a) **design soundness** — is this the right plan; wrong decomposition, missing decision, simpler structure available, and does every spec match the confirmed scoping brief, corrections included; (b) **executability** — can a memory-less session complete each task from its spec alone; paths real, steps runnable, dependencies and Next lines correct. For a stream of 8+ tasks or anything touching data migrations, permissions or auth, or money, add a third lens: (c) **risk** — what breaks, what loses data, what needs a human sign-off the plan doesn't flag. A finding may be dismissed only by verifying the contrary in this session's tool output — otherwise fix the specs or log a Question.
-9. **Write the plan's logic into the stream tracker.** Every work stream has a tracker page carrying the sections the planner owns (Scope, Rationale, Definition of Success) alongside the system-generated Progress Report and Activity Log. Update it so the ordering makes sense to anyone opening the stream later: **why the tasks run in this order**, which branches are parallel and why they are safe to split, where a human gate sits, and what ends the stream. Keep it short and keep it logic-only — no task statuses, no copies of task content, nothing the task graph already holds, or it goes stale the first time work moves. This is the same job the Blueprint page does for a multi-stream effort, at single-stream scale. Never hand-write the Progress Report or the Activity Log; the system owns those.
-10. **Hand off.** Rename the work stream so its name ends with ` (octoplanned)` — skip if it already does — so anyone scanning the workspace sees which streams have been through a full Octoplan pass. The suffix is a marker for humans reading the workspace, not part of the stream's identity: continuation prompts always use the plain name. Then end with a short wrap-up (what the plan contains — task count, decisions locked, open questions) and the continuation prompt for the first ready task, in the exact fenced format defined in Continuation. Do NOT restate chain state or the team's standing rules in the handoff: state lives in Octopad, rules live in the team's own instruction files. If you're tempted to add a fact to the handoff, it belongs in an Octopad task, Decision, or knowledge item — put it there.
-
 ## Task template
 
-Octopad rejects the create if Why / What / Done when are missing or renamed, or if the impact parameters aren't set. The other slots are Octoplan's conventions — executors read them as plain language, so write them as instructions, not codes.
+Octopad rejects the create if Why / What / Done when are missing or renamed, or if the impact parameters aren't set. The other slots are Octoplan's conventions — executors read them as plain language, so write them as instructions, not codes. Before filling the template: load `references/routing.md` for the Exec and Review slots, and `references/continuation.md` for the Next slot.
 
 ```
 Title: #N - <task title>
 
 **Why:** <why this task exists and what it builds on — enough for a memory-less session>
 **What:** <the one job in a sentence, plus scope and boundaries — what's out when ambiguous>
-**How:** <exact paths or source documents, patterns or templates to copy, edge cases to cover>
+**How:** <exact paths or source documents, the outcome and constraint, a checked precedent where one carries, edge cases to cover>
 **Verify:** <exact copy-pasteable commands or concrete checks>
-**Done when:** <the concrete end state, named in the system of record where the deliverable lives — for code, the merged/deployed state the team's process requires, never just "tests pass"; for content or ops, the approved/published/filed state and where it sits>
-**Exec:** <recommended model tier · reasoning depth — see the rubric> — <why>
+**Done when:** <the concrete end state, named in the system of record where the deliverable lives — for content or ops, the approved/published/filed state and where it sits; for code, the state the target's rules actually let this session reach, never just "tests pass" — see the note under this template>
+**Exec:** <recommended model tier · reasoning depth> — <why>
 **Review:** <required | skip> — <why>
 **Preconditions:** <what must be LIVE or matured, not just written>
-**Next:** <the hand-off instruction — copy the matching pattern from the Continuation section>
+**Next:** <the hand-off instruction — the matching pattern, copied verbatim>
 ```
 
 Creation parameters alongside the description: `impact` (1–5) and `impact_rationale`, plus `parent_task_id` for subtasks and `depends_on_task_id` (+ rationale) for dependencies. The `**Preconditions:**` slot is omitted entirely when not needed — never left as placeholder text. Subtasks carry only Why + What (put the subtask's concrete check or step in its What).
 
-## Exec & Review recommendations
+A Done when never names a state this session's own rules forbid it reaching: where the finish line is out of reach, the task ends at open-green-handed-off and a human-only landing task carries the rest (the landing-task rule, planning step 5). Where the change ships behavior a user or the team will see, its Done when includes recording the documentation consequence in the target's own mechanism (for a repository, its per-change doc-impact convention) — the final validation task only confirms what the delivery tasks recorded.
 
-**Exec.** The planner just read the real sources and specced the task, so it knows how hard the task is — record a model recommendation the user applies when launching the executor session. Use the exact model names and effort settings the team's environment offers (settled in step 1). When the current Claude models are available, use this capability-first rubric; it deliberately values avoiding a failed session over minimizing spend:
+**The Verify slot of a task that changes production code carries one call-site proof per production path the task changes or guards.** Each in this fixed two-line shape, with the real names filled in: "In a scratch checkout, remove or disable <the exact call/filter/write>, run <the exact suite command>, paste the failing output; discard the edit, run it again, paste the passing output." A suite that stays green with a real path removed proves the tests attack helpers instead of the change, and the worker proves the opposite for almost nothing, where a review round buys the same finding late and expensively. Where the suite is slow, the narrowest suite covering the path is enough.
 
-| Task profile | Recommend |
-|---|---|
-| Mechanical, fully specced copy of a verified pattern; reversible and concretely checkable | **Sonnet 5 · xhigh** — the only default Sonnet lane |
-| Standard bounded delivery with a clear pattern — a routine feature, analysis, or templated deliverable | **Opus 5 · high** |
-| Hard but well-bounded work — tricky logic, hidden invariants, or dense structure | **Opus 5 · xhigh** |
-| Cross-file or cross-document coordination, data migrations, permissions/security, money, or high-stakes hard-to-reverse work (brand-defining copy, legal text, anything published where wrong is costly) | **Opus 5 · xhigh**, with Review required |
-| Genuinely open design or long-horizon problem where the approach itself is uncertain | **Fable 5 · xhigh**, only after confirming availability and that its mandatory 30-day data retention is acceptable; otherwise **Opus 5 · xhigh** |
-| Broad read-only audit or "find/verify every X" sweep | **Opus 5 · xhigh**, plus `/effort ultracode` only with the user's explicit opt-in |
+The same discipline binds every check, code or not: **a check ships with its own defeat proof, designed before the check** — name how this check could pass while the thing it names is broken, and show that it does not. A check resting only on data the task produced itself always fails this test. And every Verify slot names its **proof surface** — the rendered page, the live API, the raw trace, the exact database, the source corpus — matched to the Done when: a source read or a passing test suite never satisfies a Done when whose surface is a rendered page or a live system, because the first real use is then the first real check. Where that surface needs a login, a seat, or a browser the executor cannot drive, the proof becomes a human-only verification task with a named owner (the runnability remedy, `references/planning.md` step 6), and the executable task's Done when steps back to the state it can actually reach.
 
-Apply the effort vocabulary precisely:
+## Exec & Review — the core rules
 
-| Setting | Octoplan policy |
-|---|---|
-| `low` | Native effort, but do not recommend it for Sonnet 5, Opus 5, or Fable 5 work. |
-| `medium` | Native effort, but recommend it only when the user explicitly prioritizes latency or cost; never use it for Sonnet 5. |
-| `high` | Default substantive route for Opus 5. It may be used with Fable 5 when the user already chose Fable for a bounded capability-sensitive task. Never use it for Sonnet 5. |
-| extra high (`xhigh`) | Minimum Sonnet 5 route and the default for hard, long-running, or consequential work. |
-| `max` | Rare. Recommend it only when `xhigh` has proved insufficient or the task is explicitly unconstrained and the extra latency, cost, and risk of overthinking are justified; write that reason in the Exec line. Prefer moving from Sonnet 5 to Opus 5 before maxing Sonnet. |
-| `ultra` / `ultracode` | Not a native effort above `max`. The `/effort ultracode` session setting combines `xhigh` with automatic workflow orchestration; the `ultracode` prompt keyword starts one workflow at the session's current effort. Save the actual native effort, name the separate opt-in, and never write `effort: ultra`. |
+The rubric, the lane dispatch mechanics, the effort vocabulary, availability conditions, and reviewer lens counts live in `references/routing.md` — load it before writing any Exec or Review line. Always true, whoever is reading:
 
-Every Fable 5 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention. If either condition fails, use Opus 5 at the best compatible effort for the task.
-
-Sonnet 5 below `xhigh` is outside this rubric. That floor is an Octoplan quality policy, not a claim that lower effort has a universally measured defect rate. Opus 4.6 is a deliberate compatibility or interaction-style lane, never an automatic downgrade: it has no `xhigh`, so use `high` for routine work; use `max` only when the user's live workload or tuned prompts favor 4.6 **and** the rare-`max` rule above is independently satisfied. Opus 4.6 and Opus 5 have the same list price; the older tokenizer can use fewer tokens for equivalent text, but that alone does not prove lower cost per successful task.
-
-The native effort ladder and model defaults come from Anthropic's [effort guide](https://platform.claude.com/docs/en/build-with-claude/effort) and [model-selection guide](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model). The Opus 4.6 compatibility facts come from the [migration guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide). Claude Code's separate orchestration modes are defined in its [workflow guide](https://code.claude.com/docs/en/workflows).
-
-Recommend generously. The executor may escalate when live work proves harder than specced, but it must not silently weaken the Sonnet floor or substitute a model that cannot provide the saved effort. If the exact route is unavailable or its data-retention policy is unacceptable, say so and recommend the best compatible fallback.
-
-**Review.** `required` whenever a mistake would be costly: real decision-making, security/permissions, a data migration, cross-file logic, anything published or client-facing. `skip` only for genuinely trivial mechanical changes a fresh pass would find nothing in. When required, the executor has a separate fresh agent — no memory of writing the work — attack just the finished change, worst problems first, and fixes confirmed findings before delivering. Default to `required` when unsure.
+- The planner records the model and reasoning depth for each task's launch. **The saved route is a floor:** the executor may escalate when live work proves harder than specced, never weaken it, and it must not silently drop the Sonnet floor or substitute a model that cannot provide the saved effort. If the exact route is unavailable or its data-retention policy is unacceptable, say so and recommend the best compatible fallback — never quietly swap.
+- The five lanes the rubric can save: **Sonnet 5 · xhigh, Opus 5 · high, Opus 5 · xhigh, Opus 5 · max, Fable 5.1 · xhigh** — which profile takes which lane, and the conditions on Fable and `max`, are in `references/routing.md`.
+- **Review:** `required` whenever a mistake would be costly — real decision-making, security/permissions, a data migration, cross-file logic, anything published or client-facing. `skip` only for genuinely trivial mechanical changes a fresh pass would find nothing in. Default to `required` when unsure. When required, one or more separate fresh agents — no memory of writing the work — attack just the finished change, worst problems first, and confirmed findings are fixed before delivering, within the review-round budget in `references/supervision.md`: a finding class that budget stops is recorded as a stated limit of the deliverable, never silently dropped — unless it answers the stream's kill question, which no stated limit can hold. Under manual execution the executor session runs that review itself; under supervised delivery the supervisor spawns the reviewers and the worker never does. A required Review line names its lens count in its why (`references/routing.md`). **The reviewer's route is never cheaper than the work it attacks.**
 
 ## Continuation — how the chain moves between sessions
 
-Sessions are chained by a **minimal continuation prompt**: a fenced code block holding two lines of plain text, no links and no formatting.
+Sessions are chained by a **minimal continuation prompt**: a fenced code block holding two lines of plain text, no links and no formatting. The exact block formats, the six Next-line patterns, and the settings-line rule live in `references/continuation.md` — load it whenever you write, rewire, or emit one of these.
 
-```
-<work stream> #N - <task title>
-Octopad · Organisation: <organisation> · Workspace: <workspace>
-```
+What is always true:
 
-The work and the rank come first because the assistant names the session after the start of what it is given, so that line has to be the readable label. Write the stream's plain name, without the ` (octoplanned)` suffix — it says nothing to the session reading it, and Octopad matches names loosely enough to resolve either way. The second line is the address: workspace names can repeat across organisations, so both are needed to land in the right place with no guessing.
+- **The prompt is a pointer, never a payload.** The receiving session briefs itself entirely from Octopad (`start_session`, then `build_context`), so the block can never go stale. Anything Octopad can hold belongs in Octopad, not in the block.
+- **Every block handed to the user carries its launch settings** on one plain line directly under the fence (outside it): model, reasoning effort, and solo or parallel-safe. The user launching the session sets those, so a block without this line hands them a decision the plan already made.
+- Under supervised delivery the blocks are the **fallback path, not the normal one**: the supervisor sequences the work itself and its workers emit no continuation block. They still get written on every task — they are the manual path (the user running one task by hand) and the recovery path. If the supervising session dies, the first recovery move is to invoke this skill on the stream again (see Resuming a stream) — the supervisor handoff block in `references/continuation.md` is that move written down.
+- Parallelize only on true independence: no shared file, symbol, or contract for code; no shared editorial structure, template, or deliverable one sibling shapes for another, for content; never data migrations or shared generated artifacts. Parallel is the exception, and every parallel group has exactly ONE relay sibling that carries the chain.
+- Executors work only tasks assigned to them or unassigned — **a task assigned to another person is theirs; the plan assigns tasks accordingly, and an executor finding a foreign assignment warns the user instead of working it.**
 
-The user pastes the block into a fresh session, which briefs itself entirely from Octopad (`start_session` on the workspace, `build_context` on the task). The prompt is a pointer, never a payload, so it can never go stale. A session learns to emit it from ONE place: the **Next** line of the task it just finished. So the planner writes that line as a verbatim instruction, using these patterns, with the real names filled in and `<block>` standing for the two-line block above built for the named task:
+## Multi-stream efforts
 
-- **Sequential** — successor is one executable task:
-  `**Next:** #4 - <title>. When this task is fully done and verified, check in Octopad that #4 is still open and unclaimed and its dependencies are done, then end your reply with a fenced code block containing exactly: <block for #4>. If #4 is not ready, end instead with one line naming what it waits on.`
-- **Human gate next** — successor is a human-only task:
-  `**Next:** waits on "<human task title>" (owner: <name/role>). When this task is done, end your reply by stating in one line that the chain waits on that action, then give the user this block to paste once it is done: <block for the task after the gate>.`
-- **Parallel fan-out** — several independent siblings become ready at once:
-  `**Next:** parallel group #2 + #3. When this task is done and both are confirmed ready in Octopad, emit one fenced code block PER sibling (<block for #2>, then <block for #3>) — the user opens one fresh session per block.`
-- **Inside a parallel group** — exactly ONE sibling is the **relay** (it carries the chain); the others are **terminal**:
-  - Relay: `**Next:** #6 - <title>, after the whole group (#2, #3) is done. Relay: check in Octopad whether every sibling is done. If yes, emit the #6 continuation block. If not, name what is still running and give the user the #6 block to paste once the group is done.`
-  - Terminal: `**Next:** none — terminal branch; #3 carries the continuation.` (The finishing session ends with its wrap-up and NO continuation prompt, so the chain never forks.)
-- **End of chain:** `**Next:** none — last task of the stream. End with the wrap-up only.`
-
-A Next line that points into another work stream (a multi-stream effort) works the same way: the block simply names that stream, and the organisation and workspace stay as they are.
-
-Parallelize only on true independence: no shared file, symbol, or contract for code; no shared editorial structure, template, or deliverable one sibling shapes for another, for content; never data migrations or shared generated artifacts. Parallel is the exception. Executors work only tasks assigned to them or unassigned — **a task assigned to another person is theirs; the plan assigns tasks accordingly, and an executor finding a foreign assignment warns the user instead of working it.**
-
-## Multi-stream efforts (Blueprint)
-
-When a request is too big for one work stream, plan it as ONE effort across several autonomous streams. The scoping brief (step 2) is written ONCE for the whole effort, before the cut into streams — the assumptions worth catching (where the seams fall, what each stream owns) live at effort level. A later Octoplan pass on a single stream of an existing effort writes its own stream-level brief: the effort brief covered the cut, not the stream's internals. No new Octopad object is needed — an effort is a goal + several work streams + one Blueprint page, all in the same workspace (dependency edges cannot cross workspaces):
-
-1. **Cut the work into autonomous packages**, one work stream each. A package stays a top-level task of its own stream — never artificially demoted to a subtask of another stream's task. Link every stream to the same goal. Wire the real dependencies between tasks across streams and note what can run in parallel.
-2. **Write one Blueprint page** — deliberately light: the expected outcome, each stream's role, the global order, the parallel branches, the few dependencies that matter, the human validation points, and the effort's end condition. Link it to the tasks it governs so every executor immediately sees where its work sits in the whole. The Blueprint explains the logic; the Octopad dependency graph enforces it — the page carries no statuses and no copies of task content, so it never goes stale.
-3. **Plan at effort scale.** Continuation crosses stream boundaries like any other step: a task's Next line may point into another stream — the continuation prompt then names that stream. The effort's final validation task includes one closing subtask: **archive the Blueprint page** once the effort is done.
-
-If one work stream suffices, none of this applies.
+A request too big for one work stream is planned as ONE effort across several autonomous streams — a goal, several work streams, and one light Blueprint page, all in the same workspace. The cut test that decides it runs in planning step 1 (`references/planning.md`); the full protocol is `references/multi-stream.md`, loaded by any session that plans, rebalances, or supervises a stream belonging to an effort.
 
 ## Replanning — when execution changes the plan
 
-A plan has no scheduled revisions. It changes only when reality changes it: a session executing a task discovers something that adds a task, drops one, or changes the order. The session that makes the discovery invokes this skill right then and rebalances the WHOLE plan, never just its own corner:
+A plan has no scheduled revisions. It changes only when reality changes it: a session executing a task discovers something that adds a task, drops one, changes the order, or moves the base the work sits on. **The user changing the mandate mid-delivery is the same trigger** — a scope cut, a corrected reading of what they asked for, a Decision superseded or retired — and it demands two sweeps before any further dispatch:
 
+- **Sweep every open task's spec against the new mandate**, started or not, and rewrite the ones that contradict it. A prose Decision saying "stop doing X" does not visibly override a spec step saying "do X": a concrete instruction beats an abstract one for the session that reads only the spec, so no Decision may leave any task spec contradicting it.
+- **Where a Decision was retired, sweep the artifacts it produced**: what did that decision put into code, configuration, or content, and does any of it still run? A decision's residue keeps executing after the reasoning behind it is withdrawn, and a comment justifying the retired decision is itself a defect — it makes the residue look intentional to the next reader. Record the sweep's result on the stream even when it is "nothing".
+
+The session that makes the discovery invokes this skill right then and rebalances the WHOLE plan, never just its own corner:
+
+- When what the work builds on has moved, re-read the final validation task's spec FIRST, not last: every earlier task gets corrected as it is worked, and that one is corrected by nothing. Then re-read what each unfinished piece actually sits on now, and write the resulting order onto the stream, not into the chat.
 - Re-validate every spec the change touches against the current sources.
 - Renumber the `#N` prefixes so the rank stays unambiguous.
-- Rewire the dependency edges and every Next line the change affects — a stale Next line kills the chain.
-- Update the tracker's ordering logic if the why-this-order changed.
-- Run the per-task self-check on any task added or materially rewritten, before the session ends.
+- Rewire the dependency edges and every Next line the change affects (load `references/continuation.md`) — a stale Next line kills the chain.
+- A task added or materially rewritten gets every template slot, Exec and Review included (load `references/routing.md`), and passes the per-task self-check below before the session ends.
+- Update the tracker's ordering logic if the why-this-order changed — rewrite it in place. Never append a correction under stale text: a reader meets the wrong version first and stops there.
 
-Then hand the user the corrected continuation prompt and go back to executing. The planning-only rule binds planning sessions; a rebalance inside an execution session covers exactly these plan edits, nothing more — the scoping brief is not rerun on a rebalance, it belongs to full planning passes. One limit: if the discovery breaks the stream's own logic — its definition of success no longer matches reality — or the rebalance would add or materially rewrite more than a couple of tasks or move the scope, that is not a rebalance: stop and tell the user the stream needs a fresh "Octoplan <stream>" pass instead of patching it mid-flight.
+Then hand the user the corrected continuation prompt, or — if a supervisor is running the stream — hand the rebalanced order back to it, and go back to work. On a multi-stream effort a supervisor rebalances only its own stream; a change touching a seam — a cross-stream dependency, the Blueprint's order, the effort's end condition — stops for the user, per `references/multi-stream.md`. The implementation-free rule binds planning passes; a rebalance inside a delivery or execution session covers exactly these plan edits, nothing more, and the scoping brief is not rerun — it belongs to full planning passes. What a rebalance can and cannot carry:
 
-## Self-check list (step 7)
+- **Authority is monotonic inside a rebalance.** A valid recorded go persists through internal corrections; replanning and re-review do not themselves revoke it. Three things do, each named elsewhere: the user asking for a re-plan, a stream re-authorized because its contract predates delivery modes (Resuming a stream), and a discovery that breaks the stream's logic (the limit below).
+- **New consent, only for a real change of authority:** a new or rewritten task carrying a protected effect missing from the go Decision's disclosed list, landing in a target or class of work the approved plan never named, or changing the substance of a user gate — dependency order or gate placement alone is not such a change. That task stops for the user's consent, stated as its consequence in plain words, before it runs.
+- **A rerun after a material premise change is a new task** (or new tasks via this replan), never a reused task carrying two campaigns — the superseded results stay on the old task, attributable.
+- **The limit:** if the discovery breaks the stream's own logic — its definition of success no longer matches reality — or the rebalance would add or materially rewrite more than a couple of tasks or move the scope, that is not a rebalance: stop and tell the user the stream needs a fresh "Octoplan" pass on it instead of patching it mid-flight. A fact ALREADY WRITTEN in the run's own records that breaks that logic is this trigger too — the trigger does not wait for a new discovery when the invalidating one is sitting in a comment.
+
+## Per-task self-check
+
+Run this on every executable task you write or materially rewrite — the planner at step 8 (which adds the per-plan list in `references/planning.md`), a rebalance before its session ends. Re-read the task FROM OCTOPAD (what was actually saved, not what you remember writing); fix failures on the spot, then re-check the fixed task.
 
 Human-only tasks: check they carry no `#N` prefix, no Exec/Review lines, no Next line — but do carry Why/What/Done when, the impact parameters, and an owner. Placeholders: check the title prefix, the required headers, and the flesh-out note. Subtasks: check only Why + What.
 
@@ -180,45 +149,18 @@ Per executable task:
 - Title carries `#N - `; the rank is unambiguous among the stream's executable tasks.
 - Why / What / Done when present under those literal names; impact parameters set.
 - Exec and Review lines present, each with its why, matching the rubric.
+- A task that causes a protected effect names that effect in its spec in plain consequence words — the worker's authorization test reads it there, against the go Decision's disclosed list.
 - A task with 3+ distinct internal steps carries one subtask per step.
-- How names the specific files or source documents to touch and a concrete existing example to copy — a memory-less session could open the right things from this text alone. "Follow the existing pattern" fails this row.
-- Every path, symbol, command, and source claim in the spec appeared in this session's tool output.
-- Verify steps are exact; access exists today; anything that can only mature later is named in `**Preconditions:**`.
+- How names the specific files or source documents to touch, plus the outcome and the constraint — a memory-less session could open the right things from this text alone. "Follow the existing pattern" fails this row. Every named precedent carries the evidence that it fits THIS case, not just its name.
+- Every path, symbol, command, source claim, claim about how the product behaves, and claim about what the environment can reach in the spec appeared in this session's tool output — and every claim naming a version, an identifier, or a count was re-derived here, not recalled. Can't re-derive it now: cut it, and log a Question if the plan needs it. A precise-sounding wrong fact invites no check, which is what makes it worse than a vague one.
+- Every Verify check names how it could pass while the thing it names is broken, and shows that it does not (the defeat-proof rule above).
+- Verify steps are exact and need no login, no third-party seat and no browser the executor cannot drive — any of those is a human-only task, not a Verify line; anything that can only mature later is named in `**Preconditions:**`.
 - One job; fits one executor session; independently verifiable.
-- Anything assumed LIVE is named in `**Preconditions:**`.
-- The Next line uses one of the Continuation patterns verbatim (with real names filled in) and matches the dependency graph; exactly one relay per parallel group; terminals really are terminal.
+- A task that builds an experiment, a staging reproduction, a fixture environment, or a simulation carries its parity manifest, and — where the run it enables is materially expensive — its rehearsal item (`references/planning.md`, step 6, validity half).
+- Anything assumed LIVE is named in `**Preconditions:**`; where only a person can make it true, a human-only task with a dependency edge carries the wait, not the line alone.
+- The Next line uses one of the patterns in `references/continuation.md` verbatim (with real names filled in) and matches the dependency graph; exactly one relay per parallel group; terminals really are terminal.
 - No guesses: every gap is a Question, a Decision, or a flesh-out placeholder.
-
-Per plan:
-- The scoping brief was confirmed by a user reply sent after seeing it, before any decision was locked or task written; every assumption in it was confirmed, corrected, or logged as a Question.
-- Definition of success matches real scope; final validation task wired after the delivery tasks.
-- Every point where the plan chose between real alternatives is a recorded Decision, not an unstated default.
-- Parallel groups only on truly independent siblings.
-- Dependencies wired for every real "B needs A", including across streams.
-- The stream tracker explains why the tasks run in this order, names the parallel branches and the human gates, and carries no task statuses or copied task content.
-- Multi-stream efforts: Blueprint page exists, is light, is linked, and its archiving is a closing subtask.
-- Nothing exists to serve process rather than the outcome.
 
 ## Changing this skill
 
-This skill is distributed from [sudolab-co/octopad-mcp](https://github.com/sudolab-co/octopad-mcp). To change it, edit that repository and release (see its CONTRIBUTING); never edit an installed copy — plugin auto-update silently overwrites it.
-
-## Common planning mistakes
-
-| Mistake | Consequence |
-|---|---|
-| Planning straight from the sources, no scoping brief | A plausible misreading of intent ships into every spec — the user finds out after the tasks are built, not before |
-| A scoping brief with an empty Assumptions list nobody hunted for | The brief becomes a rubber stamp; the hidden inferences it existed to surface stay hidden |
-| Skipping the runnability check | A late task (e.g. a check needing access nobody has) turns out impossible after sunk cost |
-| Speccing from memory instead of the real sources | Specs cite files or documents that have since changed |
-| Speculative scaffolding — tiers, options, or process the stream doesn't need yet | Executors pay a ceremony cost for scale that never arrives |
-| A handoff that dumps chain state instead of pointing to it | A bloated, self-staling prompt duplicating Octopad — the continuation prompt is a pointer |
-| A build task that sprawls past one session | The executor can't finish or verify it cleanly — split at natural seams, never mid-change |
-| A titanic validation task — a dozen checks crammed into one description | The executor drowns mid-task and progress is invisible — one subtask per check |
-| Choosing the Exec recommendation by gut instead of the rubric | Over- or under-powered sessions: maximum depth overthinks routine work, standard depth under-serves a migration |
-| A Next line that names the successor but not the emit instruction | The executor doesn't know this skill — the chain dies after one task; copy the Continuation patterns verbatim |
-| Two relays in one parallel group, or none | The chain forks, or dies silently — exactly one sibling carries the continuation |
-| A placeholder without the required headers | Octopad rejects the create — placeholders keep Why/What/Done when around the flesh-out note |
-| A plan whose ordering logic lives nowhere a human reads | The dependency graph enforces an order nobody can explain six weeks later — put the reasoning in the stream tracker |
-| Copying task statuses or task content into the tracker or the Blueprint | Both go stale the first time work moves — they carry logic, the task graph carries state |
-| Renaming the template's section names | Octopad literally matches Why / What / Done when at creation and rejects the write |
+This skill is distributed as a plugin. To change it, edit the repository it is published from and release it there, following that repository's contribution guide; never edit an installed copy — plugin auto-update silently overwrites it.

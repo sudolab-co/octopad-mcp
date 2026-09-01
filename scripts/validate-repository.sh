@@ -20,7 +20,7 @@ grep -Fq '**"Use Octopad. Start my onboarding."**' "$root/README.md" || fail 'RE
 grep -Fq 'https://chatgpt.com/plugins' "$root/README.md" || fail 'README ChatGPT directory link is missing'
 grep -Fq 'official Octopad app' "$root/README.md" || fail 'README ChatGPT app route is missing'
 grep -Fq 'supported customer-facing ChatGPT plugin' "$root/README.md" || fail 'README ChatGPT terminology bridge is missing'
-grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 18.1.1 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$root/README.md" || fail 'README Codex version or behavior is stale'
+grep -Fq '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 1.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$root/README.md" || fail 'README Codex version or behavior is stale'
 grep -Fq 'Octopad > Settings > AI clients' "$root/README.md" || fail 'README connection-revocation path is missing'
 [ -f "$root/SECURITY.md" ] || fail 'security reporting guide is missing'
 grep -Fq 'https://mcp.octopad.app/mcp' "$root/INSTALL.md" || fail 'canonical MCP endpoint is missing'
@@ -54,43 +54,26 @@ grep -q '"name": "octopad-mcp"' "$root/.agents/plugins/marketplace.json" || fail
 grep -q '"name": "octoplan-claude"' "$root/plugins/octoplan-claude/.claude-plugin/plugin.json" || fail 'Claude plugin ID is not octoplan-claude'
 claude_skill="$root/plugins/octoplan-claude/skills/octoplan/SKILL.md"
 claude_manifest="$root/plugins/octoplan-claude/.claude-plugin/plugin.json"
+claude_routing="$root/plugins/octoplan-claude/skills/octoplan/references/routing.md"
+claude_supervision="$root/plugins/octoplan-claude/skills/octoplan/references/supervision.md"
+[ -f "$claude_skill" ] || fail 'Claude Octoplan skill is missing'
+[ -f "$claude_manifest" ] || fail 'Claude Octoplan plugin manifest is missing'
+[ -f "$claude_routing" ] || fail 'Claude Octoplan routing reference is missing'
+[ -f "$claude_supervision" ] || fail 'Claude Octoplan supervision reference is missing'
+[ ! -e "$root/plugins/octoplan-autopilot" ] || fail 'retired octoplan-autopilot distribution remains'
+[ ! -e "$root/plugins/octoplan-claude/skills/octoplan-autopilot" ] || fail 'retired octoplan-autopilot skill directory remains'
+grep -q '^name: octoplan$' "$claude_skill" || fail 'Claude Octoplan skill name is not octoplan'
+! grep -Rq 'Octoplan Autopilot' "$root/plugins/octoplan-claude" || fail 'retired Autopilot identity remains in the Claude distribution'
 claude_skill_version=$(sed -n 's/^Version: //p' "$claude_skill")
-printf '%s\n' "$claude_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Claude skill version is not semantic versioning'
+printf '%s\n' "$claude_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Claude skill version is not P.I.F'
 claude_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$claude_manifest")
 [ "$claude_manifest_version" = "$claude_skill_version" ] || fail 'Claude skill and manifest versions differ'
-claude_readme_row=$(printf '| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | %s | Plans the work. It never carries out the plan. |' "$claude_skill_version")
+claude_readme_row=$(printf '| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | %s | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |' "$claude_skill_version")
 [ "$(grep -Fxc "$claude_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Claude version or behavior is stale'
-claude_latest_changelog=$(awk '/^## octoplan-claude$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
+claude_latest_changelog=$(awk '/^## octoplan-claude$/ { found=1; next } found && /^## / { found=0 } found && /^### [0-9]/ { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$claude_latest_changelog" = "$claude_skill_version" ] || fail 'latest Claude changelog version differs from the skill'
 claude_heading_count=$(awk -v version="$claude_skill_version" '
   /^## octoplan-claude$/ { found=1; next }
-  found {
-    prefix = "### " version " — "
-    if (index($0, prefix) == 1) {
-      date = substr($0, length(prefix) + 1)
-      if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) count++
-    }
-  }
-  END { print count + 0 }
-' "$root/CHANGELOG.md")
-[ "$claude_heading_count" -eq 1 ] || fail 'Claude release needs one exact dated changelog heading'
-autopilot_skill="$root/plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md"
-autopilot_manifest="$root/plugins/octoplan-autopilot/.claude-plugin/plugin.json"
-autopilot_supervision="$root/plugins/octoplan-autopilot/skills/octoplan-autopilot/references/supervision.md"
-[ -f "$autopilot_skill" ] || fail 'Autopilot skill is missing'
-[ -f "$autopilot_manifest" ] || fail 'Autopilot plugin manifest is missing'
-[ -f "$autopilot_supervision" ] || fail 'Autopilot supervision reference is missing'
-grep -q '"name": "octoplan-autopilot"' "$autopilot_manifest" || fail 'Autopilot plugin ID is not octoplan-autopilot'
-autopilot_skill_version=$(sed -n 's/^Version: //p' "$autopilot_skill")
-printf '%s\n' "$autopilot_skill_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || fail 'Autopilot skill version is not semantic versioning'
-autopilot_manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$autopilot_manifest")
-[ "$autopilot_manifest_version" = "$autopilot_skill_version" ] || fail 'Autopilot skill and manifest versions differ'
-autopilot_readme_row=$(printf '| [`octoplan-autopilot`](plugins/octoplan-autopilot/skills/octoplan-autopilot/SKILL.md) | Claude Code | %s | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |' "$autopilot_skill_version")
-[ "$(grep -Fxc "$autopilot_readme_row" "$root/README.md")" -eq 1 ] || fail 'README Autopilot version or behavior is stale'
-autopilot_latest_changelog=$(awk '/^## octoplan-autopilot$/ { found=1; next } found && /^### / { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
-[ "$autopilot_latest_changelog" = "$autopilot_skill_version" ] || fail 'latest Autopilot changelog version differs from the skill'
-autopilot_heading_count=$(awk -v version="$autopilot_skill_version" '
-  /^## octoplan-autopilot$/ { found=1; next }
   found && /^## / { found=0 }
   found {
     prefix = "### " version " — "
@@ -101,26 +84,7 @@ autopilot_heading_count=$(awk -v version="$autopilot_skill_version" '
   }
   END { print count + 0 }
 ' "$root/CHANGELOG.md")
-[ "$autopilot_heading_count" -eq 1 ] || fail 'Autopilot release needs one exact dated changelog heading'
-node - "$root" "$autopilot_skill_version" <<'NODE' || fail 'Autopilot marketplace entry is invalid'
-const fs = require('fs');
-const path = require('path');
-const root = process.argv[2];
-const version = process.argv[3];
-const marketplace = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
-const entries = marketplace.plugins.filter((plugin) => plugin.name === 'octoplan-autopilot');
-if (entries.length !== 1) process.exit(1);
-const entry = entries[0];
-if (typeof entry.description !== 'string' || entry.description.length < 40) process.exit(1);
-if (entry.author?.name !== 'Sudolab' || entry.category !== 'productivity' || entry.homepage !== 'https://octopad.app') process.exit(1);
-if (typeof entry.source !== 'string' || !entry.source.startsWith('./plugins/')) process.exit(1);
-const directory = path.resolve(root, entry.source);
-if (directory !== path.join(root, 'plugins', path.basename(directory))) process.exit(1);
-const manifestPath = path.join(directory, '.claude-plugin/plugin.json');
-if (!fs.existsSync(manifestPath)) process.exit(1);
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-if (manifest.name !== 'octoplan-autopilot' || manifest.version !== version) process.exit(1);
-NODE
+[ "$claude_heading_count" -eq 1 ] || fail 'Claude release needs one exact dated changelog heading'
 meeting_skill="$root/plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md"
 meeting_manifest="$root/plugins/meeting-to-octopad/.claude-plugin/plugin.json"
 [ -f "$meeting_skill" ] || fail 'Meeting to Octopad skill is missing'
@@ -193,7 +157,7 @@ if (claudeEntries.length !== 1 || claudeEntries[0].source !== './plugins/manage-
 const octoplanClaudeEntries = claudeMarketplace.plugins.filter((plugin) => plugin.name === 'octoplan-claude');
 const expectedOctoplanClaudeEntry = {
   name: 'octoplan-claude',
-  description: 'Turns an Octopad work stream into an execution-ready plan: detailed, ordered, self-contained tasks that fresh AI sessions execute one at a time, chained by a minimal continuation prompt. Works for engineering and non-technical work alike. Requires a connected Octopad MCP server.',
+  description: 'Turns an Octopad work stream into an execution-ready plan of detailed, ordered, self-contained tasks, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Works for engineering and non-technical work alike. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.',
   author: { name: 'Sudolab' },
   category: 'productivity',
   homepage: 'https://octopad.app',
@@ -254,30 +218,30 @@ grep -q '^### 1\.1\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-doc
 grep -q '^### 1\.2\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'product-documentation 1.2.0 entry is missing'
 grep -q '^### 1\.3\.0 — 2026-08-22$' "$root/CHANGELOG.md" || fail 'product-documentation 1.3.0 entry is missing'
 grep -q '^### 1\.4\.0 — 2026-08-24$' "$root/CHANGELOG.md" || fail 'product-documentation 1.4.0 entry is missing'
-grep -q '"version": "18\.1\.1"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 18.1.1'
-grep -q '^Version: 18\.1\.1$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 18.1.1'
+grep -q '"version": "1\.0\.0"' "$root/plugins/octoplan-codex/.codex-plugin/plugin.json" || fail 'Codex plugin is not 1.0.0'
+grep -q '^Version: 1\.0\.0$' "$root/plugins/octoplan-codex/skills/octoplan/SKILL.md" || fail 'Codex skill is not 1.0.0'
 grep -Fq 'Missing route metadata never makes a review fail or become `INFEASIBLE`.' "$root/plugins/octoplan-codex/skills/octoplan/references/codex-runtime.md" || fail 'Codex route capability degradation is missing'
 grep -Fq 'note once per run that the route is declared, not provable here' "$root/plugins/octoplan-codex/skills/octoplan/references/codex-runtime.md" || fail 'Codex route degradation note is missing'
 grep -Fq 'known mismatch' "$root/plugins/octoplan-codex/CONFORMANCE.md" || fail 'Codex conformance does not preserve no-substitution on known mismatch'
-grep -q '^### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
-grep -q '^### 10\.0\.0 — 2026-08-08$' "$root/CHANGELOG.md" || fail 'Codex 10.0.0 entry is missing'
-grep -q '^### 10\.1\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.1.0 entry is missing'
-grep -q '^### 10\.2\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.2.0 entry is missing'
-grep -q '^### 10\.2\.1 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.2.1 entry is missing'
-grep -q '^### 11\.0\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 11.0.0 entry is missing'
-grep -q '^### 12\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 12.1.0 entry is missing'
-grep -q '^### 13\.0\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.0.0 entry is missing'
-grep -q '^### 13\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.1.0 entry is missing'
-grep -q '^### 14\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 14.0.0 entry is missing'
-grep -q '^### 15\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 15.0.0 entry is missing'
-grep -q '^### 16\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'Codex 16.0.0 entry is missing'
-grep -q '^### 17\.0\.0 — 2026-08-14$' "$root/CHANGELOG.md" || fail 'Codex 17.0.0 entry is missing'
-grep -q '^### 17\.2\.0 — 2026-08-17$' "$root/CHANGELOG.md" || fail 'Codex 17.2.0 entry is missing'
-grep -q '^### 18\.0\.0 — 2026-08-24$' "$root/CHANGELOG.md" || fail 'Codex 18.0.0 entry is missing'
-grep -q '^### 18\.0\.1 — 2026-08-24$' "$root/CHANGELOG.md" || fail 'Codex 18.0.1 entry is missing'
-! grep -q '^### 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
+grep -q '^#### 1\.4\.0 — 2026-07-30$' "$root/CHANGELOG.md" || fail 'Claude 1.4.0 history is missing'
+grep -q '^#### 10\.0\.0 — 2026-08-08$' "$root/CHANGELOG.md" || fail 'Codex 10.0.0 entry is missing'
+grep -q '^#### 10\.1\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.1.0 entry is missing'
+grep -q '^#### 10\.2\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.2.0 entry is missing'
+grep -q '^#### 10\.2\.1 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 10.2.1 entry is missing'
+grep -q '^#### 11\.0\.0 — 2026-08-09$' "$root/CHANGELOG.md" || fail 'Codex 11.0.0 entry is missing'
+grep -q '^#### 12\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 12.1.0 entry is missing'
+grep -q '^#### 13\.0\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.0.0 entry is missing'
+grep -q '^#### 13\.1\.0 — 2026-08-11$' "$root/CHANGELOG.md" || fail 'Codex 13.1.0 entry is missing'
+grep -q '^#### 14\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 14.0.0 entry is missing'
+grep -q '^#### 15\.0\.0 — 2026-08-12$' "$root/CHANGELOG.md" || fail 'Codex 15.0.0 entry is missing'
+grep -q '^#### 16\.0\.0 — 2026-08-13$' "$root/CHANGELOG.md" || fail 'Codex 16.0.0 entry is missing'
+grep -q '^#### 17\.0\.0 — 2026-08-14$' "$root/CHANGELOG.md" || fail 'Codex 17.0.0 entry is missing'
+grep -q '^#### 17\.2\.0 — 2026-08-17$' "$root/CHANGELOG.md" || fail 'Codex 17.2.0 entry is missing'
+grep -q '^#### 18\.0\.0 — 2026-08-24$' "$root/CHANGELOG.md" || fail 'Codex 18.0.0 entry is missing'
+grep -q '^#### 18\.0\.1 — 2026-08-24$' "$root/CHANGELOG.md" || fail 'Codex 18.0.1 entry is missing'
+! grep -Eq '^#{3,4} 2\.0\.0 — 2026-08-03$' "$root/CHANGELOG.md" || fail 'false Claude 2.0.0 release remains'
 
-node - "$claude_skill" <<'NODE'
+node - "$claude_routing" <<'NODE'
 const assert = require('assert');
 const fs = require('fs');
 const text = fs.readFileSync(process.argv[2], 'utf8');
@@ -302,12 +266,50 @@ for (const forbidden of ['Sonnet 5 · low', 'Sonnet 5 · medium', 'Sonnet 5 · h
 const effortRows = tableRows('| Setting | Octoplan policy |');
 const effortLabels = effortRows.map(line => line.split('|')[1].trim().replaceAll('`', ''));
 assert.deepStrictEqual(effortLabels, ['low', 'medium', 'high', 'extra high (xhigh)', 'max', 'ultra / ultracode']);
-assert(text.includes('Every Fable 5 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention.'), 'global Fable retention gate is missing');
+assert(text.includes('Every Fable 5.1 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention.'), 'global Fable retention gate is missing');
 assert(text.includes('If either condition fails, use Opus 5 at the best compatible effort for the task.'), 'Fable fallback is missing');
 assert(!text.includes('Opus 4.6 · xhigh'), 'Opus 4.6 cannot satisfy xhigh');
 assert(text.includes('The `/effort ultracode` session setting combines `xhigh` with automatic workflow orchestration'), '/effort ultracode contract is missing');
 assert(text.includes('the `ultracode` prompt keyword starts one workflow at the session\'s current effort'), 'one-prompt ultracode distinction is missing');
 assert(text.includes('never write `effort: ultra`'), 'native ultra prohibition is missing');
+NODE
+
+node - "$root" <<'NODE' || fail 'one skill, one name: a folder, plugin name or manifest disagrees'
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[2];
+const runtimes = ['claude', 'codex'];
+
+// A distribution folder is either <plugin name> or <plugin name>-<runtime>.
+// The manifest inside it must carry the plugin name the marketplace advertises.
+function check(entryName, folder, manifestRelative) {
+  const base = path.basename(folder);
+  const ok = base === entryName || runtimes.some((r) => base === `${entryName}-${r}`);
+  if (!ok) throw new Error(`folder ${base} does not match plugin name ${entryName}`);
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, folder, manifestRelative), 'utf8'));
+  if (manifest.name !== entryName) throw new Error(`${folder} manifest name ${manifest.name} is not ${entryName}`);
+  const skills = fs.readdirSync(path.join(root, folder, 'skills'));
+  if (skills.length !== 1) throw new Error(`${folder} must ship exactly one skill directory`);
+  const skillName = fs.readFileSync(path.join(root, folder, 'skills', skills[0], 'SKILL.md'), 'utf8')
+    .match(/^name: (.+)$/m)?.[1];
+  if (skillName !== skills[0]) throw new Error(`${folder} skill directory ${skills[0]} does not match its name: ${skillName}`);
+  const stripped = runtimes.reduce((n, r) => (n.endsWith(`-${r}`) ? n.slice(0, -r.length - 1) : n), entryName);
+  if (skillName !== stripped) throw new Error(`${folder} skill ${skillName} should be ${stripped}`);
+}
+
+const claude = JSON.parse(fs.readFileSync(path.join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+for (const entry of claude.plugins) check(entry.name, entry.source.replace(/^\.\//, ''), '.claude-plugin/plugin.json');
+const codex = JSON.parse(fs.readFileSync(path.join(root, '.agents/plugins/marketplace.json'), 'utf8'));
+for (const entry of codex.plugins) check(entry.name, entry.source.path.replace(/^\.\//, ''), '.codex-plugin/plugin.json');
+
+// Every folder under plugins/ must be advertised by exactly one marketplace.
+const advertised = new Set([
+  ...claude.plugins.map((e) => e.source.replace(/^\.\//, '')),
+  ...codex.plugins.map((e) => e.source.path.replace(/^\.\//, ''))
+]);
+for (const dir of fs.readdirSync(path.join(root, 'plugins'))) {
+  if (!advertised.has(`plugins/${dir}`)) throw new Error(`plugins/${dir} is in no marketplace`);
+}
 NODE
 
 find "$root" -type f -name '*.json' -not -path '*/.git/*' -exec sh -c '
