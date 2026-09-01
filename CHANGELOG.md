@@ -358,6 +358,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-claude
 
+### 1.0.1 — 2026-09-01
+
+The Fable lane now names Claude Fable 5.1, released today, in place of Fable 5. Nothing else changes.
+
 ### 1.0.0 — 2026-08-31
 
 Consolidates Claude Octoplan into one distribution and restarts its numbering. Until now Claude Code had two Octoplan skills competing for the same request: a planning-only `octoplan-claude` at `1.5.0`, and `octoplan-autopilot` at `1.1.1`, which planned and then supervised delivery. Both triggered on a plain "Octoplan" followed by a work-stream name, so the install guide had to tell users to run one *instead of* the other, and an assistant with both installed had no reliable way to tell which was meant.

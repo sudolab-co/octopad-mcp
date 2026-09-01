@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when the user says "Octoplan" followed by a work-stream name, when the user asks for a work stream to be planned and then delivered under supervision or autonomously, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning is implementation-free until the user's explicit delivery go; after that go the stream is supervised, by that same session or by a fresh supervisor session it hands to. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.
 ---
-Version: 1.0.0
+Version: 1.0.1
 
 # Octoplan for Claude Code — work-stream planning and supervised delivery for Octopad
 
@@ -97,7 +97,7 @@ The same discipline binds every check, code or not: **a check ships with its own
 The rubric, the lane dispatch mechanics, the effort vocabulary, availability conditions, and reviewer lens counts live in `references/routing.md` — load it before writing any Exec or Review line. Always true, whoever is reading:
 
 - The planner records the model and reasoning depth for each task's launch. **The saved route is a floor:** the executor may escalate when live work proves harder than specced, never weaken it, and it must not silently drop the Sonnet floor or substitute a model that cannot provide the saved effort. If the exact route is unavailable or its data-retention policy is unacceptable, say so and recommend the best compatible fallback — never quietly swap.
-- The five lanes the rubric can save: **Sonnet 5 · xhigh, Opus 5 · high, Opus 5 · xhigh, Opus 5 · max, Fable 5 · xhigh** — which profile takes which lane, and the conditions on Fable and `max`, are in `references/routing.md`.
+- The five lanes the rubric can save: **Sonnet 5 · xhigh, Opus 5 · high, Opus 5 · xhigh, Opus 5 · max, Fable 5.1 · xhigh** — which profile takes which lane, and the conditions on Fable and `max`, are in `references/routing.md`.
 - **Review:** `required` whenever a mistake would be costly — real decision-making, security/permissions, a data migration, cross-file logic, anything published or client-facing. `skip` only for genuinely trivial mechanical changes a fresh pass would find nothing in. Default to `required` when unsure. When required, one or more separate fresh agents — no memory of writing the work — attack just the finished change, worst problems first, and confirmed findings are fixed before delivering, within the review-round budget in `references/supervision.md`: a finding class that budget stops is recorded as a stated limit of the deliverable, never silently dropped — unless it answers the stream's kill question, which no stated limit can hold. Under manual execution the executor session runs that review itself; under supervised delivery the supervisor spawns the reviewers and the worker never does. A required Review line names its lens count in its why (`references/routing.md`). **The reviewer's route is never cheaper than the work it attacks.**
 
 ## Continuation — how the chain moves between sessions

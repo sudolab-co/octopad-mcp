@@ -266,7 +266,7 @@ for (const forbidden of ['Sonnet 5 · low', 'Sonnet 5 · medium', 'Sonnet 5 · h
 const effortRows = tableRows('| Setting | Octoplan policy |');
 const effortLabels = effortRows.map(line => line.split('|')[1].trim().replaceAll('`', ''));
 assert.deepStrictEqual(effortLabels, ['low', 'medium', 'high', 'extra high (xhigh)', 'max', 'ultra / ultracode']);
-assert(text.includes('Every Fable 5 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention.'), 'global Fable retention gate is missing');
+assert(text.includes('Every Fable 5.1 recommendation, at any effort, requires confirmed availability and acceptance of its mandatory 30-day data retention.'), 'global Fable retention gate is missing');
 assert(text.includes('If either condition fails, use Opus 5 at the best compatible effort for the task.'), 'Fable fallback is missing');
 assert(!text.includes('Opus 4.6 · xhigh'), 'Opus 4.6 cannot satisfy xhigh');
 assert(text.includes('The `/effort ultracode` session setting combines `xhigh` with automatic workflow orchestration'), '/effort ultracode contract is missing');

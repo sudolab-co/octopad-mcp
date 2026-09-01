@@ -105,7 +105,7 @@ Then follow **Keep skills up to date** above.
 
 ### Migrate an existing Octoplan install
 
-Octoplan for Claude Code now ships as one distribution, `octoplan-claude`, at version `1.0.0`. Two earlier Claude identities are retired: the planning-only skill that carried the `octoplan-claude` name, and the experimental `octoplan-autopilot`. Remove whichever is installed before adding the current one.
+Octoplan for Claude Code now ships as one distribution, `octoplan-claude`, at version `1.0.1`. Two earlier Claude identities are retired: the planning-only skill that carried the `octoplan-claude` name, and the experimental `octoplan-autopilot`. Remove whichever is installed before adding the current one.
 
 Claude Code, from `octoplan-autopilot`:
 
