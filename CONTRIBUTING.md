@@ -42,15 +42,15 @@ Repository maintainers publish tags and releases after review, using the prefixe
 
 ## Which number moves
 
-Every version reads `P.I.F`:
+Every version is [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
 
-- **`P`, the shared protocol.** The contract that both runtimes follow. A change here moves the number on every distribution of that skill at once, Claude and Codex together, and resets `I` and `F` to zero. Use it when an existing saved plan needs migration or replanning.
-- **`I`, one runtime's own capability.** A change only one runtime sees. It moves that distribution alone and resets `F` to zero. Existing saved plans and prompts stay valid.
-- **`F`, a local fix.** A backward-compatible correction or clarification with no behavior change.
+- **MAJOR — it breaks what already works.** A saved plan, a stored continuation block, or an existing prompt must be edited or migrated before it runs again. Reset MINOR and PATCH to zero.
+- **MINOR — it adds behavior and breaks nothing.** A new rule, a new step, a widened instruction. Everything already saved keeps working untouched. Reset PATCH to zero.
+- **PATCH — it fixes or clarifies, with no behavior change.**
 
-When in doubt, ask whether the other runtime's users are affected. If yes, it is `P`. If existing valid inputs need editing or migration, it is `P`. A different internal path is neither when the public contract stays compatible.
+The test is compatibility, never size and never how many runtimes a change reaches. A change both runtimes see is still MINOR when nothing saved needs editing; it simply moves both distributions together, because they share one contract. A change one runtime sees is MAJOR when it breaks that runtime's saved state.
 
-Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract, so the first digit now means the same thing on both sides. Changelog entries from before that reset keep their original numbers under each distribution's pre-reset heading.
+Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract, so the numbers mean the same thing on both sides. Changelog entries from before that reset keep their original numbers under each distribution's pre-reset heading.
 
 Do not confuse the release version with a plan-contract generation. Codex Octoplan stamps saved plans with a contract generation (`Octoplan 18 plan contract`) that says which plans a supervisor may still execute. That identifier is runtime state and is not renumbered by a release. Changing it is a `P` bump with a migration, never a side effect of versioning.
 
