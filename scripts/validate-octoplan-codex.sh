@@ -41,14 +41,14 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '1.0.0' ] || fail 'Codex SKILL.md is not 1.0.0'
+[ "$skill_version" = '2.0.0' ] || fail 'Codex SKILL.md is not 2.0.0'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$skill_version")
 [ "$(grep -Fxc "$readme_row" "$root/README.md")" -eq 1 ] || fail 'README Codex version or behavior is stale'
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^## / { found=0 } found && /^### [0-9]/ { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
-require_contract "$conformance" '# Octoplan Codex 1.0.0 conformance'
+require_contract "$conformance" '# Octoplan Codex 2.0.0 conformance'
 require_contract "$conformance" 'Autopilot sources are outside this release.'
 
 skill_lines=$(wc -l < "$main" | tr -d ' ')
@@ -60,13 +60,13 @@ recovery_lines=$(wc -l < "$recovery" | tr -d ' ')
 [ "$skill_lines" -le 70 ] || fail "SKILL.md exceeds 70 lines: $skill_lines"
 [ "$planning_lines" -le 170 ] || fail "planning.md exceeds 170 lines: $planning_lines"
 [ "$runtime_lines" -le 45 ] || fail "codex-runtime.md exceeds 45 lines: $runtime_lines"
-[ "$supervision_lines" -le 105 ] || fail "codex-supervision.md exceeds 105 lines: $supervision_lines"
+[ "$supervision_lines" -le 110 ] || fail "codex-supervision.md exceeds 105 lines: $supervision_lines"
 [ "$multi_stream_lines" -le 35 ] || fail "multi-stream.md exceeds 35 lines: $multi_stream_lines"
 [ "$recovery_lines" -le 45 ] || fail "recovery.md exceeds 45 lines: $recovery_lines"
 active_lines=$((skill_lines + planning_lines + runtime_lines + supervision_lines + multi_stream_lines + recovery_lines))
 active_words=$(wc -w $active_files | awk 'END {print $1}')
-[ "$active_lines" -le 440 ] || fail "active skill documents exceed 440 lines: $active_lines"
-[ "$active_words" -le 5900 ] || fail "active skill documents exceed 5900 words: $active_words"
+[ "$active_lines" -le 450 ] || fail "active skill documents exceed 440 lines: $active_lines"
+[ "$active_words" -le 6100 ] || fail "active skill documents exceed 6100 words: $active_words"
 validator_lines=$(wc -l < "$0" | tr -d ' ')
 [ "$validator_lines" -ge 150 ] && [ "$validator_lines" -le 250 ] ||
   fail "validator must stay between 150 and 250 lines: $validator_lines"
@@ -108,7 +108,7 @@ if grep -Fq 'The initial go must postdate and name the Plan handoff it answers.'
   fail 'retired post-handoff-only go rule remains'
 fi
 
-for foundation in F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 F13; do
+for foundation in F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 F13 F14; do
   require_contract "$main" "**$foundation,"
   require_contract "$conformance" "| $foundation,"
 done
@@ -242,4 +242,4 @@ assert.strictEqual(closureVocabulary.has('done'), false);
 assert.strictEqual(closureVocabulary.has('green'), false);
 NODE
 
-printf 'PASS: Octoplan Codex 1.0.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
+printf 'PASS: Octoplan Codex 2.0.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"

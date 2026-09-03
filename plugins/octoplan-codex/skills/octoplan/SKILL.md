@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an outcome into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, resume, or supervise a governed work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 1.0.0
+Version: 2.0.0
 
 # Octoplan for Codex
 
@@ -43,6 +43,7 @@ The six internal phases are: confirm the Brief; compose the Plan; challenge and 
 - **F11, consequence language.** Ask only about a consequence the user owns, in words a non-expert can answer. Never ask the user to certify technical correctness.
 - **F12, one program.** Brief, Plan, and Delivery use the fixed banners above across implementations; model-specific phases and agents remain invisible product mechanics.
 - **F13, protected effects.** Any step that bills money to any party, or has another consequence that cannot be undone, is a protected effect and must be disclosed at Plan even when no house rule mentions it.
+- **F14, environment intact.** Octoplan says what and in what order; how work is done comes from each session's environment: target rule files, the skills installed there, Octopad's own and the user's alike, and hooks. Supervisor and workers load the skills matching each act; no prompt or template lists them.
 
 ## Interruption levels
 

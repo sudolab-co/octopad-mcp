@@ -58,6 +58,14 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 2.0.0 — 2026-09-03
+
+Makes every session Octoplan launches an ordinary session again. Until now the worker prompt told a worker to read the task, the stream Decisions and the target rules in Octopad, and nothing else; a worker written that way expressed no intent that any installed skill could match, so the user's own skills, Octopad's satellite skills, and hooks never loaded under Octoplan, even when they matched the work. A supervisor read "one program" the same way and treated Octoplan as the whole procedure.
+
+A new shared foundation, F14, states the rule once: Octoplan says what the stream delivers and in what order; how work is done comes from each session's environment, the target's rule files, the skills installed there, Octopad's own and the user's alike, and hooks, for the supervisor as much as for a worker. The worker prompt now opens on that rule and asks the worker to load every skill whose description matches the work and name them on the task before starting. No skill is named anywhere, because the rule must hold for skills Octoplan cannot know about, and no hook or other mechanism is added.
+
+Saved plans need no migration: the plan-contract generation stays `Octoplan 18 plan contract`. The conformance record gains the F14 row, and the validator's size caps move to fit the new rule.
+
 ### 1.0.0 — 2026-08-31
 
 Renumbers the Codex distribution from `18.1.1` to `1.0.0`. Nothing about the skill's behavior changes: the Brief, Plan, and Delivery banners, the interruption modes, the review floors, the protected-effect disclosures, and the recovery rules are byte-identical to `18.1.1`. Only the version strings move, in the skill's `Version:` line, the plugin manifest, the conformance record, and the validator.
@@ -357,6 +365,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 2.0.0 — 2026-09-03
+
+Makes every session Octoplan launches an ordinary session again. Until now the worker launch template told a worker to brief itself from Octopad, keep orientation tight, read the target's rule files and do the one job; the supervision reference added that beyond the template the worker needs nothing but Octopad, and the skill's opening line said the same. A worker written that way expressed no intent that any installed skill could match, so the user's own skills, Octopad's satellite skills, and hooks never loaded under Octoplan, even when they matched the work. A supervisor read "one program" the same way and treated Octoplan as the whole procedure.
+
+The skill now carries the rule once, beside the three-stage program: Octoplan runs inside the session's environment, never instead of it. How work is done comes from the target's rule files, the skills installed there, Octopad's own and the user's alike, and the hooks, exactly as it would with no Octoplan in the room; that binds a supervisor that opens, updates or merges a change, or applies a migration, as much as it binds a worker. The launch template opens on that rule and asks the worker to load every skill whose description matches the work and name them on the task before starting, then keep the rest of its orientation tight. The three lines that said Octopad was a worker's only source are reworded to match. No skill is named anywhere, because the rule must hold for skills Octoplan cannot know about, and no hook or other mechanism is added.
+
+Saved plans, continuation blocks and recorded go Decisions need no migration.
 
 ### 1.0.1 — 2026-09-01
 
