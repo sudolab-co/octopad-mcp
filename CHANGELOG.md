@@ -2,7 +2,7 @@
 
 All notable changes to the skills in this repository.
 
-Every version reads `P.I.F`. `P` is the contract shared across runtimes: a change there moves every distribution of that skill at once and may require migration or replanning. `I` is one runtime's own capability, moving that distribution alone. `F` is a backward-compatible fix or clarification with no behavior change. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
+Every version is [semantic versioning](https://semver.org): MAJOR breaks what already works, so saved plans, continuation blocks or prompts must be edited before they run again; MINOR adds behavior and breaks nothing; PATCH fixes or clarifies with no behavior change. Compatibility decides the number, never the size of a change or how many runtimes it reaches. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
 
 Octoplan restarted at `1.0.0` on both runtimes on 2026-08-31, when they adopted one shared contract and the first digit began to mean the same thing on both sides. Entries published before that reset keep their original numbers under each distribution's **Before the 1.0.0 reset** heading, because those numbers are what the published release pages record. A Codex plan-contract generation such as `Octoplan 18 plan contract` is runtime state, not a release version, and the reset did not change it.
 
@@ -58,7 +58,7 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
-### 2.0.0 — 2026-09-03
+### 1.1.0 — 2026-09-03
 
 Makes every session Octoplan launches an ordinary session again. Until now the worker prompt told a worker to read the task, the stream Decisions and the target rules in Octopad, and nothing else; a worker written that way expressed no intent that any installed skill could match, so the user's own skills, Octopad's satellite skills, and hooks never loaded under Octoplan, even when they matched the work. A supervisor read "one program" the same way and treated Octoplan as the whole procedure.
 
@@ -366,7 +366,7 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-claude
 
-### 2.0.0 — 2026-09-03
+### 1.1.0 — 2026-09-03
 
 Makes every session Octoplan launches an ordinary session again. Until now the worker launch template told a worker to brief itself from Octopad, keep orientation tight, read the target's rule files and do the one job; the supervision reference added that beyond the template the worker needs nothing but Octopad, and the skill's opening line said the same. A worker written that way expressed no intent that any installed skill could match, so the user's own skills, Octopad's satellite skills, and hooks never loaded under Octoplan, even when they matched the work. A supervisor read "one program" the same way and treated Octoplan as the whole procedure.
 
