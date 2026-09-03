@@ -40,6 +40,9 @@ Deliver one Octopad task: <task title>.
 Octopad: <organization> / <workspace> / <work stream>.
 Use <saved model and effort> and the recorded observation rule.
 
+You are an ordinary session doing this task for the user: the skills installed
+here, Octopad's own and the user's alike, and the hooks apply. Load every skill
+whose description matches this work and name them on the task before you start.
 Read this task, stream Decisions, and target rules in production Octopad.
 Work only within its authority. Run Verify and write the real artifact version,
 output, decisions, blockers, and any user-facing strings on the task.

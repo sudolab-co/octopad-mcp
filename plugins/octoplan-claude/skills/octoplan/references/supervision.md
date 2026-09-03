@@ -56,13 +56,13 @@ Keep your own context small. You read task comments and gate results, not the wo
 
 **One supervisor at a time, recorded.** On the go and on every resume, read the go Decision's supervisor line FIRST. Empty, or naming this session → update it (guarded by its `expected_updated_at`) to this session and continue; a guard conflict means someone wrote meanwhile — re-read, never race. Naming another session → that session owns the stream: take over only on positive evidence it stopped — the user saying so, or the platform showing its session ended. A recent write proves the predecessor is ALIVE, and no timestamp ever proves it stopped. The takeover write carries the same `expected_updated_at` guard, recording the evidence in the line; on conflict, re-read the whole Decision and re-evaluate ownership and the stop evidence before doing anything. The line cuts both ways: re-read it before every worker launch and every task close, and if it no longer names this session, stop instantly — the stream has a new supervisor.
 
-**A worker that fails is retried by failure class.** A worker that RETURNED work you cannot verify is retried ONCE with a fresh worker; if the second also returns unverifiable work, stop that branch and escalate with the six-field report — never finish the task yourself, whatever the mode says. A worker that NEVER RETURNED — an error, a stall, a killed session — is an environment signal, not a task signal: first re-read the task for fresh writes (a worker still writing is alive — wait, don't duplicate it), then say so in one line, retry once with the run reduced (one worker at a time, orientation tight), and escalate only if a third dies. A user-directed attempt is one attempt, not a standing licence.
+**A worker that fails is retried by failure class.** A worker that RETURNED work you cannot verify is retried ONCE with a fresh worker; if the second also returns unverifiable work, stop that branch and escalate with the six-field report — never finish the task yourself, whatever the mode says. A worker that NEVER RETURNED — an error, a stall, a killed session — is an environment signal, not a task signal: first re-read the task for fresh writes (a worker still writing is alive — wait, don't duplicate it), then say so in one line, retry once with the run reduced (one worker at a time), and escalate only if a third dies. A user-directed attempt is one attempt, not a standing licence.
 
 ## The worker launch template
 
 **Dispatch by lane where lanes exist.** When the environment defines one agent per rubric lane (an agent definition pinning model and reasoning depth together, e.g. under `.claude/agents/` — a one-time team setup; check for them before the first task), launch the worker or reviewer AS the lane agent matching its saved route — model and depth are then both enforced by the definition, and the template's depth line reads `pinned by your lane definition`. Where no lanes exist, or a saved route has no matching lane, pass the model on the launch call, keep the template's request wording (`requested, not enforced: this launch call cannot set it — run at it if you can; if you cannot, say so in your status line`), and say once at the start of the run, not per task, that depth is then a request nothing verifies.
 
-Send this, with the real names filled in. Nothing else: everything the worker needs beyond it, it reads from Octopad.
+Send this, with the real names filled in. Nothing else: beyond it, the worker briefs itself from Octopad and from the environment it already has.
 
 ```
 Deliver one Octopad task.
@@ -72,11 +72,16 @@ Reasoning depth: <the task's saved depth> — <how it is set: one of the two exa
 phrasings from the lane paragraph above this template>
 Work in: <its own branch inside a git worktree or equivalent isolated checkout>
 
+You are an ordinary session doing this task for the user, with everything the user's
+environment gives a session: Octopad, the skills installed here — Octopad's own and the
+user's alike — and the hooks. The task says what and why; how work is done here comes
+from that environment, not from this prompt.
 Brief yourself from Octopad: start a session on the workspace, build context on the
-task, and read the work stream's Decisions — they carry the delivery contract. Keep
-orientation tight: brief yourself, then start.
-Read the target's own rule files (CLAUDE.md, AGENTS.md, or its equivalent) and treat
-whatever they lock as a floor you cannot lower.
+task, and read the work stream's Decisions — they carry the delivery contract. Then load
+every skill whose description matches this work, name the ones you loaded on the task,
+then start; keep the rest of your orientation tight. Read the target's own rule files
+(CLAUDE.md, AGENTS.md, or its equivalent) and treat whatever they lock as a floor you
+cannot lower.
 
 The task's How and the stream's Decisions were written before the work existed and may
 be wrong. Verify any factual claim your work depends on at the source, wherever it came
@@ -89,8 +94,9 @@ irreversible effect the task's spec does NOT carry, or that the go Decision's di
 list does not name, always stops for a person, whatever the mode. Write to the user in
 <their language>.
 
-Do the one job the task describes. Run its Verify steps and paste the real output into
-the task. If you wrote or changed a test, prove it can fail: in a scratch checkout,
+Do the one job the task describes, the way your loaded skills and the target's rule
+files say work is done in this target. Run its Verify steps and paste the real output
+into the task. If you wrote or changed a test, prove it can fail: in a scratch checkout,
 remove the production path it guards, show the suite red, restore, show it green, and
 paste both runs. For any other check you introduce, state how it could pass while the
 thing it names is broken, and show that it does not. Write your findings, decisions and blockers onto the task

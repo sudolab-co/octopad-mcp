@@ -1,8 +1,8 @@
-# Octoplan Codex 1.0.0 conformance
+# Octoplan Codex 2.0.0 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 
-**Two numbers, two meanings.** The release version (`1.0.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The version reset renumbered the distribution only; it did not create a new plan contract, and live v18 plans stay valid.
+**Two numbers, two meanings.** The release version (`2.0.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and this 2.0.0 bump creates no new plan contract either; live v18 plans stay valid.
 
 ## Shared core
 
@@ -21,6 +21,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | F11, plain consequence language | `SKILL.md` > F11; fixed Brief, Plan, and Delivery shapes in the phase references |
 | F12, fixed visible program | `SKILL.md` > One visible program; exact banners repeated in the phase references |
 | F13, protected effects including spend and irreversibility | `SKILL.md` > F13 |
+| F14, intact session environment | `SKILL.md` > F14; `references/codex-supervision.md` > Worker prompt |
 | Review floors | `SKILL.md` > Review floors; phase references point to it |
 | Plan-review receipt durability and route degradation | `references/planning.md` > exact task revisions and receipt persistence; `references/codex-runtime.md` > one note per run |
 | Undisclosed-event consent | `SKILL.md` > Interruption levels; `references/planning.md` > persisted delivery authorization |
@@ -98,7 +99,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `1.0.0`.
+- [x] Skill `Version:` and plugin manifest use `2.0.0`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.

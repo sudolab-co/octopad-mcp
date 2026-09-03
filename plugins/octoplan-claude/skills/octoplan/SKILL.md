@@ -2,11 +2,11 @@
 name: octoplan
 description: Use when the user says "Octoplan" followed by a work-stream name, when the user asks for a work stream to be planned and then delivered under supervision or autonomously, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning is implementation-free until the user's explicit delivery go; after that go the stream is supervised, by that same session or by a fresh supervisor session it hands to. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.
 ---
-Version: 1.0.1
+Version: 2.0.0
 
 # Octoplan for Claude Code — work-stream planning and supervised delivery for Octopad
 
-Octoplan turns a confirmed outcome into the smallest useful Octopad work graph — a plan of detailed, ordered, self-contained tasks — and then, once the user says go, advances every safe ready branch until the outcome is proven or a real human decision is required, either from the planning session or from a fresh supervisor session it hands to. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: any session working the stream briefs itself from Octopad and needs nothing else.
+Octoplan turns a confirmed outcome into the smallest useful Octopad work graph — a plan of detailed, ordered, self-contained tasks — and then, once the user says go, advances every safe ready branch until the outcome is proven or a real human decision is required, either from the planning session or from a fresh supervisor session it hands to. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: any session working the stream briefs itself from Octopad and needs no memory of the session that planned it.
 
 ## One program, three moments
 
@@ -17,6 +17,8 @@ Whatever the stream, the user experiences every run as the same three-stage prog
 - `**Octoplan · Step 3 of 3 — Delivery**`
 
 These banners are a contract shared across Octoplan implementations — same words, same order, every run — so the user learns one program. The internal steps below are the planner's machinery and never leak into user messages: the step-1 interview and the scoping brief speak under the Brief banner; step 4's decisions and the hand-off — the finished plan, its consequences, the one delivery question, the go — under the Plan banner; every delivery report, escalation, and mid-delivery consent under the Delivery banner.
+
+**Octoplan runs inside the session's environment, never instead of it.** It says what the stream delivers and in what order; how work is done comes from the environment every session already has — the target's rule files, the skills installed there, Octopad's own and the user's alike, and the hooks — exactly as it would with no Octoplan in the room. That binds the supervisor as much as it binds a worker: a supervisor that opens, updates, or merges a change, or applies a migration, is a session delivering, and loads the skills that match that act. Nothing in this skill or its references stands in for them, and no prompt or template lists them, because what a session's environment holds is the user's to compose, not this skill's to know.
 
 **Everything a later session needs lives in the task itself.** A session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns in `references/continuation.md`. That holds for the supervised path too: it is what lets a fresh session take the stream over if this one dies. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it.
 
