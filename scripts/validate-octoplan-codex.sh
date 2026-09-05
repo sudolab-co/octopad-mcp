@@ -41,14 +41,14 @@ actual_refs=$(find "$skill/references" -maxdepth 1 -type f -name '*.md' -exec ba
 [ "$actual_refs" = "$expected_refs" ] || fail 'unexpected Codex reference set'
 
 skill_version=$(sed -n 's/^Version: //p' "$main")
-[ "$skill_version" = '1.1.0' ] || fail 'Codex SKILL.md is not 1.1.0'
+[ "$skill_version" = '1.2.0' ] || fail 'Codex SKILL.md is not 1.2.0'
 manifest_version=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).version)' "$manifest")
 [ "$manifest_version" = "$skill_version" ] || fail 'Codex skill and manifest versions differ'
 readme_row=$(printf '| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | %s | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |' "$skill_version")
 [ "$(grep -Fxc "$readme_row" "$root/README.md")" -eq 1 ] || fail 'README Codex version or behavior is stale'
 latest_changelog=$(awk '/^## octoplan-codex$/ { found=1; next } found && /^## / { found=0 } found && /^### [0-9]/ { sub(/^### /, ""); sub(/ — .*/, ""); print; exit }' "$root/CHANGELOG.md")
 [ "$latest_changelog" = "$skill_version" ] || fail 'latest Codex changelog version differs from the skill'
-require_contract "$conformance" '# Octoplan Codex 1.1.0 conformance'
+require_contract "$conformance" '# Octoplan Codex 1.2.0 conformance'
 require_contract "$conformance" 'Autopilot sources are outside this release.'
 
 skill_lines=$(wc -l < "$main" | tr -d ' ')
@@ -242,4 +242,4 @@ assert.strictEqual(closureVocabulary.has('done'), false);
 assert.strictEqual(closureVocabulary.has('green'), false);
 NODE
 
-printf 'PASS: Octoplan Codex 1.1.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
+printf 'PASS: Octoplan Codex 1.2.0 contract (%s words, %s validator lines)\n' "$active_words" "$validator_lines"
