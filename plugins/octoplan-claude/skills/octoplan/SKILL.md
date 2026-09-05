@@ -2,11 +2,11 @@
 name: octoplan
 description: Use when the user says "Octoplan" followed by a work-stream name, when the user asks for a work stream to be planned and then delivered under supervision or autonomously, when an Octopad work stream needs turning into an execution-ready plan, when a task marked "Octoplan flesh-out required" needs speccing, or when a session executing a planned stream discovers something that adds a task or changes the order — it invokes this skill to rebalance the plan. Planning is implementation-free until the user's explicit delivery go; after that go the stream is supervised, by that same session or by a fresh supervisor session it hands to. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.
 ---
-Version: 1.1.0
+Version: 1.2.0
 
 # Octoplan for Claude Code — work-stream planning and supervised delivery for Octopad
 
-Octoplan turns a confirmed outcome into the smallest useful Octopad work graph — a plan of detailed, ordered, self-contained tasks — and then, once the user says go, advances every safe ready branch until the outcome is proven or a real human decision is required, either from the planning session or from a fresh supervisor session it hands to. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: any session working the stream briefs itself from Octopad and needs no memory of the session that planned it.
+Octoplan turns a confirmed outcome into the smallest useful Octopad work graph — a plan of detailed, ordered, self-contained tasks — and then, once the user says go, advances every safe ready branch until the outcome is proven or a real human decision is required, either from the planning session or from a fresh supervisor session it hands to. It works for any kind of stream — engineering, marketing, content, operations, legal — because Octopad holds the plan, the state, and the order: any session working the stream briefs itself from Octopad, or from the task spec it was sent, and needs no memory of the session that planned it.
 
 ## One program, three moments
 
@@ -20,7 +20,7 @@ These banners are a contract shared across Octoplan implementations — same wor
 
 **Octoplan runs inside the session's environment, never instead of it.** It says what the stream delivers and in what order; how work is done comes from the environment every session already has — the target's rule files, the skills installed there, Octopad's own and the user's alike, and the hooks — exactly as it would with no Octoplan in the room. That binds the supervisor as much as it binds a worker: a supervisor that opens, updates, or merges a change, or applies a migration, is a session delivering, and loads the skills that match that act. Nothing in this skill or its references stands in for them, and no prompt or template lists them, because what a session's environment holds is the user's to compose, not this skill's to know.
 
-**Everything a later session needs lives in the task itself.** A session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes its hand-off instruction into the task description, verbatim, using the patterns in `references/continuation.md`. That holds for the supervised path too: it is what lets a fresh session take the stream over if this one dies. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it.
+**Everything a later session needs lives in the task itself.** A session that picks a task up has no memory of this one and normally does not load this skill, so the planner writes everything the task needs into its description — the spec is the whole brief, and a worker is never sent to gather more — plus its hand-off instruction, verbatim, using the patterns in `references/continuation.md`. That holds for the supervised path too: it is what lets a fresh session take the stream over if this one dies. The one exception is replanning (see Replanning): a session whose discovery changes the plan loads this skill to rebalance it.
 
 ## Load the right reference at the right moment
 
@@ -82,6 +82,7 @@ Title: #N - <task title>
 **Done when:** <the concrete end state, named in the system of record where the deliverable lives — for content or ops, the approved/published/filed state and where it sits; for code, the state the target's rules actually let this session reach, never just "tests pass" — see the note under this template>
 **Exec:** <recommended model tier · reasoning depth> — <why>
 **Review:** <required | skip> — <why>
+**Octopad:** <yes | no> — <why>
 **Preconditions:** <what must be LIVE or matured, not just written>
 **Next:** <the hand-off instruction — the matching pattern, copied verbatim>
 ```
@@ -93,6 +94,10 @@ A Done when never names a state this session's own rules forbid it reaching: whe
 **The Verify slot of a task that changes production code carries one call-site proof per production path the task changes or guards.** Each in this fixed two-line shape, with the real names filled in: "In a scratch checkout, remove or disable <the exact call/filter/write>, run <the exact suite command>, paste the failing output; discard the edit, run it again, paste the passing output." A suite that stays green with a real path removed proves the tests attack helpers instead of the change, and the worker proves the opposite for almost nothing, where a review round buys the same finding late and expensively. Where the suite is slow, the narrowest suite covering the path is enough.
 
 The same discipline binds every check, code or not: **a check ships with its own defeat proof, designed before the check** — name how this check could pass while the thing it names is broken, and show that it does not. A check resting only on data the task produced itself always fails this test. And every Verify slot names its **proof surface** — the rendered page, the live API, the raw trace, the exact database, the source corpus — matched to the Done when: a source read or a passing test suite never satisfies a Done when whose surface is a rendered page or a live system, because the first real use is then the first real check. Where that surface needs a login, a seat, or a browser the executor cannot drive, the proof becomes a human-only verification task with a named owner (the runnability remedy, `references/planning.md` step 6), and the executable task's Done when steps back to the state it can actually reach.
+
+## Octopad line — does the worker connect?
+
+The planner decides, per task, whether the session doing it opens Octopad at all, and writes it as the `**Octopad:**` line. Opening Octopad is not free: the orientation a session receives on connecting, plus the task's own context, is a large fixed read that a small model pays before it opens the first file. So the line is **no** whenever the task's text is enough to do the job — the deliverable lives outside Octopad (code, files, a draft) and no slot of the spec names Octopad, a page, or the task itself as something to read or write while working. The line is **yes** whenever the work itself happens in Octopad (pages, knowledge, tasks), or the task must read or write something there mid-work. Under supervised delivery the supervisor applies the line without judging it: a **yes** worker connects and reads its task; a **no** worker receives the spec pasted into its launch message and never connects, and the supervisor records its report on the task (`references/supervision.md`). On the manual path the line is advice: the user's own session is connected anyway. A task written before this line existed carries none; the supervisor then answers the same question from the spec and writes its answer in the launch message.
 
 ## Exec & Review — the core rules
 
@@ -150,7 +155,7 @@ Human-only tasks: check they carry no `#N` prefix, no Exec/Review lines, no Next
 Per executable task:
 - Title carries `#N - `; the rank is unambiguous among the stream's executable tasks.
 - Why / What / Done when present under those literal names; impact parameters set.
-- Exec and Review lines present, each with its why, matching the rubric.
+- Exec and Review lines present, each with its why, matching the rubric; the Octopad line present, and **no** only where no slot of the spec names Octopad, a page, or the task as a surface to read or write while working.
 - A task that causes a protected effect names that effect in its spec in plain consequence words — the worker's authorization test reads it there, against the go Decision's disclosed list.
 - A task with 3+ distinct internal steps carries one subtask per step.
 - How names the specific files or source documents to touch, plus the outcome and the constraint — a memory-less session could open the right things from this text alone. "Follow the existing pattern" fails this row. Every named precedent carries the evidence that it fits THIS case, not just its name.

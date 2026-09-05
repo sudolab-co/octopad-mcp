@@ -58,6 +58,14 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 1.2.0 — 2026-09-05
+
+Lets the planner decide, task by task, whether the worker opens Octopad at all. Until now the worker prompt sent every worker through the same orientation whatever its task: start production Octopad, read the task, the stream Decisions and the target rules, load every matching skill and name it on the task. Starting Octopad alone returns a large orientation text before the task's own context arrives, so a small model on a self-contained change spent most of its context before opening the first file, and the added ceremony re-created the directive prompt 1.1.0 had just removed.
+
+The task template gains one field beside Exec and Review: `**Octopad**`, yes or no with its reason — no when the spec alone does the job and no slot names Octopad, a page, or the task as a read or write surface. The worker prompt now comes in two paired shapes the supervisor selects from that field, after rereading the task from Octopad: a **yes** worker connects and reads its task; a **no** worker receives the spec verbatim (Exec, Review and Octopad fields stripped), never connects, and reports in its final answer, which the supervisor posts on the task word for word before its own comment, relaunching a fix round in the same shape with the findings appended and treating the harness return as the worker's only liveness signal. The prompt no longer lists Decisions, skills, or rule files to read: rule files are named only as a floor to read if the harness has not loaded them. The runtime reference's line that every worker starts Octopad is replaced by the same rule.
+
+Saved plans need no migration: the plan-contract generation stays `Octoplan 18 plan contract`, and a task written without the field is dispatched after the supervisor answers the same question from its spec. The conformance record moves to 1.2.0.
+
 ### 1.1.0 — 2026-09-03
 
 Makes every session Octoplan launches an ordinary session again. Until now the worker prompt told a worker to read the task, the stream Decisions and the target rules in Octopad, and nothing else; a worker written that way expressed no intent that any installed skill could match, so the user's own skills, Octopad's satellite skills, and hooks never loaded under Octoplan, even when they matched the work. A supervisor read "one program" the same way and treated Octoplan as the whole procedure.
@@ -365,6 +373,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 1.2.0 — 2026-09-05
+
+Lets the planner decide, task by task, whether the worker opens Octopad at all. Until now the worker launch template sent every worker through the same orientation whatever its task: connect to Octopad, build context on the task, read the stream's Decisions, load every matching skill and name it on the task, read the target's rule files. Connecting alone returns a large orientation text before the task's own context arrives, so a small model on a self-contained front-end change spent most of its context before opening the first file, and the added ceremony re-created the directive prompt 1.1.0 had just removed.
+
+The task template gains one line beside Exec and Review: `**Octopad:** yes | no`, with its why. It is **no** whenever the spec alone lets a session do the job — the deliverable lives outside Octopad and no slot names Octopad, a page, or the task as something to read or write while working — and **yes** when the work itself happens in Octopad or must read or write there mid-task. The per-task self-check and planning step 7 carry the rule. The launch template now comes in two paired shapes the supervisor selects from that line: a **yes** worker connects and reads its task, which holds everything it needs; a **no** worker receives the spec pasted verbatim (Exec, Review, Octopad and Next lines stripped), never connects, and reports in its final answer, which the supervisor posts on the task word for word before its own gate comment. In both shapes the prompt no longer lists Decisions, skills, or rule files to read: the spec is the whole brief, skills trigger on the work as in any session, and rule files are named only as a floor to read if the harness has not loaded them. The supervisor re-reads the task from Octopad before every launch, relaunches a fix round in the same shape with the findings appended, and treats a disconnected worker's harness return as its only liveness signal. The continuation reference and the skill's opening line are reworded to match.
+
+Saved plans, continuation blocks and recorded go Decisions need no migration: a task written without the line is dispatched after the supervisor answers the same question from its spec.
 
 ### 1.1.0 — 2026-09-03
 

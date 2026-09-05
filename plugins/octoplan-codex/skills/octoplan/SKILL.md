@@ -2,7 +2,7 @@
 name: octoplan
 description: Use only when a Codex user explicitly invokes $octoplan, asks Octoplan to turn an outcome into a governed Octopad plan, or explicitly asks to plan, replan, flesh out, resume, or supervise a governed work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 1.1.0
+Version: 1.2.0
 
 # Octoplan for Codex
 

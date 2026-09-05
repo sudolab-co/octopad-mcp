@@ -106,6 +106,9 @@ Every executable task carries:
 
 **Review**
 <targeted checks, fresh independent review, and any human reviewer required by effective rules>
+
+**Octopad**
+<yes or no, with reason: no when the spec alone does the job and no slot names Octopad, a page, or the task as a read or write surface>
 ```
 
 Use the live schema. Top-level tasks require literal **Why**, **What**, **Done when**, `impact`, and `impact_rationale`; subtasks require **Why**, **What**, and impact fields. Every edge carries a rationale. Add `**Preconditions**` only for a live prior artifact or maturing event.

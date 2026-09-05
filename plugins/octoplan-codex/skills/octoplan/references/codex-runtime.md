@@ -29,7 +29,7 @@ The current user task is the default planning and supervision target. Use a fres
 
 Use a spawned worker only when isolation, specialization, independent parallelism, or context reduction is worth the handoff. Keep a small sequential task inline. Treat a creation as successful only after its call returns or the authoritative target confirms it. Before any retry or replacement, inspect that target; never recreate work merely because one response field is missing.
 
-Every worker starts production Octopad, reads the exact task, Decisions, and effective rules, and works only that task. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates actors. Route a user's “continue” to that recorded owner; another thread or reviewer never acquires ownership from the message. A replacement confirms its predecessor stopped before acting.
+Every worker works only its task; its `**Octopad**` line says whether it opens Octopad. The supervisor alone closes tasks, advances the graph, validates checkpoints, and creates actors. Route a user's “continue” to that recorded owner; another thread or reviewer never acquires ownership from the message. A replacement confirms its predecessor stopped before acting.
 
 Parallelize only tasks whose real write surfaces and outputs are independent. Never parallelize migrations, shared generated artifacts, or siblings where one shapes the other's contract.
 

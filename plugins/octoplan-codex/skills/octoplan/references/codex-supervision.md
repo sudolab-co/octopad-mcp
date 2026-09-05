@@ -33,25 +33,29 @@ Do not mirror a scheduler, Plan page, report, or registry. Tasks and dependencie
 
 ## Worker prompt
 
-Send a bounded prompt without predecessor history:
+Reread the task from Octopad, then send a bounded prompt without predecessor history, keeping the bracketed blocks matching its `**Octopad**` line (no line: decide from the spec). List no skills, Decisions, or rule files.
 
 ```text
 Deliver one Octopad task: <task title>.
 Octopad: <organization> / <workspace> / <work stream>.
 Use <saved model and effort> and the recorded observation rule.
 
-You are an ordinary session doing this task for the user: the skills installed
-here, Octopad's own and the user's alike, and the hooks apply. Load every skill
-whose description matches this work and name them on the task before you start.
-Read this task, stream Decisions, and target rules in production Octopad.
-Work only within its authority. Run Verify and write the real artifact version,
-output, decisions, blockers, and any user-facing strings on the task.
+[Octopad: yes] Connect to production Octopad and read this task.
+[Octopad: no] Do not connect to Octopad. Your task, verbatim:
+<description without Exec, Review, and Octopad lines>.
+
+You are an ordinary session doing this task for the user: the installed skills,
+Octopad's own and the user's alike, and hooks apply; target rules are a floor
+(read them if your harness has not). Work only within the task's
+authority. Run Verify. Report artifact version, output, decisions, blockers,
+user-facing strings, and skills used — [Octopad: yes] on the task,
+incrementally; [Octopad: no] in your final answer.
 
 Do not close, advance, launch, approve, or perform a protected effect.
 Return the handoff if needed; otherwise name artifact and verification result.
 ```
 
-For an errored or unverifiable worker, stop that branch and use [recovery.md](recovery.md). Never finish under another identity.
+A worker without Octopad writes nothing there: post its final answer on the task verbatim before yours, relaunch in the same shape with findings appended for fixes, and treat its harness return as its only liveness signal. For an errored or unverifiable worker, stop that branch and use [recovery.md](recovery.md); never finish under another identity.
 
 ## Proof and review
 

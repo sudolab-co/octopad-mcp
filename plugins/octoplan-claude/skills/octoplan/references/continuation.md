@@ -45,6 +45,6 @@ A session learns to emit a block from ONE place: the **Next** line of the task i
   `**Next:** none — the stream ends on "<landing task title>" (owner: <name/role>). End with the wrap-up and one line naming what that person still has to do.`
 - **End of chain:** `**Next:** none — last task of the stream. End with the wrap-up only.`
 
-Every pattern carries one more clause when the stream is delivered under a contract: `Before starting, read this work stream's Decisions in Octopad — they carry the delivery contract that governs this task.` Add it verbatim to the Next line of every task on a stream that has contract Decisions, so a session opened by hand works under the same mandate a worker would.
+Every pattern carries one more clause when the stream is delivered under a contract: `Before starting, read this work stream's Decisions in Octopad — they carry the delivery contract that governs this task.` Add it verbatim to the Next line of every task on a stream that has contract Decisions, so a session opened by hand works under the delivery contract; under supervised delivery the supervisor holds that contract and the worker ignores the Next line.
 
 A Next line that points into another work stream (a multi-stream effort) works the same way: the block simply names that stream, and the organisation and workspace stay as they are.
