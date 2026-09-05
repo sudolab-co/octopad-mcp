@@ -374,6 +374,20 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ## octoplan-claude
 
+### 1.3.0 — 2026-09-05
+
+Makes the task graph the only state a supervised run keeps. Until now a supervisor created two artifacts beside it: a `Delivery report — <stream>` page it updated at every event, and, where the go Decision overflowed its field, a `Go record — <stream>` page holding the disclosed effects, a snapshot of every task's id and last-edit timestamp, and a mutable supervisor line. Both went stale in ordinary use. On a live stream on 2026-09-05 the report said the first task had not started while it was in progress with a pull request open, and the supervisor line named a session that had ended; a resuming supervisor read the same state three times and had to reconcile it.
+
+The report page is gone. What it carried is re-homed rather than dropped: the position-and-outcome line it opened with (task N of M, plus the definition of success's number and its current value) stays on every chat report; the state vocabulary moved into the loop's report step, domain equivalent included; a standing blocker now lives on the task it blocks; and a decision a person still owes is logged as an Octopad **Question** on the stream, which is what a resuming session finds. The phase map goes with the page, and nothing replaces it.
+
+The go-record page is gone too. The go Decision alone carries three short lines inside the rationale field's ~600-character cap: the delivery mode, the supervisor route, and every disclosed protected effect and marked point in the hand-off list's own consequence words. If the three do not fit, the prose is shortened, never the effects. The task snapshot is not replaced: a supervisor detects post-go drift by comparing each task's `updated_at` against the go Decision's own `created_at`, and writes the cleared re-review on the task instead of editing the authorization. The supervisor line and its takeover protocol go with the page. Under step-by-step and checkpoints the user launches each session; under full autonomy the file states the residual risk in one sentence and asks a supervisor arriving on a stream that already looks live to say so before dispatching, instead of racing it.
+
+The first read on resume is now one call, `tasks(action: "list", stream_filter, verbose: "audit", include_ui: false)`, which returns status, impact, a description preview, recent comments and dependency counts for every task at once. A page is opened only where a task's own spec links or names one.
+
+One check was dropped without a replacement, deliberately: the snapshot could also catch a task recorded at the go that has since left the graph, and a timestamp comparison cannot see a deletion. Archiving a task after a go is a replan the user is already part of.
+
+Saved plans, continuation blocks and recorded go Decisions need no migration. A go Decision pointing at a `Go record` page resumes on the Decision alone, and an existing `Delivery report` page is simply never read again. The Codex distribution is unchanged and keeps 1.2.0: it has neither page, already forbids mirroring a report or registry, and its one-supervisor rule is a separate runtime-ownership guarantee for its long-lived native Goals.
+
 ### 1.2.0 — 2026-09-05
 
 Lets the planner decide, task by task, whether the worker opens Octopad at all. Until now the worker launch template sent every worker through the same orientation whatever its task: connect to Octopad, build context on the task, read the stream's Decisions, load every matching skill and name it on the task, read the target's rule files. Connecting alone returns a large orientation text before the task's own context arrives, so a small model on a self-contained front-end change spent most of its context before opening the first file, and the added ceremony re-created the directive prompt 1.1.0 had just removed.
