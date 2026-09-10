@@ -58,6 +58,10 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 1.4.1 — 2026-09-10
+
+Supervision continues after status questions instead of ending the turn with a promise to resume. Goals are optional and require an explicit request; planning and handoff use the same rule. Worker dispatch reconciles current task decisions and delivered dependency inputs, keeps settled criteria separate from previous answers, and bounds orientation to the next action. Planning checks the capacities and actual inputs that constrain a run before scaling it. Existing Octoplan 18 plans, review floors, permissions and human gates remain valid. Version 1.4.1 stays in the restarted release series and leaves the historical 1.4.0 tag untouched.
+
 ### 1.3.2 — 2026-09-10
 
 Corrects 1.3.0's role routing. Astra `xhigh` plans and prepares tasks for the least costly capable worker; Sol `high` supervises the reviewed graph. Luna `max` is the first worker candidate, including substantial implementation when the task resolves the hard choices. Remaining judgment and verification risk determine stronger worker and reviewer routes.
@@ -385,6 +389,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 1.4.1 — 2026-09-10
+
+Supervision starts the next ready task after reporting and treats status questions as part of the active mandate. Resume reuses available evidence only while its sources, artifacts and assumptions remain current; changed, uncertain or rule-required evidence is rechecked. Worker dispatch reconciles recent decisions and delivered dependency inputs and bounds orientation to the next action. Planning checks constraining capacities and actual inputs before scaling, including relevant tool versions and automatic writers. Existing plans, independent review requirements, permissions and human gates remain valid.
 
 ### 1.3.0 — 2026-09-05
 
