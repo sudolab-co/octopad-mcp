@@ -31,11 +31,11 @@ Before task close, add one compact supervisor comment that references receipts a
 
 Require exact user-facing strings and surfaces. Put them on an unstarted owner task without changing its specification; replan if that owner started.
 
-Do not mirror a scheduler, Plan page, report, or registry. Tasks and dependencies are graph state; comments carry receipts. The Goal is only a continuity handle. While safe authorized work remains, never end because a turn, tool, or worker ended: persist the next action and continue through the Goal, or make a durable supervisor handoff if native continuation is unavailable.
+Do not mirror a scheduler, Plan page, report, or registry. Tasks and dependencies are graph state; comments carry receipts. While safe authorized work remains, execute the next action in this turn. Answer status questions and corrections in commentary, then resume. A final response ends the turn: never use it to promise continued work. Stop at the outcome, a real wait with no independent safe work, or an actual runtime limit requiring the existing handoff procedure. A saved Next step is not an active successor. Goals are optional under the runtime rule; their absence does not stop inline work.
 
 ## Worker prompt
 
-Reread the task from Octopad, then send a bounded prompt without predecessor history, keeping the bracketed blocks matching its `**Octopad**` line (no line: decide from the spec). List no skills, Decisions, or rule files.
+Reread the task from Octopad, then send a bounded prompt without predecessor history, keeping the bracketed blocks matching its `**Octopad**` line (no line: decide from the spec). Reconcile recent task decisions and delivered dependency inputs into the spec before dispatch. Preserve settled criteria without previous answers where independence requires it. List no skills, Decisions, or rule files.
 
 ```text
 Deliver one Octopad task: <task title>.
@@ -49,7 +49,7 @@ Use <saved model and effort> and the recorded observation rule.
 You are an ordinary session doing this task for the user: the installed skills,
 Octopad's own and the user's alike, and hooks apply; target rules are a floor
 (read them if your harness has not). Work only within the task's
-authority. Run Verify. Report artifact version, output, decisions, blockers,
+authority. Resolve what the next action needs, then start; defer unrelated orientation. Run Verify. Report artifact version, output, decisions, blockers,
 user-facing strings, and skills used — [Octopad: yes] on the task,
 incrementally; [Octopad: no] in your final answer.
 
