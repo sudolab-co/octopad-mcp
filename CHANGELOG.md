@@ -58,6 +58,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 1.3.0 — 2026-09-10
+
+Uses Astra for new Codex routing decisions: `low` or `medium` for bounded execution, `high` for bounded reviews, and `xhigh` for planning, supervision, and work with weak verification or high consequences. Luna `max` remains the route for mechanical work with deterministic proof. Astra `max` is reserved for exceptional reasoning difficulty after diagnosis.
+
+Saved Luna and Sol routes keep their exact model and effort, so existing v18 plans need no migration. Route changes return to Plan before dispatch, and unavailable or mismatched routes pause the affected actor without silent substitution. Independent review requirements remain unchanged. Efficiency is assessed over comparable accepted tasks, including continuations and rework; lower quota consumption per minute is not treated as proof of savings.
+
 ### 1.2.0 — 2026-09-05
 
 Lets the planner decide, task by task, whether the worker opens Octopad at all. Until now the worker prompt sent every worker through the same orientation whatever its task: start production Octopad, read the task, the stream Decisions and the target rules, load every matching skill and name it on the task. Starting Octopad alone returns a large orientation text before the task's own context arrives, so a small model on a self-contained change spent most of its context before opening the first file, and the added ceremony re-created the directive prompt 1.1.0 had just removed.
