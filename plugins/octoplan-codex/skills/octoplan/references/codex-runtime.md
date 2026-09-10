@@ -10,16 +10,22 @@ A plan reviewer is read-only: it uses production Octopad and exact bounded conte
 
 ## Exact route table
 
-Choose by detection difficulty and reversibility. Save the exact model, effort, and short reason on every spawned task.
+Choose by detection difficulty, reversibility, and the judgment needed across the whole task. Save the exact model, effort, and short reason on every spawned task.
 
 | Work profile | Route |
 |---|---|
 | Mechanical work with deterministic proof | `gpt-5.6-luna · effort max` |
-| Bounded product, technical, editorial, review, or supervision judgment | `gpt-5.6-sol · effort high` |
-| Difficult, open-ended, weakly verified, or high-consequence work | `gpt-5.6-sol · effort xhigh` |
-| Open architecture or investigation without a reliable verifier | `gpt-5.6-sol · effort max` |
+| Short, bounded execution with a reliable verifier | `gpt-6-astra · effort low` |
+| Bounded product, technical, or editorial judgment with several linked steps | `gpt-6-astra · effort medium` |
+| Review with bounded context and reliable checks | `gpt-6-astra · effort high` |
+| Planning, long supervision, open architecture, difficult investigation, weak verification, or high consequences | `gpt-6-astra · effort xhigh` |
+| Exceptional reasoning difficulty that remains after diagnosis | `gpt-6-astra · effort max` |
 
-The only automatic routes are Luna `max` and Sol `high|xhigh|max`. Other declarations pause without substitution. Role admission is stricter: planner = Sol `xhigh|max`; plan reviewer, supervisor, and delivery reviewer = Sol `high|xhigh|max`; worker = the table route.
+For new choices, use Luna `max` or Astra `low|medium|high|xhigh|max`. Role admission is stricter: planner and supervisor = Astra `xhigh|max`; plan reviewer and delivery reviewer = Astra `high|xhigh|max`; worker = the table route. Use `xhigh` for reviews with weak verification or high consequences. Effort never replaces the independent review floor.
+
+Saved Luna `max` and Sol routes remain valid without migration: planner = Sol `xhigh|max`; plan reviewer, supervisor, delivery reviewer, and worker = Sol `high|xhigh|max`. Keep each saved model and effort exactly, including active actors; do not upgrade them on resume. An explicit return to Sol uses these same role limits. Any route change returns to Plan under [planning.md](planning.md) before dispatch; it is never an automatic fallback. Other declarations or a route known to be unavailable pause the affected actor without substitution.
+
+Compare efficiency over comparable completed tasks at the same acceptance standard, including continuations, tool calls, repeated context, and rework. Use observed usage when available; benchmark dollars, elapsed time, or quota burn per minute alone do not establish cost per accepted task. After two comparable cycles without accepted progress, diagnose under [recovery.md](recovery.md) before choosing another route. Do not infer that higher effort always costs less or raise effort automatically.
 
 Record declared routes. When native evidence exposes model and effort, require an exact match. Positive evidence of either a wrong model or wrong effort pauses that actor without substitution. Prompt text, title, or the requested route is not observation. Otherwise continue and note once per run that the route is declared, not provable here, recording the note on the first affected receipt or owning task. Missing route metadata never makes a review fail or become `INFEASIBLE`.
 

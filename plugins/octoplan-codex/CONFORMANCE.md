@@ -1,8 +1,8 @@
-# Octoplan Codex 1.2.0 conformance
+# Octoplan Codex 1.3.0 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 
-**Two numbers, two meanings.** The release version (`1.2.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and the 1.1.0 and 1.2.0 releases create no new plan contract either; live v18 plans stay valid.
+**Two numbers, two meanings.** The release version (`1.3.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and the 1.1.0 through 1.3.0 releases create no new plan contract either; live v18 plans stay valid.
 
 ## Shared core
 
@@ -75,7 +75,7 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 | Fresh plan challenge, stable recheck, material-replan reset, and complete finding dispositions | `SKILL.md` > Review floors; `references/planning.md` > Phase 3 finding-disposition and targeted-recheck rules. The former one-review rule remains for low risk and rises to two independent lenses at the shared high-risk floor. |
 | Review PASS binds the exact persisted task set and revision timestamps | `SKILL.md` > F6; `references/planning.md` > Phase 3 receipt and activation checks |
 | Plan contract, delivery authorization, and current-supervisor Decision remain distinct | `references/planning.md` > Persist and hand off |
-| Exact Luna/Sol route table, role floors, capability-conditional observed-route proof, declared-route degradation, and no substitution on a known mismatch | `references/codex-runtime.md` > Exact route table |
+| Luna/Astra defaults, saved Luna/Sol compatibility, role floors, capability-conditional observed-route proof, declared-route degradation, and no substitution on a known mismatch | `references/codex-runtime.md` > Exact route table |
 | Small sequential work stays inline; delegation requires net benefit and bounded prompts | `references/codex-runtime.md` > Native tasks and delegation; `references/codex-supervision.md` > Worker prompt |
 | Exact task binding and write-conflict-aware parallelism | `references/codex-runtime.md` > Native tasks and delegation; `references/multi-stream.md` |
 | Disclosed effects, selected user checkpoints, and house-rule gates remain in the reviewed Plan | `references/planning.md` > Phase 2 and persisted delivery authorization |
@@ -99,7 +99,23 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `1.2.0`.
+- [x] Skill `Version:` and plugin manifest use `1.3.0`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.
+
+## Routing scenarios
+
+Review these decisions against `references/codex-runtime.md`; assess the selected route and continuation behavior, not wording alone.
+
+| Scenario | Expected decision |
+|---|---|
+| Mechanical edit with deterministic proof | Luna `max`; no planner or reviewer admission for Luna |
+| Short implementation with a reliable verifier; bounded judgment across several steps | Astra `low`; Astra `medium`, respectively |
+| New long-running supervisor or planner | Astra `xhigh`; `max` only for exceptional difficulty after diagnosis |
+| Bounded review; high-consequence review | Astra `high`; Astra `xhigh`, respectively; independent review floors remain |
+| Resume a planner saved as Sol `max` or a supervisor saved as Sol `high` | Keep the exact saved route and valid plan contract; no forced migration |
+| Astra unavailable or native evidence shows another effort | Pause that actor; no silent Sol or effort substitution |
+| Two cycles without accepted progress | Diagnose before further work; no automatic effort escalation |
+| Lower quota burn per minute | Does not establish savings per accepted task or authorize rerouting |
+| Change a saved route to Astra, or explicitly return to Sol | Return to Plan before dispatch; enforce role limits and existing review rules |
