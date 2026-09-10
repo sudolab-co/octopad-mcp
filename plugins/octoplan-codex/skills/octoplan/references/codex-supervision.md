@@ -18,10 +18,12 @@ Repeat until the integrated outcome is proved or no safe work remains:
 
 1. **Refresh.** Read intent, supervisor, reviewed revisions and lenses, ready graph, assignments, artifact versions, checks, effects, and gates.
 2. **Pick.** Choose a ready unassigned task and set it in progress.
-3. **Route.** Keep small work inline; spawn only for net benefit and apply the saved route.
+3. **Route.** Keep small work inline only when its saved worker route matches this session under the runtime observation rule; otherwise dispatch that route.
 4. **Collect.** Put the real deliverable, version, verification, decisions, and blockers on its task.
 5. **Review.** Run targeted checks and the delivery floor. Record cleared gates; return stable fixes to the same healthy worker.
 6. **Advance.** Close only after current proof and every finding disposition are accepted. Persist evidence, then refresh the frontier.
+
+The planner owns decomposition and task preparation; the supervisor operates the reviewed graph. Return ordinary execution defects to the same healthy worker. For missing context, unresolved project choices, or broken dependencies, pause affected work and ask the original planner, or a replacement given current Octopad state, to repair the Plan. A replanning session has planning authority only: it cannot dispatch workers, take supervisor ownership, or authorize delivery. Apply the existing revision-bound review and authority rules before resuming. Do not replace missing preparation with a stronger worker; keep independent ready work moving.
 
 At resume, worker collection, task close, report, and attempt selection, compare observations with the kill question. An answer stops that run generation immediately; never dispatch onto it, defer it, rename it a stated limit, call it “the design”, remove it through a subset, or average it away. Preserve the result and replan.
 

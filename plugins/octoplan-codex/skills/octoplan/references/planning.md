@@ -113,7 +113,7 @@ Every executable task carries:
 
 Use the live schema. Top-level tasks require literal **Why**, **What**, **Done when**, `impact`, and `impact_rationale`; subtasks require **Why**, **What**, and impact fields. Every edge carries a rationale. Add `**Preconditions**` only for a live prior artifact or maturing event.
 
-Write `How` as outcome and constraint. Prescribe a technique or precedent only when verified evidence makes it fit.
+Write `How` as outcome and constraint. Prescribe a technique or precedent only when verified evidence makes it fit. The planner prepares the task for the least costly capable worker: record settled choices, relevant context, precise sources, constraints, edge cases, expected output, and runnable acceptance checks so the worker need not rediscover project decisions. Reference live inputs and predecessor outputs precisely; do not copy the whole project or invent details. Choose `Exec` from the judgment still required after this preparation. Plan review challenges task sufficiency and route fit together. Keep the existing decomposition ceilings; extra planning, launches, and reviews also cost.
 
 Plan only runnable `Verify` steps. Use the preflight access task when a remote surface is unavailable; a seat or UI only a person can exercise is a named human checkpoint, never verification.
 
