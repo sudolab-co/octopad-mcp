@@ -58,6 +58,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 1.3.1 — 2026-09-10
+
+Corrects 1.3.0's role routing. Astra `xhigh` plans and prepares tasks for the least costly capable worker; Sol `high` supervises the reviewed graph. Luna `max` is the first worker candidate, including substantial implementation when the task resolves the hard choices. Remaining judgment and verification risk determine stronger worker and reviewer routes.
+
+The supervisor returns execution defects to the worker and task-preparation defects to a planner with planning-only authority. Session reuse and inline execution must match saved routes. Existing v18 plans retain their exact routes and review requirements. This explicitly requested corrective patch changes defaults; it is a versioning exception to the repository's usual minor-release rule for behavior changes. No cost savings are claimed.
+
 ### 1.3.0 — 2026-09-10
 
 Uses Astra for new Codex routing decisions: `low` or `medium` for bounded execution, `high` for bounded reviews, and `xhigh` for planning, supervision, and work with weak verification or high consequences. Luna `max` remains the route for mechanical work with deterministic proof. Astra `max` is reserved for exceptional reasoning difficulty after diagnosis.

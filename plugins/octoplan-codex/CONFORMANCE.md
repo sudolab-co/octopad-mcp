@@ -1,8 +1,8 @@
-# Octoplan Codex 1.3.0 conformance
+# Octoplan Codex 1.3.1 conformance
 
 This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
 
-**Two numbers, two meanings.** The release version (`1.3.0`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and the 1.1.0 through 1.3.0 releases create no new plan contract either; live v18 plans stay valid.
+**Two numbers, two meanings.** The release version (`1.3.1`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and the 1.1.0 through 1.3.1 releases create no new plan contract either; live v18 plans stay valid.
 
 ## Shared core
 
@@ -99,23 +99,24 @@ This checklist maps the shared Octoplan core and every v17.2 guarantee family to
 
 ## Release surfaces
 
-- [x] Skill `Version:` and plugin manifest use `1.3.0`.
+- [x] Skill `Version:` and plugin manifest use `1.3.1`.
 - [x] README behavior and version describe Brief, Plan, and Delivery.
 - [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
 - [x] Autopilot sources are outside this release.
 
 ## Routing scenarios
 
-Review these decisions against `references/codex-runtime.md`; assess the selected route and continuation behavior, not wording alone.
+Independently assess route choice, task sufficiency, and authority on these cases.
 
 | Scenario | Expected decision |
 |---|---|
-| Mechanical edit with deterministic proof | Luna `max`; no planner or reviewer admission for Luna |
-| Short implementation with a reliable verifier; bounded judgment across several steps | Astra `low`; Astra `medium`, respectively |
-| New long-running supervisor or planner | Astra `xhigh`; `max` only for exceptional difficulty after diagnosis |
-| Bounded review; high-consequence review | Astra `high`; Astra `xhigh`, respectively; independent review floors remain |
-| Resume a planner saved as Sol `max` or a supervisor saved as Sol `high` | Keep the exact saved route and valid plan contract; no forced migration |
-| Astra unavailable or native evidence shows another effort | Pause that actor; no silent Sol or effort substitution |
-| Two cycles without accepted progress | Diagnose before further work; no automatic effort escalation |
-| Lower quota burn per minute | Does not establish savings per accepted task or authorize rerouting |
-| Change a saved route to Astra, or explicitly return to Sol | Return to Plan before dispatch; enforce role limits and existing review rules |
+| New plan and delivery supervisor | Astra `xhigh` prepares tasks; Sol `high` operates the reviewed graph |
+| Substantial implementation with settled choices and deterministic proof | Consider Luna `max`; size alone does not justify Astra |
+| Task omits a product decision | Return to planner; do not upgrade the worker to guess it |
+| Execution defect with a sufficient task | Return findings to the same healthy worker |
+| Bounded review; difficult review; high-consequence review | Sol `high`; Astra `high`; Astra `xhigh`; existing review floors remain |
+| Resume saved Astra supervisor `xhigh` or Sol reviewer `max` | Preserve exact route; no migration or automatic downgrade |
+| Recreated planner repairs dependencies | Planning authority only; no worker dispatch or supervisor takeover; review affected revisions before resume |
+| Native model mismatch or unavailable route | Pause affected actor without substitution |
+| Lower hourly quota burn | No claim of lower total cost per accepted outcome |
+| Astra planner hands off to Sol supervisor, which dispatches Luna work | Use matching sessions; no model change by prompt and no mismatched inline execution |
