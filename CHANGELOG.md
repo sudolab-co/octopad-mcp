@@ -58,7 +58,7 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
-### 1.3.1 — 2026-09-10
+### 1.3.2 — 2026-09-10
 
 Corrects 1.3.0's role routing. Astra `xhigh` plans and prepares tasks for the least costly capable worker; Sol `high` supervises the reviewed graph. Luna `max` is the first worker candidate, including substantial implementation when the task resolves the hard choices. Remaining judgment and verification risk determine stronger worker and reviewer routes.
 
