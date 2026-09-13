@@ -1,122 +1,58 @@
-# Octoplan Codex 1.4.1 conformance
+# Octoplan 2.0.0 conformance
 
-This checklist maps the shared Octoplan core and every v17.2 guarantee family to its canonical v18 location. It is a release-review aid, not runtime state. Unprefixed skill paths are relative to `skills/octoplan/`.
+This is a reviewer aid for both native distributions, not runtime state or a declaration that behavior passed. Both packages copy `skills/octoplan/` byte for byte; paths below are relative to that canonical source. Review the final shared protocol and each affected runtime profile, including the deliberate changes below.
 
-**Two numbers, two meanings.** The release version (`1.4.1`) identifies the published distribution. The plan-contract generation (`v18`, written on saved plans as `Octoplan 18 plan contract`) identifies which plans a supervisor may still execute. The 1.0.0 reset renumbered the distribution only, and this 1.4.1 supervision update creates no new plan-contract generation; live v18 plans stay valid.
+**Release and saved state are separate.** `2.0.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
 
-## Shared core
+## Shared foundation
 
-| Guarantee | Canonical v18 location |
+| Review subject | Source |
 |---|---|
-| F1, Octopad control plane | `skills/octoplan/SKILL.md` > Shared foundation; `references/planning.md` > Persist and hand off |
-| F2, adaptive topology | `SKILL.md` > F2; `references/planning.md` > Phase 2; `references/multi-stream.md` |
-| F3, progressive complexity | `SKILL.md` > Load only what the active phase needs |
-| F4, Brief playback always confirmed | `SKILL.md` > F4; `references/planning.md` > Phase 1 |
-| F5, falsifiable Plan | `SKILL.md` > F5; `references/planning.md` > Phases 2 and 3 |
-| F6, review bound to exact state | `SKILL.md` > F6 task-and-revision rule; `references/planning.md` > Phase 3 |
-| F7, every safe ready branch advances | `SKILL.md` > F7; `references/codex-supervision.md` > Phase 4 |
-| F8, interruption never lowers safety | `SKILL.md` > Interruption levels; `references/codex-supervision.md` > Phase 5 |
-| F9, recoverable ownership | `SKILL.md` > F9; `references/recovery.md` > actor reconciliation and supervisor change |
-| F10, closure from integrated evidence | `SKILL.md` > F10 domain-equivalence rule; `references/codex-supervision.md` > Phase 6 closure predicate and recap trigger |
-| F11, plain consequence language | `SKILL.md` > F11; fixed Brief, Plan, and Delivery shapes in the phase references |
-| F12, fixed visible program | `SKILL.md` > One visible program; exact banners repeated in the phase references |
-| F13, protected effects including spend and irreversibility | `SKILL.md` > F13 |
-| F14, intact session environment | `SKILL.md` > F14; `references/codex-supervision.md` > Worker prompt |
-| Review floors | `SKILL.md` > Review floors; phase references point to it |
-| Plan-review receipt durability and route degradation | `references/planning.md` > exact task revisions and receipt persistence; `references/codex-runtime.md` > one note per run |
-| Undisclosed-event consent | `SKILL.md` > Interruption levels; `references/planning.md` > persisted delivery authorization |
-| Shared work-state vocabulary | `SKILL.md` > F10 domain-equivalence rule; `references/multi-stream.md` > Close precisely; `references/codex-supervision.md` > Phase 6 recap trigger |
-| Shared/runtime boundary | `SKILL.md` > Shared/runtime boundary; runtime mechanics in `references/codex-runtime.md` and `references/recovery.md` |
+| F1: verified durable Octopad truth, no secrets or shadow control plane | `SKILL.md` > Shared foundation; `references/planning.md` > Persist and hand off |
+| F2–F3: smallest useful topology and progressive loading | `SKILL.md` > Shared foundation and Load only what the work needs; `references/multi-stream.md` |
+| F4: confirmed interpretation, replayed on unchanged resume | `references/planning.md` > Phase 1: confirm the Brief |
+| F5: falsifiable outcome, material premises and kill question | `references/planning.md` > Phase 2: compose the Plan |
+| F6: immutable review bound to exact tasks and contract revisions | `references/planning.md` > Phase 3: challenge and activate |
+| F7: safe ready work advances; waits affect only their consumers | `references/supervision.md` > Phase 4: advance the ready frontier; `references/multi-stream.md` |
+| F8: mode changes interruption, never safety or effect coverage | `SKILL.md` > Autonomy and authority; `references/supervision.md` > Phase 5: reconcile change and interruption |
+| F9: one guarded owner, actor reconciliation before replacement | `references/recovery.md` > Reconcile actors before replacement and Change supervisor safely |
+| F10: integrated closure and distinct lifecycle states | `references/supervision.md` > Phase 6: prove closure or hand off |
+| F11–F12: consequence language and the same Brief/Plan/Delivery program | `SKILL.md` > One visible program; `references/supervision.md` > Consequence handoff |
+| F13: actual target and authority for spend or irreversible effects | `SKILL.md` > Shared foundation and Autonomy and authority |
+| F14: target rules, installed skills, hooks and permissions remain binding | `SKILL.md` > Shared foundation; `references/supervision.md` > Worker prompt |
 
-## v18.1 corrective guarantees
+## Earlier guarantee families to inspect
 
-| Guarantee | Canonical v18.1 location |
+These identifiers preserve review navigation from prior releases. They are not extra requirements or proof that every former implementation detail remains unchanged.
+
+| Prior family | Current inspection surface |
 |---|---|
-| A1, stakes and proportionality | `references/planning.md` > Phase 2 planning-overhead budget; `SKILL.md` > Review floors |
-| A2, review convergence budget | `references/planning.md` > stakes round ceiling and Phase 3 enforcement |
-| A3, kill-question stop | `references/codex-supervision.md` > Phase 4 stop rule |
-| A4, shared-infrastructure distress | `references/recovery.md` > Stop for shared-infrastructure distress |
-| A5, user-mandate sweeps | `references/recovery.md` > Replan without stale state |
-| A6, rig parity and rehearsal | `references/planning.md` > proof lenses |
-| A7, upstream premise verdict | `references/planning.md` > proof lenses and Phase 3 |
-| A8, position and outcome reporting | `references/codex-supervision.md` > Enter or resume |
-| A9, monotonic authority | `SKILL.md` > interruption levels and qualified standing intent; `references/planning.md` > per-effect authorization mapping |
-| A10, escalation ownership and stalls | `references/codex-supervision.md` > Consequence handoff |
-| A11, countable handoff and worthless assumption | `references/codex-supervision.md` > Consequence handoff |
-| A12, interpretation playback | `SKILL.md` > F4; `references/planning.md` > Phase 1 interpretation Decision |
-| A13 and P1-7, access map and remote preflight | `references/planning.md` > human-only access task; `references/codex-supervision.md` > dependency-scoped remote proof |
-| A14, verified written records | `SKILL.md` > F1; `references/planning.md` > Persist and hand off |
-| P0-1, immutable review and authorization receipts | `SKILL.md` > F6; `references/planning.md` > Phase 3 and activation |
-| P0-2, pre-effect interlock | `references/codex-supervision.md` > Phase 5 |
-| P0-3, new task after material-premise rerun | `references/recovery.md` > Replan without stale state |
-| P0-4, durable closure interlock | `references/codex-supervision.md` > Phase 6 |
-| P1-5, outcome frontier without a file cap | `references/codex-supervision.md` > Phase 4 |
-| P1-6, handover acceptance | `references/planning.md` > handoff; `references/recovery.md` > Hand off durably |
-| P1-8, real-target proof class | `references/planning.md` > proof lenses; `references/codex-supervision.md` > Proof and review |
-| P1-9, tracker non-authority | `references/planning.md` > Persist and hand off |
-| P1-10, native continuity guidance | `references/codex-runtime.md` > Native tasks; `references/codex-supervision.md` > Phase 4. Atomic Goal, session, thread-routing, and ownership enforcement remain runtime work. |
+| A1–A2: proportional planning and review convergence | `references/planning.md` > Phase 2 and Phase 3; `SKILL.md` > Review floors. Inspect real ceilings and diagnose non-progress without manufacturing a user gate. |
+| A3–A5: kill question, infrastructure containment and mandate sweep | `references/supervision.md` > Phase 4; `references/recovery.md` > Stop for shared-infrastructure distress and Replan without stale state |
+| A6–A7, P1-8: input fitness, real-target parity and proof rehearsal | `references/planning.md` > Phase 2 proof lenses; `references/supervision.md` > Proof and review |
+| A8, A10–A11: countable progress, consequence ownership and meaningful waits | `references/supervision.md` > Enter or resume and Consequence handoff |
+| A9, A12: monotonic authority and interpretation playback | `SKILL.md` > Autonomy and authority; `references/planning.md` > Phase 1 and Agree autonomy before detailing the Plan |
+| A13, P1-7: actual access and dependency-scoped remote proof | `references/planning.md` > Phase 2; `references/supervision.md` > Phase 4 |
+| A14, P0-1: verified records and immutable review/authorization receipts | `SKILL.md` > F1 and F6; `references/planning.md` > Phase 3 and Persist and hand off |
+| P0-2–P0-4: pre-effect, premise-rerun and closure interlocks | `references/supervision.md` > Phase 5 and Phase 6; `references/recovery.md` > Reconcile effects before retrying and Replan without stale state |
+| P1-5–P1-6: complete ready frontier and accepted handover | `references/supervision.md` > Phase 4 and Phase 6; `references/recovery.md` > Hand off durably |
+| P1-9–P1-10: tracker has no authority; native continuity is explicit | `references/planning.md` > Persist and hand off; selected runtime profile; `references/continuation.md` |
+| v17.2 task contract: literal sections, impact, bounded How/Verify, output owners and dependency rationales | `references/planning.md` > Phase 2 and Persist and hand off |
+| v17.2 proof: fresh review, complete finding dispositions, no inflated Done when or irrelevant green proof | `SKILL.md` > Review floors; `references/planning.md` > Phase 3; `references/supervision.md` > Proof and review |
+| v17.2 effects: stable keys, absence-proved retry and no speculative actor replacement | `references/recovery.md` > Reconcile effects before retrying and Reconcile actors before replacement |
+| v17.2 persistence: task receipts, exact wording ownership, guarded supervisor and six-field handoff | `references/supervision.md` > Phase 4, Consequence handoff and Phase 6; `references/recovery.md` > Hand off durably |
+| v17.2 compatibility: exact routes and valid saved consent; unsupported objects are historical evidence | Each runtime's compatibility section; `references/recovery.md` > Resume without a forced migration |
 
-## v17.2 guarantee retention
+## Deliberate changes and runtime checks
 
-| v17.2 guarantee family | Canonical v18 location |
-|---|---|
-| Explicit-only invocation and no generic execution | `SKILL.md` frontmatter; `agents/openai.yaml` policy |
-| Durable Octopad truth, no private control plane or duplicate report | `SKILL.md` > F1; `references/codex-supervision.md` > Phase 4 |
-| Resume from current Decisions, tasks, receipts, Goal, rules, and artifacts | `references/codex-supervision.md` > Enter or resume current-state read and pre-v18 recovery trigger |
-| Outcome, proof, scope, constraints, assumptions, ownership, effects, and gates captured before activation | `references/planning.md` > Phases 1 and 2 |
-| Planning-only permission never authorizes delivery | `references/planning.md` > Phase 2 and Persist and hand off |
-| Live Octopad schemas and effective target rules remain the floor | `SKILL.md` > Shared/runtime boundary; `references/planning.md` > Enter or resume |
-| Fewest coherent tasks for the first integrated result; no fake approval or status tasks | `references/planning.md` > Phase 2 |
-| Literal task sections, impact fields, and dependency rationales | `references/planning.md` > executable task contract and Persist and hand off |
-| `How` stays outcome-led; techniques and precedents require verified fit | `references/planning.md` > executable task contract |
-| Unavailable login, seat, or drivable UI becomes a named gate, not a false Verify step | `references/planning.md` > executable task contract |
-| Consumed outputs get dependency edges; each user-facing text surface has one final owner | `references/planning.md` > executable task contract; `references/codex-supervision.md` > Phase 4 |
-| Repository, content, research, and operations keep distinct proof lenses | `references/planning.md` > proof lenses; `references/codex-supervision.md` > Proof and review |
-| Fresh plan challenge, stable recheck, material-replan reset, and complete finding dispositions | `SKILL.md` > Review floors; `references/planning.md` > Phase 3 finding-disposition and targeted-recheck rules. The former one-review rule remains for low risk and rises to two independent lenses at the shared high-risk floor. |
-| Review PASS binds the exact persisted task set and revision timestamps | `SKILL.md` > F6; `references/planning.md` > Phase 3 receipt and activation checks |
-| Plan contract, delivery authorization, and current-supervisor Decision remain distinct | `references/planning.md` > Persist and hand off |
-| Luna/Astra defaults, saved Luna/Sol compatibility, role floors, capability-conditional observed-route proof, declared-route degradation, and no substitution on a known mismatch | `references/codex-runtime.md` > Exact route table |
-| Small sequential work stays inline; delegation requires net benefit and bounded prompts | `references/codex-runtime.md` > Native tasks and delegation; `references/codex-supervision.md` > Worker prompt |
-| Exact task binding and write-conflict-aware parallelism | `references/codex-runtime.md` > Native tasks and delegation; `references/multi-stream.md` |
-| Disclosed effects, selected user checkpoints, and house-rule gates remain in the reviewed Plan | `references/planning.md` > Phase 2 and persisted delivery authorization |
-| A wait blocks only dependent work | `SKILL.md` > F7; `references/multi-stream.md` > Supervise one ready frontier |
-| Actor or effect existence is reported only after a returned or authoritative result | `references/codex-supervision.md` > Phase 4; `references/recovery.md` > effect and actor reconciliation |
-| Task close gets one compact evidence comment, not another log | `references/codex-supervision.md` > Phase 4 |
-| Minted user-facing wording records exact strings on its unstarted owner or triggers replan | `references/codex-supervision.md` > Phase 4 |
-| Review cannot enlarge `Done when`; blocking findings need a real rule, reviewed proof, gate, or correctness basis | `references/codex-supervision.md` > Proof and review |
-| Tests that can bypass production require negative proof at the real call site | `references/codex-supervision.md` > Proof and review |
-| Unplanned persistent verification infrastructure is scope expansion or a material replan | `references/codex-supervision.md` > Proof and review |
-| Non-idempotent effects use stable keys, authoritative inspection, and absence-proved retry | `references/codex-supervision.md` > Phase 5 pre-effect loading trigger; `references/recovery.md` > Reconcile effects before retrying |
-| Retry or replacement checks the authoritative target; a successor waits for predecessor stop | `SKILL.md` > F9; `references/recovery.md` > Reconcile actors before replacement |
-| Recovery shares a two-route budget and diagnoses two no-progress cycles before more work | `SKILL.md` > two-cycle recovery loading trigger; `references/recovery.md` > Bound recovery |
-| One supervisor is recorded as a stream Decision and changed with `expected_updated_at` | `SKILL.md` > F9; `references/recovery.md` > Change supervisor safely |
-| Goals never transfer or receive false completion | `references/recovery.md` > Change supervisor safely; `references/codex-supervision.md` > Phase 6 |
-| Human waits and completion retain the localized six-field Markdown handoff | `references/codex-supervision.md` > Consequence handoff wait trigger and Phase 6 recap trigger |
-| The accepted Plan shows the created graph, open questions, gates, and first ready work | `references/planning.md` > fixed Plan shape and Persist and hand off |
-| Native blocked requires the same real impasse for three Goal turns | `references/codex-supervision.md` > Consequence handoff |
-| Closure rejects active tasks, unresolved effects, stale task revisions, or missing continuations | `references/codex-supervision.md` > Phase 6 completion predicate and residual-risk recap |
-| Pre-v18 state carries no PASS, authority, action, supervisor, or Goal ownership | `references/codex-supervision.md` > Enter or resume recovery trigger; `references/recovery.md` > Replan without stale state |
+- **Early mandate:** Brief confirmation still permits planning only. The mode and delivery mandate are agreed before detailed planning, then reused within their actual scope after the reviewed Plan is shown. A new consequence asks only for its authority delta.
+- **Fresh actors:** a fresh supervisor owns Delivery and dispatches workers; the original parent relays user dialogue and manages supervisor lifecycle. This replaces the former inline-worker default. A planner repairing the Plan does not silently take over Delivery. Verify the actual native launch, follow-up and stop capabilities before offering this route.
+- **Diagnosis:** two comparable cycles without accepted progress trigger internal diagnosis and a different defensible strategy, not an automatic user question. Real spend/attempt limits and house rules still bind; independent safe work continues.
+- **Context:** respect a user preference around 60% at a natural boundary using reliable runtime signals. This is not a fabricated measurement or per-task token quota. Prove the predecessor stopped before launching a successor; a saved Next pointer is not a live actor.
+- **Codex:** inspect `references/codex-runtime.md` for exact saved model/effort enforcement, declared-versus-observed route evidence, the parent relay and optional parent-owned Goal. Children never mutate that Goal; supervisor retirement does not complete the global objective. Native blocked thresholds apply to genuine Goal turns, not polls.
+- **Claude:** inspect `references/claude-runtime.md` for available pinned lanes versus explicitly request-only effort, Fable availability and data-handling consent, native effort versus workflow opt-in, supervisor/reviewer route floors and real parent/child capability checks. No Codex Goal or invented Claude tool is assumed.
+- **Fallback and compatibility:** `references/continuation.md` discloses manual launch honestly. Existing manual continuations and valid saved routes remain usable; names, new defaults or absent optional fields do not force a migration or enlarge authority.
 
-## Release surfaces
+## Release verification
 
-- [x] Skill `Version:` and plugin manifest use `1.4.1`.
-- [x] README behavior and version describe Brief, Plan, and Delivery.
-- [x] Proportionate validation covers fixed banners, mode names, closure vocabulary, release sync, review-floor arithmetic, file sets, protected invariants, and size caps.
-- [x] Autopilot sources are outside this release.
-
-## Routing scenarios
-
-Independently assess route choice, task sufficiency, and authority on these cases.
-
-| Scenario | Expected decision |
-|---|---|
-| New plan and delivery supervisor | Astra `xhigh` prepares tasks; Sol `high` operates the reviewed graph |
-| Substantial implementation with settled choices and deterministic proof | Consider Luna `max`; size alone does not justify Astra |
-| Task omits a product decision | Return to planner; do not upgrade the worker to guess it |
-| Execution defect with a sufficient task | Return findings to the same healthy worker |
-| Bounded review; difficult review; high-consequence review | Sol `high`; Astra `high`; Astra `xhigh`; existing review floors remain |
-| Resume saved Astra supervisor `xhigh` or Sol reviewer `max` | Preserve exact route; no migration or automatic downgrade |
-| Recreated planner repairs dependencies | Planning authority only; no worker dispatch or supervisor takeover; review affected revisions before resume |
-| Native model mismatch or unavailable route | Pause affected actor without substitution |
-| Lower hourly quota burn | No claim of lower total cost per accepted outcome |
-| Astra planner hands off to Sol supervisor, which dispatches Luna work | Use matching sessions; no model change by prompt and no mismatched inline execution |
+Run `sh scripts/validate-repository.sh` from the repository root. It checks source-to-package byte parity, local file links, public hygiene, native metadata and versions, stable foundation/stage identifiers, and mutation tests of the copier and validator. It does not execute agent instructions, validate live model availability, rehearse native actor lifecycle or prove compliance with this checklist. Those claims require corresponding review or runtime evidence.

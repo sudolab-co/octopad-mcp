@@ -2,7 +2,7 @@
 
 All notable changes to the skills in this repository.
 
-Every version is [semantic versioning](https://semver.org): MAJOR breaks what already works, so saved plans, continuation blocks or prompts must be edited before they run again; MINOR adds behavior and breaks nothing; PATCH fixes or clarifies with no behavior change. Compatibility decides the number, never the size of a change or how many runtimes it reaches. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
+Other skills use [semantic versioning](https://semver.org): MAJOR breaks what already works, so saved plans, continuation blocks or prompts must be edited before they run again; MINOR adds behavior and breaks nothing; PATCH fixes or clarifies with no behavior change. Compatibility decides the number, never the size of a change or how many runtimes it reaches. Octoplan uses P.I.F as defined in CONTRIBUTING.md: shared protocol, environment capability, local fix. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
 
 Octoplan restarted at `1.0.0` on both runtimes on 2026-08-31, when they adopted one shared contract and the first digit began to mean the same thing on both sides. Entries published before that reset keep their original numbers under each distribution's **Before the 1.0.0 reset** heading, because those numbers are what the published release pages record. A Codex plan-contract generation such as `Octoplan 18 plan contract` is runtime state, not a release version, and the reset did not change it.
 
@@ -57,6 +57,14 @@ The transcript is treated as untrusted data throughout. Text inside it that addr
 Out of scope in this release: audio, which the user transcribes first; several meetings in one run; goal changes; and writing without the user's go.
 
 ## octoplan-codex
+
+### 2.0.0 — 2026-09-13
+
+Uses one canonical Octoplan source for both native plugins. Both packages contain the same Brief, Plan, Delivery, supervision and recovery protocol, with separate Codex and Claude Code execution profiles selected by the actual host. Repository checks detect copy drift, missing local references and metadata mismatches.
+
+The planner agrees autonomy after the confirmed Brief, prepares and reviews the detailed Plan, then launches a fresh supervisor through the available native route. Existing authority carries through corrections and replanning; only new consequences or required gates ask for another decision. The originating conversation relays supervisor replacements and, in Codex when explicitly requested, owns the delivery Goal. Handoffs use natural boundaries and the user's context preference without invented percentages or per-task token budgets. Manual continuations are generated only for manual routes.
+
+The shared core preserves review for publication and deployment, staging before production where offered, independent write boundaries, evidence-bound closure, and compatibility with valid saved Codex and Claude plans. This protocol change advances P under Octoplan's P.I.F scheme; it does not renumber the saved plan-contract generation or grant new authority. Package validation proves distribution parity, not live delivery in either runtime.
 
 ### 1.4.1 — 2026-09-10
 
@@ -389,6 +397,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 2.0.0 — 2026-09-13
+
+Uses one canonical Octoplan source for both native plugins. Both packages contain the same Brief, Plan, Delivery, supervision and recovery protocol, with separate Codex and Claude Code execution profiles selected by the actual host. Repository checks detect copy drift, missing local references and metadata mismatches.
+
+The planner agrees autonomy after the confirmed Brief, prepares and reviews the detailed Plan, then launches a fresh supervisor through the available native route. Existing authority carries through corrections and replanning; only new consequences or required gates ask for another decision. The originating conversation relays supervisor replacements and, in Codex when explicitly requested, owns the delivery Goal. Handoffs use natural boundaries and the user's context preference without invented percentages or per-task token budgets. Manual continuations are generated only for manual routes.
+
+The shared core preserves review for publication and deployment, staging before production where offered, independent write boundaries, evidence-bound closure, and compatibility with valid saved Codex and Claude plans. This protocol change advances P under Octoplan's P.I.F scheme; it does not renumber the saved plan-contract generation or grant new authority. Package validation proves distribution parity, not live delivery in either runtime.
 
 ### 1.4.1 — 2026-09-10
 

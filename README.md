@@ -62,9 +62,11 @@ These plugins are optional and separate from the MCP connection:
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
 | [`manage-product-documentation`](plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.4.0 shared | Organizes and maintains product documentation as product work evolves. |
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 1.4.1 | Plans the work, shows the plan with every protected effect disclosed, asks one delivery-mode question, then supervises delivery on that go. |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 1.4.1 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 2.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 2.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
+
+Both Octoplan plugins contain the same shared protocol and both runtime profiles. Octoplan loads only the profile for the current host. Each package is self-contained; install the native plugin for your runtime.
 
 Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.
 
@@ -92,8 +94,10 @@ docs/clients/                                Client-specific direct MCP guides
 .agents/plugins/marketplace.json             Codex marketplace manifest
 plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
 plugins/manage-product-documentation-codex/  Codex product-documentation distribution
-plugins/octoplan-claude/                     Claude Code Octoplan distribution
-plugins/octoplan-codex/                      Codex Octoplan distribution
+skills/octoplan/                            Canonical Octoplan skill and runtime profiles
+plugins/octoplan-claude/                     Generated Claude Code Octoplan distribution
+plugins/octoplan-codex/                      Generated Codex Octoplan distribution
+scripts/sync-octoplan.py                    Copy or check canonical Octoplan documents
 plugins/meeting-to-octopad/                  Optional Claude meeting-transcript distribution
 scripts/validate-repository.sh               Repository contract validation
 ```

@@ -5,8 +5,9 @@ This public repository contains direct MCP setup guides and optional skill distr
 ## Choose the scope
 
 - **Connection docs:** `README.md`, `INSTALL.md` and `docs/clients/`.
-- **Claude Octoplan:** `.claude-plugin/` and `plugins/octoplan-claude/`.
-- **Codex Octoplan:** `.agents/` and `plugins/octoplan-codex/`.
+- **Shared Octoplan source:** `skills/octoplan/`; edit the protocol and both runtime profiles here, then copy them into the packages.
+- **Claude Octoplan packaging:** `.claude-plugin/` and `plugins/octoplan-claude/`.
+- **Codex Octoplan packaging:** `.agents/` and `plugins/octoplan-codex/`.
 - **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
 - **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation-codex/`.
 - **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
@@ -30,7 +31,7 @@ The product-documentation plugin name carries no runtime suffix because each mar
 
 ## Skill contract changes ship with a version bump
 
-For an independently versioned distribution such as Octoplan, three surfaces move together. The paired product-documentation distributions follow the synchronized rule below. Change a required surface without the others and the repo lies about itself:
+For Octoplan, the canonical source and both generated copies move together; both native manifests carry the canonical version. Three release surfaces move together. The paired product-documentation distributions follow the synchronized rule below. Change a required surface without the others and the repo lies about itself:
 
 1. **That distribution's skill `Version:` line**, at the top of its `SKILL.md`.
 2. **That distribution's plugin `version`**, in `plugins/<plugin>/.claude-plugin/plugin.json` for Claude or `plugins/<plugin>/.codex-plugin/plugin.json` for Codex. Same number.
@@ -42,23 +43,29 @@ Repository maintainers publish tags and releases after review, using the prefixe
 
 ## Which number moves
 
-Every version is [semantic versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
+Octoplan uses **P.I.F**:
 
-- **MAJOR — it breaks what already works.** A saved plan, a stored continuation block, or an existing prompt must be edited or migrated before it runs again. Reset MINOR and PATCH to zero.
-- **MINOR — it adds behavior and breaks nothing.** A new rule, a new step, a widened instruction. Everything already saved keeps working untouched. Reset PATCH to zero.
-- **PATCH — it fixes or clarifies, with no behavior change.**
+- **P — shared protocol:** a change to the contract shared by both runtimes advances P and resets I and F, even when existing plans remain compatible.
+- **I — environment capability:** a change confined to one runtime's capability advances I and resets F.
+- **F — local fix:** a correction or clarification with no behavior change.
 
-The test is compatibility, never size and never how many runtimes a change reaches. A change both runtimes see is still MINOR when nothing saved needs editing; it simply moves both distributions together, because they share one contract. A change one runtime sees is MAJOR when it breaks that runtime's saved state.
+Octoplan has one canonical source version, so both generated skills and native manifests carry the same number even for an environment-only change. State which runtime behavior changed in each release entry. The level test is the changed contract or capability, never line count. Check the final diff again after review.
+
+Other skills retain their existing version rules: MAJOR breaks saved state, MINOR adds compatible behavior, and PATCH clarifies or fixes without a behavior change. The paired product-documentation distributions still move together as described below.
 
 Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract, so the numbers mean the same thing on both sides. Changelog entries from before that reset keep their original numbers under each distribution's pre-reset heading.
 
 Do not confuse the release version with a plan-contract generation. Codex Octoplan stamps saved plans with a contract generation (`Octoplan 18 plan contract`) that says which plans a supervisor may still execute. That identifier is runtime state and is not renumbered by a release. Changing it is a `P` bump with a migration, never a side effect of versioning.
 
-## Keep the distributions separate
+## One Octoplan source, two native packages
 
-A Claude-only Octoplan change may edit Claude files, its changelog entry and shared docs about that change. A Codex-only Octoplan change follows the same rule. A change to the contract both share moves both.
+Author Octoplan only in `skills/octoplan/SKILL.md` and `skills/octoplan/references/**/*.md`. Common behavior belongs in the shared phase references; model routing, native dispatch and continuation mechanics belong in the named runtime profiles. The entrypoint selects the actual host profile, and never guesses or combines runtimes.
 
-Do not copy behavior between distributions without checking each contract. Describe both runtimes accurately in shared docs. Test both paths when an edit touches both.
+Run `python3 scripts/sync-octoplan.py` after a source edit. It copies the canonical Markdown bytes into both native packages and preserves native metadata, including Codex's `agents/openai.yaml`. The script does not remove obsolete files: remove a retired generated reference explicitly in the same reviewed change. Never author fixes in a generated copy, use symlinks, or refer outside the installed skill tree.
+
+Run `python3 scripts/sync-octoplan.py --check` for read-only parity, local-link and public-hygiene checks, then `sh scripts/validate-repository.sh` for metadata, versions, other plugins and packaging mutation tests. Commit the canonical source and generated copies together. These checks prove package structure and parity; behavioral guarantees still need a fresh review of the actual shared protocol and each affected runtime profile.
+
+Native plugin names, marketplaces and installation commands stay separate. The packages contain both profiles so they install offline without a second source checkout; loading the wrong host profile remains forbidden.
 
 The two `manage-product-documentation` distributions have one synchronized release version and one shared AI-neutral contract. Their skill `Version:` lines, both plugin manifest versions, `SKILL.md`, `documentation-model.md`, `artifact-shapes.md`, and `lifecycle-playbooks.md` must move together and remain byte-identical where shared. Any behavior or runtime-packaging change bumps the synchronized version in both distributions and creates one shared changelog entry. Publish the Claude and Codex tags with that same version.
 
@@ -71,7 +78,7 @@ Skills that write Tasks through Octopad's MCP server must follow the server cont
 - Subtasks are created with `parent_task_id` and need only Why + What.
 - Dependency edges require a rationale when added.
 
-An incompatible Octopad contract change needs a major skill version. A backward-compatible server addition follows the same minor-or-patch test above.
+For Octoplan, a changed shared server contract is a P change. Other skills follow the compatibility test above.
 
 ## Write for a first-time reader
 
