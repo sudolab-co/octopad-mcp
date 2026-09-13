@@ -27,6 +27,8 @@ Native evidence exposing model and effort must match the saved values exactly. P
 
 Before offering automatic delivery, inspect exposed tools: fresh child creation at the saved route, delegation by that child, and native follow-up, wait, status and stop. Declarations show capabilities, not successful end-to-end handoff. A missing capability requires the precise [manual fallback](continuation.md) at mode choice, without an autonomous-continuation promise.
 
+For repository work, verify the intended repository and working directory before dispatch. An explicitly requested new task uses the matching `list_projects` project through `create_thread`, not `projectless`. Honor the user's destination; otherwise choose `worktree` if `isGitRepository` is true, `local` if false. A returned `clientThreadId` means setup is pending: wait for a real `threadId` before follow-up or delivery, then verify the task's project and directory.
+
 After the reviewed Plan is visible and authority holds:
 
 1. Launch one supervisor with `collaboration.spawn_agent`, `fork_turns: "none"`, and the exact saved model and `reasoning_effort`. Its bounded prompt gives stream identity, organization/workspace, authorization and ownership pointers, plus indispensable environment facts absent from Octopad. Creation needs a returned identity or authoritative reconciliation before retry.
@@ -36,7 +38,7 @@ After the reviewed Plan is visible and authority holds:
 
 Keep pending user answers until the successor is identified, then forward their exact scope and source; never wake the retired owner. The original parent may repair the Plan on the supervisor's bounded request without taking delivery ownership.
 
-This route creates no user-owned native task. Use worktrees only when needed. Bounded receipts and native compaction reduce parent context; they do not replace that parent after its runtime ends. User stop wins; agents and Goals guarantee nothing after closure. Add no worker loop, hook or scheduler. Scheduled external-wait follow-up requires its own explicit request.
+The child route creates no user-owned native task. Bounded receipts and native compaction reduce parent context; they do not replace that parent after its runtime ends. User stop wins; agents and Goals guarantee nothing after closure. Add no worker loop, hook or scheduler. Scheduled external-wait follow-up requires its own explicit request.
 
 ## Optional parent-owned Goal
 

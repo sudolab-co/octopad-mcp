@@ -58,6 +58,10 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 2.1.0 — 2026-09-13
+
+Codex verifies the repository and working directory before dispatch. Explicitly requested new tasks for repository work use the matching project, honor the user's destination, and default to a worktree for Git or local otherwise. Queued setup waits for a real task ID before follow-up or delivery. Both packages carry the same source and version; Claude execution and saved plans remain unchanged.
+
 ### 2.0.0 — 2026-09-13
 
 Uses one canonical Octoplan source for both native plugins. Both packages contain the same Brief, Plan, Delivery, supervision and recovery protocol, with separate Codex and Claude Code execution profiles selected by the actual host. Repository checks detect copy drift, missing local references and metadata mismatches.
@@ -397,6 +401,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 2.1.0 — 2026-09-13
+
+Codex verifies the repository and working directory before dispatch. Explicitly requested new tasks for repository work use the matching project, honor the user's destination, and default to a worktree for Git or local otherwise. Queued setup waits for a real task ID before follow-up or delivery. Both packages carry the same source and version; Claude execution and saved plans remain unchanged.
 
 ### 2.0.0 — 2026-09-13
 

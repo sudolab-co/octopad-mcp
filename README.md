@@ -62,8 +62,8 @@ These plugins are optional and separate from the MCP connection:
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
 | [`manage-product-documentation`](plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.4.0 shared | Organizes and maintains product documentation as product work evolves. |
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 2.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 2.0.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 2.1.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 2.1.0 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
 Both Octoplan plugins contain the same shared protocol and both runtime profiles. Octoplan loads only the profile for the current host. Each package is self-contained; install the native plugin for your runtime.
