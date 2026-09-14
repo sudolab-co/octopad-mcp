@@ -404,7 +404,7 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 
 ### 2.1.0 — 2026-09-13
 
-Codex verifies the repository and working directory before dispatch. Explicitly requested new tasks for repository work use the matching project, honor the user's destination, and default to a worktree for Git or local otherwise. Queued setup waits for a real task ID before follow-up or delivery. Both packages carry the same source and version; Claude execution and saved plans remain unchanged.
+No change to Claude Code behavior. This release exists because both distributions are generated from one canonical source and carry one version: the 2.1.0 source adds a Codex-only rule (repository and working-directory selection before Codex dispatch, in `references/codex-runtime.md`), which Claude never loads. Claude execution, routes and saved plans are unchanged; nothing needs editing before existing plans run again.
 
 ### 2.0.0 — 2026-09-13
 
