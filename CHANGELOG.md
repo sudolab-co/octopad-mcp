@@ -58,6 +58,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 3.0.0 — 2026-09-16
+
+Shared protocol change, from the first live run of the unified skill in Claude Code (a three-task stream with a planted out-of-mandate order, a killed supervisor, and a fresh-session resume). Two foundations added: rigor is sized to the stakes in both directions, with one same-reviewer recheck per stable fix instead of a fresh floor; and no unmeasured technical claim goes into any record, with every Verify check carrying its defeat proof (the concrete call-site shape returns). A material change now sweeps every open task, not only the ones it touched. A plan defect or a failed check goes to a planner through the relay, never to the user; a rejected uncovered effect keeps the chosen mode. The banner is the first line of every user-facing message and those messages stay in everyday words. Receipts and contract overflow live on one linked contract page per stream. Guarded Octopad writes reread first, because a task's `updated_at` moves on its own. Saved plans, routes, authorizations and manual continuations remain valid; nothing needs editing before existing plans run again.
+
+No Codex-specific change; the Codex profile is untouched and the shared rules above apply to both hosts.
+
 ### 2.1.0 — 2026-09-13
 
 Codex verifies the repository and working directory before dispatch. Explicitly requested new tasks for repository work use the matching project, honor the user's destination, and default to a worktree for Git or local otherwise. Queued setup waits for a real task ID before follow-up or delivery. Both packages carry the same source and version; Claude execution and saved plans remain unchanged.
@@ -401,6 +407,12 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 3.0.0 — 2026-09-16
+
+Shared protocol change, from the first live run of the unified skill in Claude Code (a three-task stream with a planted out-of-mandate order, a killed supervisor, and a fresh-session resume). Two foundations added: rigor is sized to the stakes in both directions, with one same-reviewer recheck per stable fix instead of a fresh floor; and no unmeasured technical claim goes into any record, with every Verify check carrying its defeat proof (the concrete call-site shape returns). A material change now sweeps every open task, not only the ones it touched. A plan defect or a failed check goes to a planner through the relay, never to the user; a rejected uncovered effect keeps the chosen mode. The banner is the first line of every user-facing message and those messages stay in everyday words. Receipts and contract overflow live on one linked contract page per stream. Guarded Octopad writes reread first, because a task's `updated_at` moves on its own. Saved plans, routes, authorizations and manual continuations remain valid; nothing needs editing before existing plans run again.
+
+The Claude runtime profile records measured facts: subagents nest; a subagent's messages land in the main session and a finished subagent is not woken by its children, so the relay is always the user's own session; `ListAgents` is the cessation proof; every hop rereads the contract, so the floor must be sized.
 
 ### 2.1.0 — 2026-09-13
 

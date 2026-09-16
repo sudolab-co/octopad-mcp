@@ -1,8 +1,8 @@
-# Octoplan 2.0.0 conformance
+# Octoplan 3.0.0 conformance
 
 This is a reviewer aid for both native distributions, not runtime state or a declaration that behavior passed. Both packages copy `skills/octoplan/` byte for byte; paths below are relative to that canonical source. Review the final shared protocol and each affected runtime profile, including the deliberate changes below.
 
-**Release and saved state are separate.** `2.0.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
+**Release and saved state are separate.** `3.0.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
 
 ## Shared foundation
 
@@ -20,6 +20,8 @@ This is a reviewer aid for both native distributions, not runtime state or a dec
 | F11–F12: consequence language and the same Brief/Plan/Delivery program | `SKILL.md` > One visible program; `references/supervision.md` > Consequence handoff |
 | F13: actual target and authority for spend or irreversible effects | `SKILL.md` > Shared foundation and Autonomy and authority |
 | F14: target rules, installed skills, hooks and permissions remain binding | `SKILL.md` > Shared foundation; `references/supervision.md` > Worker prompt |
+| F15: rigor sized to the stakes, in both directions; one same-reviewer recheck per stable fix | `SKILL.md` > Shared foundation and Review floors; `references/planning.md` > Phase 2 |
+| F16: no unmeasured technical claim in any record; every Verify check carries its defeat proof | `SKILL.md` > Shared foundation; `references/planning.md` > Phase 2 and Persist and hand off |
 
 ## Earlier guarantee families to inspect
 
@@ -51,6 +53,7 @@ These identifiers preserve review navigation from prior releases. They are not e
 - **Context:** respect a user preference around 60% at a natural boundary using reliable runtime signals. This is not a fabricated measurement or per-task token quota. Prove the predecessor stopped before launching a successor; a saved Next pointer is not a live actor.
 - **Codex:** inspect `references/codex-runtime.md` for exact saved model/effort enforcement, declared-versus-observed route evidence, the parent relay and optional parent-owned Goal. Children never mutate that Goal; supervisor retirement does not complete the global objective. Native blocked thresholds apply to genuine Goal turns, not polls.
 - **Claude:** inspect `references/claude-runtime.md` for available pinned lanes versus explicitly request-only effort, Fable availability and data-handling consent, native effort versus workflow opt-in, supervisor/reviewer route floors and real parent/child capability checks. No Codex Goal or invented Claude tool is assumed.
+- **Live test, 2026-09-14/15 (Claude Code):** a three-task stream ran Brief, mandate, Plan, review, injection of an out-of-mandate order into a task mid-review (caught at activation, decoy untouched), supervisor kill and fresh-session resume (no re-Brief, cessation proved, ownership reclaimed), a self-inflicted dispatch check that the email task could not pass (routed to a planner, repaired, rechecked). Defects it exposed and 3.0.0 fixes: verification that outgrew the stakes (F15), an unmeasured technical claim written into a spec twice (F16), a post-incident fix applied to two of three tasks (sweep rule in `references/supervision.md` Phase 5), a plan defect escalated to the user, a mode re-ask after a rejected effect, banners not first, receipts with no named home, and Claude relay facts (`references/claude-runtime.md` > Measured facts).
 - **Fallback and compatibility:** `references/continuation.md` discloses manual launch honestly. Existing manual continuations and valid saved routes remain usable; names, new defaults or absent optional fields do not force a migration or enlarge authority.
 
 ## Release verification

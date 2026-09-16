@@ -24,6 +24,15 @@ On manual launches, exact model and effort are binding settings the user sets. O
 
 Preserve saved routes, including earlier exceptions and lane requests, as floors; do not normalize them to defaults. Escalation requires diagnosis, planning and affected review before replacement, never weakening or silent substitution. Review uses the worker's model at `xhigh`, retaining stronger saved review routes; the supervisor supports at least the strongest saved worker route. Select the planner against actual judgment using this rubric. Common review and upstream-premise floors apply.
 
+## Measured facts about this runtime
+
+Measured on 2026-09-14 and 2026-09-15 in Claude Code on macOS; re-measure when the harness changes.
+
+- A subagent launched with the Agent tool can itself launch subagents, and `SendMessage` resumes a completed agent from its transcript. So planner, supervisor, workers, and reviewers nest as the shared protocol asks.
+- A subagent's `SendMessage` lands in the main session's conversation, not in the subagent that spawned it, and a subagent that has ended its turn is not woken when its own background children finish. Therefore the relay is always the user's own session: it launches the supervisor, receives its reports, and forwards user decisions. Never delegate relaying to a subagent, and never let the relay end its turn on "in progress" unless it is the main session, which the harness wakes when a background agent completes.
+- `ListAgents` reports a stopped agent as `killed` or `completed`; that listing is the cessation proof a successor needs. An agent stopped with `TaskStop` takes its in-process children with it; a successor still inspects the target for half-written artifacts.
+- Each agent's context is its own: a fresh supervisor starts without the planner's history. The cost is elsewhere: every hop rereads the contract page, Decisions, and tasks, so a three-task stream spent about 200k tokens per relay, planner, or reviewer turn. Size the review floor to the stakes (F15).
+
 ## Verify the native route before offering it
 
 Verify all three native capabilities: the parent spawns a fresh child; that child delegates workers/reviewers; and the parent can message or resume it after a report. Also verify native status/stop controls can prove cessation before replacement. Use only documented mechanisms exposed by the actual environment, not invented tool names.

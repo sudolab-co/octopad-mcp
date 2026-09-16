@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when the user explicitly invokes Octoplan or asks it to plan, replan, flesh out, resume, or supervise a governed Octopad work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 2.1.0
+Version: 3.0.0
 
 # Octoplan
 
@@ -17,6 +17,8 @@ Use the applicable banner as the first line of user-facing Octoplan messages, in
 **Octoplan · Step 2 of 3 — Plan**
 **Octoplan · Step 3 of 3 — Delivery**
 ```
+
+The banner is the first line of the message, before any incident narrative, explanation, or table. What the user reads is written in everyday words: name what will happen and who does it, and keep this skill's vocabulary out of it, along with any synonym doing the same job; say the thing itself instead: "your team's own rules already require this", "this cannot be undone", "this sends an email". Records written for other sessions (Decisions, tasks, receipts, prompts) keep the precise wording.
 
 The user describes the need; the planner asks foundational questions, confirms the Brief, then agrees the autonomy and delivery mandate before detailing the Plan. The planner records and reviews the Plan in Octopad, shows it, and launches a fresh supervisor through the selected runtime. The supervisor dispatches prepared tasks, verifies results, and owns incident resolution. An executor produces its task's deliverable. Internal roles add no user-facing stage.
 
@@ -45,6 +47,8 @@ The user describes the need; the planner asks foundational questions, confirms t
 - **F12, one program.** Brief, Plan, and Delivery keep the same banners and experience across environments.
 - **F13, protected effects.** Disclose any effect that bills money to any party or cannot be undone, even when no house rule names it. Its authorization must cover the actual effect and target.
 - **F14, environment intact.** Effective target rules, installed skills, hooks, permissions, privacy, and legal boundaries remain binding. Each actor loads guidance applicable to its work; Octoplan does not replace it or prescribe a fixed catalog.
+- **F15, rigor sized to the stakes.** Every verification, review, and recheck is read against the stakes Decision, in both directions: reversible internal work gets the floor and nothing more, irreversible or outward work gets the full floors. Verification that outgrows the decision it protects is a defect, the same as verification that falls short; every round spends the user's time and money against the same stakes the work does.
+- **F16, no unmeasured technical claims.** Every path, command, version, count, or behavior written into a record was read or measured in this session; what cannot be measured now is written as unknown, never as fact. A precise-sounding wrong fact invites no check, which is what makes it worse than a vague one.
 
 ## Autonomy and authority
 
@@ -54,11 +58,11 @@ After Brief confirmation, explain known consequences and the available delivery 
 - **Checkpoints.** Also pause at the selected checkpoints. Default to every protected effect, human step, and Plan landing; the user may adjust this set within applicable rules.
 - **Step-by-step.** Pause after each agreed step.
 
-Mode and effect coverage are separate. An effect written into a task after the choice is not thereby authorized; send workers only the authority actually given. Preserve the chosen mode when an effect needs clarification. Ask only for that delta and continue independent covered work. Exact-artifact consent and actions reserved to a person by effective rules remain explicit gates; no mode removes them.
+Mode and effect coverage are separate. An effect written into a task after the choice is not thereby authorized; send workers only the authority actually given. Preserve the chosen mode when an effect needs clarification. Ask only for that delta and continue independent covered work. An uncovered effect that was found and rejected is not an authority delta: report it, keep the mode, and continue; do not offer the user a new choice of mode. A plan defect, a failed check, or an unmeasured technical claim is never a user question either; it goes to a planner or a reviewer. Exact-artifact consent and actions reserved to a person by effective rules remain explicit gates; no mode removes them.
 
 ## Review floors
 
-Every Plan needs one fresh independent review before activation. Use at least two independent judgments with distinct lenses for eight or more tasks, or schema, permissions, money, privacy, destructive operations, publishing, or deployment. A count-only trigger may reduce to one for internal reversible work with deterministic proof; named risk triggers and stricter effective rules may not. Every material executable change and every published or client-facing deliverable gets a fresh independent review, with a second focused lens for a one-way-door surface. Low-risk non-material internal work may close on machine checks plus supervisor verification. When the target offers staging, changes land there before production, within the applicable access and authorization limits; unavailable access is a gate, not permission to skip staging. Disposition each finding as fixed, deferred with authority and rationale, or dismissed with evidence.
+Every Plan needs one fresh independent review before activation. Use at least two independent judgments with distinct lenses for eight or more tasks, or schema, permissions, money, privacy, destructive operations, publishing, or deployment. A count-only trigger may reduce to one for internal reversible work with deterministic proof; named risk triggers and stricter effective rules may not. Every material executable change and every published or client-facing deliverable gets a fresh independent review, with a second focused lens for a one-way-door surface. Low-risk non-material internal work may close on machine checks plus supervisor verification. When the target offers staging, changes land there before production, within the applicable access and authorization limits; unavailable access is a gate, not permission to skip staging. Disposition each finding as fixed, deferred with authority and rationale, or dismissed with evidence. A stable fix to a reviewed text gets one targeted recheck by the same reviewer of the changed clauses only, never a fresh floor; a repair whose blast radius is one reversible internal record may be rechecked by the supervisor. Two consecutive rounds that add process without changing what ships trigger F15, not a third round.
 
 ## One source, native adaptations
 

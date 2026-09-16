@@ -22,7 +22,7 @@ def validate(root=sync.ROOT):
     assert required <= {p.name for p in (source / 'references').glob('*.md')}, 'missing shared contract or runtime profile'
     assert all(f'references/{runtime}-runtime.md' in main for runtime in sync.RUNTIMES), 'entrypoint must route to both native profiles'
     foundations = re.findall(r'\*\*F(\d+),', main)
-    assert foundations == [str(n) for n in range(1, 15)], 'shared foundation identity/order changed; review the contract'
+    assert foundations == [str(n) for n in range(1, 17)], 'shared foundation identity/order changed; review the contract'
     banners = re.findall(r'\*\*Octoplan · Step [^*]+\*\*', main)
     assert banners == [f'**Octoplan · Step {n} of 3 — {name}**' for n, name in enumerate(('Brief', 'Plan', 'Delivery'), 1)], 'visible program changed'
     readme = (root / 'README.md').read_text()
