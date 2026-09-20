@@ -58,6 +58,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 3.1.0 — 2026-09-20
+
+Codex parents now distinguish a supervisor ending its turn from Delivery ending. A premature return with safe authorized work resumes the same healthy owner through native follow-up; unclear state is reconciled before work, and repeated non-progress goes to diagnosis. Real waits, user stop, limits, effects and ownership checks remain binding. The relay stays in an active native wait unless parent wake-up is demonstrated, reports progress in commentary, and identifies the supervisor at launch, replacement and status requests. Mode choice explains the parent-runtime lifetime limit; no scheduler or continuation after parent closure is added.
+
+Both packages carry the same source and version; Claude execution, saved routes and existing plan contracts remain unchanged. Package checks and a bounded native resume probe do not prove end-to-end autonomous delivery.
+
 ### 3.0.0 — 2026-09-16
 
 Shared protocol change, from the first live run of the unified skill in Claude Code (a three-task stream with a planted out-of-mandate order, a killed supervisor, and a fresh-session resume). Two foundations added: rigor is sized to the stakes in both directions, with one same-reviewer recheck per stable fix instead of a fresh floor; and no unmeasured technical claim goes into any record, with every Verify check carrying its defeat proof (the concrete call-site shape returns). A material change now sweeps every open task, not only the ones it touched. A plan defect or a failed check goes to a planner through the relay, never to the user; a rejected uncovered effect keeps the chosen mode. The banner is the first line of every user-facing message and those messages stay in everyday words. Receipts and contract overflow live on one linked contract page per stream. Guarded Octopad writes reread first, because a task's `updated_at` moves on its own. Saved plans, routes, authorizations and manual continuations remain valid; nothing needs editing before existing plans run again.
@@ -407,6 +413,12 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 3.1.0 — 2026-09-20
+
+Codex parents now distinguish a supervisor ending its turn from Delivery ending. A premature return with safe authorized work resumes the same healthy owner through native follow-up; unclear state is reconciled before work, and repeated non-progress goes to diagnosis. Real waits, user stop, limits, effects and ownership checks remain binding. The relay stays in an active native wait unless parent wake-up is demonstrated, reports progress in commentary, and identifies the supervisor at launch, replacement and status requests. Mode choice explains the parent-runtime lifetime limit; no scheduler or continuation after parent closure is added.
+
+Both packages carry the same source and version; Claude execution, saved routes and existing plan contracts remain unchanged. Package checks and a bounded native resume probe do not prove end-to-end autonomous delivery.
 
 ### 3.0.0 — 2026-09-16
 

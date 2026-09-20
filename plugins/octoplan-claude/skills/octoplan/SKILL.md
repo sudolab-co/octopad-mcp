@@ -2,7 +2,7 @@
 name: octoplan
 description: Use when the user explicitly invokes Octoplan or asks it to plan, replan, flesh out, resume, or supervise a governed Octopad work stream or task. Do not use for generic Octopad actions, onboarding, or execution the user did not authorize.
 ---
-Version: 3.0.0
+Version: 3.1.0
 
 # Octoplan
 

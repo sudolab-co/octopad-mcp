@@ -1,7 +1,7 @@
 {
   "name": "octoplan-claude",
   "description": "Confirms a Brief, reviews an Octopad Plan, and supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step.",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "author": {
     "name": "Sudolab"
   },

@@ -1,8 +1,8 @@
-# Octoplan 3.0.0 conformance
+# Octoplan 3.1.0 conformance
 
 This is a reviewer aid for both native distributions, not runtime state or a declaration that behavior passed. Both packages copy `skills/octoplan/` byte for byte; paths below are relative to that canonical source. Review the final shared protocol and each affected runtime profile, including the deliberate changes below.
 
-**Release and saved state are separate.** `3.0.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
+**Release and saved state are separate.** `3.1.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
 
 ## Shared foundation
 
@@ -55,6 +55,12 @@ These identifiers preserve review navigation from prior releases. They are not e
 - **Claude:** inspect `references/claude-runtime.md` for available pinned lanes versus explicitly request-only effort, Fable availability and data-handling consent, native effort versus workflow opt-in, supervisor/reviewer route floors and real parent/child capability checks. No Codex Goal or invented Claude tool is assumed.
 - **Live test, 2026-09-14/15 (Claude Code):** a three-task stream ran Brief, mandate, Plan, review, injection of an out-of-mandate order into a task mid-review (caught at activation, decoy untouched), supervisor kill and fresh-session resume (no re-Brief, cessation proved, ownership reclaimed), a self-inflicted dispatch check that the email task could not pass (routed to a planner, repaired, rechecked). Defects it exposed and 3.0.0 fixes: verification that outgrew the stakes (F15), an unmeasured technical claim written into a spec twice (F16), a post-incident fix applied to two of three tasks (sweep rule in `references/supervision.md` Phase 5), a plan defect escalated to the user, a mode re-ask after a rejected effect, banners not first, receipts with no named home, and Claude relay facts (`references/claude-runtime.md` > Measured facts).
 - **Fallback and compatibility:** `references/continuation.md` discloses manual launch honestly. Existing manual continuations and valid saved routes remain usable; names, new defaults or absent optional fields do not force a migration or enlarge authority.
+
+## Codex continuation checks for 3.1.0
+
+Inspect `references/codex-runtime.md` > Handle returns without losing the supervisor against the final diff. Verify same-owner resume after a premature return, reconciliation before ambiguous effects, real waits without repeated wake-ups, explicit stop overriding stale saved authority, diagnosis after repeated non-progress, and cessation before replacement. Native completion is not outcome acceptance. Check user-facing scope and observed actor state, commentary versus final response, and honest parent-runtime limits.
+
+A bounded Codex probe on 2026-09-20 observed a child return after phase A and complete phase B under the same identity after `collaboration.followup_task`, without human relaunch or business effects. This proves that primitive from a live parent only. It does not prove model adherence to this profile, automatic parent wake-up after a final response, survival after parent closure, or a complete governed stream. These remain unproved by that probe; do not upgrade package checks or a reasoned scenario review into live behavioral acceptance.
 
 ## Release verification
 
