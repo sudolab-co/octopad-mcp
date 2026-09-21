@@ -58,6 +58,10 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 4.0.1 — 2026-09-21
+
+Corrects release metadata only. The historical `octoplan-codex-v4.0.0` tag predates the version reset and must remain unchanged, so the new shared protocol ships under the unused 4.0.1 number on both runtimes. The source behavior reviewed for 4.0.0 is unchanged. Claude 4.0.0 remains a valid publication record; 4.0.1 restores the common distribution number without rewriting history.
+
 ### 4.0.0 — 2026-09-21
 
 Adds native multi-stream coordination to the shared protocol. A Delivery Map explains related streams without duplicating their contracts or live state. Each stream has local success criteria; producer/consumer interfaces identify versions and proof, one existing actor coordinates cross-stream changes, and an integration owner proves the assembled outcome. A common supervisor remains the default; multiple supervisors require disjoint ownership, qualified lifecycle support and capacity for task work. Both native profiles specify scoped return handling, continuation and replacement. Task descriptions remain specifications; compact receipts link long reports. Load-bearing verification uses a defeat proof suited to the surface and risk, retaining real-call-site negative proof for bypass-prone executable paths. Valid existing plans retain their authority and evidence; requested topology migrations reconcile active actors before takeover.
@@ -419,6 +423,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 4.0.1 — 2026-09-21
+
+Corrects release metadata only. The historical `octoplan-codex-v4.0.0` tag predates the version reset and must remain unchanged, so the new shared protocol ships under the unused 4.0.1 number on both runtimes. The source behavior reviewed for 4.0.0 is unchanged. Claude 4.0.0 remains a valid publication record; 4.0.1 restores the common distribution number without rewriting history.
 
 ### 4.0.0 — 2026-09-21
 
