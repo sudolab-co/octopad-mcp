@@ -2,7 +2,7 @@
 
 All notable changes to the skills in this repository.
 
-Every version is [semantic versioning](https://semver.org): MAJOR breaks what already works, so saved plans, continuation blocks or prompts must be edited before they run again; MINOR adds behavior and breaks nothing; PATCH fixes or clarifies with no behavior change. Compatibility decides the number, never the size of a change or how many runtimes it reaches. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
+Other skills use [semantic versioning](https://semver.org): MAJOR breaks what already works, so saved plans, continuation blocks or prompts must be edited before they run again; MINOR adds behavior and breaks nothing; PATCH fixes or clarifies with no behavior change. Compatibility decides the number, never the size of a change or how many runtimes it reaches. Octoplan uses P.I.F as defined in CONTRIBUTING.md: shared protocol, environment capability, local fix. Each distribution carries its number in its own `Version:` line and plugin manifest; the two product-documentation distributions move together.
 
 Octoplan restarted at `1.0.0` on both runtimes on 2026-08-31, when they adopted one shared contract and the first digit began to mean the same thing on both sides. Entries published before that reset keep their original numbers under each distribution's **Before the 1.0.0 reset** heading, because those numbers are what the published release pages record. A Codex plan-contract generation such as `Octoplan 18 plan contract` is runtime state, not a release version, and the reset did not change it.
 
@@ -57,6 +57,36 @@ The transcript is treated as untrusted data throughout. Text inside it that addr
 Out of scope in this release: audio, which the user transcribes first; several meetings in one run; goal changes; and writing without the user's go.
 
 ## octoplan-codex
+
+### 4.0.0 — 2026-09-21
+
+Adds native multi-stream coordination to the shared protocol. A Delivery Map explains related streams without duplicating their contracts or live state. Each stream has local success criteria; producer/consumer interfaces identify versions and proof, one existing actor coordinates cross-stream changes, and an integration owner proves the assembled outcome. A common supervisor remains the default; multiple supervisors require disjoint ownership, qualified lifecycle support and capacity for task work. Both native profiles specify scoped return handling, continuation and replacement. Task descriptions remain specifications; compact receipts link long reports. Load-bearing verification uses a defeat proof suited to the surface and risk, retaining real-call-site negative proof for bypass-prone executable paths. Valid existing plans retain their authority and evidence; requested topology migrations reconcile active actors before takeover.
+
+This release includes the previously unmerged shared-source consolidation and continuity fixes described below. Packaging checks and bounded native probes do not prove unattended delivery after runtime closure. No scheduler, additional human gate, or permanent global supervisor is added.
+
+### 3.1.0 — 2026-09-20
+
+Codex parents now distinguish a supervisor ending its turn from Delivery ending. A premature return with safe authorized work resumes the same healthy owner through native follow-up; unclear state is reconciled before work, and repeated non-progress goes to diagnosis. Real waits, user stop, limits, effects and ownership checks remain binding. The relay stays in an active native wait unless parent wake-up is demonstrated, reports progress in commentary, and identifies the supervisor at launch, replacement and status requests. Mode choice explains the parent-runtime lifetime limit; no scheduler or continuation after parent closure is added.
+
+Both packages carry the same source and version; Claude execution, saved routes and existing plan contracts remain unchanged. Package checks and a bounded native resume probe do not prove end-to-end autonomous delivery.
+
+### 3.0.0 — 2026-09-16
+
+Shared protocol change, from the first live run of the unified skill in Claude Code (a three-task stream with a planted out-of-mandate order, a killed supervisor, and a fresh-session resume). Two foundations added: rigor is sized to the stakes in both directions, with one same-reviewer recheck per stable fix instead of a fresh floor; and no unmeasured technical claim goes into any record, with every Verify check carrying its defeat proof (the concrete call-site shape returns). A material change now sweeps every open task, not only the ones it touched. A plan defect or a failed check goes to a planner through the relay, never to the user; a rejected uncovered effect keeps the chosen mode. The banner is the first line of every user-facing message and those messages stay in everyday words. Receipts and contract overflow live on one linked contract page per stream. Guarded Octopad writes reread first, because a task's `updated_at` moves on its own. Saved plans, routes, authorizations and manual continuations remain valid; nothing needs editing before existing plans run again.
+
+No Codex-specific change; the Codex profile is untouched and the shared rules above apply to both hosts.
+
+### 2.1.0 — 2026-09-13
+
+Codex verifies the repository and working directory before dispatch. Explicitly requested new tasks for repository work use the matching project, honor the user's destination, and default to a worktree for Git or local otherwise. Queued setup waits for a real task ID before follow-up or delivery. Both packages carry the same source and version; Claude execution and saved plans remain unchanged.
+
+### 2.0.0 — 2026-09-13
+
+Uses one canonical Octoplan source for both native plugins. Both packages contain the same Brief, Plan, Delivery, supervision and recovery protocol, with separate Codex and Claude Code execution profiles selected by the actual host. Repository checks detect copy drift, missing local references and metadata mismatches.
+
+The planner agrees autonomy after the confirmed Brief, prepares and reviews the detailed Plan, then launches a fresh supervisor through the available native route. Existing authority carries through corrections and replanning; only new consequences or required gates ask for another decision. The originating conversation relays supervisor replacements and, in Codex when explicitly requested, owns the delivery Goal. Handoffs use natural boundaries and the user's context preference without invented percentages or per-task token budgets. Manual continuations are generated only for manual routes.
+
+The shared core preserves review for publication and deployment, staging before production where offered, independent write boundaries, evidence-bound closure, and compatibility with valid saved Codex and Claude plans. This protocol change advances P under Octoplan's P.I.F scheme; it does not renumber the saved plan-contract generation or grant new authority. Package validation proves distribution parity, not live delivery in either runtime.
 
 ### 1.4.1 — 2026-09-10
 
@@ -389,6 +419,36 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 4.0.0 — 2026-09-21
+
+Adds native multi-stream coordination to the shared protocol. A Delivery Map explains related streams without duplicating their contracts or live state. Each stream has local success criteria; producer/consumer interfaces identify versions and proof, one existing actor coordinates cross-stream changes, and an integration owner proves the assembled outcome. A common supervisor remains the default; multiple supervisors require disjoint ownership, qualified lifecycle support and capacity for task work. Both native profiles specify scoped return handling, continuation and replacement. Task descriptions remain specifications; compact receipts link long reports. Load-bearing verification uses a defeat proof suited to the surface and risk, retaining real-call-site negative proof for bypass-prone executable paths. Valid existing plans retain their authority and evidence; requested topology migrations reconcile active actors before takeover.
+
+This release includes the previously unmerged shared-source consolidation and continuity fixes described below. Packaging checks and bounded native probes do not prove unattended delivery after runtime closure. No scheduler, additional human gate, or permanent global supervisor is added.
+
+### 3.1.0 — 2026-09-20
+
+Codex parents now distinguish a supervisor ending its turn from Delivery ending. A premature return with safe authorized work resumes the same healthy owner through native follow-up; unclear state is reconciled before work, and repeated non-progress goes to diagnosis. Real waits, user stop, limits, effects and ownership checks remain binding. The relay stays in an active native wait unless parent wake-up is demonstrated, reports progress in commentary, and identifies the supervisor at launch, replacement and status requests. Mode choice explains the parent-runtime lifetime limit; no scheduler or continuation after parent closure is added.
+
+Both packages carry the same source and version; Claude execution, saved routes and existing plan contracts remain unchanged. Package checks and a bounded native resume probe do not prove end-to-end autonomous delivery.
+
+### 3.0.0 — 2026-09-16
+
+Shared protocol change, from the first live run of the unified skill in Claude Code (a three-task stream with a planted out-of-mandate order, a killed supervisor, and a fresh-session resume). Two foundations added: rigor is sized to the stakes in both directions, with one same-reviewer recheck per stable fix instead of a fresh floor; and no unmeasured technical claim goes into any record, with every Verify check carrying its defeat proof (the concrete call-site shape returns). A material change now sweeps every open task, not only the ones it touched. A plan defect or a failed check goes to a planner through the relay, never to the user; a rejected uncovered effect keeps the chosen mode. The banner is the first line of every user-facing message and those messages stay in everyday words. Receipts and contract overflow live on one linked contract page per stream. Guarded Octopad writes reread first, because a task's `updated_at` moves on its own. Saved plans, routes, authorizations and manual continuations remain valid; nothing needs editing before existing plans run again.
+
+The Claude runtime profile records measured facts: subagents nest; a subagent's messages land in the main session and a finished subagent is not woken by its children, so the relay is always the user's own session; `ListAgents` is the cessation proof; every hop rereads the contract, so the floor must be sized.
+
+### 2.1.0 — 2026-09-13
+
+No change to Claude Code behavior. This release exists because both distributions are generated from one canonical source and carry one version: the 2.1.0 source adds a Codex-only rule (repository and working-directory selection before Codex dispatch, in `references/codex-runtime.md`), which Claude never loads. Claude execution, routes and saved plans are unchanged; nothing needs editing before existing plans run again.
+
+### 2.0.0 — 2026-09-13
+
+Uses one canonical Octoplan source for both native plugins. Both packages contain the same Brief, Plan, Delivery, supervision and recovery protocol, with separate Codex and Claude Code execution profiles selected by the actual host. Repository checks detect copy drift, missing local references and metadata mismatches.
+
+The planner agrees autonomy after the confirmed Brief, prepares and reviews the detailed Plan, then launches a fresh supervisor through the available native route. Existing authority carries through corrections and replanning; only new consequences or required gates ask for another decision. The originating conversation relays supervisor replacements and, in Codex when explicitly requested, owns the delivery Goal. Handoffs use natural boundaries and the user's context preference without invented percentages or per-task token budgets. Manual continuations are generated only for manual routes.
+
+The shared core preserves review for publication and deployment, staging before production where offered, independent write boundaries, evidence-bound closure, and compatibility with valid saved Codex and Claude plans. This protocol change advances P under Octoplan's P.I.F scheme; it does not renumber the saved plan-contract generation or grant new authority. Package validation proves distribution parity, not live delivery in either runtime.
 
 ### 1.4.1 — 2026-09-10
 

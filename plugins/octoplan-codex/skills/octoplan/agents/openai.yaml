@@ -1,7 +1,7 @@
 interface:
   display_name: "Octoplan for Codex"
   short_description: "Confirm, plan, and supervise governed delivery"
-  default_prompt: "Use $octoplan to confirm my Brief, show the Plan and interruption choice, then supervise authorized Delivery."
+  default_prompt: "Use $octoplan to confirm my Brief, review the Plan, and supervise authorized Delivery."
 
 policy:
   allow_implicit_invocation: true

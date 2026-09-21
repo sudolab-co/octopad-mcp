@@ -18,7 +18,7 @@
     },
     {
       "name": "octoplan-claude",
-      "description": "Turns an Octopad work stream into an execution-ready plan of detailed, ordered, self-contained tasks, agrees a delivery contract with you, and then supervises the delivery of that plan once you give an explicit go. Works for engineering and non-technical work alike. This is the Claude Code distribution of Octoplan; Codex runs its own. Requires a connected Octopad MCP server.",
+      "description": "Confirms a Brief, reviews an Octopad Plan, and supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step. Claude Code distribution; requires a connected Octopad MCP server.",
       "author": {
         "name": "Sudolab"
       },

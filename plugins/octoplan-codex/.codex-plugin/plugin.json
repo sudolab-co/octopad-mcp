@@ -1,7 +1,7 @@
 {
   "name": "octoplan-codex",
-  "version": "1.4.1",
-  "description": "Confirm a Brief, review a governed Octopad Plan, and supervise authorized Delivery with explicit interruption levels.",
+  "version": "4.0.0",
+  "description": "Confirms a Brief, reviews an Octopad Plan, and supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step.",
   "author": {
     "name": "Sudolab"
   },
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Octoplan for Codex",
     "shortDescription": "Confirm, review, and supervise governed delivery.",
-    "longDescription": "Turns a confirmed Brief into the smallest useful Octopad work graph, binds independent review to the exact Plan, then supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step interruption.",
+    "longDescription": "Confirms a Brief, reviews an Octopad Plan, and supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step. Uses the shared Octoplan protocol with the native Codex execution profile.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": [
@@ -26,7 +26,7 @@
       "Orchestration"
     ],
     "defaultPrompt": [
-      "Use $octoplan to confirm my Brief, show the Plan and interruption choice, then supervise authorized Delivery."
+      "Use $octoplan to confirm my Brief, review the Plan, and supervise authorized Delivery."
     ]
   }
 }
