@@ -42,6 +42,8 @@ Read the selected runtime's compatibility section. Valid existing Codex v18 and 
 
 For an unknown, unsupported, or invalid contract, reconcile any live actors and effects first. Read the current user mandate, target rules, and graph. Preserve verifiable facts and authority that still applies, but never upgrade stale PASS or infer missing consent. Rebuild and review only the unproved scope; ask for an actually changed Brief or missing consequence decision. Unsupported pre-v18 Codex control objects are historical evidence, never an execution authority.
 
+An explicitly requested migration to a new topology follows the same recovery rules: identify affected owners and effects, stop and reconcile predecessors before transferring a boundary, preserve valid mandate and version-bound evidence, repair only affected contracts and tasks, and review before resumed dispatch. Do not archive history, claim stale PASS, or restart unrelated streams merely to adopt a release.
+
 ## Hand off durably
 
-At an unrecovered incident or handoff, persist in-flight facts on owning tasks and use the six-field Delivery handoff. Before dispatch, the successor re-proves the decision served, premise, kill question, standing authority, pending effects, one supervisor, active actors, and person-waits; no new go is needed without an authority delta. Chat is never the only copy of authority, progress, or an ambiguous effect.
+At an unrecovered incident or handoff, persist in-flight facts on owning tasks and use the six-field Delivery handoff. Before dispatch, the successor re-proves the decision served, premise, kill question, standing authority, pending effects, one supervisor per boundary, active actors, and person-waits; no new go is needed without an authority delta. Chat is never the only copy of authority, progress, or an ambiguous effect.

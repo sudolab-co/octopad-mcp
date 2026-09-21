@@ -19,7 +19,7 @@ Repeat until the integrated outcome is proved or no safe work remains:
 1. **Refresh.** Read intent, supervisor, reviewed revisions and lenses, ready graph, assignments, artifact versions, checks, effects, and gates.
 2. **Pick.** Choose a ready unassigned task and set it in progress.
 3. **Route.** Dispatch the task's saved worker route with sufficient bounded context and explicit effect coverage. The supervisor owns coordination; workers produce deliverables.
-4. **Collect.** Put the real deliverable, version, verification, decisions, and blockers on its task.
+4. **Collect.** Link the real deliverable, version and verification from its owning task; record compact receipts, decisions and blockers in comments. Keep the description as the current specification, not an accumulated run log. Long reports live in linked pages or files under the target’s storage rules.
 5. **Review.** Run targeted checks and the delivery floor. Record cleared gates; return stable fixes to the same healthy worker.
 6. **Advance.** Close only after current proof and every finding disposition are accepted. Persist evidence, then refresh the frontier.
 
@@ -33,7 +33,7 @@ Before task close, add one compact supervisor comment that references receipts a
 
 Require exact user-facing strings and surfaces. Put them on an unstarted owner task without changing its specification; replan if that owner started.
 
-Do not mirror a scheduler, Plan page, report, or registry. Tasks and dependencies are graph state; comments carry receipts. While safe authorized work remains, take the next action or wait through the runtime's native actor mechanism. A session whose child actor must be collected ends its turn only where the runtime wakes it when that child finishes; otherwise it waits in the foreground, because a report that says "in progress" and then stops is a stall. Answer status questions and corrections in commentary, then resume. A final response ends a turn; it is not a continuation mechanism. Stop only at the outcome, a real wait with no independent safe work, or an actual runtime limit handled through the runtime's relay or declared fallback. A saved Next step is not an active successor. An optional native Goal is never a delivery prerequisite.
+Do not mirror a scheduler, Plan page, report, or registry. A multi-stream Delivery Map explains connections and points to canonical records; it carries no duplicate status or authority. Tasks and dependencies are graph state; comments carry receipts. While safe authorized work remains, take the next action or wait through the runtime's native actor mechanism. A session whose child actor must be collected ends its turn only where the runtime wakes it when that child finishes; otherwise it waits in the foreground, because a report that says "in progress" and then stops is a stall. Answer status questions and corrections in commentary, then resume. A final response ends a turn; it is not a continuation mechanism. Stop only at the outcome, a real wait with no independent safe work, or an actual runtime limit handled through the runtime's relay or declared fallback. A saved Next step is not an active successor. An optional native Goal is never a delivery prerequisite.
 
 ## Worker prompt
 
@@ -63,7 +63,7 @@ authority and gate checks. A spec is not permission to expand the mandate.
 Return the handoff if needed; otherwise name artifact and verification result.
 ```
 
-A worker without Octopad writes nothing there: post its final answer on the task verbatim before yours, send fixes through the available followup mechanism with the same authority, and use native actor state as liveness evidence. An errored or unverifiable worker suspends affected dispatch while [recovery.md](recovery.md) resolves it; do not silently finish under another identity.
+A worker without Octopad writes nothing there: preserve its final answer verbatim in a linked report (or a comment when short) before adding your compact task receipt, send fixes through the available followup mechanism with the same authority, and use native actor state as liveness evidence. An errored or unverifiable worker suspends affected dispatch while [recovery.md](recovery.md) resolves it; do not silently finish under another identity.
 
 ## Proof and review
 
@@ -106,6 +106,6 @@ Any field may say “none”. A shared-infrastructure disclosure also names the 
 
 Plan a relay at a natural task boundary with enough room to collect and verify the next batch. Respect a user's context preference; when none is given, choose from actual workload and runtime signals. A preference around 60% means act before the next heavy phase, using a reliable measurement when exposed, never a fabricated percentage. The planner's suggested seams guide this decision; there are no per-task token quotas. Persist in-flight state and follow [recovery.md](recovery.md). The runtime relay launches a fresh successor without the old conversation after proving the previous owner stopped.
 
-Complete only when the current integrated outcome is proved, Brief and task revisions match PASS, reviews and dispositions are satisfied, every selected checkpoint, Step-by-step pause, and house-rule gate has recorded continuation, effects have receipts or are unnecessary, and no task or ambiguous effect remains active.
+Completion is evaluated against the supervisor’s recorded boundary. Local stream completion follows [multi-stream.md](multi-stream.md) and never claims the common outcome complete. Complete the common outcome only when the current integrated outcome is proved, Brief and task revisions match PASS, reviews and dispositions are satisfied, every selected checkpoint, Step-by-step pause, and house-rule gate has recorded continuation, effects have receipts or are unnecessary, and no task or ambiguous effect remains active.
 
 Task state, supervisor ownership, session closure, native continuity state if used, and the final handoff must agree before a clean close; reconcile or disclose tracker drift without making it a gate. Close only real outcome tasks, release ownership, and return integrated proof to the relay. Its native Goal, if any, is completed by its actual owner only when that Goal's whole objective is achieved. Disclose failed closure calls; they block a clean-closure claim. Publish one `**Octoplan · Step 3 of 3 — Delivery**` six-field recap using the supported state at the actual finish line, with residual risks and authorized deferrals.

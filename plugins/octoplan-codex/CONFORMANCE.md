@@ -1,8 +1,8 @@
-# Octoplan 3.1.0 conformance
+# Octoplan 4.0.0 conformance
 
 This is a reviewer aid for both native distributions, not runtime state or a declaration that behavior passed. Both packages copy `skills/octoplan/` byte for byte; paths below are relative to that canonical source. Review the final shared protocol and each affected runtime profile, including the deliberate changes below.
 
-**Release and saved state are separate.** `3.1.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
+**Release and saved state are separate.** `4.0.0` is the shared source and package version. New plans use the common `Octoplan brief`, `Octoplan stakes`, `Octoplan plan contract`, `Octoplan delivery authorization`, and `Octoplan supervisor` Decision names. Existing Codex v18 aliases and Claude mode-based records remain readable without renaming, new fields, or duplicate consent. The release does not renumber the Codex plan-contract generation. Compatibility still requires current scope, revisions, authority, effects and ownership to be valid; a familiar title never turns stale evidence into PASS.
 
 ## Shared foundation
 
@@ -21,7 +21,7 @@ This is a reviewer aid for both native distributions, not runtime state or a dec
 | F13: actual target and authority for spend or irreversible effects | `SKILL.md` > Shared foundation and Autonomy and authority |
 | F14: target rules, installed skills, hooks and permissions remain binding | `SKILL.md` > Shared foundation; `references/supervision.md` > Worker prompt |
 | F15: rigor sized to the stakes, in both directions; one same-reviewer recheck per stable fix | `SKILL.md` > Shared foundation and Review floors; `references/planning.md` > Phase 2 |
-| F16: no unmeasured technical claim in any record; every Verify check carries its defeat proof | `SKILL.md` > Shared foundation; `references/planning.md` > Phase 2 and Persist and hand off |
+| F16: no unmeasured technical claim in any record; load-bearing Verify checks carry a risk- and surface-appropriate defeat proof | `SKILL.md` > Shared foundation; `references/planning.md` > Phase 2 and Persist and hand off |
 
 ## Earlier guarantee families to inspect
 
@@ -61,6 +61,12 @@ These identifiers preserve review navigation from prior releases. They are not e
 Inspect `references/codex-runtime.md` > Handle returns without losing the supervisor against the final diff. Verify same-owner resume after a premature return, reconciliation before ambiguous effects, real waits without repeated wake-ups, explicit stop overriding stale saved authority, diagnosis after repeated non-progress, and cessation before replacement. Native completion is not outcome acceptance. Check user-facing scope and observed actor state, commentary versus final response, and honest parent-runtime limits.
 
 A bounded Codex probe on 2026-09-20 observed a child return after phase A and complete phase B under the same identity after `collaboration.followup_task`, without human relaunch or business effects. This proves that primitive from a live parent only. It does not prove model adherence to this profile, automatic parent wake-up after a final response, survival after parent closure, or a complete governed stream. These remain unproved by that probe; do not upgrade package checks or a reasoned scenario review into live behavioral acceptance.
+
+## Multi-stream checks for 4.0.0
+
+Review `references/multi-stream.md` with both runtime profiles. Exercise these boundaries: parallel tasks stay single-stream when appropriate; local success differs from integrated success; the Delivery Map cannot override a contract; an interface revision pauses only affected consumers; its coordinator cannot write another owner's output; integration cannot inherit uncovered protected-effect authority; unrelated ready work continues after a failure; slot exhaustion does not produce a supervisor-only deadlock; ended turns are resumed only under current mandate and ownership; a predecessor with uncertain effects cannot be replaced speculatively. Existing plans retain valid authority and history during an explicitly requested migration.
+
+Distinguish a reasoned scenario review from a native lifecycle probe and a complete real delivery. Record what actually ran and any missing evidence; no checklist grants PASS by itself.
 
 ## Release verification
 

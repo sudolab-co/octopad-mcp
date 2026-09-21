@@ -17,7 +17,9 @@ Select workers by the judgment remaining after preparation. Consider Luna `max` 
 | Worker or reviewer: difficult reasoning or hard-to-detect errors | `gpt-6-astra · effort high` |
 | Worker or reviewer: weak verification or high consequences | `gpt-6-astra · effort xhigh` |
 
-Astra `max` is exceptional after diagnosis, never automatic. New role admission: planner = Astra `xhigh|max`; supervisor = Sol `high`; worker = Luna `max` or Astra `low|medium|high|xhigh|max`; reviewer = Sol `high` or Astra `high|xhigh|max`. Review floors do not depend on worker price. Repair insufficient preparation before escalating effort.
+These defaults do not override an explicit user choice of an available model and effort. Record that choice and reason; capability, independent-review and evidence requirements still apply.
+
+Astra `max` is exceptional after diagnosis, never automatic. Default role admission: planner = Astra `xhigh|max`; supervisor = Sol `high`; worker = Luna `max` or Astra `low|medium|high|xhigh|max`; reviewer = Sol `high` or Astra `high|xhigh|max`. Review floors do not depend on worker price. Repair insufficient preparation before escalating effort.
 
 Saved v18 routes valid under 1.3.0 remain valid: Luna workers `max`; Sol planners `xhigh|max`, supervisors, reviewers and workers `high|xhigh|max`; Astra planners and supervisors `xhigh|max`, reviewers `high|xhigh|max`, workers `low|medium|high|xhigh|max`. Keep exact saved values, including active actors. A saved-route change returns to Plan and affected review before dispatch; unavailable or invalid routes pause only the affected actor. Never substitute silently.
 
@@ -29,9 +31,13 @@ Before offering automatic delivery, inspect exposed tools: fresh child creation 
 
 For repository work, verify the intended repository and working directory before dispatch. An explicitly requested new task uses the matching `list_projects` project through `create_thread`, not `projectless`. Honor the user's destination; otherwise choose `worktree` if `isGitRepository` is true, `local` if false. A returned `clientThreadId` means setup is pending: wait for a real `threadId` before follow-up or delivery, then verify the task's project and directory.
 
+For multiple streams, apply [multi-stream.md](multi-stream.md). Default to a common supervisor. Qualify launch, nested delegation, follow-up, wait/status, stop and replacement for each proposed boundary using actual tool permissions and native evidence; reuse still-compatible qualification, and repeat only evidence invalidated by a runtime change. Reserve capacity for workers and reviewers: with four shared slots, a parent plus three supervisors leaves none for task work. Use fewer simultaneous supervisors or the common owner rather than launching a topology that cannot advance.
+
+The parent routes returns, answers and dependency-clearance events to the correct recorded owner, using `collaboration.list_agents`, `collaboration.wait_agent`, `collaboration.send_message` and `collaboration.followup_task` as applicable. Apply return and replacement guards separately to every boundary. A local finish does not retire other owners or finish integration. The cross-stream coordinator initiates affected Plan repair; the parent may act as that planner without taking delivery ownership. There is no extra global supervisor.
+
 After the reviewed Plan is visible and authority holds:
 
-1. Launch one supervisor with `collaboration.spawn_agent`, `fork_turns: "none"`, and the exact saved model and `reasoning_effort`. Its bounded prompt gives stream identity, organization/workspace, authorization and ownership pointers, plus indispensable environment facts absent from Octopad. Creation needs a returned identity or authoritative reconciliation before retry.
+1. Launch one supervisor per approved disjoint boundary with `collaboration.spawn_agent`, `fork_turns: "none"`, and the exact saved model and `reasoning_effort`. Its bounded prompt gives the owned stream identities and boundary, organization/workspace, authorization and ownership pointers, plus indispensable environment facts absent from Octopad. Creation needs a returned identity or authoritative reconciliation before retry.
 2. The child rereads Octopad, claims the guarded supervisor Decision, and delegates workers/reviewers under common supervision. It never starts another supervisor.
 3. The parent handles every supervisor return using the rules below, then relays bounded reports and human escalations without altering the decision. Deliver later user answers using `collaboration.followup_task`, which resumes an idle child; `collaboration.send_message` can reach a running child. The parent does not dispatch delivery workers or close tasks.
 4. Apply common recovery at handoff. Use native status and, when needed, `collaboration.interrupt_agent`, then verify cessation before launching a replacement with `fork_turns: "none"`. The successor reconciles actors/effects and claims ownership using current `expected_updated_at`. A missing response or saved handoff does not prove cessation; uncertainty holds that boundary.

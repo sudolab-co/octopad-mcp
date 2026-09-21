@@ -58,6 +58,12 @@ Out of scope in this release: audio, which the user transcribes first; several m
 
 ## octoplan-codex
 
+### 4.0.0 — 2026-09-21
+
+Adds native multi-stream coordination to the shared protocol. A Delivery Map explains related streams without duplicating their contracts or live state. Each stream has local success criteria; producer/consumer interfaces identify versions and proof, one existing actor coordinates cross-stream changes, and an integration owner proves the assembled outcome. A common supervisor remains the default; multiple supervisors require disjoint ownership, qualified lifecycle support and capacity for task work. Both native profiles specify scoped return handling, continuation and replacement. Task descriptions remain specifications; compact receipts link long reports. Load-bearing verification uses a defeat proof suited to the surface and risk, retaining real-call-site negative proof for bypass-prone executable paths. Valid existing plans retain their authority and evidence; requested topology migrations reconcile active actors before takeover.
+
+This release includes the previously unmerged shared-source consolidation and continuity fixes described below. Packaging checks and bounded native probes do not prove unattended delivery after runtime closure. No scheduler, additional human gate, or permanent global supervisor is added.
+
 ### 3.1.0 — 2026-09-20
 
 Codex parents now distinguish a supervisor ending its turn from Delivery ending. A premature return with safe authorized work resumes the same healthy owner through native follow-up; unclear state is reconciled before work, and repeated non-progress goes to diagnosis. Real waits, user stop, limits, effects and ownership checks remain binding. The relay stays in an active native wait unless parent wake-up is demonstrated, reports progress in commentary, and identifies the supervisor at launch, replacement and status requests. Mode choice explains the parent-runtime lifetime limit; no scheduler or continuation after parent closure is added.
@@ -413,6 +419,12 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+### 4.0.0 — 2026-09-21
+
+Adds native multi-stream coordination to the shared protocol. A Delivery Map explains related streams without duplicating their contracts or live state. Each stream has local success criteria; producer/consumer interfaces identify versions and proof, one existing actor coordinates cross-stream changes, and an integration owner proves the assembled outcome. A common supervisor remains the default; multiple supervisors require disjoint ownership, qualified lifecycle support and capacity for task work. Both native profiles specify scoped return handling, continuation and replacement. Task descriptions remain specifications; compact receipts link long reports. Load-bearing verification uses a defeat proof suited to the surface and risk, retaining real-call-site negative proof for bypass-prone executable paths. Valid existing plans retain their authority and evidence; requested topology migrations reconcile active actors before takeover.
+
+This release includes the previously unmerged shared-source consolidation and continuity fixes described below. Packaging checks and bounded native probes do not prove unattended delivery after runtime closure. No scheduler, additional human gate, or permanent global supervisor is added.
 
 ### 3.1.0 — 2026-09-20
 
