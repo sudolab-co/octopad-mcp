@@ -1,7 +1,7 @@
 {
   "name": "octopad",
-  "version": "1.0.0",
-  "description": "Connect Octopad and load nine skills for work, knowledge and documentation, under the methodology served by the server.",
+  "version": "2.0.0",
+  "description": "Connect Octopad and load its skills for work, knowledge, documentation and Octoplan, under the methodology served by the server.",
   "author": {
     "name": "Sudolab"
   },
@@ -11,19 +11,22 @@
   "keywords": [
     "octopad",
     "knowledge",
-    "documentation"
+    "documentation",
+    "planning"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Octopad",
-    "shortDescription": "Octopad connection and nine companion skills.",
-    "longDescription": "Bundles the hosted Octopad MCP connection, nine satellite skills and a technical session bootstrap. The server supplies the kernel methodology. Octoplan remains a separate plugin.",
+    "shortDescription": "Octopad connection, nine companion skills and Octoplan.",
+    "longDescription": "Bundles the hosted Octopad MCP connection, nine satellite skills, Octoplan and a technical session bootstrap. The server supplies the kernel methodology.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": [
       "Read",
-      "Write"
+      "Write",
+      "Planning",
+      "Orchestration"
     ],
     "defaultPrompt": [
       "Use $octopad-session before calling Octopad, then help with my work."

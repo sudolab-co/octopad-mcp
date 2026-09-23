@@ -37,7 +37,7 @@ Start a new Codex task and send: **"Use Octopad. Start my onboarding."**
 
 ## Optional Codex skills
 
-The `manage-product-documentation` and `octoplan-codex` plugins are separate from the MCP connection. Do not install either unless the user asks for it. See [INSTALL.md](../../INSTALL.md#optional-skills).
+The `octopad` plugin bundles this MCP connection with Octopad's skills and Octoplan. Do not install it unless the user asks for it, and do not keep both it and the direct connection above. See [INSTALL.md](../../INSTALL.md#optional-skills).
 
 ## Why this differs from the ChatGPT app
 

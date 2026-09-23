@@ -24,7 +24,7 @@ class PackagingTests(unittest.TestCase):
         (self.source / 'references').mkdir(parents=True)
         (self.source / 'SKILL.md').write_text('---\nname: octoplan\n---\nVersion: 2.0.0\n[Phase](references/phase.md)\n')
         (self.source / 'references/phase.md').write_text('# Phase\n')
-        self.codex = self.root / 'plugins/octoplan-codex/skills/octoplan'
+        self.codex = self.root / 'plugins/octopad-codex/skills/octoplan'
         (self.codex / 'agents').mkdir(parents=True)
         (self.codex / 'agents/openai.yaml').write_bytes(b'native metadata\n')
         sync.synchronize(self.root)
@@ -33,7 +33,7 @@ class PackagingTests(unittest.TestCase):
         sync.synchronize(self.root, check=True)
         sync.synchronize(self.root)
         self.assertEqual((self.codex / 'agents/openai.yaml').read_bytes(), b'native metadata\n')
-        self.assertFalse((self.root / 'plugins/octoplan-claude/skills/octoplan/agents').exists())
+        self.assertFalse((self.root / 'plugins/octopad-claude/skills/octoplan/agents').exists())
 
     def test_changed_and_added_source_documents(self):
         for relative in ('references/phase.md', 'references/new/nested.md'):
@@ -78,20 +78,20 @@ class PackagingTests(unittest.TestCase):
 
     def test_real_release_version_and_metadata_mutations(self):
         fixture = self.root / 'release'
-        for relative in ('skills/octoplan', 'plugins/octoplan-codex', 'plugins/octoplan-claude'):
+        for relative in ('skills/octoplan', 'plugins/octopad-codex', 'plugins/octopad-claude'):
             shutil.copytree(sync.ROOT / relative, fixture / relative)
         for relative in ('README.md', 'CHANGELOG.md'):
             shutil.copyfile(sync.ROOT / relative, fixture / relative)
         validator.validate(fixture)
-        manifest = fixture / 'plugins/octoplan-codex/.codex-plugin/plugin.json'
+        manifest = fixture / 'plugins/octopad-codex/.codex-plugin/plugin.json'
         original = manifest.read_text()
         changed = json.loads(original)
-        changed["version"] = "0.0.0"
+        changed["name"] = "octoplan-codex"
         manifest.write_text(json.dumps(changed))
-        with self.assertRaisesRegex(AssertionError, 'version mismatch'):
+        with self.assertRaisesRegex(AssertionError, 'identity mismatch'):
             validator.validate(fixture)
         manifest.write_text(original)
-        agent = fixture / 'plugins/octoplan-codex/skills/octoplan/agents/openai.yaml'
+        agent = fixture / 'plugins/octopad-codex/skills/octoplan/agents/openai.yaml'
         agent.write_text('interface: {}\n')
         with self.assertRaisesRegex(AssertionError, 'metadata mismatch'):
             validator.validate(fixture)

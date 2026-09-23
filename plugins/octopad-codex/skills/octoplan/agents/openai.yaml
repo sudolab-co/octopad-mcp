@@ -1,0 +1,15 @@
+interface:
+  display_name: "Octoplan for Codex"
+  short_description: "Confirm, plan, and supervise governed delivery"
+  default_prompt: "Use $octoplan to confirm my Brief, review the Plan, and supervise authorized Delivery."
+
+policy:
+  allow_implicit_invocation: true
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "octopad"
+      description: "Read and update Octopad work streams, tasks, decisions, and plans"
+      transport: "streamable_http"
+      url: "https://mcp.octopad.app/mcp"

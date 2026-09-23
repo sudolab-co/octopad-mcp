@@ -5,34 +5,30 @@ This public repository contains direct MCP setup guides and optional skill distr
 ## Choose the scope
 
 - **Connection docs:** `README.md`, `INSTALL.md` and `docs/clients/`.
-- **Shared Octoplan source:** `skills/octoplan/`; edit the protocol and both runtime profiles here, then copy them into the packages.
-- **Claude Octoplan packaging:** `.claude-plugin/` and `plugins/octoplan-claude/`.
-- **Codex Octoplan packaging:** `.agents/` and `plugins/octoplan-codex/`.
-- **Product documentation for Claude Code:** `.claude-plugin/` and `plugins/manage-product-documentation-claude/`.
-- **Product documentation for Codex:** `.agents/` and `plugins/manage-product-documentation-codex/`.
+- **Shared Octoplan source:** `skills/octoplan/`; edit the protocol and both runtime profiles here, then copy them into both bundles.
+- **Shared satellite source:** `config/shared-skills/`; the nine skills both bundles carry.
+- **Claude Octopad bundle:** `.claude-plugin/` and `plugins/octopad-claude/`.
+- **Codex Octopad bundle:** `.agents/` and `plugins/octopad-codex/`.
 - **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
-The two Octoplan plugins distribute one shared contract to two runtimes, as do the two product-documentation plugins. Do not change several unrelated contracts unless the pull request clearly covers them.
+The two Octopad bundles distribute one shared contract to two runtimes. Do not change several unrelated contracts unless the pull request clearly covers them.
 
 ## Distribution names
 
-A distribution's folder name, its plugin `name`, and its release tag prefix are the same string. A plugin may aggregate related skills: `octopad` is the Codex-first bundle, with nine satellite skills and one technical bootstrap. The plugin identity does not rename its skills. A skill that ships to more than one AI runtime carries that runtime in the name; a skill that ships to one runtime does not. Release titles read `<Display Name> <version>`, nothing else.
+A distribution's folder name and its release tag prefix are the same string. Its plugin `name` is that string without a runtime suffix: a distribution shipped to more than one AI runtime carries the runtime in its folder and tag (`octopad-claude`), and one shipped to a single runtime does not. A plugin may bundle related skills without renaming them: `octopad` is the bundle, with nine satellite skills, Octoplan and one technical bootstrap per runtime. Release titles read `<Display Name> <version>`, nothing else.
 
 | Folder | Plugin name | Tag prefix | Release title |
 |---|---|---|---|
-| `plugins/octopad/` | `octopad` | `octopad-v` | `Octopad X.Y.Z` |
-| `plugins/octoplan-claude/` | `octoplan-claude` | `octoplan-claude-v` | `Octoplan for Claude Code X.Y.Z` |
-| `plugins/octoplan-codex/` | `octoplan-codex` | `octoplan-codex-v` | `Octoplan for Codex X.Y.Z` |
-| `plugins/manage-product-documentation-claude/` | `manage-product-documentation` | `manage-product-documentation-claude-v` | `Manage Product Documentation X.Y.Z (Claude Code)` |
-| `plugins/manage-product-documentation-codex/` | `manage-product-documentation` | `manage-product-documentation-codex-v` | `Manage Product Documentation X.Y.Z (Codex)` |
+| `plugins/octopad-claude/` | `octopad` | `octopad-claude-v` | `Octopad X.Y.Z (Claude Code)` |
+| `plugins/octopad-codex/` | `octopad` | `octopad-codex-v` | `Octopad X.Y.Z (Codex)` |
 | `plugins/meeting-to-octopad/` | `meeting-to-octopad` | `meeting-to-octopad-v` | `Meeting to Octopad X.Y.Z` |
 
-The product-documentation plugin name carries no runtime suffix because each marketplace manifest already selects one runtime and the two entries never appear in the same list. Its folder and tag still carry the suffix, because both live in one repository where the names must not collide. `scripts/validate-repository.sh` enforces the folder-to-plugin-name half of this rule; tags and release titles are the publisher's to get right.
+The bundle's plugin name carries no runtime suffix because each marketplace manifest already selects one runtime and the two entries never appear in the same list. Its folder and tag still carry the suffix, because both live in one repository where the names must not collide. `scripts/validate-repository.sh` enforces the folder-to-plugin-name half of this rule; tags and release titles are the publisher's to get right.
 
 ## Skill contract changes ship with a version bump
 
-For Octoplan, the canonical source and both generated copies move together; both native manifests carry the canonical version. Three release surfaces move together. The paired product-documentation distributions follow the synchronized rule below. Change a required surface without the others and the repo lies about itself:
+For Octoplan, the canonical source and both generated copies move together; its version lives in its skill `Version:` line, and a change also bumps both bundles as the Octopad section below explains. Three release surfaces move together. Change a required surface without the others and the repo lies about itself:
 
 1. **That distribution's skill `Version:` line**, at the top of its `SKILL.md`.
 2. **That distribution's plugin `version`**, in `plugins/<plugin>/.claude-plugin/plugin.json` for Claude or `plugins/<plugin>/.codex-plugin/plugin.json` for Codex. Same number.
@@ -40,7 +36,7 @@ For Octoplan, the canonical source and both generated copies move together; both
 
 An identity migration that changes no skill behavior keeps the existing skill versions. Document it in the connection guides. Do not invent a skill release.
 
-Repository maintainers publish tags and releases after review, using the prefixes in the table above. Tags published before a distribution's version reset keep their original prefix and number: they are the record of what those release pages already serve, and renaming them would break the link between a release and what it shipped. Retired prefixes, kept for history only: `octoplan-vX.Y.Z` and `octoplan-autopilot-vX.Y.Z`.
+Repository maintainers publish tags and releases after review, using the prefixes in the table above. Tags published before a distribution's version reset keep their original prefix and number: they are the record of what those release pages already serve, and renaming them would break the link between a release and what it shipped. Retired prefixes, kept for history only: `octoplan-vX.Y.Z`, `octoplan-autopilot-vX.Y.Z`, `octoplan-claude-vX.Y.Z`, `octoplan-codex-vX.Y.Z`, `manage-product-documentation-claude-vX.Y.Z`, `manage-product-documentation-codex-vX.Y.Z` and `octopad-vX.Y.Z`.
 
 ## Which number moves
 
@@ -50,9 +46,9 @@ Octoplan uses **P.I.F**:
 - **I — environment capability:** a change confined to one runtime's capability advances I and resets F.
 - **F — local fix:** a correction or clarification with no behavior change.
 
-Octoplan has one canonical source version, so both generated skills and native manifests carry the same number even for an environment-only change. State which runtime behavior changed in each release entry. The level test is the changed contract or capability, never line count. Check the final diff again after review.
+Octoplan has one canonical source version, so both generated skills carry the same number even for an environment-only change. State which runtime behavior changed in each release entry. The level test is the changed contract or capability, never line count. Check the final diff again after review.
 
-Other skills retain their existing version rules: MAJOR breaks saved state, MINOR adds compatible behavior, and PATCH clarifies or fixes without a behavior change. The paired product-documentation distributions still move together as described below.
+Other skills retain their existing version rules: MAJOR breaks saved state, MINOR adds compatible behavior, and PATCH clarifies or fixes without a behavior change.
 
 Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract, so the numbers mean the same thing on both sides. Changelog entries from before that reset keep their original numbers under each distribution's pre-reset heading.
 
@@ -66,17 +62,15 @@ Run `python3 scripts/sync-octoplan.py` after a source edit. It copies the canoni
 
 Run `python3 scripts/sync-octoplan.py --check` for read-only parity, local-link and public-hygiene checks, then `sh scripts/validate-repository.sh` for metadata, versions, other plugins and packaging mutation tests. Commit the canonical source and generated copies together. These checks prove package structure and parity; behavioral guarantees still need a fresh review of the actual shared protocol and each affected runtime profile.
 
-Native plugin names, marketplaces and installation commands stay separate. The packages contain both profiles so they install offline without a second source checkout; loading the wrong host profile remains forbidden.
+Octoplan ships inside each runtime's Octopad bundle. Both copies contain both runtime profiles so they install offline without a second source checkout; loading the wrong host profile remains forbidden.
 
-The two `manage-product-documentation` distributions have one synchronized release version and one shared AI-neutral contract. Their skill `Version:` lines, both plugin manifest versions, `SKILL.md`, `documentation-model.md`, `artifact-shapes.md`, and `lifecycle-playbooks.md` must move together and remain byte-identical where shared. Any behavior or runtime-packaging change bumps the synchronized version in both distributions and creates one shared changelog entry. Publish the Claude and Codex tags with that same version.
+## Octopad bundle source and version
 
-## Octopad aggregate source and version
+Author the nine satellites in `config/shared-skills/`. This is their common, runtime-neutral source for both bundles; `plugins/octopad-claude/skills/` and `plugins/octopad-codex/skills/` contain generated copies, the generated Octoplan copy and each runtime's native `octopad-session` bootstrap. Do not edit generated copies. The two bootstraps are authored by hand and may differ only where the runtime differs.
 
-Author the nine satellites in `config/shared-skills/`. This is their common, runtime-neutral source for the aggregate; `plugins/octopad/skills/` contains generated copies plus the native `octopad-session` bootstrap. Do not edit generated copies. Existing standalone product-documentation 1.4.0 packages remain a separate compatibility line; neither they nor Octoplan are regenerated by this workflow. A future Claude aggregate must reuse this canon and supply its own reviewed native bootstrap.
+Run `python3 scripts/sync-octoplan.py` and `python3 scripts/sync-octopad.py`, then `python3 scripts/sync-octopad.py --check`. The provenance manifest pins the qualified sources and the packaged files. An intentional source change requires a reviewed provenance update, an impact assessment and an appropriate skill version bump; never update a hash just to make a failing check pass. Preserve the qualification hashes as historical evidence.
 
-Run `python3 scripts/sync-octopad.py`, then `python3 scripts/sync-octopad.py --check`. The provenance manifest pins the qualified sources and the packaged files. An intentional source change requires a reviewed provenance update, an impact assessment and an appropriate skill version bump; never update a hash just to make a failing check pass. Preserve the qualification hashes as historical evidence.
-
-The aggregate has its own P.I.F version: shared integration-contract changes bump P; compatible Codex packaging capability changes bump I; corrections without behavior change bump F. The initial version is 1.0.0. Keep the plugin manifest, bootstrap Version, provenance plugin_version and changelog synchronized. Satellite versions identify their own contracts, not the aggregate. The first assembly preserves candidate versions; Notepad's terminology correction advances its patch, and the previously unversioned planning skill receives its first declared version without a behavior change. Candidate labels do not assert installation or release.
+The bundle has its own P.I.F version, the same on both runtimes: shared integration-contract changes, including which skills it carries, bump P; one runtime's packaging capability bumps I; corrections without behavior change bump F. A new satellite or Octoplan release changes what the bundle ships, so it bumps the bundle too. Keep both plugin manifests, both bootstrap Version lines, provenance plugin_version and the `## octopad` changelog section synchronized. Satellite versions identify their own contracts, not the bundle. The first assembly preserves candidate versions; Notepad's terminology correction advances its patch, and the previously unversioned planning skill receives its first declared version without a behavior change. Candidate labels do not assert installation or release.
 
 The server owns the kernel. This repository records only its qualification fingerprint and integration contract. The kernel text stays in Octopad, outside this public repository; no server code is changed. See [the integration and transition guide](docs/octopad/README.md). Local packaging checks do not establish installation, early skill loading, authentication or server activation.
 

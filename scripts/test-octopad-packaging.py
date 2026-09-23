@@ -17,10 +17,12 @@ class PackageTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='octopad-package-test-')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        for relative in ('plugins/octopad', 'config/shared-skills', 'docs/octopad', '.agents/plugins'):
+        for relative in ('plugins/octopad-codex', 'plugins/octopad-claude', 'skills/octoplan', 'config/shared-skills',
+                         'docs/octopad', '.agents/plugins', '.claude-plugin'):
             shutil.copytree(sync.ROOT / relative, self.root / relative)
         shutil.copyfile(sync.ROOT / 'CHANGELOG.md', self.root / 'CHANGELOG.md')
-        self.package = self.root / 'plugins/octopad'
+        self.package = self.root / 'plugins/octopad-codex'
+        self.claude = self.root / 'plugins/octopad-claude'
 
     def test_current_package_and_repeat_copy(self):
         sync.synchronize(self.root, check=True)
@@ -85,9 +87,55 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'one Octopad marketplace'):
             sync.synchronize(self.root, check=True)
 
+    def test_claude_wrong_endpoint(self):
+        path = self.claude / '.mcp.json'
+        path.write_text(path.read_text().replace('mcp.octopad.app', 'mcp-staging.octopad.app'))
+        with self.assertRaisesRegex(ValueError, 'claude connector drift'):
+            sync.synchronize(self.root, check=True)
+
+    def test_claude_version_drift(self):
+        path = self.claude / '.claude-plugin/plugin.json'
+        data = json.loads(path.read_text())
+        data['version'] = '0.0.0'
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError, 'claude plugin identity/version drift'):
+            sync.synchronize(self.root, check=True)
+
+    def test_missing_octoplan_is_drift(self):
+        (self.claude / 'skills/octoplan/references/planning.md').unlink()
+        with self.assertRaisesRegex(ValueError, 'claude distribution drift'):
+            sync.synchronize(self.root, check=True)
+
+    def test_bootstrap_must_route_to_octoplan(self):
+        path = self.claude / 'skills/octopad-session/SKILL.md'
+        path.write_text(path.read_text().replace('](../octoplan/SKILL.md)', ']'))
+        with self.assertRaisesRegex(ValueError, 'claude bootstrap routing drift'):
+            sync.synchronize(self.root, check=True)
+
+    def test_bootstraps_cannot_diverge(self):
+        path = self.claude / 'skills/octopad-session/SKILL.md'
+        path.write_text(path.read_text().replace('Load only the satellite', 'Load every satellite'))
+        with self.assertRaisesRegex(ValueError, 'bootstraps diverge'):
+            sync.synchronize(self.root, check=True)
+
+    def test_manifest_hooks_rejected(self):
+        path = self.claude / '.claude-plugin/plugin.json'
+        data = json.loads(path.read_text())
+        data['hooks'] = {'SessionStart': [{'hooks': [{'type': 'command', 'command': 'true'}]}]}
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError, 'unexpected keys'):
+            sync.synchronize(self.root, check=True)
+
+    def test_new_octoplan_needs_bundle_release_note(self):
+        for path in [self.root / 'skills/octoplan/SKILL.md', *(self.root / 'plugins').glob('octopad-*/skills/octoplan/SKILL.md')]:
+            path.write_text(path.read_text().replace('Version: 4.0.1', 'Version: 9.9.9', 1))
+        with self.assertRaisesRegex(ValueError, 'must name the shipped Octoplan 9.9.9'):
+            sync.synchronize(self.root, check=True)
+
     def test_bootstrap_link_cannot_escape(self):
-        path = self.package / 'skills/octopad-session/SKILL.md'
-        path.write_text(path.read_text() + '\n[escape](../../../../CHANGELOG.md)\n')
+        for package in (self.package, self.claude):
+            path = package / 'skills/octopad-session/SKILL.md'
+            path.write_text(path.read_text() + '\n[escape](../../../../CHANGELOG.md)\n')
         with self.assertRaisesRegex(ValueError, 'escaping local link'):
             sync.synchronize(self.root, check=True)
 

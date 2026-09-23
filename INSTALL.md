@@ -31,9 +31,9 @@ If the client cannot add a remote Streamable HTTP MCP server with OAuth, explain
 
 For regular ChatGPT conversations, install the official Octopad app. This is the supported customer-facing ChatGPT plugin. Open the current [ChatGPT directory](https://chatgpt.com/plugins) and search for `Octopad`. That route is separate from the direct MCP setup in this file.
 
-## Octopad bundle for Codex
+## Octopad bundle
 
-If the user explicitly requests the unified `octopad` plugin, follow its [installation and rollback guide](docs/octopad/README.md). It includes an MCP connection, so do not also create the direct connection above. Inventory existing connections and same-named skills before selecting one route. The bundle's kernel integration must be verified separately from its local package structure.
+If the user explicitly asks for the `octopad` plugin, install it from **Octopad bundle** under Optional skills below. It includes an MCP connection, so do not also create the direct connection above. Before installing, list the Octopad connections and same-named skills already present, and keep one active Octopad connection per client. The [integration and rollback guide](docs/octopad/README.md) covers coexistence in detail.
 
 ## Optional skills
 
@@ -51,15 +51,15 @@ Do not claim this is done until the user confirms the setting. To refresh once, 
 
 **Codex.** There is no automatic update. Refresh with `codex plugin marketplace upgrade octopad-mcp`, which refreshes the marketplace and reinstalls its configured plugins. Start a new task afterwards. Tell the user this is manual rather than implying it is automatic.
 
-### Manage product documentation
+### Octopad bundle
 
-This skill helps an AI assistant organize and maintain product documentation in Octopad during normal product work. It can activate while the assistant is running, but it is not a background service.
+The `octopad` plugin installs the hosted Octopad connection, nine skills, Octoplan and a technical entry skill. Octoplan plans a work stream into ordered tasks, shows the plan with every protected effect named, and supervises delivery only after the user's explicit go.
 
 Claude Code:
 
 ```text
 /plugin marketplace add sudolab-co/octopad-mcp
-/plugin install manage-product-documentation@octopad-mcp
+/plugin install octopad@octopad-mcp
 /reload-plugins
 ```
 
@@ -67,24 +67,14 @@ Codex:
 
 ```bash
 codex plugin marketplace add sudolab-co/octopad-mcp --ref main
-codex plugin add manage-product-documentation@octopad-mcp
+codex plugin add octopad@octopad-mcp
 ```
 
-Then follow **Keep skills up to date** above.
+If the `octopad-mcp` marketplace was added earlier, refresh it first so it lists the bundle: `/plugin marketplace update octopad-mcp` in Claude Code, `codex plugin marketplace upgrade octopad-mcp` in Codex.
 
-### Octoplan for Claude Code
+Sign in through the client's own authorization window when it asks. Then start a new conversation or task. In Codex, start with `$octopad-session`. Then follow **Keep skills up to date** above.
 
-Octoplan plans a work stream into detailed, ordered, self-contained tasks, shows the finished plan with every protected effect named in plain words, asks one delivery-mode question, and supervises the delivery of that plan once the user gives an explicit go. It never delivers without that go.
-
-```text
-/plugin marketplace add sudolab-co/octopad-mcp
-/plugin install octoplan-claude@octopad-mcp
-/reload-plugins
-```
-
-Then follow **Keep skills up to date** above.
-
-Codex has its own Octoplan distribution. Do not install the Claude one in Codex or the reverse.
+If Octopad was already connected by hand, such as with `claude mcp add` or `codex mcp add`, or through a Claude connector, two Octopad connections are now active. Ask the user which one to keep, and remove or disable the other only with their agreement.
 
 ### Meeting to Octopad for Claude Code
 
@@ -98,51 +88,29 @@ This skill turns a meeting transcript into Octopad changes: it extracts decision
 
 Then follow **Keep skills up to date** above.
 
-### Octoplan for Codex
+### Move from the retired plugins
 
-```bash
-codex plugin marketplace add sudolab-co/octopad-mcp --ref main
-codex plugin add octoplan-codex@octopad-mcp
-```
+`octoplan-claude`, `octoplan-codex` and `manage-product-documentation` are retired. The `octopad` bundle carries the same skills, so keeping an old plugin beside it would load the same skill twice. Remove each one that is installed, then install the bundle.
 
-Then follow **Keep skills up to date** above.
-
-### Migrate an existing Octoplan install
-
-Octoplan for Claude Code now ships as one distribution, `octoplan-claude`, at version `1.1.0`. Two earlier Claude identities are retired: the planning-only skill that carried the `octoplan-claude` name, and the experimental `octoplan-autopilot`. Remove whichever is installed before adding the current one.
-
-Claude Code, from `octoplan-autopilot`:
+Claude Code:
 
 ```text
-/plugin uninstall octoplan-autopilot@octopad-mcp
-/plugin install octoplan-claude@octopad-mcp
+/plugin marketplace update octopad-mcp
+/plugin uninstall octoplan-claude@octopad-mcp
+/plugin uninstall manage-product-documentation@octopad-mcp
+/plugin install octopad@octopad-mcp
 /reload-plugins
 ```
 
-Claude Code, from the retired `octopad-skills` marketplace:
-
-```text
-/plugin uninstall octoplan@octopad-skills
-/plugin marketplace remove octopad-skills
-/plugin marketplace add sudolab-co/octopad-mcp
-/plugin install octoplan-claude@octopad-mcp
-/reload-plugins
-```
-
-Codex, from the retired `octopad-skills` marketplace:
-
-```bash
-codex plugin remove octoplan-codex@octopad-skills
-codex plugin marketplace remove octopad-skills
-codex plugin marketplace add sudolab-co/octopad-mcp --ref main
-codex plugin add octoplan-codex@octopad-mcp
-```
-
-Codex Octoplan also restarted its version numbering at `1.0.0`. A Codex install still holding an `18.x` version may not offer `1.0.0` as an upgrade. When `codex plugin marketplace upgrade octopad-mcp` leaves the old version in place, remove and re-add the plugin:
+Codex:
 
 ```bash
 codex plugin remove octoplan-codex@octopad-mcp
-codex plugin add octoplan-codex@octopad-mcp
+codex plugin remove manage-product-documentation@octopad-mcp
+codex plugin marketplace upgrade octopad-mcp
+codex plugin add octopad@octopad-mcp
 ```
+
+Older identities follow the same path. From `octoplan-autopilot@octopad-mcp`, or from the retired `octopad-skills` marketplace, uninstall that plugin, remove the `octopad-skills` marketplace if it is present, then install the bundle as above.
 
 Start a new conversation or task after any migration.
