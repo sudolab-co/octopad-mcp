@@ -10,6 +10,10 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## octopad
 
+### 1.1.0 — 2026-09-23
+
+Add a tenth satellite, `octopad-crm` 1.0.0. It tells the AI how to work in a workspace where the CRM is on: find customer records through the CRM tools, read the card before the rest, pick the right place for each fact (signal, entry, brief or field), never overwrite a value a person set, act for the member on outreach drafts and background agent runs with the same care a person would, link a customer issue to a task, and bring records in from another system with a dry run first. It names a fallback for each tool that an organization may not have. The bootstrap routes CRM requests to it. The kernel's own routing line for this skill is maintained with the kernel, outside this repository; until the server serves that line, the skill loads from its description alone. This skill is not part of the R2 qualification and has no behavioral trial yet.
+
 ### 1.0.0 — 2026-09-23
 
 Add the first Codex Octopad aggregate in the existing repository marketplace: hosted MCP connection, nine qualified satellite skills and a technical `octopad-session` bootstrap. The server remains the sole kernel provider; Octoplan and existing Claude and Codex standalone plugins remain separate.

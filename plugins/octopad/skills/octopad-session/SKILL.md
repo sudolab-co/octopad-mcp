@@ -2,7 +2,7 @@
 name: octopad-session
 description: Initialize the Octopad plugin before the first Octopad tool call in a new conversation. Use when the user asks to use or connect Octopad, start onboarding, or begin work with this plugin. Respects the served methodology and routes to the bundled skills; it is not an additional business skill.
 ---
-Version: 1.0.0
+Version: 1.1.0
 
 # Start an Octopad plugin session
 
@@ -17,7 +17,7 @@ Read this bootstrap before any Octopad tool call. Installing the plugin does not
 
 ## Bundled satellite routes
 
-These are nine business skills. This bootstrap is technical; Octoplan is separate.
+These are ten business skills. This bootstrap is technical; Octoplan is separate.
 
 | Request | Skill file |
 |---|---|
@@ -30,5 +30,6 @@ These are nine business skills. This bootstrap is technical; Octoplan is separat
 | Maintain marketing choices and their records | [manage-product-marketing](../manage-product-marketing/SKILL.md) |
 | Diagnose or review marketing when useful | [pmm-check](../pmm-check/SKILL.md) |
 | Improve technical and user writing without changing its facts | [technical-writing](../technical-writing/SKILL.md) |
+| Read, write or sync customer records in a workspace where the CRM is on | [octopad-crm](../octopad-crm/SKILL.md) |
 
 Follow each loaded skill's references and the methodology's routing limits. Invoke Octoplan only under its own trigger and authorization, from its separate installed plugin. Do not install it as a side effect.

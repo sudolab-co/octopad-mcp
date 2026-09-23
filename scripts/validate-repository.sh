@@ -210,8 +210,8 @@ function check(entryName, folder, manifestRelative) {
   if (manifest.name !== entryName) throw new Error(`${folder} manifest name ${manifest.name} is not ${entryName}`);
   const skills = fs.readdirSync(path.join(root, folder, 'skills'));
   if (entryName === 'octopad') {
-    const expected = ['octopad-session', 'octopad-knowledge-evidence', 'octopad-planning-and-work-design', 'octopad-notepad', 'manage-activity-context', 'manage-market-intelligence', 'manage-product-documentation', 'manage-product-marketing', 'pmm-check', 'technical-writing'];
-    if (JSON.stringify(skills.sort()) !== JSON.stringify(expected.sort())) throw new Error('Octopad must ship nine satellites and one bootstrap');
+    const expected = ['octopad-session', 'octopad-knowledge-evidence', 'octopad-planning-and-work-design', 'octopad-notepad', 'manage-activity-context', 'manage-market-intelligence', 'manage-product-documentation', 'manage-product-marketing', 'pmm-check', 'technical-writing', 'octopad-crm'];
+    if (JSON.stringify(skills.sort()) !== JSON.stringify(expected.sort())) throw new Error('Octopad must ship ten satellites and one bootstrap');
     for (const skill of skills) {
       const name = fs.readFileSync(path.join(root, folder, 'skills', skill, 'SKILL.md'), 'utf8').match(/^name: (.+)$/m)?.[1];
       if (name !== skill) throw new Error(`Octopad skill name mismatch: ${skill}`);

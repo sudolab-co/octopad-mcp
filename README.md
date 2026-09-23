@@ -6,7 +6,7 @@ This public repository contains:
 
 - setup guides for Octopad's hosted MCP connection
 - optional skills for product documentation and planning
-- a Codex-first Octopad bundle with its MCP connection and nine satellite skills
+- a Codex-first Octopad bundle with its MCP connection and ten satellite skills
 
 It does not contain the Octopad service source code. MCP is the open standard that lets an AI client use tools from another service.
 
@@ -58,9 +58,9 @@ Both routes connect to Octopad. The marketplaces in this repository distribute o
 
 ## Octopad bundle for Codex
 
-The `octopad` package, version **1.0.0**, combines the hosted MCP connector, nine satellite skills and a technical session bootstrap. The kernel comes from the server; Octoplan remains separate. This is a repository marketplace package, not a submission to the public OpenAI directory.
+The `octopad` package, version **1.1.0**, combines the hosted MCP connector, ten satellite skills and a technical session bootstrap. The kernel comes from the server; Octoplan remains separate. This is a repository marketplace package, not a submission to the public OpenAI directory.
 
-**Version 1.0.0:** the bundle leaves session methodology selection unchanged. Client-aware kernel routing is separate server work. Real installation and kernel activation require their own verification. Start with the [integration, compatibility and reversible installation guide](docs/octopad/README.md) before enabling it alongside existing connections or skills.
+**Version 1.1.0:** the bundle leaves session methodology selection unchanged. Client-aware kernel routing is separate server work. Real installation and kernel activation require their own verification. Start with the [integration, compatibility and reversible installation guide](docs/octopad/README.md) before enabling it alongside existing connections or skills.
 
 ## Optional skills
 

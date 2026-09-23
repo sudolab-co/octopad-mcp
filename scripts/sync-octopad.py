@@ -16,7 +16,7 @@ SPEC.loader.exec_module(shared)
 SATELLITES = {
     'octopad-knowledge-evidence', 'octopad-planning-and-work-design', 'octopad-notepad',
     'manage-activity-context', 'manage-market-intelligence', 'manage-product-documentation',
-    'manage-product-marketing', 'pmm-check', 'technical-writing',
+    'manage-product-marketing', 'pmm-check', 'technical-writing', 'octopad-crm',
 }
 
 
@@ -69,7 +69,7 @@ def synchronize(root=ROOT, check=False):
         require(hashlib.sha256(content).hexdigest() == entry['sha256'], f'qualified source drift: {source_relative}')
         canonical_paths.add(source_relative)
         files[relative.as_posix()] = content
-    require(len(files) == 17, 'expected 17 qualified satellite files')
+    require(len(files) == 18, 'expected 18 satellite files')
     require({p.relative_to(root) for p in canon.rglob('*') if p.is_file()} == canonical_paths,
             'unexpected or missing canonical file')
     for name in SATELLITES:
@@ -109,4 +109,4 @@ if __name__ == '__main__':
         synchronize(check=args.check)
     except (ValueError, OSError, KeyError, IndexError) as error:
         parser.exit(1, f'FAIL: {error}\n')
-    print('PASS: Octopad source pins, nine satellites, bootstrap, connector, marketplace and package parity')
+    print('PASS: Octopad source pins, ten satellites, bootstrap, connector, marketplace and package parity')

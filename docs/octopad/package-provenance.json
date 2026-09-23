@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "plugin_version": "1.0.0",
+  "plugin_version": "1.1.0",
   "qualification": {
     "package-pins.json": "bc5b36d9aa15ecb5ffa1e061ad54d3a601c0ad50d64a11f6a26784e8c74bf4b9",
     "REVIEW-FREEZE.json": "4a171bf5e766736077c9dbf7c554733bcdd0582ab17ce5de1a7391b8899c2a80",
@@ -152,6 +152,16 @@
       "packaged": "skills/technical-writing/SKILL.md",
       "sha256": "fc363b7901af57a8c7a338d4cf89413b182e2e3e635cb40a010287cab9a008af",
       "changes": []
+    },
+    {
+      "source": "authored in this repository for Octopad 1.1.0",
+      "source_sha256": "536d9f97be6cb9cb1263a7fcb0e280b88a5c21aa5840fcae36a770ca82765862",
+      "canonical": "config/shared-skills/octopad-crm/SKILL.md",
+      "packaged": "skills/octopad-crm/SKILL.md",
+      "sha256": "536d9f97be6cb9cb1263a7fcb0e280b88a5c21aa5840fcae36a770ca82765862",
+      "changes": [
+        "new satellite, not part of the R2 qualification"
+      ]
     }
   ]
 }
