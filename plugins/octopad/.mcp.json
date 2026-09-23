@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "octopad": {
+      "type": "http",
+      "url": "https://mcp.octopad.app/mcp"
+    }
+  }
+}
