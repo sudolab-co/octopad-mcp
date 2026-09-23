@@ -51,7 +51,7 @@ On the inspected production connection, the exposed `start_session` schema lacke
 | Codex CLI and desktop | Package prepared; real install, catalogue resolution and early bootstrap loading still require separate witnesses in each host. |
 | Claude Code | Package prepared and accepted by `claude plugin validate`. The bootstrap loads when a request matches its description; no SessionStart hook forces early loading, which PR #979 requests for this host. Real install, OAuth and loading still require a witness. |
 | Claude web, Desktop, Cowork | No skill-installation or early-loading claim from this package. |
-| Retired standalone plugins | `octoplan-claude`, `octoplan-codex` and both `manage-product-documentation` 1.4.0 distributions left the marketplaces with this release. Installed copies keep working until removed, and would duplicate the bundle's skills: remove them before or when installing the bundle. |
+| Retired standalone plugins | `octoplan-claude`, `octoplan-codex` and both `manage-product-documentation` 1.4.0 distributions are retired with this release. They stay listed, frozen and marked as replaced, for a short transition. Installed copies keep working until removed, and would duplicate the bundle's skills: remove them before or when installing the bundle. |
 | Octoplan | Ships in the bundle at 4.0.1. Its planning and supervision authority is unchanged: it still acts only under its own trigger and the user's explicit go. |
 | Personal/shared skills | Inventory same-named Notepad, product-documentation, PMM and technical-writing variants, plus old activity-context and MI routes. Do not silently shadow, rename, delete or alias them. |
 

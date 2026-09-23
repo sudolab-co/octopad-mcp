@@ -78,7 +78,7 @@ These plugins are optional and separate from a direct MCP connection:
 | [`octopad`](plugins/octopad-codex/skills/octopad-session/SKILL.md) | Codex | 2.0.0 | Connects Octopad and loads its nine skills and Octoplan. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
-The standalone `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` plugins are retired: the bundle carries the same skills. [INSTALL.md](INSTALL.md#move-from-the-retired-plugins) explains how to switch.
+The standalone `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` plugins are retired: the bundle carries the same skills. They stay listed for a short transition, frozen and marked as replaced; do not install them. [INSTALL.md](INSTALL.md#move-from-the-retired-plugins) explains how to switch.
 
 ## Privacy, access and removal
 

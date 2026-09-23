@@ -25,6 +25,26 @@
       "category": "productivity",
       "homepage": "https://octopad.app",
       "source": "./plugins/meeting-to-octopad"
+    },
+    {
+      "name": "octoplan-claude",
+      "description": "Retired: now part of the octopad plugin. Install octopad@octopad-mcp instead, and do not keep both. This entry will be removed.",
+      "author": {
+        "name": "Sudolab"
+      },
+      "category": "productivity",
+      "homepage": "https://octopad.app",
+      "source": "./plugins/octoplan-claude"
+    },
+    {
+      "name": "manage-product-documentation",
+      "description": "Retired: now part of the octopad plugin. Install octopad@octopad-mcp instead, and do not keep both. This entry will be removed.",
+      "author": {
+        "name": "Sudolab"
+      },
+      "category": "productivity",
+      "homepage": "https://octopad.app",
+      "source": "./plugins/manage-product-documentation-claude"
     }
   ]
 }

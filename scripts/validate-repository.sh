@@ -12,8 +12,10 @@ fail() {
 [ -f "$root/.github/workflows/validate.yml" ] || fail 'repository validation workflow is missing'
 [ -d "$root/plugins/octopad-claude" ] || fail 'Claude Octopad bundle is missing'
 [ -d "$root/plugins/octopad-codex" ] || fail 'Codex Octopad bundle is missing'
-for retired in octopad octoplan-claude octoplan-codex manage-product-documentation-claude manage-product-documentation-codex; do
-  [ ! -e "$root/plugins/$retired" ] || fail "retired distribution plugins/$retired remains"
+[ ! -e "$root/plugins/octopad" ] || fail 'the Codex bundle moved to plugins/octopad-codex'
+# Retired standalone plugins stay listed, frozen and marked, only until Octopad's public install pages stop naming them.
+for retired in octoplan-claude octoplan-codex manage-product-documentation-claude manage-product-documentation-codex; do
+  [ ! -e "$root/plugins/$retired" ] || grep -Rq "Retired: now part of the octopad plugin" "$root/.claude-plugin/marketplace.json" || fail "plugins/$retired is listed without its retirement notice"
 done
 [ ! -e "$root/plugins/octoplan" ] || fail 'unsupported Claude distribution path remains'
 [ ! -e "$root/plugins/octoplan-autopilot" ] || fail 'retired octoplan-autopilot distribution remains'
