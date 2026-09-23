@@ -53,7 +53,7 @@ Do not claim this is done until the user confirms the setting. To refresh once, 
 
 ### Octopad bundle
 
-The `octopad` plugin installs the hosted Octopad connection, nine skills, Octoplan and a technical entry skill. Octoplan plans a work stream into ordered tasks, shows the plan with every protected effect named, and supervises delivery only after the user's explicit go.
+The `octopad` plugin installs the hosted Octopad connection, ten skills, Octoplan and a technical entry skill. Octoplan plans a work stream into ordered tasks, shows the plan with every protected effect named, and supervises delivery only after the user's explicit go.
 
 Claude Code:
 

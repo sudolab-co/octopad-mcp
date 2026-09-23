@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "octopad",
-      "description": "Connects Octopad and loads its skills: knowledge and evidence, planning and work design, the Notepad, activity context, market intelligence, product documentation, product marketing, positioning checks, technical writing, and Octoplan. The server supplies the methodology.",
+      "description": "Connects Octopad and loads its skills: knowledge and evidence, planning and work design, the Notepad, activity context, market intelligence, product documentation, product marketing, positioning checks, technical writing, the CRM, and Octoplan. The server supplies the methodology.",
       "author": {
         "name": "Sudolab"
       },

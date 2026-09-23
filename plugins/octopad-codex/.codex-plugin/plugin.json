@@ -1,6 +1,6 @@
 {
   "name": "octopad",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Connect Octopad and load its skills for work, knowledge, documentation and Octoplan, under the methodology served by the server.",
   "author": {
     "name": "Sudolab"
@@ -18,8 +18,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Octopad",
-    "shortDescription": "Octopad connection, nine companion skills and Octoplan.",
-    "longDescription": "Bundles the hosted Octopad MCP connection, nine satellite skills, Octoplan and a technical session bootstrap. The server supplies the kernel methodology.",
+    "shortDescription": "Octopad connection, ten companion skills and Octoplan.",
+    "longDescription": "Bundles the hosted Octopad MCP connection, ten satellite skills, Octoplan and a technical session bootstrap. The server supplies the kernel methodology.",
     "developerName": "Sudolab",
     "category": "Productivity",
     "capabilities": [

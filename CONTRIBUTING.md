@@ -6,7 +6,7 @@ This public repository contains direct MCP setup guides and optional skill distr
 
 - **Connection docs:** `README.md`, `INSTALL.md` and `docs/clients/`.
 - **Shared Octoplan source:** `skills/octoplan/`; edit the protocol and both runtime profiles here, then copy them into both bundles.
-- **Shared satellite source:** `config/shared-skills/`; the nine skills both bundles carry.
+- **Shared satellite source:** `config/shared-skills/`; the ten skills both bundles carry.
 - **Claude Octopad bundle:** `.claude-plugin/` and `plugins/octopad-claude/`.
 - **Codex Octopad bundle:** `.agents/` and `plugins/octopad-codex/`.
 - **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
@@ -16,7 +16,7 @@ The two Octopad bundles distribute one shared contract to two runtimes. Do not c
 
 ## Distribution names
 
-A distribution's folder name and its release tag prefix are the same string. Its plugin `name` is that string without a runtime suffix: a distribution shipped to more than one AI runtime carries the runtime in its folder and tag (`octopad-claude`), and one shipped to a single runtime does not. A plugin may bundle related skills without renaming them: `octopad` is the bundle, with nine satellite skills, Octoplan and one technical bootstrap per runtime. Release titles read `<Display Name> <version>`, nothing else.
+A distribution's folder name and its release tag prefix are the same string. Its plugin `name` is that string without a runtime suffix: a distribution shipped to more than one AI runtime carries the runtime in its folder and tag (`octopad-claude`), and one shipped to a single runtime does not. A plugin may bundle related skills without renaming them: `octopad` is the bundle, with ten satellite skills, Octoplan and one technical bootstrap per runtime. Release titles read `<Display Name> <version>`, nothing else.
 
 | Folder | Plugin name | Tag prefix | Release title |
 |---|---|---|---|
@@ -66,7 +66,7 @@ Octoplan ships inside each runtime's Octopad bundle. Both copies contain both ru
 
 ## Octopad bundle source and version
 
-Author the nine satellites in `config/shared-skills/`. This is their common, runtime-neutral source for both bundles; `plugins/octopad-claude/skills/` and `plugins/octopad-codex/skills/` contain generated copies, the generated Octoplan copy and each runtime's native `octopad-session` bootstrap. Do not edit generated copies. The two bootstraps are authored by hand and may differ only where the runtime differs.
+Author the ten satellites in `config/shared-skills/`. This is their common, runtime-neutral source for both bundles; `plugins/octopad-claude/skills/` and `plugins/octopad-codex/skills/` contain generated copies, the generated Octoplan copy and each runtime's native `octopad-session` bootstrap. Do not edit generated copies. The two bootstraps are authored by hand and may differ only where the runtime differs.
 
 Run `python3 scripts/sync-octoplan.py` and `python3 scripts/sync-octopad.py`, then `python3 scripts/sync-octopad.py --check`. The provenance manifest pins the qualified sources and the packaged files. An intentional source change requires a reviewed provenance update, an impact assessment and an appropriate skill version bump; never update a hash just to make a failing check pass. Preserve the qualification hashes as historical evidence.
 
