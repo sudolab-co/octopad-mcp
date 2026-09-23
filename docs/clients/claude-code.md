@@ -18,7 +18,7 @@ Start a new Claude Code session and send: **"Use Octopad. Start my onboarding."*
 
 The `user` scope makes Octopad available across your projects. Use `local` or `project` scope only when you want a narrower connection.
 
-The optional skills listed in the repository [README](../../README.md#optional-skills) are separate installs. Do not install any of them unless the user asks for it. See [INSTALL.md](../../INSTALL.md#optional-skills).
+The optional skills listed in the repository [README](../../README.md#optional-skills) are separate installs. Do not install any of them unless the user asks for it. The `octopad` plugin bundles this MCP connection with Octopad's skills and Octoplan: do not keep both it and the direct connection above. See [INSTALL.md](../../INSTALL.md#optional-skills).
 
 To revoke or remove the connection, follow [Privacy, access and removal](../../README.md#privacy-access-and-removal).
 

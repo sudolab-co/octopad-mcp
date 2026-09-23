@@ -5,8 +5,8 @@ Connect supported AI clients to [Octopad](https://octopad.app). Octopad is the c
 This public repository contains:
 
 - setup guides for Octopad's hosted MCP connection
-- optional skills for product documentation and planning
-- a Codex-first Octopad bundle with its MCP connection and nine satellite skills
+- the Octopad bundle for Claude Code and Codex: its MCP connection, nine skills and Octoplan
+- an optional meeting-transcript skill for Claude Code
 
 It does not contain the Octopad service source code. MCP is the open standard that lets an AI client use tools from another service.
 
@@ -54,28 +54,31 @@ For regular ChatGPT conversations, install the official Octopad app. This is the
 
 Use the direct MCP guides in this repository for Codex, Claude, Cursor, Gemini CLI and other compatible MCP clients.
 
-Both routes connect to Octopad. The marketplaces in this repository distribute optional skills and the Octopad aggregate. The aggregate includes its MCP connection; standalone skill plugins do not. These packages are not the official Octopad app for ChatGPT.
+Both routes connect to Octopad. The marketplaces in this repository distribute the Octopad bundle, which includes its MCP connection, and an optional skill that does not. These packages are not the official Octopad app for ChatGPT.
 
-## Octopad bundle for Codex
+## Octopad bundle
 
-The `octopad` package, version **1.0.0**, combines the hosted MCP connector, nine satellite skills and a technical session bootstrap. The kernel comes from the server; Octoplan remains separate. This is a repository marketplace package, not a submission to the public OpenAI directory.
+The `octopad` plugin, version **2.0.0**, installs the hosted Octopad connection with its skills in one step. It exists for Claude Code and for Codex, under the same name and version:
 
-**Version 1.0.0:** the bundle leaves session methodology selection unchanged. Client-aware kernel routing is separate server work. Real installation and kernel activation require their own verification. Start with the [integration, compatibility and reversible installation guide](docs/octopad/README.md) before enabling it alongside existing connections or skills.
+- nine skills for knowledge and evidence, planning and work design, the Notepad, activity context, market intelligence, product documentation, product marketing, positioning checks and technical writing
+- Octoplan 4.0.1, which plans a work stream and supervises its delivery once you give an explicit go
+- a technical `octopad-session` entry skill that starts Octopad before the first call
+
+The server supplies the methodology; the bundle contains no methodology text and does not change which one the server sends. See the [integration, compatibility and rollback guide](docs/octopad/README.md) before you enable it beside an existing Octopad connection or older skills. Keep one active Octopad connection per client.
+
+Install it by following [INSTALL.md](INSTALL.md#optional-skills).
 
 ## Optional skills
 
-These plugins are optional and separate from the MCP connection:
+These plugins are optional and separate from a direct MCP connection:
 
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
-| [`manage-product-documentation`](plugins/manage-product-documentation-codex/skills/manage-product-documentation/SKILL.md) | Claude Code and Codex | 1.4.0 shared | Organizes and maintains product documentation as product work evolves. |
-| [`octoplan-claude`](plugins/octoplan-claude/skills/octoplan/SKILL.md) | Claude Code | 4.0.1 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
-| [`octoplan-codex`](plugins/octoplan-codex/skills/octoplan/SKILL.md) | Codex | 4.0.1 | Confirms a Brief, reviews the Plan, then supervises authorized Delivery at the chosen interruption level. |
+| [`octopad`](plugins/octopad-claude/skills/octopad-session/SKILL.md) | Claude Code | 2.0.0 | Connects Octopad and loads its nine skills and Octoplan. |
+| [`octopad`](plugins/octopad-codex/skills/octopad-session/SKILL.md) | Codex | 2.0.0 | Connects Octopad and loads its nine skills and Octoplan. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
-Both Octoplan plugins contain the same shared protocol and both runtime profiles. Octoplan loads only the profile for the current host. Each package is self-contained; install the native plugin for your runtime.
-
-Install only the plugin you want. See [INSTALL.md](INSTALL.md#optional-skills) for commands and migration steps.
+The standalone `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` plugins are retired: the bundle carries the same skills. [INSTALL.md](INSTALL.md#move-from-the-retired-plugins) explains how to switch.
 
 ## Privacy, access and removal
 
@@ -95,23 +98,22 @@ For a sensitive security report, follow [SECURITY.md](SECURITY.md).
 ## Repository layout
 
 ```text
-INSTALL.md                                   AI-readable install guide
-docs/clients/                                Client-specific direct MCP guides
-.claude-plugin/marketplace.json              Claude marketplace manifest
-.agents/plugins/marketplace.json             Codex marketplace manifest
-plugins/manage-product-documentation-claude/ Claude Code product-documentation distribution
-plugins/manage-product-documentation-codex/  Codex product-documentation distribution
-skills/octoplan/                            Canonical Octoplan skill and runtime profiles
-plugins/octoplan-claude/                     Generated Claude Code Octoplan distribution
-plugins/octoplan-codex/                      Generated Codex Octoplan distribution
-scripts/sync-octoplan.py                    Copy or check canonical Octoplan documents
-plugins/meeting-to-octopad/                  Optional Claude meeting-transcript distribution
-scripts/validate-repository.sh               Repository contract validation
+INSTALL.md                         AI-readable install guide
+docs/clients/                      Client-specific direct MCP guides
+docs/octopad/                      Bundle integration, provenance and validation record
+.claude-plugin/marketplace.json    Claude marketplace manifest
+.agents/plugins/marketplace.json   Codex marketplace manifest
+config/shared-skills/              Canonical source of the nine skills
+skills/octoplan/                   Canonical Octoplan skill and runtime profiles
+plugins/octopad-claude/            Generated Claude Code bundle
+plugins/octopad-codex/             Generated Codex bundle
+plugins/meeting-to-octopad/        Optional Claude meeting-transcript distribution
+scripts/                           Copy and validation scripts
 ```
 
 ## Releases
 
-One distribution, one identity. A plugin can bundle related skills without renaming them. A distribution's folder, its plugin name, and its release tag prefix are the same string, and a skill that ships to more than one AI runtime carries that runtime in the name. Release titles read `<Display Name> <version>`.
+One distribution, one identity. A plugin can bundle related skills without renaming them. A distribution's folder and its release tag prefix are the same string; the plugin name drops any runtime suffix, so both `octopad-claude` and `octopad-codex` install as `octopad`. Release titles read `<Display Name> <version>`.
 
 Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract. Releases published before that reset keep their original numbers and tags, because those are what the published release pages record; `CHANGELOG.md` lists them under each distribution's pre-reset heading. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 

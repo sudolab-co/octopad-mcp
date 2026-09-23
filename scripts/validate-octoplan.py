@@ -27,25 +27,23 @@ def validate(root=sync.ROOT):
     assert banners == [f'**Octoplan · Step {n} of 3 — {name}**' for n, name in enumerate(('Brief', 'Plan', 'Delivery'), 1)], 'visible program changed'
     readme = (root / 'README.md').read_text()
     changelog = (root / 'CHANGELOG.md').read_text()
+    assert f'Octoplan {version}' in readme, 'README Octoplan version stale'
     for runtime in sync.RUNTIMES:
+        # Octoplan ships inside each runtime's Octopad bundle; the bundle keeps its own version.
         name = f'octoplan-{runtime}'
-        package = root / 'plugins' / name
+        package = root / 'plugins' / f'octopad-{runtime}'
         manifest = json.loads((package / f'.{runtime}-plugin/plugin.json').read_text())
-        assert manifest['name'] == name and manifest['version'] == version, f'{name} identity/version mismatch'
-        assert manifest['license'] == 'MIT', f'{name} license missing'
-        assert re.search(rf'^\| .*`{name}`.* \| {re.escape(version)} \|', readme, re.M), f'{name} README version stale'
+        assert manifest['name'] == 'octopad' and manifest['license'] == 'MIT', f'{runtime} bundle identity mismatch'
         section = changelog.split(f'## {name}\n', 1)[1].split('\n## ', 1)[0]
         releases = re.findall(r'^### (\d+\.\d+\.\d+) — \d{4}-\d{2}-\d{2}$', section, re.M)
         assert releases[0] == version and releases.count(version) == 1, f'{name} release entry mismatch'
         skill = package / 'skills/octoplan'
         assert set(p.name for p in skill.iterdir()) == ({'SKILL.md', 'references', 'agents'} if runtime == 'codex' else {'SKILL.md', 'references'}), f'{name} unexpected skill payload'
         if runtime == 'codex':
-            assert manifest['skills'] == './skills/', 'Codex skills location mismatch'
-            prompt = manifest['interface']['defaultPrompt']
-            assert len(prompt) == 1 and 0 < len(prompt[0]) <= 128 and '$octoplan' in prompt[0], 'invalid Codex invocation prompt'
             assert {p.name for p in (skill / 'agents').iterdir()} == {'openai.yaml'}, 'unexpected Codex agent payload'
             agent = (skill / 'agents/openai.yaml').read_text()
-            assert f'default_prompt: "{prompt[0]}"' in agent and 'allow_implicit_invocation: true' in agent, 'Codex agent metadata mismatch'
+            prompt = re.search(r'^  default_prompt: "([^"\n]+)"$', agent, re.M)
+            assert prompt and len(prompt.group(1)) <= 128 and '$octoplan' in prompt.group(1) and 'allow_implicit_invocation: true' in agent, 'Codex agent metadata mismatch'
         for path in package.rglob('*'):
             assert not path.is_symlink(), f'package symlink: {path}'
             if path.is_file() and path.suffix in ('.md', '.yaml', '.json'):

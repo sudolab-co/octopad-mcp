@@ -5,34 +5,10 @@
   },
   "plugins": [
     {
-      "name": "octoplan-codex",
-      "source": {
-        "source": "local",
-        "path": "./plugins/octoplan-codex"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
-      "name": "manage-product-documentation",
-      "source": {
-        "source": "local",
-        "path": "./plugins/manage-product-documentation-codex"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Productivity"
-    },
-    {
       "name": "octopad",
       "source": {
         "source": "local",
-        "path": "./plugins/octopad"
+        "path": "./plugins/octopad-codex"
       },
       "policy": {
         "installation": "AVAILABLE",

@@ -10,6 +10,14 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## octopad
 
+### 2.0.0 — 2026-09-23
+
+Octopad becomes one bundle on both runtimes, and it now carries Octoplan. Claude Code gets its first `octopad` plugin: the same hosted MCP connection, the same nine satellite skills, Octoplan and its own `octopad-session` bootstrap. The Codex bundle adds Octoplan and routes to it from its bootstrap. Both bundles carry the same version and follow the same rules: the server still provides the methodology, and the bootstrap still leaves `methodology` unset.
+
+This release retires four standalone plugins, because each would install a skill the bundle already carries: `octoplan-claude`, `octoplan-codex` and both `manage-product-documentation` distributions. The bundle ships Octoplan 4.0.1, unchanged. Product documentation moves from the standalone 1.4.0 line to the bundle's qualified 4.0.0-public-r2 satellite. `meeting-to-octopad` stays a separate Claude plugin. The Codex bundle moves from `plugins/octopad/` to `plugins/octopad-codex/` and keeps the plugin name `octopad`; releases are now tagged `octopad-claude-v` and `octopad-codex-v`, and `octopad-v` is kept for history.
+
+To migrate, remove the retired plugins, then install `octopad@octopad-mcp`, as INSTALL.md explains. Keep one active Octopad connection per client. Local package checks do not prove installation, early skill loading, authentication or kernel activation.
+
 ### 1.0.0 — 2026-09-23
 
 Add the first Codex Octopad aggregate in the existing repository marketplace: hosted MCP connection, nine qualified satellite skills and a technical `octopad-session` bootstrap. The server remains the sole kernel provider; Octoplan and existing Claude and Codex standalone plugins remain separate.
@@ -17,6 +25,8 @@ Add the first Codex Octopad aggregate in the existing repository marketplace: ho
 Move the three former module paths into the skill catalogue, rename Notepad's module terminology and declare the planning skill's previously absent version. Preserve the qualified instructions and references otherwise. Add a shared source, provenance pins, package checks and a reversible coexistence guide. The bootstrap leaves methodology selection unchanged. The kernel reference is maintained in Octopad, outside this public repository. Publishing this package does not activate the kernel or establish successful client installation.
 
 ## manage-product-documentation
+
+Retired as a standalone plugin on 2026-09-23. The skill now ships only inside the `octopad` bundle, as its qualified satellite. The entries below record the standalone 1.x line.
 
 ### 1.4.0 — 2026-08-24
 
@@ -65,6 +75,8 @@ The transcript is treated as untrusted data throughout. Text inside it that addr
 Out of scope in this release: audio, which the user transcribes first; several meetings in one run; goal changes; and writing without the user's go.
 
 ## octoplan-codex
+
+Since 2026-09-23, Octoplan for Codex ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-codex` plugin is retired. Octoplan contract changes keep recording here.
 
 ### 4.0.1 — 2026-09-21
 
@@ -431,6 +443,8 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 - No Kickstart skill or Branch command.
 
 ## octoplan-claude
+
+Since 2026-09-23, Octoplan for Claude Code ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-claude` plugin is retired. Octoplan contract changes keep recording here.
 
 ### 4.0.1 — 2026-09-21
 

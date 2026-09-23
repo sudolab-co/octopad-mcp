@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "plugin_version": "1.0.0",
+  "plugin_version": "2.0.0",
   "qualification": {
     "package-pins.json": "bc5b36d9aa15ecb5ffa1e061ad54d3a601c0ad50d64a11f6a26784e8c74bf4b9",
     "REVIEW-FREEZE.json": "4a171bf5e766736077c9dbf7c554733bcdd0582ab17ce5de1a7391b8899c2a80",

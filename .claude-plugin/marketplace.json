@@ -1,30 +1,20 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "octopad-mcp",
-  "description": "Optional Octopad skills for Claude Code.",
+  "description": "Octopad plugins for Claude Code.",
   "owner": {
     "name": "Sudolab"
   },
   "plugins": [
     {
-      "name": "manage-product-documentation",
-      "description": "Organizes and maintains evidence-based product documentation in Octopad as product work evolves.",
+      "name": "octopad",
+      "description": "Connects Octopad and loads its skills: knowledge and evidence, planning and work design, the Notepad, activity context, market intelligence, product documentation, product marketing, positioning checks, technical writing, and Octoplan. The server supplies the methodology.",
       "author": {
         "name": "Sudolab"
       },
       "category": "productivity",
       "homepage": "https://octopad.app",
-      "source": "./plugins/manage-product-documentation-claude"
-    },
-    {
-      "name": "octoplan-claude",
-      "description": "Confirms a Brief, reviews an Octopad Plan, and supervises authorized Delivery under Full autonomy, Checkpoints, or Step-by-step. Claude Code distribution; requires a connected Octopad MCP server.",
-      "author": {
-        "name": "Sudolab"
-      },
-      "category": "productivity",
-      "homepage": "https://octopad.app",
-      "source": "./plugins/octoplan-claude"
+      "source": "./plugins/octopad-claude"
     },
     {
       "name": "meeting-to-octopad",

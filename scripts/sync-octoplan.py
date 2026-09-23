@@ -48,7 +48,8 @@ def synchronize(root=ROOT, check=False):
         raise ValueError('canonical skills parent must not be a symlink')
     canonical = documents(source)
     validate_documents(source, canonical)
-    destinations = [root / f'plugins/octoplan-{runtime}/skills/octoplan' for runtime in RUNTIMES]
+    # Octoplan ships inside each runtime's Octopad bundle.
+    destinations = [root / f'plugins/octopad-{runtime}/skills/octoplan' for runtime in RUNTIMES]
     # Preflight both targets before writing; never follow a link out of a package.
     for destination in destinations:
         for item in [destination, *destination.parents]:
