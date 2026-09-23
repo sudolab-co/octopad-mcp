@@ -42,7 +42,7 @@ def synchronize(root=ROOT, check=False):
     safe_tree(root, package)
     provenance = json.loads((root / 'docs/octopad/package-provenance.json').read_text())
     kernel = root / 'docs/octopad/kernel-r2.md'
-    require(hashlib.sha256(kernel.read_bytes()).hexdigest() == provenance['kernel']['sha256'], 'frozen kernel handoff drift')
+    require(not kernel.exists(), 'kernel text must not be published in this repository')
     manifest = json.loads((package / '.codex-plugin/plugin.json').read_text())
     version = provenance['plugin_version']
     require(manifest['name'] == 'octopad' and manifest['version'] == version, 'plugin identity/version drift')

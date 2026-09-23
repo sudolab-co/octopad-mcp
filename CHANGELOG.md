@@ -14,7 +14,7 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 Add the first Codex Octopad aggregate in the existing repository marketplace: hosted MCP connection, nine qualified satellite skills and a technical `octopad-session` bootstrap. The server remains the sole kernel provider; Octoplan and existing Claude and Codex standalone plugins remain separate.
 
-Move the three former module paths into the skill catalogue, rename Notepad's module terminology and declare the planning skill's previously absent version. Preserve the qualified instructions and references otherwise. Add a shared source, provenance pins, package checks and a reversible coexistence guide. The bootstrap leaves methodology selection unchanged. A pinned kernel handoff lives outside the installed plugin for the server owner. Publishing this package does not activate the kernel or establish successful client installation.
+Move the three former module paths into the skill catalogue, rename Notepad's module terminology and declare the planning skill's previously absent version. Preserve the qualified instructions and references otherwise. Add a shared source, provenance pins, package checks and a reversible coexistence guide. The bootstrap leaves methodology selection unchanged. The kernel reference is maintained in Octopad, outside this public repository. Publishing this package does not activate the kernel or establish successful client installation.
 
 ## manage-product-documentation
 

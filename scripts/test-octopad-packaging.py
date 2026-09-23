@@ -71,10 +71,10 @@ class PackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'kernel must remain server-owned'):
             sync.synchronize(self.root, check=True)
 
-    def test_frozen_kernel_drift(self):
+    def test_public_kernel_forbidden(self):
         path = self.root / 'docs/octopad/kernel-r2.md'
-        path.write_text(path.read_text() + 'changed')
-        with self.assertRaisesRegex(ValueError, 'kernel handoff drift'):
+        path.write_text('unwanted kernel copy')
+        with self.assertRaisesRegex(ValueError, 'kernel text must not be published'):
             sync.synchronize(self.root, check=True)
 
     def test_duplicate_marketplace_entry(self):
