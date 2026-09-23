@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "plugin_version": "1.0.0",
+  "qualification": {
+    "package-pins.json": "bc5b36d9aa15ecb5ffa1e061ad54d3a601c0ad50d64a11f6a26784e8c74bf4b9",
+    "REVIEW-FREEZE.json": "4a171bf5e766736077c9dbf7c554733bcdd0582ab17ce5de1a7391b8899c2a80",
+    "RESULT-REVIEW.md": "963b5a5706edaabdd2a48d4921487a66a121507568ba033475e794239b4cbc4f"
+  },
+  "kernel": {
+    "path": "kernel/kernel.md",
+    "sha256": "76bd4a21d046de7878cd21872ad3854ca2782b5d4a9859217567da666e51d98c",
+    "bytes": 18041
+  },
+  "entries": [
+    {
+      "source": "modules/octopad-knowledge-evidence/SKILL.md",
+      "source_sha256": "8140b72d6db12f889277dc36f28a329387a80053e8ac43541ddd759248b89315",
+      "canonical": "config/shared-skills/octopad-knowledge-evidence/SKILL.md",
+      "packaged": "skills/octopad-knowledge-evidence/SKILL.md",
+      "sha256": "8140b72d6db12f889277dc36f28a329387a80053e8ac43541ddd759248b89315",
+      "changes": []
+    },
+    {
+      "source": "modules/octopad-notepad/SKILL.md",
+      "source_sha256": "5c271e1d900256913ad809c50de3256d98a8f1e197bbcfd0de6a79926b36e43a",
+      "canonical": "config/shared-skills/octopad-notepad/SKILL.md",
+      "packaged": "skills/octopad-notepad/SKILL.md",
+      "sha256": "df5d72d56e617832a45431ebb93e7f4e8222f7b855c25580c76e76cf89d07143",
+      "changes": [
+        "module terminology to skill",
+        "patch version 1.0.1-public-r2"
+      ]
+    },
+    {
+      "source": "modules/octopad-planning-and-work-design/SKILL.md",
+      "source_sha256": "f1a151f599c6f4911541875f274ee9e75f3e559081752727b1da2fcb59816c1a",
+      "canonical": "config/shared-skills/octopad-planning-and-work-design/SKILL.md",
+      "packaged": "skills/octopad-planning-and-work-design/SKILL.md",
+      "sha256": "9ca9d180c09501e1b6bbb335e80be1c00afb45f9f79595ba7feffb5aa0073b5d",
+      "changes": [
+        "declare version for previously unversioned qualified source"
+      ]
+    },
+    {
+      "source": "skills/manage-activity-context/references/adaptation.md",
+      "source_sha256": "04d54458fd6f5e723e8190e3cd20f7004fcc71af52ad51c436074a33c90233d0",
+      "canonical": "config/shared-skills/manage-activity-context/references/adaptation.md",
+      "packaged": "skills/manage-activity-context/references/adaptation.md",
+      "sha256": "04d54458fd6f5e723e8190e3cd20f7004fcc71af52ad51c436074a33c90233d0",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-activity-context/references/evolution.md",
+      "source_sha256": "29a28e1b88eee77d6baeaa4a937f6d7ea88896d530653d8005f8c0d8d965e851",
+      "canonical": "config/shared-skills/manage-activity-context/references/evolution.md",
+      "packaged": "skills/manage-activity-context/references/evolution.md",
+      "sha256": "29a28e1b88eee77d6baeaa4a937f6d7ea88896d530653d8005f8c0d8d965e851",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-activity-context/references/onboarding-compatibility.md",
+      "source_sha256": "9c036e67219701108cab5f28e9d1daa809a8648d73e7a930c67e60e4dabe5cac",
+      "canonical": "config/shared-skills/manage-activity-context/references/onboarding-compatibility.md",
+      "packaged": "skills/manage-activity-context/references/onboarding-compatibility.md",
+      "sha256": "9c036e67219701108cab5f28e9d1daa809a8648d73e7a930c67e60e4dabe5cac",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-activity-context/SKILL.md",
+      "source_sha256": "589813ab7b5c302d2321529fa928c80ddfe8207ed59a428d1b979131f3653ad0",
+      "canonical": "config/shared-skills/manage-activity-context/SKILL.md",
+      "packaged": "skills/manage-activity-context/SKILL.md",
+      "sha256": "589813ab7b5c302d2321529fa928c80ddfe8207ed59a428d1b979131f3653ad0",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-market-intelligence/SKILL.md",
+      "source_sha256": "cffd1c7ad0437ac514d53b4480ae23ffc15b1e0fd3f5cc1fc4e966a3dc9bd682",
+      "canonical": "config/shared-skills/manage-market-intelligence/SKILL.md",
+      "packaged": "skills/manage-market-intelligence/SKILL.md",
+      "sha256": "cffd1c7ad0437ac514d53b4480ae23ffc15b1e0fd3f5cc1fc4e966a3dc9bd682",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-documentation/references/artifact-shapes.md",
+      "source_sha256": "51a26f9fd3cb65c7669b97c67a5e85ead1b3215aa2a744f96ffccaab1b49f628",
+      "canonical": "config/shared-skills/manage-product-documentation/references/artifact-shapes.md",
+      "packaged": "skills/manage-product-documentation/references/artifact-shapes.md",
+      "sha256": "51a26f9fd3cb65c7669b97c67a5e85ead1b3215aa2a744f96ffccaab1b49f628",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-documentation/references/documentation-model.md",
+      "source_sha256": "ce424af64d28e92eae339f696a7bdd8887fd6565e6dd601470fd5f19a00be9db",
+      "canonical": "config/shared-skills/manage-product-documentation/references/documentation-model.md",
+      "packaged": "skills/manage-product-documentation/references/documentation-model.md",
+      "sha256": "ce424af64d28e92eae339f696a7bdd8887fd6565e6dd601470fd5f19a00be9db",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-documentation/references/lifecycle-playbooks.md",
+      "source_sha256": "086d5c828568e224c0248129b21474a920d6c0b5520996d411f62c458b82f1df",
+      "canonical": "config/shared-skills/manage-product-documentation/references/lifecycle-playbooks.md",
+      "packaged": "skills/manage-product-documentation/references/lifecycle-playbooks.md",
+      "sha256": "086d5c828568e224c0248129b21474a920d6c0b5520996d411f62c458b82f1df",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-documentation/references/product-scope-and-seams.md",
+      "source_sha256": "3c96efa742f97ddf3c743fa1bc7ee4bd4cd5f03081a0d0d40c2d3ce3ab5e62b7",
+      "canonical": "config/shared-skills/manage-product-documentation/references/product-scope-and-seams.md",
+      "packaged": "skills/manage-product-documentation/references/product-scope-and-seams.md",
+      "sha256": "3c96efa742f97ddf3c743fa1bc7ee4bd4cd5f03081a0d0d40c2d3ce3ab5e62b7",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-documentation/SKILL.md",
+      "source_sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
+      "canonical": "config/shared-skills/manage-product-documentation/SKILL.md",
+      "packaged": "skills/manage-product-documentation/SKILL.md",
+      "sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
+      "changes": []
+    },
+    {
+      "source": "skills/manage-product-marketing/SKILL.md",
+      "source_sha256": "11680f1c009bac2bba6be68e72e4e9f32c172d81f32eb236af0800481bca5153",
+      "canonical": "config/shared-skills/manage-product-marketing/SKILL.md",
+      "packaged": "skills/manage-product-marketing/SKILL.md",
+      "sha256": "11680f1c009bac2bba6be68e72e4e9f32c172d81f32eb236af0800481bca5153",
+      "changes": []
+    },
+    {
+      "source": "skills/pmm-check/references/evidence-basis.md",
+      "source_sha256": "1288c61999206319307d2221e67f5ef254b2a84a450ca1b50cacb2e39729ad28",
+      "canonical": "config/shared-skills/pmm-check/references/evidence-basis.md",
+      "packaged": "skills/pmm-check/references/evidence-basis.md",
+      "sha256": "1288c61999206319307d2221e67f5ef254b2a84a450ca1b50cacb2e39729ad28",
+      "changes": []
+    },
+    {
+      "source": "skills/pmm-check/SKILL.md",
+      "source_sha256": "068ac29795ba4a6ea5558f395b492a7ff1d8ea1babf511a4af0293305f4475b1",
+      "canonical": "config/shared-skills/pmm-check/SKILL.md",
+      "packaged": "skills/pmm-check/SKILL.md",
+      "sha256": "068ac29795ba4a6ea5558f395b492a7ff1d8ea1babf511a4af0293305f4475b1",
+      "changes": []
+    },
+    {
+      "source": "skills/technical-writing/SKILL.md",
+      "source_sha256": "fc363b7901af57a8c7a338d4cf89413b182e2e3e635cb40a010287cab9a008af",
+      "canonical": "config/shared-skills/technical-writing/SKILL.md",
+      "packaged": "skills/technical-writing/SKILL.md",
+      "sha256": "fc363b7901af57a8c7a338d4cf89413b182e2e3e635cb40a010287cab9a008af",
+      "changes": []
+    }
+  ]
+}

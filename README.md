@@ -6,6 +6,7 @@ This public repository contains:
 
 - setup guides for Octopad's hosted MCP connection
 - optional skills for product documentation and planning
+- a Codex-first Octopad bundle with its MCP connection and nine satellite skills
 
 It does not contain the Octopad service source code. MCP is the open standard that lets an AI client use tools from another service.
 
@@ -53,7 +54,13 @@ For regular ChatGPT conversations, install the official Octopad app. This is the
 
 Use the direct MCP guides in this repository for Codex, Claude, Cursor, Gemini CLI and other compatible MCP clients.
 
-Both routes connect to Octopad. The marketplaces in this repository distribute optional skills. Those plugins add the skills described below; they are not the official Octopad app for ChatGPT.
+Both routes connect to Octopad. The marketplaces in this repository distribute optional skills and the Octopad aggregate. The aggregate includes its MCP connection; standalone skill plugins do not. These packages are not the official Octopad app for ChatGPT.
+
+## Octopad bundle for Codex
+
+The `octopad` package, version **1.0.0**, combines the hosted MCP connector, nine satellite skills and a technical session bootstrap. The kernel comes from the server; Octoplan remains separate. This is a repository marketplace package, not a submission to the public OpenAI directory.
+
+**Version 1.0.0:** the bundle leaves session methodology selection unchanged. Client-aware kernel routing is separate server work. Real installation and kernel activation require their own verification. Start with the [integration, compatibility and reversible installation guide](docs/octopad/README.md) before enabling it alongside existing connections or skills.
 
 ## Optional skills
 
@@ -104,7 +111,7 @@ scripts/validate-repository.sh               Repository contract validation
 
 ## Releases
 
-One skill, one name. A distribution's folder, its plugin name, and its release tag prefix are the same string, and a skill that ships to more than one AI runtime carries that runtime in the name. Release titles read `<Display Name> <version>`.
+One distribution, one identity. A plugin can bundle related skills without renaming them. A distribution's folder, its plugin name, and its release tag prefix are the same string, and a skill that ships to more than one AI runtime carries that runtime in the name. Release titles read `<Display Name> <version>`.
 
 Octoplan restarted at `1.0.0` on both runtimes when they adopted one shared contract. Releases published before that reset keep their original numbers and tags, because those are what the published release pages record; `CHANGELOG.md` lists them under each distribution's pre-reset heading. See [CHANGELOG.md](CHANGELOG.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
