@@ -26,11 +26,11 @@ The manifest follows the repository's `.codex-plugin/plugin.json` convention wit
 
 The installed package carries **no kernel text**. Version 1.0.0 leaves `methodology` unset and follows the methodology returned by the server. Client-aware routing between legacy and kernel methodologies is separate server work. Publishing this bundle does not require changing `start_session` and does not turn on kernel delivery.
 
-The exact tested kernel is stored as [kernel-r2.md](kernel-r2.md) for the server owner. It is a frozen handoff artifact outside `plugins/octopad/`, not a runtime instruction or local fallback.
+The kernel reference is maintained in Octopad. This public repository contains neither its text nor a local fallback; the provenance manifest retains only its qualification fingerprint.
 
 The integration target is [server PR #979](https://github.com/sudolab-co/octopad/pull/979), inspected at head `249294a58a969cd86280b1ab4a12a3ff53620433`, base `161a5e00094fd972db931c0674b2ef59dd2858fd`. On 2026-09-23 it was open and draft, with two successful checks. Its implementation embeds and serves kernel text. Its task description still describes a pointer to a plugin-local kernel. That draft is context, not an activated contract for this release. The server owner must reconcile the stale description, client detection and the final contract before kernel activation. This work changes neither `start_session` nor any backend source or deployment.
 
-The frozen R2 kernel required for the integration handoff has SHA-256 `76bd4a21d046de7878cd21872ad3854ca2782b5d4a9859217567da666e51d98c` (18,041 bytes). The server PR explicitly requests replacing its provisional kernel before leaving draft. Its owner must compare the actual embedded bytes with that frozen input; a green packaging check does not prove this replacement. The frozen kernel still uses the historical word “module” for the three skills. Do not edit its bytes here to normalize vocabulary: any server-side wording change needs its own recorded hash and review.
+The server owner must verify the embedded kernel against the reference held in Octopad. A green packaging check does not prove that server-side integration. The historical qualification fingerprint in the provenance manifest is not a copy of the kernel or a delivery mechanism.
 
 | Situation in the inspected server contract | Expected methodology |
 |---|---|

@@ -78,7 +78,7 @@ Run `python3 scripts/sync-octopad.py`, then `python3 scripts/sync-octopad.py --c
 
 The aggregate has its own P.I.F version: shared integration-contract changes bump P; compatible Codex packaging capability changes bump I; corrections without behavior change bump F. The initial version is 1.0.0. Keep the plugin manifest, bootstrap Version, provenance plugin_version and changelog synchronized. Satellite versions identify their own contracts, not the aggregate. The first assembly preserves candidate versions; Notepad's terminology correction advances its patch, and the previously unversioned planning skill receives its first declared version without a behavior change. Candidate labels do not assert installation or release.
 
-The server owns the kernel. This repository records its required hash and contract, and keeps its frozen handoff outside the plugin, but ships no second executable kernel and changes no server code. See [the integration and transition guide](docs/octopad/README.md). Local packaging checks do not establish installation, early skill loading, authentication or server activation.
+The server owns the kernel. This repository records only its qualification fingerprint and integration contract. The kernel text stays in Octopad, outside this public repository; no server code is changed. See [the integration and transition guide](docs/octopad/README.md). Local packaging checks do not establish installation, early skill loading, authentication or server activation.
 
 ## The Octopad contract is not yours to change
 
