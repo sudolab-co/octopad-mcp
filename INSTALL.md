@@ -31,6 +31,10 @@ If the client cannot add a remote Streamable HTTP MCP server with OAuth, explain
 
 For regular ChatGPT conversations, install the official Octopad app. This is the supported customer-facing ChatGPT plugin. Open the current [ChatGPT directory](https://chatgpt.com/plugins) and search for `Octopad`. That route is separate from the direct MCP setup in this file.
 
+## Octopad bundle for Codex
+
+If the user explicitly requests the unified `octopad` plugin, follow its [installation and rollback guide](docs/octopad/README.md). It includes an MCP connection, so do not also create the direct connection above. Inventory existing connections and same-named skills before selecting one route. The bundle's kernel integration must be verified separately from its local package structure.
+
 ## Optional skills
 
 Skills are separate from the MCP connection. Install one only when the user explicitly asks for it.
