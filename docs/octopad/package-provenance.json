@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "plugin_version": "3.0.0",
+  "plugin_version": "3.1.0",
   "qualification": {
     "package-pins.json": "bc5b36d9aa15ecb5ffa1e061ad54d3a601c0ad50d64a11f6a26784e8c74bf4b9",
     "REVIEW-FREEZE.json": "4a171bf5e766736077c9dbf7c554733bcdd0582ab17ce5de1a7391b8899c2a80",
@@ -86,8 +86,10 @@
       "source_sha256": "51a26f9fd3cb65c7669b97c67a5e85ead1b3215aa2a744f96ffccaab1b49f628",
       "canonical": "config/shared-skills/manage-product-documentation/references/artifact-shapes.md",
       "packaged": "skills/manage-product-documentation/references/artifact-shapes.md",
-      "sha256": "51a26f9fd3cb65c7669b97c67a5e85ead1b3215aa2a744f96ffccaab1b49f628",
-      "changes": []
+      "sha256": "97d2c38aafbd8f91d40e92bf366b942a82f9e189abbb8d80531b62b746039d81",
+      "changes": [
+        "one replaced Verification block; release history stays on tasks and releases"
+      ]
     },
     {
       "source": "skills/manage-product-documentation/references/documentation-model.md",
@@ -118,8 +120,10 @@
       "source_sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
       "canonical": "config/shared-skills/manage-product-documentation/SKILL.md",
       "packaged": "skills/manage-product-documentation/SKILL.md",
-      "sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
-      "changes": []
+      "sha256": "002ab0612e7c74feab480f919311035029a75fbf4bfe94cd4c4795b674d2cc72",
+      "changes": [
+        "patch version 4.0.1-public-r2"
+      ]
     },
     {
       "source": "skills/manage-product-marketing/SKILL.md",

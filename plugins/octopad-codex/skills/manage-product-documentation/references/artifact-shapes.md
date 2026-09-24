@@ -64,6 +64,8 @@ Use these as adaptable shapes, not forms that must be filled. Omit irrelevant se
 - Known gaps: <gaps or None found>
 ```
 
+Keep one Verification block and replace it at each check; it states the latest verification only. Release history, install proofs and delivery receipts belong on the Task, pull request or release record, never appended to the page or written into its opening lines.
+
 Do not mix unreleased behavior into the released section. Put lifecycle state on each material claim or change, not on the Product Spec as a whole. A Product Spec may contain items in several states when they remain visibly separated.
 
 Keep every parked idea to that one line. Omit the section until the system has a parked idea, and drop the section again once the last line leaves it.
