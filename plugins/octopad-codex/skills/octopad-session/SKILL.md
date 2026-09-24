@@ -2,7 +2,7 @@
 name: octopad-session
 description: Initialize the Octopad plugin before the first Octopad tool call in a new conversation. Use when the user asks to use or connect Octopad, start onboarding, or begin work with this plugin. Respects the served methodology and routes to the bundled skills; it is not an additional business skill.
 ---
-Version: 3.0.0
+Version: 3.1.0
 
 # Start an Octopad plugin session
 

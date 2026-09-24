@@ -58,10 +58,10 @@ Both routes connect to Octopad. The marketplaces in this repository distribute t
 
 ## Octopad bundle
 
-The `octopad` plugin, version **3.0.0**, installs the hosted Octopad connection with its skills in one step. It exists for Claude Code and for Codex, under the same name and version:
+The `octopad` plugin, version **3.1.0**, installs the hosted Octopad connection with its skills in one step. It exists for Claude Code and for Codex, under the same name and version:
 
 - ten skills for knowledge and evidence, planning and work design, the Notepad, activity context, market intelligence, product documentation, product marketing, positioning checks, technical writing and the CRM
-- Octoplan 4.0.1, which plans a work stream and supervises its delivery once you give an explicit go
+- Octoplan 4.1.0, which plans a work stream and supervises its delivery once you give an explicit go
 - a technical `octopad-session` entry skill that starts Octopad before the first call
 
 The server supplies the methodology; the bundle contains no methodology text and does not change which one the server sends. See the [integration, compatibility and rollback guide](docs/octopad/README.md) before you enable it beside an existing Octopad connection or older skills. Keep one active Octopad connection per client.
@@ -74,8 +74,8 @@ These plugins are optional and separate from a direct MCP connection:
 
 | Distribution | Runtime | Version | What it does |
 |---|---|---|---|
-| [`octopad`](plugins/octopad-claude/skills/octopad-session/SKILL.md) | Claude Code | 3.0.0 | Connects Octopad and loads its ten skills and Octoplan. |
-| [`octopad`](plugins/octopad-codex/skills/octopad-session/SKILL.md) | Codex | 3.0.0 | Connects Octopad and loads its ten skills and Octoplan. |
+| [`octopad`](plugins/octopad-claude/skills/octopad-session/SKILL.md) | Claude Code | 3.1.0 | Connects Octopad and loads its ten skills and Octoplan. |
+| [`octopad`](plugins/octopad-codex/skills/octopad-session/SKILL.md) | Codex | 3.1.0 | Connects Octopad and loads its ten skills and Octoplan. |
 | [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
 The standalone `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` plugins are retired: the bundle carries the same skills. They stay listed for a short transition, frozen and marked as replaced; do not install them. [INSTALL.md](INSTALL.md#move-from-the-retired-plugins) explains how to switch.

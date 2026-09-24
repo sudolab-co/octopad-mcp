@@ -10,6 +10,10 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## octopad
 
+### 3.1.0 — 2026-09-24
+
+Ships Octoplan 4.1.0 and manage-product-documentation 4.0.1-public-r2. Octoplan for Claude Code now runs delivery in its own fresh session and hands off to a new one before its context fills. Codex gives workers and reviewers bounded context, batches independent reads, yields long commands and uses asynchronous questions when available. Parallel repository children require a verified route to separate checkouts. A Product Spec now keeps one Verification block, replaced at each check, so release history no longer piles up on the page. Both bundles carry the same files; no migration is needed.
+
 ### 3.0.0 — 2026-09-23
 
 Both bundles carry a tenth satellite, `octopad-crm` 1.0.0. It tells the AI how to work in a workspace where the CRM is on: find customer records through the CRM tools, read the card before the rest, pick the right place for each fact (signal, entry, brief or field), never overwrite a value a person set, act for the member on outreach drafts and background agent runs with the same care a person would, link a customer issue to a task, and bring records in from another system with a dry run first. It names a fallback for each tool that an organization may not have. Both bootstraps route CRM requests to it. The kernel's own routing line for this skill is maintained with the kernel, outside this repository; until the server serves that line, the skill loads from its description alone. This skill is not part of the R2 qualification and has no behavioral trial yet. The bundle still ships Octoplan 4.0.1 unchanged.
@@ -81,6 +85,10 @@ Out of scope in this release: audio, which the user transcribes first; several m
 ## octoplan-codex
 
 Since 2026-09-23, Octoplan for Codex ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-codex` plugin is retired. Octoplan contract changes keep recording here.
+
+### 4.1.0 — 2026-09-24
+
+Workers and reviewers now start with bounded context. Codex batches independent reads, caps output without dropping required evidence, and yields long commands while independent work continues. It collects every command result before ending the turn. When asynchronous questions are available, independent work can continue while work that needs the answer waits. Parallel repository children require a verified route to separate checkouts; otherwise repository work runs sequentially. Saved routes and routing defaults stay unchanged. This release also carries the Claude Code changes described in `octoplan-claude` 4.1.0 and removes a timing detail from shared planning that changed no decision.
 
 ### 4.0.1 — 2026-09-21
 
@@ -449,6 +457,14 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 ## octoplan-claude
 
 Since 2026-09-23, Octoplan for Claude Code ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-claude` plugin is retired. Octoplan contract changes keep recording here.
+
+### 4.1.0 — 2026-09-24
+
+The supervisor is now a fresh top-level session instead of a subagent of the planning conversation. After the plan is shown, the planner gives the user one short block to open that session, or starts it itself when Claude Code exposes a session-launch tool. The user talks to the supervisor directly, and the heavy planning conversation can be closed: each supervisor returns its closure proof in its own session.
+
+Where the desktop app reports the session's context fill, the supervisor reads it after each task and before each batch. At the user's preference, or at about 60% by default, it finishes the current task, drains its workers, records its state and release in Octopad, and gives the block for a fresh successor. The successor checks that the previous session has stopped before taking over, and asks the user when it cannot see that. Without a context reading, the supervisor picks the handoff point from the workload.
+
+Internal waits no longer spend context: once no other work is ready, a wait on workers, reviewers or pull-request checks ends the turn on a background agent or command that wakes the session. Parallel workers on one repository each get their own checkout. Runtime facts that changed no decision were removed. Existing plans keep their authority and continue unchanged.
 
 ### 4.0.1 — 2026-09-21
 

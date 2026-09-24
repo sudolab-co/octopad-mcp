@@ -2,7 +2,7 @@
 name: manage-product-documentation
 description: Keep one or more products' documentation true to the work as it happens. In a multi-product workspace, establish the affected product scope before choosing a page; the first matching document does not establish scope. Load it when product behavior is explored, decided, implemented, merged, released, rolled back, or retired; for product ideas, specs, contracts, architecture, user documentation, release notes, and Product Facts; and before claiming no product or documentation impact. It owns product truth and passes claim-safe facts to product marketing. A change confined to agent instructions, internal notes, or pure marketing does not need it; build tooling still needs an impact check when durable architecture or release behavior moves.
 ---
-Version: 4.0.0-public-r2
+Version: 4.0.1-public-r2
 Candidate status: local and unreleased
 
 # Manage Product Documentation
@@ -34,6 +34,8 @@ These four request classes are defined here and reused by the documentation fami
 - **refresh:** replace stale current truth in the existing owner while preserving history;
 - **audit:** inspect a bounded maintained set, repair the unambiguous, and record gaps;
 - **synchronize:** propagate a changed source through this family's projections and hand other outputs to their owners.
+
+A page keeps one Verification block that states the latest check; replace it, never append to it. Release history, install proofs and delivery receipts belong on the Task, pull request or release record, not on the page or in its opening lines.
 
 ## Stop before writing
 

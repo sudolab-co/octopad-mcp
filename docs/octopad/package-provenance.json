@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "plugin_version": "3.0.0",
+  "plugin_version": "3.1.0",
   "qualification": {
     "package-pins.json": "bc5b36d9aa15ecb5ffa1e061ad54d3a601c0ad50d64a11f6a26784e8c74bf4b9",
     "REVIEW-FREEZE.json": "4a171bf5e766736077c9dbf7c554733bcdd0582ab17ce5de1a7391b8899c2a80",
@@ -118,8 +118,11 @@
       "source_sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
       "canonical": "config/shared-skills/manage-product-documentation/SKILL.md",
       "packaged": "skills/manage-product-documentation/SKILL.md",
-      "sha256": "3b3c58d75ad02bcfeb6e87089ab90eaf40077d51de89a2292583de7f341aabe1",
-      "changes": []
+      "sha256": "c5e8fcc86255c7af3aa5b064b3e68ec14bea9ca196148d724869328cdb17328c",
+      "changes": [
+        "patch version 4.0.1-public-r2",
+        "one replaced Verification block; release history stays on tasks, pull requests and releases"
+      ]
     },
     {
       "source": "skills/manage-product-marketing/SKILL.md",

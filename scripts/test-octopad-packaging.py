@@ -2,6 +2,7 @@
 """Exercise package corruption against the real validator, offline."""
 import importlib.util
 import json
+import re
 from pathlib import Path
 import shutil
 import sys
@@ -128,7 +129,7 @@ class PackageTests(unittest.TestCase):
 
     def test_new_octoplan_needs_bundle_release_note(self):
         for path in [self.root / 'skills/octoplan/SKILL.md', *(self.root / 'plugins').glob('octopad-*/skills/octoplan/SKILL.md')]:
-            path.write_text(path.read_text().replace('Version: 4.0.1', 'Version: 9.9.9', 1))
+            path.write_text(re.sub(r'^Version: \d+\.\d+\.\d+$', 'Version: 9.9.9', path.read_text(), count=1, flags=re.M))
         with self.assertRaisesRegex(ValueError, 'must name the shipped Octoplan 9.9.9'):
             sync.synchronize(self.root, check=True)
 

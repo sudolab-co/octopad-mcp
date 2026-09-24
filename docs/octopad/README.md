@@ -1,6 +1,6 @@
 # Octopad bundle for Claude Code and Codex
 
-Release scope, 2026-09-23: **MCP connection, skills and Octoplan; no kernel activation**. Version **3.0.0**, the same on both runtimes. Each package joins the hosted Octopad connection, nine satellite skills, Octoplan and a native session bootstrap in the existing `octopad-mcp` repository marketplace. Neither is the official ChatGPT app or a public-directory submission.
+Release scope, 2026-09-23: **MCP connection, skills and Octoplan; no kernel activation**. Version **3.1.0**, the same on both runtimes. Each package joins the hosted Octopad connection, nine satellite skills, Octoplan and a native session bootstrap in the existing `octopad-mcp` repository marketplace. Neither is the official ChatGPT app or a public-directory submission.
 
 ## Contents and source
 
@@ -13,12 +13,12 @@ The runtime-neutral canon is `config/shared-skills/`. `scripts/sync-octopad.py` 
 | octopad-notepad | 1.0.1-public-r2, terminology-only patch |
 | manage-activity-context | 5.0.0 |
 | manage-market-intelligence | 1.3.0 |
-| manage-product-documentation | 4.0.0-public-r2 |
+| manage-product-documentation | 4.0.1-public-r2 |
 | manage-product-marketing | 1.0.0-public-r1 |
 | pmm-check | 1.0.0-public-r1 |
 | technical-writing | 2.0.0 |
 | octopad-crm | 1.0.0, added in bundle 3.0.0 |
-| octoplan (not a satellite; own contract) | 4.0.1 |
+| octoplan (not a satellite; own contract) | 4.1.0 |
 
 [Package provenance](package-provenance.json) preserves the qualified source hashes, path mapping and exact adaptations. `octopad-crm` was added in bundle 3.0.0 and is not part of the R2 qualification: it is written from the published CRM behavior and the CRM tools, and it has no behavioral trial yet. The R2 local qualification was a composition of prior evidence and a targeted impact analysis. It did not establish production behavior, ACL enforcement, actual client installation or statistical reliability. Historical failures stay failures. Packaging changes require focused validation; they do not retroactively rerun those behavioral trials.
 
@@ -42,7 +42,7 @@ On the inspected production connection, the exposed `start_session` schema lacke
 | Claude Code | Package prepared and accepted by `claude plugin validate`. The bootstrap loads when a request matches its description; no SessionStart hook forces early loading, which PR #979 requests for this host. Real install, OAuth and loading still require a witness. |
 | Claude web, Desktop, Cowork | No skill-installation or early-loading claim from this package. |
 | Retired standalone plugins | `octoplan-claude`, `octoplan-codex` and both `manage-product-documentation` 1.4.0 distributions are retired with this release. They stay listed, frozen and marked as replaced, for a short transition. Installed copies keep working until removed, and would duplicate the bundle's skills: remove them before or when installing the bundle. |
-| Octoplan | Ships in the bundle at 4.0.1. Its planning and supervision authority is unchanged: it still acts only under its own trigger and the user's explicit go. |
+| Octoplan | Ships in the bundle at 4.1.0. Its planning and supervision authority is unchanged: it still acts only under its own trigger and the user's explicit go. |
 | Personal/shared skills | Inventory same-named Notepad, product-documentation, PMM and technical-writing variants, plus old activity-context and MI routes. Do not silently shadow, rename, delete or alias them. |
 
 Use exactly one active Octopad connector route in the target client. Each bundle connects to `https://mcp.octopad.app/mcp`; do not add another direct entry for it. If a direct connector already exists, preserve its non-secret configuration and identify the exact disable/restore mechanism before changing the active selection. Do not inspect, copy or export credential stores.
