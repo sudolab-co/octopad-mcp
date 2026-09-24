@@ -30,18 +30,7 @@ The installed package carries **no kernel text**. The bundle leaves `methodology
 
 The kernel reference is maintained in Octopad. This public repository contains neither its text nor a local fallback; the provenance manifest retains only its qualification fingerprint.
 
-The integration target is [server PR #979](https://github.com/sudolab-co/octopad/pull/979), inspected at head `249294a58a969cd86280b1ab4a12a3ff53620433`, base `161a5e00094fd972db931c0674b2ef59dd2858fd`. On 2026-09-23 it was open and draft, with two successful checks. Its implementation embeds and serves kernel text. Its task description still describes a pointer to a plugin-local kernel. That draft is context, not an activated contract for this release. The server owner must reconcile the stale description, client detection and the final contract before kernel activation. This work changes neither `start_session` nor any backend source or deployment.
-
-The server owner must verify the embedded kernel against the reference held in Octopad. A green packaging check does not prove that server-side integration. The historical qualification fingerprint in the provenance manifest is not a copy of the kernel or a delivery mechanism.
-
-| Situation in the inspected server contract | Expected methodology |
-|---|---|
-| Marker and allow-listed organization | Server kernel |
-| Marker and another organization | V1 with precedence over conflicting plugin instructions |
-| No marker and allow-listed organization | V1 with a note about an earlier kernel already received in the conversation |
-| No marker and another organization | Existing V1 |
-
-The draft remembers the marker for up to 24 hours per client identity in process memory. A restart or eviction may forget it. Omission of the marker is not a reset. A plugin removal does not erase kernel text already in a conversation. Do not infer organization eligibility from the ability to install the package.
+Server-side integration — how the server chooses which methodology to return for a given client — is separate work tracked outside this repository. A green packaging check here does not prove it. The qualification fingerprint in the provenance manifest is not a copy of the kernel and is not a delivery mechanism.
 
 On the inspected production connection, the exposed `start_session` schema lacked `methodology`. An existing direct connection worked, but that is **not** a test of the bundled connector or kernel selection. No kernel activation was attempted.
 
