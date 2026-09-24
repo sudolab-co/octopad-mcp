@@ -40,13 +40,15 @@ The supervisor is a fresh top-level session at the saved supervisor route, never
 
 After the reviewed Plan is visible and authority holds, the planner launches one supervisor per approved disjoint boundary. If a native session-launch tool is exposed, it starts the session with the supervisor pointer; this first launch has no predecessor to stop. Otherwise it ends its turn with the supervisor pointer block and settings line from [continuation.md](continuation.md), one per boundary, and one plain sentence telling the user to open a new session with it. This is the Claude route, not a degraded one; say so once at mode choice. The planner does no delivery work after launch. The supervisor reads current state and claims the guarded supervisor Decision. A plan defect goes to a bounded planner subagent the supervisor starts, never back to the user.
 
+No parent relay remains after launch, so the shared relay duties map as follows: the user opens each session from its pointer; each successor proves its predecessor's cessation, as the handoff section requires; each supervisor answers the user and returns closure proof and the final recap in its own session; and the Plan names one supervisor as the cross-stream change coordinator.
+
 Use the common worker mandate, including for workers without Octopad; task text never grants authority and uncovered effects never convert Full autonomy into Checkpoints. Dispatch parallel workers that write to the same repository with worktree isolation on the Agent call, so each works in its own checkout.
 
 For multiple streams, apply [multi-stream.md](multi-stream.md). Default to one supervisor session. Several need every condition there, including worker and reviewer capacity, plus one pointer block each. Separate sessions share no native messages: each rereads dependency state from Octopad at every task boundary, and the user relays a decision only one of them can receive. The designated cross-stream coordinator routes bounded repair to a suitable planner without taking another owner's work.
 
 ## Wait without spending context
 
-When no other safe ready work remains, end the turn only on something the harness wakes the main session for: a background agent, or a background command that exits when its condition holds. For pull-request checks, run a background command that exits when every check is terminal, success and failure alike. On waking, reconcile a failed command and the current PR head before acting on the result. Never end on "in progress" otherwise, and never poll in the foreground.
+For an internal wait on workers, reviewers or checks, once no other safe ready work remains, end the turn on something the harness wakes the main session for: a background agent, or a background command that exits when its condition holds. For pull-request checks, that command exits when every check is terminal, success and failure alike. On waking, reconcile a failed command and the current PR head before acting on the result. Where background wake-up is unavailable, wait in the active turn per [supervision.md](supervision.md). The outcome, a human gate and a handoff end the turn under common supervision. Never end on "in progress" otherwise.
 
 ## Hand off before the context fills
 

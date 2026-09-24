@@ -35,6 +35,8 @@ These four request classes are defined here and reused by the documentation fami
 - **audit:** inspect a bounded maintained set, repair the unambiguous, and record gaps;
 - **synchronize:** propagate a changed source through this family's projections and hand other outputs to their owners.
 
+A page keeps one Verification block that states the latest check; replace it, never append to it. Release history, install proofs and delivery receipts belong on the Task, pull request or release record, not on the page or in its opening lines.
+
 ## Stop before writing
 
 - Create or activate a Product Fact only after reading evidence, retrieved or supplied, competent to prove its exact claim, product scope and state. Claims of shipped or released behavior, or of software's current capabilities or availability, require verified release evidence, whether or not their wording mentions a release. Facts about a non-software offer, service or physical specification require the relevant authoritative decision, service record or technical evidence for their exact state; approval or validation alone proves neither availability nor launch. A named artifact or an assurance that evidence is available is a pointer, not proof. If the required evidence cannot be found, create no Fact or dependent approved copy and name the gap.

@@ -25,11 +25,21 @@ Saved v18 routes valid under 1.3.0 remain valid: Luna workers `max`; Sol planner
 
 Native evidence exposing model and effort must match the saved values exactly. Positive mismatch pauses that actor. Requested settings, prompts and titles are declarations, not observations. Where native metadata is absent, continue with the declared route and record once on the first affected receipt that it is not independently observable here; missing metadata alone is neither a failed review nor `INFEASIBLE`. Reusing a session for a role requires a matching saved route under this same rule; prompting cannot change its model.
 
+## Native work
+
+Create supervisors, workers and reviewers with `fork_turns: "none"` or an exposed equivalent. Pass a bounded brief and evidence pointers; the default copies full history.
+
+Batch independent reads in one `functions.exec` call with `Promise.allSettled`; inspect every result. Keep dependent operations sequential. Cap tool output; retrieve omitted evidence before relying on it.
+
+Yield long commands while independent work continues. Use `functions.wait` only after `functions.exec` returns a running cell; use `write_stdin` for a session returned by `exec_command`. Await every started command before closing the turn.
+
+Use `request_user_input_async` when exposed. Continue independent work while the question is pending; hold work that requires the answer until it arrives.
+
 ## Parent relay and fresh supervisor
 
 Before offering automatic delivery, inspect exposed tools: fresh child creation at the saved route, delegation by that child, and native follow-up, wait, status and stop. Declarations show capabilities, not successful end-to-end handoff. A missing capability requires the precise [manual fallback](continuation.md) at mode choice, without an autonomous-continuation promise. Explain at that choice that automatic continuation depends on the parent runtime staying active; an open conversation in the sidebar is not proof of a running parent. While Delivery still requires that parent to collect or resume an actor, ending its turn requires demonstrated native wake-up support or the declared manual fallback, never a promise to continue later. A proved outcome or legitimate wait with no independent safe work can end the turn under common supervision.
 
-For repository work, verify the intended repository and working directory before dispatch. An explicitly requested new task uses the matching `list_projects` project through `create_thread`, not `projectless`. Honor the user's destination; otherwise choose `worktree` if `isGitRepository` is true, `local` if false. A returned `clientThreadId` means setup is pending: wait for a real `threadId` before follow-up or delivery, then verify the task's project and directory.
+Verify the repository and directory before dispatch. Parallel repository children need separate checkouts through a verified route that binds each child to its directory; otherwise serialize repository work. When `list_projects` and `create_thread` are exposed, create an explicitly requested new task in the matching project. Honor the user's destination; otherwise choose `worktree` if `isGitRepository` is true, `local` if false. A returned `clientThreadId` means setup is pending: wait for a real `threadId` before follow-up or delivery, then verify its project and directory.
 
 For multiple streams, apply [multi-stream.md](multi-stream.md). Default to a common supervisor. Qualify launch, nested delegation, follow-up, wait/status, stop and replacement for each proposed boundary using actual tool permissions and native evidence; reuse still-compatible qualification, and repeat only evidence invalidated by a runtime change. Reserve capacity for workers and reviewers: with four shared slots, a parent plus three supervisors leaves none for task work. Use fewer simultaneous supervisors or the common owner rather than launching a topology that cannot advance.
 
@@ -37,10 +47,10 @@ The parent routes returns, answers and dependency-clearance events to the correc
 
 After the reviewed Plan is visible and authority holds:
 
-1. Launch one supervisor per approved disjoint boundary with `collaboration.spawn_agent`, `fork_turns: "none"`, and the exact saved model and `reasoning_effort`. Its bounded prompt gives the owned stream identities and boundary, organization/workspace, authorization and ownership pointers, plus indispensable environment facts absent from Octopad. Creation needs a returned identity or authoritative reconciliation before retry.
+1. Launch one supervisor per approved disjoint boundary with `collaboration.spawn_agent` and the exact saved model and `reasoning_effort`. Its prompt gives the owned stream identities and boundary, organization/workspace, authorization and ownership pointers, plus indispensable environment facts absent from Octopad. Creation needs a returned identity or authoritative reconciliation before retry.
 2. The child rereads Octopad, claims the guarded supervisor Decision, and delegates workers/reviewers under common supervision. It never starts another supervisor.
 3. The parent handles every supervisor return using the rules below, then relays bounded reports and human escalations without altering the decision. Deliver later user answers using `collaboration.followup_task`, which resumes an idle child; `collaboration.send_message` can reach a running child. The parent does not dispatch delivery workers or close tasks.
-4. Apply common recovery at handoff. Use native status and, when needed, `collaboration.interrupt_agent`, then verify cessation before launching a replacement with `fork_turns: "none"`. The successor reconciles actors/effects and claims ownership using current `expected_updated_at`. A missing response or saved handoff does not prove cessation; uncertainty holds that boundary.
+4. Apply common recovery at handoff. Use native status and, when needed, `collaboration.interrupt_agent`, then verify cessation before launching a replacement. The successor reconciles actors/effects and claims ownership using current `expected_updated_at`. A missing response or saved handoff does not prove cessation; uncertainty holds that boundary.
 
 Keep pending user answers until the successor is identified, then forward their exact scope and source; never wake the retired owner. The original parent may repair the Plan on the supervisor's bounded request without taking delivery ownership.
 

@@ -12,7 +12,7 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ### 3.1.0 — 2026-09-24
 
-Ships Octoplan 4.1.0 and manage-product-documentation 4.0.1-public-r2. Octoplan for Claude Code now runs delivery in its own fresh session and hands off to a new one before its context fills; the Codex runtime is unchanged. A Product Spec now keeps one Verification block, replaced at each check, so release history no longer piles up on the page. Both bundles carry the same files; no migration is needed.
+Ships Octoplan 4.1.0 and manage-product-documentation 4.0.1-public-r2. Octoplan for Claude Code now runs delivery in its own fresh session and hands off to a new one before its context fills. Codex gives workers and reviewers bounded context, batches independent reads, yields long commands and uses asynchronous questions when available. Parallel repository children require a verified route to separate checkouts. A Product Spec now keeps one Verification block, replaced at each check, so release history no longer piles up on the page. Both bundles carry the same files; no migration is needed.
 
 ### 3.0.0 — 2026-09-23
 
@@ -88,7 +88,7 @@ Since 2026-09-23, Octoplan for Codex ships only inside the `octopad` bundle, at 
 
 ### 4.1.0 — 2026-09-24
 
-No Codex behavior change. The shared source moves to 4.1.0 for a Claude Code runtime change; see `octoplan-claude` 4.1.0. One shared sentence in planning loses a timing detail that changed no decision.
+Workers and reviewers now start with bounded context. Codex batches independent reads, caps output without dropping required evidence, and yields long commands while independent work continues. It collects every command result before ending the turn. When asynchronous questions are available, independent work can continue while work that needs the answer waits. Parallel repository children require a verified route to separate checkouts; otherwise repository work runs sequentially. Saved routes and routing defaults stay unchanged. This release also carries the Claude Code changes described in `octoplan-claude` 4.1.0 and removes a timing detail from shared planning that changed no decision.
 
 ### 4.0.1 — 2026-09-21
 
@@ -460,11 +460,11 @@ Since 2026-09-23, Octoplan for Claude Code ships only inside the `octopad` bundl
 
 ### 4.1.0 — 2026-09-24
 
-The supervisor is now a fresh top-level session instead of a subagent of the planning conversation. After the plan is shown, the planner gives the user one short block to open that session, or starts it itself when Claude Code exposes a session-launch tool. The user talks to the supervisor directly, and the heavy planning conversation can be closed.
+The supervisor is now a fresh top-level session instead of a subagent of the planning conversation. After the plan is shown, the planner gives the user one short block to open that session, or starts it itself when Claude Code exposes a session-launch tool. The user talks to the supervisor directly, and the heavy planning conversation can be closed: each supervisor returns its closure proof in its own session.
 
 Where the desktop app reports the session's context fill, the supervisor reads it after each task and before each batch. At the user's preference, or at about 60% by default, it finishes the current task, drains its workers, records its state and release in Octopad, and gives the block for a fresh successor. The successor checks that the previous session has stopped before taking over, and asks the user when it cannot see that. Without a context reading, the supervisor picks the handoff point from the workload.
 
-Waits no longer spend context: once no other work is ready, the supervisor ends its turn only on a background agent or a background command that wakes it, including pull-request checks. Parallel workers on one repository each get their own checkout. Runtime facts that changed no decision were removed. Existing plans keep their authority and continue unchanged.
+Internal waits no longer spend context: once no other work is ready, a wait on workers, reviewers or pull-request checks ends the turn on a background agent or command that wakes the session. Parallel workers on one repository each get their own checkout. Runtime facts that changed no decision were removed. Existing plans keep their authority and continue unchanged.
 
 ### 4.0.1 — 2026-09-21
 
