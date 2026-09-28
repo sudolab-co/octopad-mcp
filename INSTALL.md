@@ -76,18 +76,6 @@ Sign in through the client's own authorization window when it asks. Then start a
 
 If Octopad was already connected by hand, such as with `claude mcp add` or `codex mcp add`, or through a Claude connector, two Octopad connections are now active. Ask the user which one to keep, and remove or disable the other only with their agreement.
 
-### Meeting to Octopad for Claude Code
-
-This skill turns a meeting transcript into Octopad changes: it extracts decisions, action items, updates, open questions, and goal signals, matches them against what Octopad already holds, and proposes every change in one table that you approve before anything is written.
-
-```text
-/plugin marketplace add sudolab-co/octopad-mcp
-/plugin install meeting-to-octopad@octopad-mcp
-/reload-plugins
-```
-
-Then follow **Keep skills up to date** above.
-
 ### Move from the retired plugins
 
 `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` are retired. The `octopad` bundle carries the same skills, so keeping an old plugin beside it would load the same skill twice. Remove each one that is installed, then install the bundle.

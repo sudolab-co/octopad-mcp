@@ -9,7 +9,6 @@ This public repository contains direct MCP setup guides and optional skill distr
 - **Shared satellite source:** `config/shared-skills/`; the ten skills both bundles carry.
 - **Claude Octopad bundle:** `.claude-plugin/` and `plugins/octopad-claude/`.
 - **Codex Octopad bundle:** `.agents/` and `plugins/octopad-codex/`.
-- **Meeting to Octopad:** `.claude-plugin/` and `plugins/meeting-to-octopad/`.
 - **Shared release records:** `CHANGELOG.md` and repository-level validation.
 
 The two Octopad bundles distribute one shared contract to two runtimes. Do not change several unrelated contracts unless the pull request clearly covers them.
@@ -22,7 +21,6 @@ A distribution's folder name and its release tag prefix are the same string. Its
 |---|---|---|---|
 | `plugins/octopad-claude/` | `octopad` | `octopad-claude-v` | `Octopad X.Y.Z (Claude Code)` |
 | `plugins/octopad-codex/` | `octopad` | `octopad-codex-v` | `Octopad X.Y.Z (Codex)` |
-| `plugins/meeting-to-octopad/` | `meeting-to-octopad` | `meeting-to-octopad-v` | `Meeting to Octopad X.Y.Z` |
 
 The bundle's plugin name carries no runtime suffix because each marketplace manifest already selects one runtime and the two entries never appear in the same list. Its folder and tag still carry the suffix, because both live in one repository where the names must not collide. `scripts/validate-repository.sh` enforces the folder-to-plugin-name half of this rule; tags and release titles are the publisher's to get right.
 
@@ -36,7 +34,7 @@ For Octoplan, the canonical source and both generated copies move together; its 
 
 An identity migration that changes no skill behavior keeps the existing skill versions. Document it in the connection guides. Do not invent a skill release.
 
-Repository maintainers publish tags and releases after review, using the prefixes in the table above. Tags published before a distribution's version reset keep their original prefix and number: they are the record of what those release pages already serve, and renaming them would break the link between a release and what it shipped. Retired prefixes, kept for history only: `octoplan-vX.Y.Z`, `octoplan-autopilot-vX.Y.Z`, `octoplan-claude-vX.Y.Z`, `octoplan-codex-vX.Y.Z`, `manage-product-documentation-claude-vX.Y.Z`, `manage-product-documentation-codex-vX.Y.Z` and `octopad-vX.Y.Z`.
+Repository maintainers publish tags and releases after review, using the prefixes in the table above. Tags published before a distribution's version reset keep their original prefix and number: they are the record of what those release pages already serve, and renaming them would break the link between a release and what it shipped. Retired prefixes, kept for history only: `octoplan-vX.Y.Z`, `octoplan-autopilot-vX.Y.Z`, `octoplan-claude-vX.Y.Z`, `octoplan-codex-vX.Y.Z`, `manage-product-documentation-claude-vX.Y.Z`, `manage-product-documentation-codex-vX.Y.Z`, `meeting-to-octopad-vX.Y.Z` and `octopad-vX.Y.Z`.
 
 ## Which number moves
 

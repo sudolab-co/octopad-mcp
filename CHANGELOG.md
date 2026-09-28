@@ -70,6 +70,8 @@ Pull-request, delivery, release, audit, user-documentation, release-note, Produc
 
 ## meeting-to-octopad
 
+Withdrawn from the marketplace on 2026-09-28 while it is reworked. The entry below records the 0.1.0 release.
+
 ### 0.1.0 — 2026-08-17
 
 First release of a Claude Code skill that turns a meeting transcript into validated Octopad changes. It takes a file path or pasted text, reads it to the last line, works out what the meeting decided and who owes what, checks each item against what Octopad already holds, and proposes every change in one table. Nothing is written until the user approves that table in the chat, and there is no flag to skip it.

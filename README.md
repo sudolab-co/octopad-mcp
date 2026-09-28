@@ -6,7 +6,6 @@ This public repository contains:
 
 - setup guides for Octopad's hosted MCP connection
 - the Octopad bundle for Claude Code and Codex: its MCP connection, ten skills and Octoplan
-- an optional meeting-transcript skill for Claude Code
 
 It does not contain the Octopad service source code. MCP is the open standard that lets an AI client use tools from another service.
 
@@ -76,7 +75,6 @@ These plugins are optional and separate from a direct MCP connection:
 |---|---|---|---|
 | [`octopad`](plugins/octopad-claude/skills/octopad-session/SKILL.md) | Claude Code | 3.1.0 | Connects Octopad and loads its ten skills and Octoplan. |
 | [`octopad`](plugins/octopad-codex/skills/octopad-session/SKILL.md) | Codex | 3.1.0 | Connects Octopad and loads its ten skills and Octoplan. |
-| [`meeting-to-octopad`](plugins/meeting-to-octopad/skills/meeting-to-octopad/SKILL.md) | Claude Code | 0.1.0 | Turns a meeting transcript into Octopad changes, proposed in one table you approve before anything is written. |
 
 The standalone `octoplan-claude`, `octoplan-codex` and `manage-product-documentation` plugins are retired: the bundle carries the same skills. They stay listed for a short transition, frozen and marked as replaced; do not install them. [INSTALL.md](INSTALL.md#move-from-the-retired-plugins) explains how to switch.
 
@@ -107,7 +105,6 @@ config/shared-skills/              Canonical source of the ten skills
 skills/octoplan/                   Canonical Octoplan skill and runtime profiles
 plugins/octopad-claude/            Generated Claude Code bundle
 plugins/octopad-codex/             Generated Codex bundle
-plugins/meeting-to-octopad/        Optional Claude meeting-transcript distribution
 scripts/                           Copy and validation scripts
 ```
 
