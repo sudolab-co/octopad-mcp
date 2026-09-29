@@ -4,14 +4,14 @@ Load only in Codex. Apply common [planning](planning.md), [supervision](supervis
 
 ## Exact routes
 
-Select workers by the judgment remaining after preparation. Consider Luna `max` first, including substantial implementation with settled choices and reliable checks; record why another route is needed. These are routing defaults, not measured cost rankings. Save exact model, effort and reason.
+Select workers by the judgment remaining after preparation. Consider `gpt-6-luna` at `xhigh` first, including substantial implementation with settled choices and reliable checks; record why another route is needed. These are routing defaults, not measured cost rankings. Save exact model, effort and reason.
 
 | Role or remaining work | Default route |
 |---|---|
 | Planner | `gpt-6-astra · effort xhigh` |
-| Supervisor | `gpt-5.6-sol · effort high` |
-| Worker: settled choices and reliable verification | `gpt-5.6-luna · effort max` |
-| Worker: bounded judgment beyond that first candidate | `gpt-6-astra · effort low` |
+| Supervisor | `gpt-6-sol · effort high` |
+| Worker: settled choices and reliable verification | `gpt-6-luna · effort xhigh` |
+| Worker: bounded judgment beyond that first candidate | `gpt-6-sol · effort high` |
 | Worker: several unresolved reasoning steps in a prepared task | `gpt-6-astra · effort medium` |
 | Reviewer: bounded verification with reliable checks | `gpt-5.6-sol · effort high` |
 | Worker or reviewer: difficult reasoning or hard-to-detect errors | `gpt-6-astra · effort high` |
@@ -19,9 +19,9 @@ Select workers by the judgment remaining after preparation. Consider Luna `max` 
 
 These defaults do not override an explicit user choice of an available model and effort. Record that choice and reason; capability, independent-review and evidence requirements still apply.
 
-Astra `max` is exceptional after diagnosis, never automatic. Default role admission: planner = Astra `xhigh|max`; supervisor = Sol `high`; worker = Luna `max` or Astra `low|medium|high|xhigh|max`; reviewer = Sol `high` or Astra `high|xhigh|max`. Review floors do not depend on worker price. Repair insufficient preparation before escalating effort.
+Astra `max` is exceptional after diagnosis, never automatic. Default role admission: planner = `gpt-6-astra` at `xhigh|max`; supervisor = `gpt-6-sol` at `high`; worker = `gpt-6-luna` at `xhigh`, `gpt-6-sol` at `high` or `gpt-6-astra` at `medium|high|xhigh|max`; reviewer = `gpt-5.6-sol` at `high` or `gpt-6-astra` at `high|xhigh|max`. Review floors do not depend on worker price. Repair insufficient preparation before escalating effort.
 
-Saved v18 routes valid under 1.3.0 remain valid: Luna workers `max`; Sol planners `xhigh|max`, supervisors, reviewers and workers `high|xhigh|max`; Astra planners and supervisors `xhigh|max`, reviewers `high|xhigh|max`, workers `low|medium|high|xhigh|max`. Keep exact saved values, including active actors. A saved-route change returns to Plan and affected review before dispatch; unavailable or invalid routes pause only the affected actor. Never substitute silently.
+Valid routes saved before 4.2.0 remain valid; the new defaults apply when preparing new plans. This includes saved v18 routes valid under 1.3.0: Luna workers `max`; Sol planners `xhigh|max`, supervisors, reviewers and workers `high|xhigh|max`; Astra planners and supervisors `xhigh|max`, reviewers `high|xhigh|max`, workers `low|medium|high|xhigh|max`. Keep exact saved model IDs and efforts, including active actors; an older Luna or Sol route does not select its GPT-6 successor. A saved-route change returns to Plan and affected review before dispatch; unavailable or invalid routes pause only the affected actor. Never substitute silently.
 
 Native evidence exposing model and effort must match the saved values exactly. Positive mismatch pauses that actor. Requested settings, prompts and titles are declarations, not observations. Where native metadata is absent, continue with the declared route and record once on the first affected receipt that it is not independently observable here; missing metadata alone is neither a failed review nor `INFEASIBLE`. Reusing a session for a role requires a matching saved route under this same rule; prompting cannot change its model.
 

@@ -10,6 +10,10 @@ This file records versioned contract changes. GitHub tags and releases are the p
 
 ## octopad
 
+### 3.2.0 — 2026-09-29
+
+Ships Octoplan 4.2.0. In Codex, new plans use GPT-6 Sol at high effort for supervision and workers with bounded judgment, and GPT-6 Luna at xhigh effort for workers with settled choices and reliable checks. Planner and reviewer defaults stay unchanged. Existing plans and active actors keep their exact saved models and efforts; no migration is needed. Both bundles carry the same updated source. Claude Code behavior and the shared protocol stay unchanged. These are routing defaults, not measured cost rankings.
+
 ### 3.1.0 — 2026-09-24
 
 Ships Octoplan 4.1.0 and manage-product-documentation 4.0.1-public-r2. Octoplan for Claude Code now runs delivery in its own fresh session and hands off to a new one before its context fills. Codex gives workers and reviewers bounded context, batches independent reads, yields long commands and uses asynchronous questions when available. Parallel repository children require a verified route to separate checkouts. A Product Spec now keeps one Verification block, replaced at each check, so release history no longer piles up on the page. Both bundles carry the same files; no migration is needed.
@@ -87,6 +91,10 @@ Out of scope in this release: audio, which the user transcribes first; several m
 ## octoplan-codex
 
 Since 2026-09-23, Octoplan for Codex ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-codex` plugin is retired. Octoplan contract changes keep recording here.
+
+### 4.2.0 — 2026-09-29
+
+New plans use `gpt-6-sol` at `high` for supervisors, `gpt-6-luna` at `xhigh` for workers with settled choices and reliable checks, and `gpt-6-sol` at `high` for workers with bounded judgment. The worker selection rule and role admission follow these defaults. Planner and reviewer defaults stay unchanged, including `gpt-5.6-sol` at `high` for bounded review. Valid saved routes, including active actors, retain their exact model IDs and efforts; they do not select a newer model automatically. Changing a saved route still returns to Plan and affected review before dispatch. The shared protocol and Claude Code behavior stay unchanged. These are routing defaults, not measured cost rankings.
 
 ### 4.1.0 — 2026-09-24
 
@@ -459,6 +467,10 @@ First public Codex release, intentionally aligned with the current Claude `1.3.1
 ## octoplan-claude
 
 Since 2026-09-23, Octoplan for Claude Code ships only inside the `octopad` bundle, at the version its skill declares. The standalone `octoplan-claude` plugin is retired. Octoplan contract changes keep recording here.
+
+### 4.2.0 — 2026-09-29
+
+Carries the shared source version for the Codex routing update described in `octoplan-codex` 4.2.0. Claude Code behavior and the shared protocol stay unchanged; existing plans need no migration.
 
 ### 4.1.0 — 2026-09-24
 
